@@ -59,6 +59,7 @@ import TableData from './NP_table.vue'
   .main_contain{
       height: 90vh;
       max-width: 99%;
+      font-size: 20px;
   }   
   .button_level{
       display: flex;
@@ -80,7 +81,7 @@ import TableData from './NP_table.vue'
   }
   .titleText{
     color: black;
-    font-size: 20px;
+    font-size: 25px;
 
   }
   </style>

@@ -24,7 +24,7 @@
           @change="ChangeParam"
         >
         <!-- Завтра сделать метод принимающий index, event.target исделать всё это редактирование красивым-->
-          <td><input :id="index" name="idNode" class="small" 
+          <td><input :id="index"  style="pointer-events: none;" name="idNode" class="small" 
              :value="data.idNode"></td>
           <td><input :id="index" name="nameEarthPoint"
              :value="data.nameEarthPoint"></td>
@@ -45,13 +45,13 @@
           Статус: {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
         <div class="ButtonApproved">
-          <button v-if="approved" @click="SatartEditing">Редактировать</button>  
+          <button v-if="approved" @click="SatartEditing"> <img src="../assets/edit.svg">Редактировать</button>  
         </div>
         <div class="ButtonApproved">
-          <button v-if="!approved" @click="SatartApproved">Сохранить</button>
+          <button v-if="!approved" @click="SatartSave" :class="datasave ? 'Save' :'NotSave'"> <img src="../assets/save.svg">Сохранить</button>
         </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="SatartApproved">Утвердить</button>
+          <button v-if="!approved" @click="SatartApproved" :class="datasave ? 'active' :'disabled'" > <img src="../assets/approve.svg">Утвердить</button>
         </div>
         <!--<div>Статус сервера: {{timefetch}}</div>-->
         
@@ -76,7 +76,7 @@ import jsons from '../res/test2.json'
         dataJson: jsons,
         approved: true,
         timefetch: "none",
-        addRowinTable: false
+        datasave: true
       }
     },
     methods:
@@ -97,23 +97,28 @@ import jsons from '../res/test2.json'
             .then(response => response.json())
             .then(data => console.log(data))
         },
-        SatartApproved(){
-          this.approved = true
+        SatartSave(){
           this.setPost();
+          this.datasave = true
+        },
+        SatartApproved(){
+          if(this.datasave){
+            this.approved = true
+            //this.setPost();
+          }
         },
         SatartEditing (){
           this.approved = false
         },
         AddRow(){
-          var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'id' : 0};
-          this.dataJson.push(addedRow);    
+          var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0};
+          this.dataJson.push(addedRow);   
+          this.datasave = false
         },
         ChangeParam(event){
           console.log(event.target, event.target.value, event.target.id)
+          this.datasave = false
           switch(event.target.name){
-            case "idNode":
-              this.dataJson[event.target.id].idNode = Number(event.target.value)
-              break;
             case "nameEarthPoint":
               this.dataJson[event.target.id].nameEarthPoint = event.target.value
               break;
@@ -146,7 +151,7 @@ import jsons from '../res/test2.json'
               method:  'POST',})
               .then(response => response.json())
               .then(data => console.log(data))
-            console.log('http://192.168.50.250:8081/api/v1/earth/delete/byId?id='+this.dataJson[index].id)
+            //console.log('http://192.168.50.250:8081/api/v1/earth/delete/byId?id='+this.dataJson[index].id)
         }
     },
     async mounted() {
@@ -211,11 +216,13 @@ table{
     width: 100%;
     height: 100%;
     padding: 10px 0px;
+    font-size: 18px;
   }    
   
 
   tr{
     height: 35px;
+    font-size: 20px;
 
     .iconDelete{
       width: 25px;
@@ -235,6 +242,7 @@ table{
         pointer-events: none;
         border: none;
         background: none;
+        font-size: 18px;
       }
     }
     &.active 
@@ -282,6 +290,7 @@ table{
       align-items: center;
       width: 100%;
       justify-content: space-evenly;
+      padding: 5px 0px;
 
       div{
         &.Yes{
@@ -300,7 +309,31 @@ table{
           border-radius: 10px;
           padding: 7px;
           width: 100%;
-          color: white;
+          font-size: 18px;
+          color: #FFFFFF;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          img{
+            width: 30px;
+            margin-right: 5px;
+          }
+
+          &.Save{
+            box-shadow: 3px 3px 3px green;
+          }
+          &.NotSave{
+            box-shadow: 3px 3px 3px red;
+          }
+          &.disabled{
+            background-color: #24608b;
+            border: solid 2px #acc5d8;
+            pointer-events:none;
+          }
+          &:active{
+            padding: 5px;
+            background-color: #012c4b;
+          }
         }
       }
 
