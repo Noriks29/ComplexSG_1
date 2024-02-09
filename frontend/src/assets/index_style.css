@@ -1,0 +1,31 @@
+.button_flex{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.main_contain{
+    height: 90vh;
+    max-width: 99%;
+}   
+.button_level{
+    display: flex;
+    flex-wrap: wrap;
+    width: 90%;
+    margin-top: 15px;
+}
+.button_level div{
+    margin: 10px;
+    padding: 3px;
+    flex: 1;
+}
+
+.button_level button{
+    background: none;
+    height: 100%;
+    width: 100%;
+    font-size: 30px;
+}

@@ -1,0 +1,31 @@
+[
+    {
+        "idNode": null,
+        "nameEarthPoint": "Земельная точка 1",
+        "longitude": 45.678,
+        "latitude": 23.456,
+        "id": 102
+    },
+    {
+        "idNode": 2,
+        "nameEarthPoint": "Земельная точка 2",
+        "longitude": 45.678,
+        "latitude": 23.456,
+        "id": 103
+    },
+    {
+        "idNode": 3,
+        "nameEarthPoint": "Земельная точка 3",
+        "longitude": 45.678,
+        "latitude": 23.456,
+        "id": 104
+    },
+    {
+        "idNode": 4,
+        "nameEarthPoint": "Земельная точка 4",
+        "longitude": 45.678,
+        "latitude": 23.456,
+        "id": 105
+    }
+] 
+  
