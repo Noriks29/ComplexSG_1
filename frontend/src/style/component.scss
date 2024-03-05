@@ -1,0 +1,212 @@
+.ToMenuButtonDiv{
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 0px;
+    border: none;
+
+    img{
+      width: 30px;
+    }
+  }
+
+  .button_flex{
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: center;
+  }
+  
+  .main_contain{
+      height: 90vh;
+      max-width: 99%;
+      font-size: 20px;
+  }   
+  .button_level{
+      display: flex;
+      flex-wrap: wrap;
+      width: 90%;
+      margin-top: 15px;
+  }
+  .button_level div{
+      margin: 10px;
+      padding: 3px;
+      flex: 1;
+  }
+  
+  .button_level button{
+      background: none;
+      height: 100%;
+      width: 100%;
+      font-size: 30px;
+  }
+  .titleText{
+    color: white;
+    font-size: 25px;
+
+  }
+
+  .DataTable{
+    transition: all 1s ease-out;
+    display: inline-flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    
+    .PanelTable{
+      width: 100%;
+      position: sticky;
+      margin-top: 20px;
+      bottom: 10px;
+      color: white;
+  
+      .TableInfo{
+        margin-top: 5px;
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 100%;
+        justify-content: space-evenly;
+        padding: 5px 0px;
+  
+        div{
+          &.Yes{
+            border-bottom: 2px solid green;
+          }
+          &.No{
+            border-bottom: 2px solid red;
+          }
+        }
+        .ButtonApproved
+         {
+          height: 100%;
+          position: relative;
+          button{
+            padding: 7px;
+            width: 100%;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: row;
+            img{
+              width: 30px;
+              margin-right: 5px;
+            }
+            &.disabled{
+              pointer-events:none;
+            }
+          }
+        }
+  
+      }
+    }
+  }
+
+.PanelDefault{
+  background-color: rgba(151, 151, 151, 0.15);
+  box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+  border: 2px solid rgba(0, 0, 0, 0.25);
+}
+
+.ButtonDefault{
+  clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
+  background: linear-gradient(90deg, rgba(53,0,245,1) 0%, rgba(172,0,245,1) 100%);
+  border: none;
+  font-size: 18px;
+  align-items: center;
+  transition: all 1s;
+  &.Empty{
+    border: 2px solid white;
+    background: none;
+  }
+}
+.ButtonDefault:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(146, 148, 248, 0.4),
+    transparent
+  );
+  transition: all 650ms;
+}
+.ButtonDefault:hover:before {
+  left: 100%;
+}
+
+.ButtonDefaultShadow{
+  clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
+  background: linear-gradient(90deg, rgba(53,0,245,0.5) 0%, rgba(172,0,245,0.5) 100%);
+  position: absolute;
+  z-index: -1;
+  content: "";
+  width: 100%;
+  height: 100%;
+  left: 5px;
+  top: 3px;
+}
+
+.TableDefault{
+  border-spacing: 0px;
+  background: rgb(40,40,40);
+  background: linear-gradient(140deg, rgba(40,40,40,1) 0%, rgba(28,28,28,1) 15%, rgba(10,10,10,1) 100%);
+
+  tr:first-child{
+    th{
+      color: white;
+    }
+  }
+.addRowButton button{
+  background: none;
+  border: none;
+  width: 100%;
+  height: 100%;
+  padding: 10px 0px;
+  font-size: 18px;
+  color: white;
+}   
+tr{
+  height: 35px;
+  font-size: 20px;
+
+  .iconDelete{
+    width: 25px;
+    height: 25px;
+  }
+  .small{
+    width: 100px;
+  }
+  td {
+    padding: 5px;
+
+    input{
+      padding: 10px;
+      text-align: center;
+      pointer-events: none;
+      border: none;
+      background: none;
+      font-size: 18px;
+      color: white;
+    }
+  }
+  &.active 
+  {
+    input{
+      pointer-events: auto;
+    }
+    input:focus{
+        border: none;
+        border-bottom: 3px solid red;
+        border-radius: 5px;
+    }
+  }
+}
+}
