@@ -1,19 +1,18 @@
 <template>
     <div class="SelectOG ">
-      <div class="divflex">
-        {{ dataJson }}
+      <div class="divflex PanelDefault">
         <div @click="DisplayOGList= !DisplayOGList" >{{ tableDisplay ? dataJsonTable.constellationName : 'Орбитальная группировка не выбрана' }}</div>
-        <table :class="DisplayOGList ? 'active' :'disable'">
+        <table :class="DisplayOGList ? 'active' :'disable'" class="TableDefault" >
             <tr v-for="data, index in dataJson"
                 :key="index"
                 @click="SelectOGData(index)"
                 
                 >
-            <td>{{ data.constellationName }}</td><td>{{ data.arbitraryFormation ? "Произвольное" : "Плоскостное" }}</td>
+            <td colspan="2">{{ data.constellationName }}</td><td>{{ data.arbitraryFormation ? "Произвольное" : "Плоскостное" }}</td>
                 <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="3"><Button @click="AddRow">Добавить КА</Button></td>
+            <td colspan="4"><Button @click="AddRow">Добавить ОГ</Button></td>
           </tr> 
         </table>
       </div>
@@ -25,15 +24,17 @@
           {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
           <div class="ButtonApproved">
-            <button v-if="approved" @click="SatartEditing" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button>  
-            <button v-if="approved" class="ButtonDefaultShadow"></button>  
-          </div>
-          <div class="ButtonApproved">
-            <button v-if="!approved" @click="SatartSave" :class="datasave ? 'Save' :'NotSave'"> <img src="../../assets/save.svg">Сохранить</button>
-          </div>
-          <div class="ButtonApproved"> 
-            <button v-if="!approved" @click="SatartApproved" :class="datasave ? 'active' :'disabled'" > <img src="../../assets/approve.svg">Утвердить</button>
-          </div>
+          <button v-if="approved" @click="SatartEditing" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+          <button v-if="approved" class="ButtonDefaultShadow"></button>  
+        </div>
+        <div class="ButtonApproved">
+          <button v-if="!approved" @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
+          <button v-if="!approved && !datasave" class="ButtonDefaultShadow"></button>
+        </div>
+        <div class="ButtonApproved"> 
+          <button v-if="!approved" @click="SatartApproved" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved && datasave" class="ButtonDefaultShadow"></button>
+        </div>
           
         </div>
       </div>
@@ -119,6 +120,9 @@ import TableData from './OG_tableFree.vue'
     color: white;
     padding: 10px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     
   .divflex{
@@ -129,8 +133,13 @@ import TableData from './OG_tableFree.vue'
     align-items: center;
     position: relative;
     top: 10px;
-    left: 0px;
-    color:white;
+    /* left: 0px; */
+    width: 70%;
+    color: white;
+    margin-bottom: 50px;
+    background: none;
+    box-shadow: none;
+    border: none;
 
     table{
       width: 75%;
@@ -138,31 +147,21 @@ import TableData from './OG_tableFree.vue'
       border-spacing: 0px;
       overflow: hidden;
       position: relative;
-      tr:last-child{
-          
-        td:first-child{
-          border-bottom-left-radius: 10px;
-        }
-        td:last-child{
-          border-bottom-right-radius: 10px;
-        }
-      }
-      .addRowButton button{
-        background: none;
-        border: none;
-        width: 100%;
-        height: 100%;
-        padding: 10px 0px;
-        font-size: 18px;
-        position: absolute;
-      }    
+      transition: all 1s ease-in-out;
+      background: none;
+      background-color: rgba(151, 151, 151, 0);
+      box-shadow: -4px 3px 1px rgba(63, 60, 60, 0);
+      border: 2px solid rgba(0, 0, 0, 0);
+
       &.active 
         {
           tr {
             top: 0px;
             opacity: 1;
           }
-          filter: drop-shadow(2px 2px 7px #A9D6E5);
+          background-color: rgba(151, 151, 151, 0.15);
+          box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+          border: 2px solid rgba(0, 0, 0, 0.25);
         }
         &.disable{
           tr {
@@ -175,10 +174,9 @@ import TableData from './OG_tableFree.vue'
       tr{
         height: 35px;
         font-size: 20px;
-
         position: relative;
         transition: all 1s ease-in-out;
-        
+        padding-top: 5px;
         .iconDelete{
           width: 25px;
           height: 25px;
@@ -187,13 +185,6 @@ import TableData from './OG_tableFree.vue'
         td {
           overflow-wrap: break-word;
           padding: 5px;
-          border-top: 1px solid #013A63;
-          background-color: #A9D6E5;
-
-          &:first-child{
-            width: 70%;
-
-          }
         }
         
     

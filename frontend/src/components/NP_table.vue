@@ -112,7 +112,8 @@ import jsons from '../res/test2.json'
         },
         ChangeParam(event){
           console.log(event.target, event.target.value, event.target.id)
-          
+          this.datasave = false
+          this.ChangeTableStatusForPerent()
           switch(event.target.name){
             case "nameEarthPoint":
               this.dataJson[event.target.id].nameEarthPoint = event.target.value

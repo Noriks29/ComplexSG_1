@@ -1,6 +1,5 @@
 <template>
     <div class="DataTable">
-      {{ dataOGLocal }}
       <div v-if="TableDisplay" class="PanelDefault">
         <table class="TableDefault">
           <tr>
@@ -146,104 +145,6 @@
   
   
   <style lang="scss" scoped>
-  table{
-    transition: all 1s ease-out;
-    border: 1px solid #013A63;
-      border-radius: 10px;
-      border-spacing: 0px;
-      filter: drop-shadow(10px 10px 21px #A9D6E5);
-    
+  
 
-    tr:first-child{
-        
-        th:first-child{
-          border-top-left-radius: 10px;
-        }
-        th:last-child{
-          border-top-right-radius: 10px;
-        }
-        th{
-          background-color: #014F86;
-          color: white;
-          padding-left: 10px;
-
-        }
-      }
-    
-    tr:last-child{
-        
-      td:first-child{
-        border-bottom-left-radius: 10px;
-      }
-      td:last-child{
-        border-bottom-right-radius: 10px;
-      }
-    }
-    .addRowButton button{
-      background: none;
-      border: none;
-      width: 100%;
-      height: 100%;
-      padding: 10px 0px;
-      font-size: 18px;
-    }    
-    
-  
-    tr{
-      height: 35px;
-      font-size: 20px;
-  
-      .iconDelete{
-        width: 25px;
-        height: 25px;
-      }
-      .small{
-        width: 100px;
-      }
-      td {
-        padding: 5px;
-        border-top: 1px solid #013A63;
-        background-color: #A9D6E5;
-        
-        input{
-          padding: 10px;
-          text-align: center;
-          pointer-events: none;
-          border: none;
-          background: none;
-          font-size: 18px;
-        }
-      }
-      &.active 
-      {
-        input{
-          pointer-events: auto;
-        }
-        input:focus{
-            //background-color: #468FAF;
-            border: none;
-            border-bottom: 3px solid red;
-            
-            border-radius: 5px;
-          }
-      }
-      
-  
-    }
-    
-  }
-  
-  
-  .NPTable{
-    transition: all 1s ease-out;
-    display: inline-flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: center;
-    max-width: 80%;
-  
-  
-    
-  
-  }
   </style>

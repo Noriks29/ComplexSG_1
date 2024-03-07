@@ -75,9 +75,11 @@
   
         div{
           &.Yes{
+            margin: 5px;
             border-bottom: 2px solid green;
           }
           &.No{
+            margin: 5px;
             border-bottom: 2px solid red;
           }
         }
@@ -85,6 +87,7 @@
          {
           height: 100%;
           position: relative;
+          margin: 10px;
           button{
             padding: 7px;
             width: 100%;
@@ -118,6 +121,7 @@
   font-size: 18px;
   align-items: center;
   transition: all 1s;
+  
   &.Empty{
     border: 2px solid white;
     background: none;
