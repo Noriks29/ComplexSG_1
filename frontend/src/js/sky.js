@@ -1,5 +1,3 @@
-const COLORS = ["209,217,255","205,206,209","252,251,237","252,235,237"];
-//const BUBBLE_DENSITY = 100;
 
 
 function generateDecimalBetween(left, right){
@@ -18,22 +16,23 @@ class Bubble {
         this.canvasHeight = this.canvas.clientHeight;
     }
     init(){
-        this.color = COLORS[Math.floor(Math.random()*COLORS.length)]
-        this.size = 1
+        this.size = 2
         this.alpha = generateDecimalBetween(4, 8) / 10;
         this.translateX = generateDecimalBetween(0, this.canvasWidth);
         this.translateY = generateDecimalBetween(0, this.canvasHeight);
-        this.velocity = generateDecimalBetween(20, 40);
-        this.movementX = generateDecimalBetween(1,3) / this.velocity;
-        this.movementY = generateDecimalBetween(1,2) / this.velocity;
+        this.movementX = generateDecimalBetween(1,3) / 30;
+        this.movementY = generateDecimalBetween(1,2) / 30;
 
     }
     move(){
         this.translateX = this.translateX - this.movementX;
         this.translateY = this.translateY - this.movementY;
-        if(this.translateY < 0 || this.translateX < 0 || this.translateX > this.canvasWidth){
-            this.init();
+        if(this.translateY < 0){
             this.translateY = this.canvasHeight;
+        }
+        if(this.translateX < 0)
+        {
+            this.translateX = this.canvasWidth;
         }
     }
 }
@@ -65,7 +64,7 @@ export class CanvasBackground{
     }
     generateBubbles(){
         this.bubblesList = [];
-        for (let index = 0; index < 500; index++) {
+        for (let index = 0; index < 300; index++) {
            this.bubblesList.push(new Bubble(this.canvas));
         }
     }
@@ -75,8 +74,8 @@ export class CanvasBackground{
             bubble.move();
             this.ctx.translate(bubble.translateX,bubble.translateY);
             this.ctx.beginPath();
-            this.ctx.arc(0,0,bubble.size,0,2* Math.PI);
-            this.ctx.fillStyle = `rgba(${bubble.color},${bubble.alpha})`;
+            this.ctx.arc(0,0,bubble.size,0,0.5* Math.PI);
+            this.ctx.fillStyle = `rgba(250,250,250,${bubble.alpha})`;
             this.ctx.fill();
             this.ctx.setTransform(this.dpr,0,0,this.dpr,0,0);
         });

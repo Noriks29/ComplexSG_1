@@ -3,7 +3,7 @@
       <div class="ButtonSection first">
         <button @click="SelectComponent('NP')">НП</button>
         <button @click="SelectComponent('OG')">ОГ</button>
-        <button>Типы КА</button>
+        <button @click="SelectComponent('TypeKA')">Типы КА</button>
         <button>Система</button>
         <button>Заявки ДЗЗ</button>
       </div>
@@ -39,7 +39,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
 .SectionMenu{
     width: 81%;
     height: 600px;

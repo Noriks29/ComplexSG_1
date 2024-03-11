@@ -64,7 +64,6 @@ import jsons from '../res/test2.json'
       return {
         dataJson: jsons,
         approved: true,
-        timefetch: "none",
         datasave: true
       }
     },
@@ -76,20 +75,26 @@ import jsons from '../res/test2.json'
           })
         },
         ShowData(){
-          console.log(`{"dtoEarthPointList": ` + JSON.stringify(this.dataJson) + `}`)
+          console.log(JSON.stringify(this.dataJson))
         },
         setPost() {
           this.ShowData()
           console.log("Отправка на сервер")
-          fetch('http://192.168.50.105:8081/api/v1/earth/update/byList',{
-            method:  'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.dataJson)
-          })
-            .then(response => response.json())
-            .then(data => console.log(data))
+          try {
+            fetch('http://192.168.50.105:8081/api/v1/earth/update/byList',{
+              method:  'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(this.dataJson)
+            })
+              .then(response => response.json())
+              .then(data => console.log(data))
+            } catch (error) {
+                this.timefetch = "Error";
+                console.error('Error save:', error);
+            }
+          
         },
         SatartSave(){
           this.setPost();
@@ -99,6 +104,16 @@ import jsons from '../res/test2.json'
         SatartApproved(){
           if(this.datasave){
             this.approved = true
+            try {
+              fetch('http://localhost:8081/api/v1/constellation/set/status?status=true',{
+                method:  'POST'
+              })
+              .then(response => response.json())
+              .then(data => console.log(data))
+            } catch (error) {
+                this.timefetch = "Error";
+                console.error('Error approve:', error);
+            }
           }
         },
         SatartEditing (){
@@ -164,7 +179,6 @@ import jsons from '../res/test2.json'
           let date = new Date();
           let datetime = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+" "+ date.getHours()+":"+ date.getMinutes()+":"+ date.getSeconds()
           console.log(result, datetime);
-          this.timefetch = datetime
           this.dataJson = result;
         }
     } catch (error) {

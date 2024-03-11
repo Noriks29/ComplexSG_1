@@ -214,3 +214,77 @@ tr{
   }
 }
 }
+.SelectDivList{
+  position: absolute;
+  top: 0px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  .divflex{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    position: relative;
+    top: 10px;
+    /* left: 0px; */
+    width: 70%;
+    color: white;
+    margin-bottom: 50px;
+    background: none;
+    box-shadow: none;
+    border: none;
+
+    table{
+      width: 75%;
+      table-layout: fixed;
+      border-spacing: 0px;
+      overflow: hidden;
+      position: relative;
+      transition: all 1s ease-in-out;
+      background: none;
+      background-color: rgba(151, 151, 151, 0);
+      box-shadow: -4px 3px 1px rgba(63, 60, 60, 0);
+      border: 2px solid rgba(0, 0, 0, 0);
+
+      &.active 
+        {
+          tr {
+            top: 0px;
+            opacity: 1;
+          }
+          background-color: rgba(151, 151, 151, 0.15);
+          box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+          border: 2px solid rgba(0, 0, 0, 0.25);
+        }
+        &.disable{
+          tr {
+            top: -200px;
+            opacity: 0;
+          }
+
+        }
+    
+      tr{
+        height: 35px;
+        font-size: 20px;
+        position: relative;
+        transition: all 1s ease-in-out;
+        padding-top: 5px;
+        .iconDelete{
+          width: 25px;
+          height: 25px;
+        }
+
+        td {
+          overflow-wrap: break-word;
+          padding: 5px;
+        }
+        
+    
+      }
+      
+    }
+  }
+}

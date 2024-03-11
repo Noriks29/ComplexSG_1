@@ -1,20 +1,28 @@
 <template>
-    <div class="SelectOG ">
+    <ModalWindow  v-if="modalwindowDisplay" mainText="Вы уверены что хотите выйти?" 
+        infoText="Не сохранённые изменения будут утеряны" 
+        trueText="Произвольное построение"
+        falseText="Построение по плоскостям"
+        @returnValue="GetValueModalWind"/>
+    <div class="SelectDiv ">
+      <div class="SelectDivList">
       <div class="divflex PanelDefault">
-        <div @click="DisplayOGList= !DisplayOGList" >{{ tableDisplay ? dataJsonTable.constellationName : 'Орбитальная группировка не выбрана' }}</div>
-        <table :class="DisplayOGList ? 'active' :'disable'" class="TableDefault" >
+        <div @click="DisplayList= !DisplayList" >{{ tableDisplay ? dataJsonTable.constellationName : 'Орбитальная группировка не выбрана' }}</div>
+        <table :class="DisplayList ? 'active' :'disable'" class="TableDefault" >
             <tr v-for="data, index in dataJson"
                 :key="index"
                 @click="SelectOGData(index)"
+                v-show="!(data.deleted==true)"
                 
                 >
             <td colspan="2">{{ data.constellationName }}</td><td>{{ data.arbitraryFormation ? "Произвольное" : "Плоскостное" }}</td>
                 <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="4"><Button @click="AddRow">Добавить ОГ</Button></td>
+            <td colspan="4"><Button @click="ShowModalWindow">Добавить ОГ</Button></td>
           </tr> 
         </table>
+      </div>
       </div>
         <div class='DataTable'>
         <TableData :dataOGLocal="dataJsonTable.dtoConstellationArbitraryList" :approved="approved" :datasave="datasave" @updateDataSave="ChangeDataSave"/>
@@ -46,13 +54,15 @@
 
 import jsons from '../../res/testOG.json'
 import TableData from './OG_tableFree.vue'
+import ModalWindow from '../ModalWindow.vue';
 
   export default {
     name: 'SelectMode',
     data(){
         return{
             dataJson: jsons,
-            DisplayOGList: false,
+            modalwindowDisplay: false,
+            DisplayList: false,
             tableDisplay: false,
             arbitraryFormationOG: true,
             dataJsonTable: [],
@@ -63,7 +73,8 @@ import TableData from './OG_tableFree.vue'
     },
     components:
     {
-      TableData
+      TableData,
+      ModalWindow
     },
     methods: {
       ChangeDataSave(st){
@@ -78,11 +89,11 @@ import TableData from './OG_tableFree.vue'
             this.tableDisplay = true
 
         },
-        AddRow(){
+        AddRow(arbitraryFormation){
             var addedRow = {
                     'constellationName' : "ff",
                     'modelSat' : 0, 'dtoConstellationArbitraryList' : [],
-                    'id' : 0, 'arbitraryFormation' : true,
+                    'id' : -1, 'arbitraryFormation' : arbitraryFormation,
                     'constellationOverviewList' : []
                 };
             this.dataJson.push(addedRow);   
@@ -90,7 +101,13 @@ import TableData from './OG_tableFree.vue'
           },
           DeleteRow(index){
               console.log("Удаление - ",index)
-              this.dataJson.splice(index,1)
+              if (this.dataJson[index].id == -1) {
+                console.log(index)
+                this.dataJson.splice(index,1)
+              }
+              else{
+                this.dataJson[index].deleted = true
+              }
           },
           SatartApproved(){
             if(this.datasave){
@@ -110,88 +127,38 @@ import TableData from './OG_tableFree.vue'
             this.setPost();
             this.datasave = true
           },
+          GetValueModalWind(status) {
+            console.log(status.status);
+            switch(status.status){
+              case 1:
+                this.AddRow(true)
+                break;
+              case 0:{
+                this.AddRow(false)
+                break;
+              }
+              default:
+                alert( "Ошибка!" );
+            }
+            this.modalwindowDisplay = false
+          },
+          ShowModalWindow() {
+              this.modalwindowDisplay = true
+          }
 
     }
   }
   </script>
 
 <style lang="scss" scoped>
-.SelectOG{
+.SelectDiv{
     color: white;
     padding: 10px;
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-
-    
-  .divflex{
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: center;
-    position: relative;
-    top: 10px;
-    /* left: 0px; */
-    width: 70%;
-    color: white;
-    margin-bottom: 50px;
-    background: none;
-    box-shadow: none;
-    border: none;
-
-    table{
-      width: 75%;
-      table-layout: fixed;
-      border-spacing: 0px;
-      overflow: hidden;
-      position: relative;
-      transition: all 1s ease-in-out;
-      background: none;
-      background-color: rgba(151, 151, 151, 0);
-      box-shadow: -4px 3px 1px rgba(63, 60, 60, 0);
-      border: 2px solid rgba(0, 0, 0, 0);
-
-      &.active 
-        {
-          tr {
-            top: 0px;
-            opacity: 1;
-          }
-          background-color: rgba(151, 151, 151, 0.15);
-          box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
-          border: 2px solid rgba(0, 0, 0, 0.25);
-        }
-        &.disable{
-          tr {
-            top: -200px;
-            opacity: 0;
-          }
-
-        }
-    
-      tr{
-        height: 35px;
-        font-size: 20px;
-        position: relative;
-        transition: all 1s ease-in-out;
-        padding-top: 5px;
-        .iconDelete{
-          width: 25px;
-          height: 25px;
-        }
-
-        td {
-          overflow-wrap: break-word;
-          padding: 5px;
-        }
-        
-    
-      }
-      
-    }
-  }
+    padding-top: 100px;
 }
 
 

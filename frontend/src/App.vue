@@ -12,6 +12,7 @@
 import TemplateComponent from './components/TemplateComponent.vue'
 import NP from './components/NP.vue'
 import OG from './components/OG/OG.vue'
+import TypeKA from './components/TypeKA/TypeKA.vue';
 import {CanvasBackground}  from './js/sky.js';
 
 export default {
@@ -34,7 +35,8 @@ export default {
   components: {
     TemplateComponent,
     NP,
-    OG
+    OG,
+    TypeKA
   }
 }
 </script>

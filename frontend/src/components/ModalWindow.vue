@@ -3,9 +3,9 @@
         <div class="ModalWindow">
             <dIv>{{ mainText }}</dIv>
             <dIv>{{ infoText }}</dIv>
-            <dIv>
-                <button @click="PostValue(1)">Да</button>
-                <button @click="PostValue(0)">Нет</button>
+            <dIv> 
+                <button @click="PostValue(1)">{{ trueText }}</button>
+                <button @click="PostValue(0)">{{ falseText }}</button>
             </dIv>
         </div>
     </div>
@@ -26,7 +26,16 @@
       infoText: {
         type: String,
         default: "Подтвердите действие"
+      },
+      trueText: {
+        type: String,
+        default: "Да"
+      },
+      falseText: {
+        type: String,
+        default: "Нет"
       }
+
     },
     data() {
       return {
@@ -57,6 +66,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 10;
 
   .ModalWindow{
     border: 1px solid #013A63;

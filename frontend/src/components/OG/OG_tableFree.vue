@@ -17,6 +17,7 @@
             :key="index"
             :class="!approved ? 'active' :''"
             @change="ChangeParam"
+            v-show="!(data.deleted==true)"
           >
           <!-- Завтра сделать метод принимающий index, event.target исделать всё это редактирование красивым-->
             <td><input :id="index"  style="pointer-events: none;" name="idNode" class="small" 
@@ -66,7 +67,6 @@
       data() {
         return {
           dataJson: jsons,
-          timefetch: "none",
           TableDisplay: false
         }
       },
@@ -78,7 +78,8 @@
                     'idNode' : 0,
                     'altitude' : 0, 'eccentricity' : 0,
                     'incline' : 0, 'longitudeAscendingNode' : 0,
-                    'perigeeWidthArgument' : 0, 'trueAnomaly' : 0
+                    'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
+                    'deleted': false, 'id': -1
                 };
             this.dataJson.push(addedRow);   
             this.ChangeSaveStatus()
@@ -122,19 +123,17 @@
           },
           DeleteRow(index){
               console.log("Удаление - ",index)
-              this.dataJson.splice(index,1)/*
-              console.log(this.dataJson)
-              this.ShowData()
-              console.log("Отправка на сервер")
-              fetch('http://192.168.50.250:8081/api/v1/earth/delete/byId?id='+this.dataJson[index].id,{
-                method:  'POST',})
-                .then(response => response.json())
-                .then(data => console.log(data))*/
+              if (this.dataJson[index].id == -1) {
+                console.log(index)
+                this.dataJson.splice(index,1)
+              }
+              else{
+                this.dataJson[index].deleted = true
+              }
           }
       },
       watch: {
         dataOGLocal: function () {
-          //console.log("Changed", this.dataOGLocal);
           this.TableDisplay = true
           this.dataJson = this.dataOGLocal
 
