@@ -87,6 +87,7 @@ import ModalWindow from '../ModalWindow.vue';
         SelectOGData(index){
             this.dataJsonTable = this.dataJson[index]
             this.tableDisplay = true
+            this.DisplayList = false
 
         },
         AddRow(arbitraryFormation){
