@@ -1,6 +1,6 @@
 <template>
     <div class="DataTable">
-      <div v-if="TableDisplay" class="PanelDefault">
+      <div class="PanelDefault">
         <table class="TableDefault">
           <tr>
             <th>ID</th>
@@ -41,13 +41,25 @@
           </tr> 
         </table>
       </div>
-
+        <div class="PanelTable" v-if="!approved">
+        <div class="TableInfo PanelDefault">
+          <div class="ButtonApproved">
+            <button @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
+            <button v-if="!datasave" class="ButtonDefaultShadow"></button>
+          </div>
+          <div class="ButtonApproved">
+            <button  @click="DeleteRowOG" class="ButtonDefault"> <img src="../../assets/save.svg">Удалить орбитальную группировку</button>
+            <button class="ButtonDefaultShadow"></button>
+          </div>
+        </div>
+        </div>
     </div>
   </template>
   
   <script>
   
   import jsons from '../../res/testOGFree.json'
+  import {adress} from '../../js/config_server.js'
   
     export default {
       name: 'TableData',
@@ -58,16 +70,15 @@
         approved:{
           type: Boolean
         },
-        datasave:{
-          type: Boolean
-        }
 
       },
 
       data() {
         return {
           dataJson: jsons,
-          TableDisplay: false
+          dataJsonOG: {},
+          TableDisplay: false,
+          datasave: true
         }
       },
       methods:
@@ -79,14 +90,14 @@
                     'altitude' : 0, 'eccentricity' : 0,
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
-                    'deleted': false, 'id': -1
+                    'deleted': false, 'id': undefined, 'modelSat' : 3
                 };
             this.dataJson.push(addedRow);   
-            this.ChangeSaveStatus()
+            this.datasave = false
           },
           ChangeParam(event){
             console.log(event.target, event.target.value, event.target.id)
-            this.ChangeSaveStatus()
+            this.datasave = false
             switch(event.target.name){
               case "altitude":{
                 this.dataJson[event.target.id].altitude = Number(event.target.value)
@@ -116,28 +127,81 @@
                 alert( "Ошибка!" );
             }
           },
-          ChangeSaveStatus(){
-            this.$emit('updateDataSave', {
-              datasave: false
-            })
-          },
           DeleteRow(index){
               console.log("Удаление - ",index)
-              if (this.dataJson[index].id == -1) {
+              this.datasave = false
+              if (this.dataJson[index].id === undefined) {
                 console.log(index)
                 this.dataJson.splice(index,1)
               }
               else{
                 this.dataJson[index].deleted = true
               }
+          },
+          DeleteRowOG(){
+              if (this.dataJsonOG.id === undefined) {
+
+                this.dataJsonOG.deleted=true
+              }
+              else{
+                this.dataJsonOG.deleted=true
+                try {
+                fetch('http://'+adress+'/api/v1/constellation/delete/byId?id='+this.dataJsonOG.id,{
+                  method:  'POST',
+                })
+                  .then(response => response.json())
+                  .then(data => console.log(data))
+                } catch (error) {
+                    console.error('Error save:', error);
+                }
+              }
+          },
+          SatartSave() {
+            this.datasave = true
+            console.log("Отправка на сервер")
+            if(this.dataJsonOG.id === undefined)
+            {
+              try {
+              fetch('http://'+adress+'/api/v1/constellation/add',{
+                method:  'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.dataJsonOG)
+              })
+                .then(response => response.json())
+                .then(data => console.log(data))
+              } catch (error) {
+                  console.error('Error save:', error);
+              }
+            }
+            else{
+              try {
+              console.log(JSON.stringify(this.dataJson))
+              fetch('http://'+adress+'/api/v1/constellation/arbitrary/update/byList',{
+                method:  'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.dataJson)
+              })
+                .then(response => response.json())
+                .then(data => console.log(data))
+              } catch (error) {
+                  console.error('Error save:', error);
+              }
+            }
           }
-      },
+      },/*
       watch: {
         dataOGLocal: function () {
-          this.TableDisplay = true
           this.dataJson = this.dataOGLocal
-
+          console.log(this.dataOGLocal)
         }
+      },*/
+      mounted() {
+        this.dataJsonOG = this.dataOGLocal
+        this.dataJson = this.dataJsonOG.arbitraryConstructions
       }
     }
   </script>

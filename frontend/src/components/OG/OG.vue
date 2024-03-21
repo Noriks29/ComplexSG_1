@@ -6,7 +6,7 @@
             </button>
           </div>
           <div class="titleText">
-            Список орбитальных групировок
+            Список орбитальных группировок
           </div>
           <Select></Select>
       </div>
@@ -15,6 +15,7 @@
   <script>
 import Select from './SelectOG.vue'
 import MainStyle from '../../style/component.scss'
+
 
   export default {
     name: 'OG',

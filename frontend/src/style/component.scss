@@ -219,7 +219,12 @@ tr{
   top: 0px;
   display: flex;
   justify-content: center;
-  z-index: 2;
+  &.disable{
+    z-index: 0;
+  }
+  &.active{
+    z-index: 2;
+  }
   .divflex{
     display: flex;
     justify-content: flex-start;

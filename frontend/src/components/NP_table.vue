@@ -57,6 +57,7 @@
 <script>
 
 import jsons from '../res/test2.json'
+import {adress} from '../js/config_server.js'
 
   export default {
     name: 'TableData',
@@ -75,13 +76,14 @@ import jsons from '../res/test2.json'
           })
         },
         ShowData(){
-          console.log(JSON.stringify(this.dataJson))
+          console.log(this.dataJson)
         },
         setPost() {
           this.ShowData()
           console.log("Отправка на сервер")
+          console.log(JSON.stringify(this.dataJson))
           try {
-            fetch('http://192.168.50.105:8081/api/v1/earth/update/byList',{
+            fetch('http://'+adress+'/api/v1/earth/update/byList',{
               method:  'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -104,8 +106,9 @@ import jsons from '../res/test2.json'
         SatartApproved(){
           if(this.datasave){
             this.approved = true
+            
             try {
-              fetch('http://localhost:8081/api/v1/constellation/set/status?status=true',{
+              fetch('http://'+adress+'/api/v1/constellation/set/status?status=true',{
                 method:  'POST'
               })
               .then(response => response.json())
@@ -120,7 +123,7 @@ import jsons from '../res/test2.json'
           this.approved = false
         },
         AddRow(){
-          var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'deleted': false, 'id': -1};
+          var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'deleted': false, 'id': undefined};
           this.dataJson.push(addedRow);   
           this.datasave = false
           this.ChangeTableStatusForPerent()
@@ -154,12 +157,13 @@ import jsons from '../res/test2.json'
         },
         DeleteRow(index){
             
-            if (this.dataJson[index].id == -1) {
-              console.log(index)
-              this.dataJson.splice(index,1)
+            if (this.dataJson[index].id !== undefined) {
+              
+              this.dataJson[index].deleted = true
             }
             else{
-              this.dataJson[index].deleted = true
+              console.log(index)
+              this.dataJson.splice(index,1)
             }
             console.log(this.dataJson[index])
             this.ShowData()
@@ -170,7 +174,8 @@ import jsons from '../res/test2.json'
     },
     async mounted() {
     try {
-        const response = await fetch('http://192.168.50.105:8081/api/v1/earth/get/list');
+
+        const response = await fetch('http://'+adress+'/api/v1/earth/get/list');
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
