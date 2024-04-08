@@ -10,7 +10,7 @@
             <th>Долгота восходящего узла</th>
             <th>Аргумент ширины перигея</th>
             <th>Истинная аномалия</th>
-            <th v-if="!approved"></th>
+            <th v-if="!approved"><span>&#8203;</span></th>
           </tr>
           <tr
             v-for="(data, index) in dataJson"
@@ -37,7 +37,7 @@
             <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="10"><Button @click="AddRow">Добавить КА</Button></td>
+            <td colspan="10"><button @click="AddRow">Добавить КА</button></td>
           </tr> 
         </table>
       </div>
@@ -45,11 +45,11 @@
         <div class="TableInfo PanelDefault">
           <div class="ButtonApproved">
             <button @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-            <button v-if="!datasave" class="ButtonDefaultShadow"></button>
+            <button v-if="!datasave" class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
           <div class="ButtonApproved">
-            <button  @click="DeleteRowOG" class="ButtonDefault"> <img src="../../assets/save.svg">Удалить орбитальную группировку</button>
-            <button class="ButtonDefaultShadow"></button>
+            <button  @click="DeleteRowOG" class="ButtonDefault"><img src="../../assets/save.svg">Удалить орбитальную группировку</button>
+            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
         </div>
         </div>
@@ -90,14 +90,16 @@
                     'altitude' : 0, 'eccentricity' : 0,
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
-                    'deleted': false, 'id': undefined, 'modelSat' : 3
+                    'deleted': false, 'id': undefined, 'modelSat' : 3, 'tableId' : this.dataJsonOG.id
                 };
             this.dataJson.push(addedRow);   
             this.datasave = false
+            this.dataJsonOG.statuswork = "notSave"
           },
           ChangeParam(event){
             console.log(event.target, event.target.value, event.target.id)
             this.datasave = false
+            this.dataJsonOG.statuswork = "notSave"
             switch(event.target.name){
               case "altitude":{
                 this.dataJson[event.target.id].altitude = Number(event.target.value)
@@ -130,6 +132,7 @@
           DeleteRow(index){
               console.log("Удаление - ",index)
               this.datasave = false
+              this.dataJsonOG.statuswork = "notSave"
               if (this.dataJson[index].id === undefined) {
                 console.log(index)
                 this.dataJson.splice(index,1)
@@ -159,6 +162,7 @@
           SatartSave() {
             this.datasave = true
             console.log("Отправка на сервер")
+            this.dataJsonOG.statuswork = "Save"
             if(this.dataJsonOG.id === undefined)
             {
               try {
@@ -202,6 +206,9 @@
       mounted() {
         this.dataJsonOG = this.dataOGLocal
         this.dataJson = this.dataJsonOG.arbitraryConstructions
+        if(this.dataJsonOG.statuswork == "notSave")
+          this.datasave = false
+        console.log(this.dataJsonOG.id)
       }
     }
   </script>

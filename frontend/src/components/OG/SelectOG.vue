@@ -5,7 +5,6 @@
         falseText="Построение по плоскостям"
         @returnValue="GetValueModalWind"/>
     <div class="SelectDiv ">
-      {{ dataJson }}
       <div class="PanelDefault"
         v-for="data, index in dataJson"
           :key="index"
@@ -31,7 +30,7 @@
           </select></div>
           <div>
             <button @click="AddRow" class="ButtonDefault"> Сохранить </button> 
-            <button class="ButtonDefaultShadow"></button>
+            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
         </div>
       </div>
@@ -45,11 +44,11 @@
           </div>
           <div v-if="approved" class="ButtonApproved">
             <button @click="SatartEditing" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
-            <button class="ButtonDefaultShadow"></button>  
+            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>  
           </div>
           <div v-else class="ButtonApproved"> 
             <button @click="SatartApproved" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
-            <button class="ButtonDefaultShadow"></button>
+            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
         </div>
         </div>
@@ -105,7 +104,7 @@ import {adress} from '../../js/config_server.js'
         ShowTableStatus(data){
           var color = ""
           var text = ""
-          if(data.statuswork == "addRow")
+          if(data.statuswork == "notSave")
           {
             color = "red"
             text = "Строка не сохранена"
@@ -123,7 +122,7 @@ import {adress} from '../../js/config_server.js'
                       'constellationName' : this.inputName,
                       'arbitraryConstructions' : [],
                       'id' : undefined, 'arbitraryFormation' : this.selectedType,
-                      'constellationOverviewList' : [], "statuswork" : "addRow"
+                      'constellationOverviewList' : [], "statuswork" : "notSave"
                   };
               this.dataJson.push(addedRow);   
               this.datasave = false

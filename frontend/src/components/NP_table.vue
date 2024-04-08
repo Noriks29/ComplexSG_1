@@ -28,7 +28,7 @@
           <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="addRowButton">
-          <td colspan="5"><Button @click="AddRow">Добавить наземный пункт</Button></td>
+          <td colspan="5"><button @click="AddRow">Добавить наземный пункт</button></td>
         </tr> 
       </table>
     </div>
