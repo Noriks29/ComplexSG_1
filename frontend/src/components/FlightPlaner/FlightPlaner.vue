@@ -99,8 +99,8 @@ import StyleDefolt from '../../style/component.scss'
       // если возникла ошибка
       this.connection.onerror = (error) => {
           this.WebSocketLog.push("WebSocket Error")
-          console.log(`WebSocket Error: ${error}`);
-          alert("На WebSocket ошибка")
+          console.log(`WebSocket Error: `, error);
+          //alert("На WebSocket ошибка")
       };
       // если соединение закрыто
       this.connection.onclose = (event) => {
