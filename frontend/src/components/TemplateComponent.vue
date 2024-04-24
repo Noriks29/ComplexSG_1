@@ -16,7 +16,7 @@
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">
-        <button>Модель полета КА</button>
+        <button @click="SelectComponent('FlightPlaner')">Модель полета КА</button>
         <button>Планирование заявок</button>
         <button>Доставка данных</button>
         <button>Планирование и доставка</button>

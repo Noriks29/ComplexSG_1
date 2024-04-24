@@ -192,9 +192,9 @@ import {adress} from '../../js/config_server.js'
         }
         else{
           const result = await response.json();
-          let date = new Date();
-          let datetime = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+" "+ date.getHours()+":"+ date.getMinutes()+":"+ date.getSeconds()
-          console.log(result, datetime);
+          //let date = new Date();
+          //let datetime = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+" "+ date.getHours()+":"+ date.getMinutes()+":"+ date.getSeconds()
+          //console.log(result, datetime);
           this.dataJson = result;
         }
     } catch (error) {

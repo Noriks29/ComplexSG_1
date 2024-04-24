@@ -64,7 +64,7 @@ export class CanvasBackground{
     }
     generateBubbles(){
         this.bubblesList = [];
-        for (let index = 0; index < 300; index++) {
+        for (let index = 0; index <1; index++) {
            this.bubblesList.push(new Bubble(this.canvas));
         }
     }
