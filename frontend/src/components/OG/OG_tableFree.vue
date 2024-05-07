@@ -19,7 +19,7 @@
             @change="ChangeParam"
             v-show="!(data.deleted==true)"
           >
-          <!-- Завтра сделать метод принимающий index, event.target исделать всё это редактирование красивым-->
+
             <td><input :id="index"  style="pointer-events: none;" name="idNode" class="small" 
                :value="data.idNode"></td>
             <td><input :id="index" name="altitude" class="small" 

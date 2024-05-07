@@ -4,8 +4,8 @@
         <button @click="SelectComponent('NP')">НП</button>
         <button @click="SelectComponent('OG')">ОГ</button>
         <button @click="SelectComponent('TypeKA')">Типы КА</button>
-        <button>Система</button>
-        <button>Заявки ДЗЗ</button>
+        <button @click="SelectComponent('SystemWindow')">Система</button>
+        <button @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
       <div class="ButtonSection second">
         <button>КА - НП</button>
