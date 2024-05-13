@@ -9,6 +9,9 @@
           <div class="titleText">
             Информация системы
           </div>
+          <div>
+            <!--<SelectDiv  :dataOption="arr"/>-->
+          </div>
     <div class="DataTable">
         <h1>Эксперимент</h1>
         <p>Заявки</p>
@@ -26,17 +29,12 @@
             v-show="!(data.deleted==true)"
           >
           <td>{{ index }}</td>
-          <td> {{data.catalog.goalName}} <select v-if="!requestApproved"  :id="index" name="catalog" class="select-css" v-model="selectCatalog">
-            <option v-for="data_catalog, index_catalog in catalogJson" 
-              :key="index_catalog"
-              :selected="data.catalog.goalName == data_catalog.goalName"
-              :value="data_catalog">{{ data_catalog.goalName }}</option>
-          </select></td>
+          <td><SelectDiv  :dataOption="arr" :valueS="data.catalog" :id="index" @valueSelect="SelectChange"/></td>
           <td>{{ data.catalog.lat }}</td>
           <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
-          <td><input :id="index" name="term" type="text" :value="data.term"></td>
-          <td><input :id="index" name="time" type="text" :value="data.time"></td>
+          <td><input :id="index" name="term" type="text" :value="UnixtoTime(data.term)"></td>
+          <td><input :id="index" name="time" type="text" :value="UnixtoTime(data.time)"></td>
           <td v-if="!requestApproved" :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
             <tr v-if="!requestApproved" class="addRowButton">
@@ -101,11 +99,15 @@
 
 import {adress} from '../../js/config_server.js'
 import MainStyle from '../../style/component.scss'
+import SelectDiv from '../SelectDiv.vue'
 
   export default {
     name: 'TargetDZZ',
     css:{
       MainStyle
+    },
+    components:{
+      SelectDiv
     },
     data(){
       return{
@@ -119,6 +121,8 @@ import MainStyle from '../../style/component.scss'
         requestApproved: true,
         requestJsonsave: true,
 
+        arr: []
+
       }
     },
     methods: {
@@ -126,6 +130,20 @@ import MainStyle from '../../style/component.scss'
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
+      },
+      SelectChange(e){
+        console.log(e, this.requestJson[e.id].catalog)
+        this.requestJson[e.id].catalog = e.value
+        this.requestJsonsave = false
+      },
+      CreateSelectArr(){
+        this.arr = []
+        for (let i = 0; i < this.catalogJson.length; i++) {
+          const element = this.catalogJson[i];
+          this.arr.push({value: element, lable: element.goalName })
+        }
+        console.log(this.arr)
+
       },
       AddRow(){
             var addedRow = {
@@ -148,11 +166,11 @@ import MainStyle from '../../style/component.scss'
                       "catalog": this.catalogJson[0],
                       "orderId": this.catalogJson.length + 1,
                       "priory": 3,
-                      "term": "2024-01-01T00:00:00",
-                      "time": "2024-01-01T00:01:00",
+                      "term": Math.floor(Date.now()/1000),
+                      "time": Math.floor(Date.now()/1000),
                       "idNode": {
-                          "entryId": 402,
-                          "idNode": 1
+                          "entryId": 452,
+                          "idNode": 1,
                       }, // тестово неизвестно где брать
                       "filter": false,
                       "deleted": null, 'role': "newRow"
@@ -231,26 +249,47 @@ import MainStyle from '../../style/component.scss'
         console.log(target.target.id)
         this.catalogJson[target.target.id][target.target.name] = target.target.value
         this.catalogJsonsave = false
+        this.CreateSelectArr()
       },
       ChangeParamRequest(target){
-        console.log(target)
+        console.log("target",target)
         
         if(target.target.name == "catalog")
         {
           console.log(target.target.name, this.requestJson[target.target.id][target.target.name])
           this.requestJson[target.target.id][target.target.name] = this.selectCatalog
         }
+        else if(target.target.name == "term" || target.target.name == "time"){
+          this.requestJson[target.target.id][target.target.name] = this.TimetoUnix(target.target.value)
+          
+        }
         else{
           this.requestJson[target.target.id][target.target.name] = target.target.value
         }
         this.requestJsonsave = false
         console.log(this.requestJson, this.selectCatalog)
+      },
+      TimetoUnix(time){
+        /*const date = new Date(time)
+        return Math.floor(time.getTime()/1000);*/
+        console.log(time)
+        return Math.floor(Date.parse(time)/1000)
+      },
+      UnixtoTime(time){
+        console.log("time",time)
+        const timeL = new Date(time * 1000)
+        let time1 = ((timeL.getHours() < 10)?"0":"") + timeL.getHours() +":"+ ((timeL.getMinutes() < 10)?"0":"") + timeL.getMinutes() +":"+ ((timeL.getSeconds() < 10)?"0":"") + timeL.getSeconds();
+        let time2 = timeL.getFullYear() + "-" + (((timeL.getMonth()+1) < 10)?"0":"") + (timeL.getMonth()+1) +"-"+((timeL.getDate() < 10)?"0":"") + timeL.getDate();
+        let timeFormat = time2+"T"+ time1
+        console.log(timeFormat, Date.parse(timeFormat))
+        return timeFormat
       }
       
     },
     
     async mounted() {
     try {
+        console.log(new Date())
         const response = await fetch('http://'+adress+'/api/v1/satrequest/catalog/get/all');
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -259,6 +298,7 @@ import MainStyle from '../../style/component.scss'
           const result = await response.json();
           console.log(result)
           this.catalogJson = result;
+          this.CreateSelectArr()
         }
     } catch (error) {
         this.timefetch = "Error";

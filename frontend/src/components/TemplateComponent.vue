@@ -8,7 +8,7 @@
         <button @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
       <div class="ButtonSection second">
-        <button>КА - НП</button>
+        <button @click="SelectComponent('SelectDiv')">КА - НП</button>
         <button>КА - КА</button>
         <button>КА - КА решетка</button>
         <button>Оценка ОГ</button>

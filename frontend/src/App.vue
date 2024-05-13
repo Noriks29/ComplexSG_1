@@ -16,6 +16,7 @@ import TypeKA from './components/TypeKA/TypeKA.vue';
 import FlightPlaner from './components/FlightPlaner/FlightPlaner.vue';
 import SystemWindow from './components/System/SystemWindow.vue';
 import TargetDZZ from './components/TargetDZZ/TargetDZZ.vue'
+import SelectDiv from './components/SelectDiv.vue';
 import {CanvasBackground}  from './js/sky.js';
 
 export default {
@@ -42,7 +43,8 @@ export default {
     TypeKA,
     FlightPlaner,
     SystemWindow,
-    TargetDZZ
+    TargetDZZ,
+    SelectDiv
   }
 }
 </script>
