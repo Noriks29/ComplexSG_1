@@ -81,7 +81,6 @@ import {adress} from '../js/config_server.js'
           })
         },
         setPost() {
-          this.ShowData()
           console.log("Отправка на сервер")
           console.log(JSON.stringify(this.dataJson))
           try {
@@ -175,7 +174,6 @@ import {adress} from '../js/config_server.js'
               this.dataJson.splice(index,1)
             }
             console.log(this.dataJson[index])
-            this.ShowData()
             this.datasave = false
             this.ChangeTableStatusForPerent()
             
