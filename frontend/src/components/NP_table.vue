@@ -68,15 +68,17 @@ import {adress} from '../js/config_server.js'
         datasave: true
       }
     },
+    props:{
+    systemStatus:{
+          type: Object
+        },
+    },
     methods:
       {
         ChangeTableStatusForPerent(){
           this.$emit('changeState', {
             state: this.datasave
           })
-        },
-        ShowData(){
-          console.log(this.dataJson)
         },
         setPost() {
           this.ShowData()
@@ -106,7 +108,11 @@ import {adress} from '../js/config_server.js'
         SatartApproved(){
           if(this.datasave){
             this.approved = true
-            
+
+            let dataSystem = this.systemStatus
+            dataSystem.earthStatus = this.approved
+            this.$emit('ChangeSystemStatus', dataSystem)
+
             try {
               fetch('http://'+adress+'/api/v1/constellation/set/status?status=true',{
                 method:  'POST'
@@ -121,6 +127,9 @@ import {adress} from '../js/config_server.js'
         },
         SatartEditing (){
           this.approved = false
+          let dataSystem = this.systemStatus
+          dataSystem.earthStatus = this.approved
+          this.$emit('ChangeSystemStatus', dataSystem)
         },
         AddRow(){
           var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'deleted': false, 'id': undefined};
@@ -173,6 +182,7 @@ import {adress} from '../js/config_server.js'
         }
     },
     async mounted() {
+      this.approved = this.systemStatus.earthStatus
     try {
 
         const response = await fetch('http://'+adress+'/api/v1/earth/get/list');

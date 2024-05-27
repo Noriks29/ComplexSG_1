@@ -2,7 +2,7 @@
 <template>
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
     <transition name="translate" mode="out-in"> 
-      <component :is="activeComponent" @updateParentComponent="ChangeComponents"></component> 
+      <component :is="activeComponent" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
     </transition> 
    
     
@@ -17,24 +17,46 @@ import FlightPlaner from './components/FlightPlaner/FlightPlaner.vue';
 import SystemWindow from './components/System/SystemWindow.vue';
 import TargetDZZ from './components/TargetDZZ/TargetDZZ.vue'
 import SelectDiv from './components/SelectDiv.vue';
+import DateTime from './components/DateTime.vue'
 import {CanvasBackground}  from './js/sky.js';
+import {adress} from './js/config_server.js';
 
 export default {
   name: 'App',
   data() {
     return{
       activeComponent: "TemplateComponent",
+      systemStatus: {},
     };
   },
   methods: {
       ChangeComponents(nameObject) {
         console.log(nameObject.name,nameObject);
         this.activeComponent = nameObject.nameComponent
+      },
+      ChangeSystemStatus(data){
+        this.systemStatus = data
+        console.log(this.systemStatus)
       }
     },
-  mounted() {
-    const canvasBG = new CanvasBackground('orb-canvas');
+  async mounted() {
+    const canvasBG = new CanvasBackground('orb-canvas'); //запускаем звёзды
     canvasBG.start();
+
+    try {
+      const response = await fetch('http://'+adress+'/api/v1/system/get');
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      else{
+        const result = await response.json();
+        console.log(result);
+        this.systemStatus = result;
+      }
+    } catch (error) {
+      console.error('Error during fetch:', error);
+    }
+
   },
   components: {
     TemplateComponent,
@@ -44,7 +66,8 @@ export default {
     FlightPlaner,
     SystemWindow,
     TargetDZZ,
-    SelectDiv
+    SelectDiv,
+    DateTime
   }
 }
 </script>

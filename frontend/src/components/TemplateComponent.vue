@@ -1,25 +1,25 @@
 <template>
     <div class="SectionMenu">
       <div class="ButtonSection first">
-        <button @click="SelectComponent('NP')">НП</button>
-        <button @click="SelectComponent('OG')">ОГ</button>
+        <button @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
+        <button @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>ОГ</button>
         <button @click="SelectComponent('TypeKA')">Типы КА</button>
         <button @click="SelectComponent('SystemWindow')">Система</button>
         <button @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
       <div class="ButtonSection second">
-        <button @click="SelectComponent('SelectDiv')">КА - НП</button>
-        <button>КА - КА</button>
+        <button><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
+        <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
         <button>Оценка ОГ</button>
         <button>Реконфигурация</button>
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">
-        <button @click="SelectComponent('FlightPlaner')">Модель полета КА</button>
-        <button>Планирование заявок</button>
-        <button>Доставка данных</button>
-        <button>Планирование и доставка</button>
+        <button @click="SelectComponent('FlightPlaner')">КА</button>
+        <button>КС 1</button>
+        <button>КС 2</button>
+        <button>КС 3</button>
       </div>
     </div>
 </template>
@@ -27,6 +27,11 @@
 <script>
 export default {
   name: 'TemplateComponent',
+  props:{
+    systemStatus:{
+          type: Object
+        },
+  },
   methods: {
     SelectComponent(nameComponent) {
         this.$emit('updateParentComponent', {
@@ -66,6 +71,7 @@ export default {
         justify-content: center;
         padding: 10px;
         transition: all 0.2s ease-out;
+        position: relative;
 
 
 
@@ -111,6 +117,27 @@ export default {
         }
         &:hover:before {
           left: 100%;
+        }
+
+        div{
+          position: absolute;
+          width: 10px;
+          
+          height: 10px;
+          top: 20%;
+          left: 10px;
+          border-radius: 20px;
+          
+
+          &.approved{
+            background-color: rgb(0, 139, 0);
+            box-shadow: 0px 0px 5px rgb(11, 167, 11);
+          }
+          &.Notapproved{
+            background-color: red;
+            box-shadow: 0px 0px 5px #fe1a1a;
+          }
+
         }
       }
 

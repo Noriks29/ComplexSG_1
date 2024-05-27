@@ -2,7 +2,7 @@
     <div class="main_contain">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/left-arrow.png">
+              <img src="../../assets/exit.svg">
             </button>
           </div>
           
@@ -33,8 +33,8 @@
           <td>{{ data.catalog.lat }}</td>
           <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
-          <td><input :id="index" name="term" type="text" :value="UnixtoTime(data.term)"></td>
-          <td><input :id="index" name="time" type="text" :value="UnixtoTime(data.time)"></td>
+          <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
+          <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
           <td v-if="!requestApproved" :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
             <tr v-if="!requestApproved" class="addRowButton">
@@ -75,7 +75,7 @@
             <td v-if="!catalogApproved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!catalogApproved" class="addRowButton">
-            <td colspan="5"><button @click="AddRow">Добавить КА</button></td>
+            <td colspan="5"><button @click="AddRow">Добавить</button></td>
           </tr> 
         </table>
         </div>
@@ -100,6 +100,7 @@
 import {adress} from '../../js/config_server.js'
 import MainStyle from '../../style/component.scss'
 import SelectDiv from '../SelectDiv.vue'
+import DateTime from '../DateTime.vue';
 
   export default {
     name: 'TargetDZZ',
@@ -107,7 +108,8 @@ import SelectDiv from '../SelectDiv.vue'
       MainStyle
     },
     components:{
-      SelectDiv
+      SelectDiv,
+      DateTime
     },
     data(){
       return{
@@ -130,6 +132,11 @@ import SelectDiv from '../SelectDiv.vue'
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
+      },
+      ChangeTime(obgtime){
+        console.log(obgtime)
+        this.requestJson[obgtime.id][obgtime.name] = obgtime.time
+        this.requestJsonsave = false
       },
       SelectChange(e){
         console.log(e, this.requestJson[e.id].catalog)
@@ -259,30 +266,14 @@ import SelectDiv from '../SelectDiv.vue'
           console.log(target.target.name, this.requestJson[target.target.id][target.target.name])
           this.requestJson[target.target.id][target.target.name] = this.selectCatalog
         }
-        else if(target.target.name == "term" || target.target.name == "time"){
-          this.requestJson[target.target.id][target.target.name] = this.TimetoUnix(target.target.value)
-          
+        else if(target.target.name == "date" || target.target.name == "time"){
+          //обработка через событие компонента
         }
         else{
           this.requestJson[target.target.id][target.target.name] = target.target.value
         }
         this.requestJsonsave = false
         console.log(this.requestJson, this.selectCatalog)
-      },
-      TimetoUnix(time){
-        /*const date = new Date(time)
-        return Math.floor(time.getTime()/1000);*/
-        console.log(time)
-        return Math.floor(Date.parse(time)/1000)
-      },
-      UnixtoTime(time){
-        console.log("time",time)
-        const timeL = new Date(time * 1000)
-        let time1 = ((timeL.getHours() < 10)?"0":"") + timeL.getHours() +":"+ ((timeL.getMinutes() < 10)?"0":"") + timeL.getMinutes() +":"+ ((timeL.getSeconds() < 10)?"0":"") + timeL.getSeconds();
-        let time2 = timeL.getFullYear() + "-" + (((timeL.getMonth()+1) < 10)?"0":"") + (timeL.getMonth()+1) +"-"+((timeL.getDate() < 10)?"0":"") + timeL.getDate();
-        let timeFormat = time2+"T"+ time1
-        console.log(timeFormat, Date.parse(timeFormat))
-        return timeFormat
       }
       
     },

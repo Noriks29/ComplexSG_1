@@ -4,6 +4,7 @@
     left: 20px;
     padding: 0px;
     border: none;
+    background: none;
 
     img{
       width: 30px;
@@ -55,17 +56,19 @@
     flex-wrap: nowrap;
     align-items: center;
     
+    
     .PanelTable{
       width: 100%;
       position: sticky;
       margin-top: 20px;
       bottom: 10px;
       color: white;
+      padding: 20px;
   
       .TableInfo{
         margin-top: 5px;
         margin-bottom: 5px;
-        display: flex;
+        display: inline-flex;
         flex-direction: row;
         flex-wrap: wrap;
         align-items: center;

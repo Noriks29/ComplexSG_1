@@ -1,6 +1,9 @@
 <template>
     <div class="DataTable">
       <div class="PanelDefault">
+        <div class="closebutton"><button @click="CloseTable">
+          <img src="../../assets/close.svg"><span>&#8203;</span>
+        </button></div>
         <table class="TableDefault">
           <tr>
             <th>ID</th>
@@ -40,7 +43,6 @@
             <td colspan="10"><button @click="AddRow">Добавить КА</button></td>
           </tr> 
         </table>
-      </div>
         <div class="PanelTable" v-if="!approved">
         <div class="TableInfo PanelDefault">
           <div class="ButtonApproved">
@@ -53,6 +55,8 @@
           </div>
         </div>
         </div>
+      </div>
+        
     </div>
   </template>
   
@@ -83,7 +87,9 @@
       },
       methods:
         {
-          
+          CloseTable(){
+            this.$emit('closetable', true)
+          },
           AddRow(){
             var addedRow = {
                     'idNode' : 0,
@@ -215,6 +221,42 @@
   
   
   <style lang="scss" scoped>
-  
+  .closebutton{
+    display: flex;
+    margin: 20px;
+    flex-direction: row-reverse;
+    button{
+      background: none;
+      border: none;
+      img{
+        width: 25px;
+      }
+    }
+  }
+  .DataTable{
+    backdrop-filter: blur(10px);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    z-index: 4;
+    max-width: 100%;
+    .TableDefault{
+      margin: 5% 1%;
+      filter: drop-shadow(2px 4px 6px black);
+
+    }
+    .PanelTable{
+      position: sticky;
+      bottom: 20px;
+      margin: 0px 5%;
+      width: 90%;
+    }
+  }
+  .PanelDefault{
+    width: 95%;
+    .TableDefault{
+      width: 98%;
+    }
+  }
 
   </style>

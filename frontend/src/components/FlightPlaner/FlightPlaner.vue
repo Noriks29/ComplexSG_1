@@ -1,8 +1,8 @@
 <template>
     <div class="main_contain">
           <div>
-            <button class="ToMenuButtonDiv" @click="ShowModalWindow">
-              <img src="../../assets/left-arrow.png">
+            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+              <img src="../../assets/exit.svg">
             </button>
           </div>
           
@@ -60,6 +60,11 @@ import StyleDefolt from '../../style/component.scss'
       }
     },
     methods: {
+      SelectComponent(nameComponent) {
+        this.$emit('updateParentComponent', {
+            nameComponent: nameComponent
+        })
+      },
       ChangeTableStatus(state){
         this.tableStatus = state.state
       },

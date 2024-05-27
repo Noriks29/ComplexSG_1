@@ -2,14 +2,14 @@
     <div class="main_contain">
           <div>
             <button class="ToMenuButtonDiv" @click="ShowModalWindow">
-              <img src="../assets/left-arrow.png">
+              <img src="../assets/exit.svg">
             </button>
           </div>
           
           <div class="titleText">
             Список наземных пунктов
           </div>
-          <TableData @changeState="ChangeTableStatus"/>
+          <TableData @changeState="ChangeTableStatus" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"/>
           <ModalWindow  v-if="modalwindowDisplay" mainText="Вы уверены что хотите выйти?" infoText="Не сохранённые изменения будут утеряны" @returnValue="GetValueModalWind"/>
       </div>
   </template>
@@ -34,9 +34,17 @@ import StyleDefolt from '../style/component.scss'
         tableStatus: true,
       }
     },
+    props:{
+    systemStatus:{
+          type: Object
+        },
+    },
     methods: {
       ChangeTableStatus(state){
         this.tableStatus = state.state
+      },
+      ChangeSystemStatus(data){
+        this.$emit('ChangeSystemStatus', data)
       },
       GetValueModalWind(status) {
         console.log(status.status);

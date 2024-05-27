@@ -4,19 +4,20 @@
         trueText="Произвольное построение"
         falseText="Построение по плоскостям"
         @returnValue="GetValueModalWind"/>
+    <TableData v-if="ShowTableID == true" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTableData"/>
     <div class="SelectDiv ">
       <div class="PanelDefault"
         v-for="data, index in dataJson"
           :key="index"
           v-show="!(data.deleted==true)"
       >
-        <div @click="SelectOGData(index)" class="flexrow">
+        <div @click="SelectOGData(data)" class="flexrow">
           <div> {{data.constellationName}} </div><div>{{ data.arbitraryFormation == "true" ? "Произвольное" : "Плоскостное" }}</div>
           <div v-html="ShowTableStatus(data)"></div>
         </div>
         <div>
           
-          <TableData v-if="ShowTableID == index" :dataOGLocal="data" :approved="approved"/>
+          
         </div>
         
       </div>
@@ -35,7 +36,7 @@
         </div>
       </div>
     
-      <div class='DataTable' style="width: 90%;">
+      <div class='DataTable'>
         
         <div class="PanelTable">
         <div class="TableInfo PanelDefault">
@@ -68,6 +69,7 @@ import {adress} from '../../js/config_server.js'
     data(){
         return{
             dataJson: jsons,
+            selectOG: {},
             modalwindowDisplay: false,
             DisplayList: false,
             tableDisplay: false,
@@ -80,6 +82,11 @@ import {adress} from '../../js/config_server.js'
             inputName: ''
         }
     },
+    props:{
+    systemStatus:{
+          type: Object
+        },
+    },
     components:
     {
       TableData,
@@ -90,16 +97,14 @@ import {adress} from '../../js/config_server.js'
         this.datasave = st.datasave
         console.log(st.datasave)
       },
-        ShowOG() {
-            console.log(this.dataJson)
+        closeTableData(e) {
+            console.log(e)
+            this.ShowTableID = false
+            this.selectOG = {}
         },
-        SelectOGData(index){
-            if(this.ShowTableID == index)
-            { this.ShowTableID = -1 }
-            else{
-              this.ShowTableID = index
-            }
-
+        SelectOGData(data){
+              this.ShowTableID = true
+              this.selectOG = data
         },
         ShowTableStatus(data){
           var color = ""
@@ -135,6 +140,9 @@ import {adress} from '../../js/config_server.js'
           SatartApproved(){
             if(this.datasave){
               this.approved = true
+              let dataSystem = this.systemStatus
+              dataSystem.constellationStatus = this.approved
+              this.$emit('ChangeSystemStatus', dataSystem)
             }
           },
           ShowData(){
@@ -142,6 +150,9 @@ import {adress} from '../../js/config_server.js'
           },
           SatartEditing (){
             this.approved = false
+            let dataSystem = this.systemStatus
+            dataSystem.constellationStatus = this.approved
+            this.$emit('ChangeSystemStatus', dataSystem)
           },
           setPost(datapost) {
             this.ShowData()
@@ -185,6 +196,7 @@ import {adress} from '../../js/config_server.js'
 
     },
     async mounted() {
+      this.approved = this.systemStatus.constellationStatus
     try {
         const response = await fetch('http://'+adress+'/api/v1/constellation/get/list');
         if (!response.ok) {
@@ -214,6 +226,9 @@ import {adress} from '../../js/config_server.js'
     flex-direction: column;
     align-items: center;
     padding-top: 100px;
+    .DataTable{
+    width: 100%;
+  }
 }
 .PanelDefault{
   width: 90%;
@@ -249,7 +264,9 @@ import {adress} from '../../js/config_server.js'
         width: 150px;
       }
     }
+
   }
+
 
   .select-css { 
     display: block;

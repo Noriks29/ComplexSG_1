@@ -2,7 +2,7 @@
     <div class="main_contain">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/left-arrow.png">
+              <img src="../../assets/exit.svg">
             </button>
           </div>
           <div class="titleText">
