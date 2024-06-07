@@ -35,9 +35,9 @@
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
           <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
           <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
-          <td v-if="!requestApproved" :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+          <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
-            <tr v-if="!requestApproved" class="addRowButton">
+            <tr class="addRowButton">
             <td colspan="9"><button @click="AddRowRequest">Добавить заявку</button></td>
           </tr>   
         </table>
@@ -45,12 +45,8 @@
         <div class="PanelTable">
       <div class="TableInfo PanelDefault">
         <div class="ButtonApproved">
-          <button v-if="requestApproved" @click="SatartEditing('request')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
-          <button v-if="requestApproved" class="ButtonDefaultShadow"></button>  
-        </div>
-        <div class="ButtonApproved">
-          <button v-if="!requestApproved" @click="SatartSave('request')" :class="!requestJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-          <button v-if="!requestApproved && !requestJsonsave" class="ButtonDefaultShadow"></button>
+          <button  @click="SatartSave('request')" :class="!requestJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
+          <button v-if="!requestJsonsave" class="ButtonDefaultShadow"></button>
         </div>
       </div>
       </div>
@@ -72,9 +68,9 @@
             <td><input :id="index" name="lat" type="text" :value="data.lat"></td>
             <td><input :id="index" name="lon" type="text" :value="data.lon"></td>
             <td><input :id="index" name="alt" type="text" :value="data.alt"></td>
-            <td v-if="!catalogApproved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
-          <tr v-if="!catalogApproved" class="addRowButton">
+          <tr class="addRowButton">
             <td colspan="5"><button @click="AddRow">Добавить</button></td>
           </tr> 
         </table>
@@ -82,12 +78,8 @@
         <div class="PanelTable">
       <div class="TableInfo PanelDefault">
         <div class="ButtonApproved">
-          <button v-if="catalogApproved" @click="SatartEditing('catalog')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
-          <button v-if="catalogApproved" class="ButtonDefaultShadow"></button>  
-        </div>
-        <div class="ButtonApproved">
-          <button v-if="!catalogApproved" @click="SatartSave('catalog')" :class="!catalogJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-          <button v-if="!catalogApproved && !catalogJsonsave" class="ButtonDefaultShadow"></button>
+          <button @click="SatartSave('catalog')" :class="!catalogJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
+          <button v-if="!catalogJsonsave" class="ButtonDefaultShadow"></button>
         </div>
       </div>
     </div>
@@ -97,7 +89,7 @@
   
   <script>
 
-import {adress} from '../../js/config_server.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import MainStyle from '../../style/component.scss'
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
@@ -113,18 +105,14 @@ import DateTime from '../DateTime.vue';
     },
     data(){
       return{
-        modalwindowDisplay: false,
         catalogJson: [],
-        catalogApproved: true,
         catalogJsonsave: true,
         selectCatalog: null,
 
         requestJson: [],
-        requestApproved: true,
         requestJsonsave: true,
 
         arr: []
-
       }
     },
     methods: {
@@ -134,12 +122,10 @@ import DateTime from '../DateTime.vue';
         })
       },
       ChangeTime(obgtime){
-        console.log(obgtime)
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.requestJsonsave = false
       },
       SelectChange(e){
-        console.log(e, this.requestJson[e.id].catalog)
         this.requestJson[e.id].catalog = e.value
         this.requestJsonsave = false
       },
@@ -149,7 +135,6 @@ import DateTime from '../DateTime.vue';
           const element = this.catalogJson[i];
           this.arr.push({value: element, lable: element.goalName })
         }
-        console.log(this.arr)
 
       },
       AddRow(){
@@ -162,8 +147,7 @@ import DateTime from '../DateTime.vue';
             this.catalogJson.push(addedRow);   
             this.catalogJsonsave = false
           },
-      AddRowRequest(Catalog_id){
-        console.log(Catalog_id)
+      AddRowRequest(){
         if(this.catalogJson.length < 1){
           alert("Нет целей в каталоге, пожалуйста создайте")
           return;
@@ -186,10 +170,8 @@ import DateTime from '../DateTime.vue';
             this.requestJsonsave = false
       },
       DeleteRow(index){
-              console.log("Удаление - ",index)
               this.catalogJsonsave = false
               if (this.catalogJson[index].role === "newRow") {
-                console.log(index)
                 this.catalogJson.splice(index,1)
               }
               else{
@@ -197,10 +179,8 @@ import DateTime from '../DateTime.vue';
               }
           },
       DeleteRowRequest(index){
-              console.log("Удаление - ",index)
               this.requestJsonsave = false
               if (this.requestJson[index].role === "newRow") {
-                console.log(index)
                 this.requestJson.splice(index,1)
               }
               else{
@@ -210,60 +190,24 @@ import DateTime from '../DateTime.vue';
       SatartSave(target){
         if(target == 'catalog')
         {
-          console.log(JSON.stringify(this.catalogJson))
-          try {
-            fetch('http://'+adress+'/api/v1/satrequest/catalog/update',{
-              method:  'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.catalogJson)
-            })
-              .then(response => response.json())
-              .then(data => console.log(data))
-              this.catalogJsonsave = true
-            } catch (error) {
-                console.error('Error save:', error);
-            }
-            
+          FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)
+          this.catalogJsonsave = true
         }
         if(target == 'request')
         {
-          console.log(JSON.stringify(this.requestJson))
-          try {
-            fetch('http://'+adress+'/api/v1/satrequest/request/update',{
-              method:  'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.requestJson)
-            })
-              .then(response => response.json())
-              .then(data => console.log(data))
-              this.requestJsonsave = true
-            } catch (error) {
-                console.error('Error save:', error);
-            }
+          FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+          this.requestJsonsave = true
         }
       },
-      SatartEditing (target){
-        if(target == 'catalog')
-          this.catalogApproved = false
-        if(target == 'request')
-          this.requestApproved = false
-      },
       ChangeParam(target){
-        console.log(target.target.id)
         this.catalogJson[target.target.id][target.target.name] = target.target.value
         this.catalogJsonsave = false
         this.CreateSelectArr()
       },
       ChangeParamRequest(target){
-        console.log("target",target)
         
         if(target.target.name == "catalog")
         {
-          console.log(target.target.name, this.requestJson[target.target.id][target.target.name])
           this.requestJson[target.target.id][target.target.name] = this.selectCatalog
         }
         else if(target.target.name == "date" || target.target.name == "time"){
@@ -273,42 +217,17 @@ import DateTime from '../DateTime.vue';
           this.requestJson[target.target.id][target.target.name] = target.target.value
         }
         this.requestJsonsave = false
-        console.log(this.requestJson, this.selectCatalog)
       }
       
     },
     
     async mounted() {
-    try {
-        console.log(new Date())
-        const response = await fetch('http://'+adress+'/api/v1/satrequest/catalog/get/all');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        else{
-          const result = await response.json();
-          console.log(result)
-          this.catalogJson = result;
-          this.CreateSelectArr()
-        }
-    } catch (error) {
-        this.timefetch = "Error";
-        console.error('Error during fetch:', error);
-    }
-    try {
-        const response = await fetch('http://'+adress+'/api/v1/satrequest/request/get/all');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        else{
-          const result = await response.json();
-          console.log("REZ- ", result)
-          this.requestJson = result;
-        }
-    } catch (error) {
-        this.timefetch = "Error";
-        console.error('Error during fetch:', error);
-    }
+      DisplayLoad(true)
+      let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+      this.catalogJson = result || {}
+      result = await FetchGet('/api/v1/satrequest/request/get/all')
+      this.requestJson = result || {}
+      DisplayLoad(false)
     }
   }
   </script>

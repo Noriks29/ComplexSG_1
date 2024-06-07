@@ -8,15 +8,15 @@
         <button @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
       <div class="ButtonSection second">
-        <button><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
+        <button @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>План контактов НП – ОГ</button>
         <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
-        <button>Оценка ОГ</button>
+        <button @click="SelectComponent('EstimationConstellation')">Оценка ОГ</button>
         <button>Реконфигурация</button>
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">
-        <button @click="SelectComponent('FlightPlaner')">КА</button>
+        <button @click="SelectComponent('KA1')">КА</button>
         <button>КС 1</button>
         <button>КС 2</button>
         <button>КС 3</button>

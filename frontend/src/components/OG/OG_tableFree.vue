@@ -63,7 +63,7 @@
   <script>
   
   import jsons from '../../res/testOGFree.json'
-  import {adress} from '../../js/config_server.js'
+  import {FetchPost} from '../../js/LoadDisplayMetod.js'
   
     export default {
       name: 'TableData',
@@ -103,7 +103,6 @@
             this.dataJsonOG.statuswork = "notSave"
           },
           ChangeParam(event){
-            console.log(event.target, event.target.value, event.target.id)
             this.datasave = false
             this.dataJsonOG.statuswork = "notSave"
             switch(event.target.name){
@@ -136,11 +135,9 @@
             }
           },
           DeleteRow(index){
-              console.log("Удаление - ",index)
               this.datasave = false
               this.dataJsonOG.statuswork = "notSave"
               if (this.dataJson[index].id === undefined) {
-                console.log(index)
                 this.dataJson.splice(index,1)
               }
               else{
@@ -154,67 +151,26 @@
               }
               else{
                 this.dataJsonOG.deleted=true
-                try {
-                fetch('http://'+adress+'/api/v1/constellation/delete/byId?id='+this.dataJsonOG.id,{
-                  method:  'POST',
-                })
-                  .then(response => response.json())
-                  .then(data => console.log(data))
-                } catch (error) {
-                    console.error('Error save:', error);
-                }
+                FetchPost('/api/v1/constellation/delete/byId?id='+this.dataJsonOG.id,{})
               }
           },
           SatartSave() {
             this.datasave = true
-            console.log("Отправка на сервер")
             this.dataJsonOG.statuswork = "Save"
             if(this.dataJsonOG.id === undefined)
             {
-              try {
-              fetch('http://'+adress+'/api/v1/constellation/add',{
-                method:  'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.dataJsonOG)
-              })
-                .then(response => response.json())
-                .then(data => console.log(data))
-              } catch (error) {
-                  console.error('Error save:', error);
-              }
+              FetchPost('/api/v1/constellation/add',this.dataJsonOG)
             }
             else{
-              try {
-              console.log(JSON.stringify(this.dataJson))
-              fetch('http://'+adress+'/api/v1/constellation/arbitrary/update/byList',{
-                method:  'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.dataJson)
-              })
-                .then(response => response.json())
-                .then(data => console.log(data))
-              } catch (error) {
-                  console.error('Error save:', error);
-              }
+              FetchPost('/api/v1/constellation/arbitrary/update/byList',this.dataJson)
             }
           }
-      },/*
-      watch: {
-        dataOGLocal: function () {
-          this.dataJson = this.dataOGLocal
-          console.log(this.dataOGLocal)
-        }
-      },*/
+      },
       mounted() {
         this.dataJsonOG = this.dataOGLocal
         this.dataJson = this.dataJsonOG.arbitraryConstructions
         if(this.dataJsonOG.statuswork == "notSave")
           this.datasave = false
-        console.log(this.dataJsonOG.id)
       }
     }
   </script>

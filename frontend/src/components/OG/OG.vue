@@ -42,11 +42,11 @@ import MainStyle from '../../style/component.scss'
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
-      }
-    },
+      },
     ChangeSystemStatus(data){
         this.$emit('ChangeSystemStatus', data)
-      },
+      }
+    }
   }
   </script>
 

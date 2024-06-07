@@ -9,42 +9,57 @@
           <div class="titleText" @click="StartLog">
              <button  @click="StartLog">Продолжить моделирование</button>
           </div>
+          <div class="infoTable PanelDefault">
+            <div>КА</div>
+            <div class="infoSection">
+              <div>
+                Тип эксперимента
+                <div class="infoObject">- A. Планирование съемок без прогнозирования баланса заряда АКБ</div>
+                <div class="infoObject">- B. Планирование съемок и моделирование полета без обратной связи</div>
+                <div class="infoObject">- C. Планирование съемок и моделирование полета с обратной связью</div>
+              </div>
+              <div>
+                Доставка данных 
+                <div class="infoObject">- Earth. Сеансы связи КА - НП</div>
+                <div class="infoObject">- Net. Коммуникационная сеть </div>
+              </div>
+              <div>
+                Режим моделирования 
+                <div class="infoObject">- 0: Непрерывный</div>
+                <div class="infoObject">- 1. Пошаговый</div>
+              </div>
+            </div>
+            <div class="buttonStart" @click="StartModeling">Начать моделирование</div>
+          </div>
           <div class="log_list">
-            <div v-for="data, index in WebSocketLog"
-            :key="index">
-            {{ data }}
+            <div v-for="data, index in InputLog"
+            :key="index"
+            class="Logitem">
+            <div>{{ data }}</div>
+              <!--<div>{{ data.time }}</div>
+              
+              <div>{{ data.type }}</div>
+              <div>{{ data.idReceiver }}</div>
+              <div v-if="data.order">
+                <div v-for="dataunder, indexunder in data.order"
+                  :key="indexunder"
+                >
+                  {{ dataunder }}
+                </div>
+              </div>
+              <div v-else-if="data.flightState">{{ data.flightState }}</div>
+              <div v-else >{{ data }}</div>-->
+
             </div>
             
           </div>
-          <div class="flex_contain">
-          <table>
-            <tr>
-              <th>nodeId</th>
-              <th>orderId</th>
-              <th>type</th>
-              <th>plan</th>
-              <th>time</th>
-              
-            </tr>
-            <tr v-for="data, index in logs"
-            :key="index">
-              <td>{{ data.nodeId }}</td>
-              <td>{{ data.orderId }}</td>
-              <td>{{ data.type }}</td>
-              <td class="td_flex_row">
-                <div>{{ data.plan.charge }}</div>
-                <div>{{ data.plan.numberRev }}</div>
-                <div>{{ data.plan.state }}</div>
-              </td>
-              <td>{{ data.time }}</td>
-            </tr>
-          </table>
-        </div>
       </div>
 </template>
   
 <script>
 import StyleDefolt from '../../style/component.scss'
+import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
+import json from './test.json'
   export default {
     name: 'FlightPlaner',
     css:{
@@ -55,7 +70,7 @@ import StyleDefolt from '../../style/component.scss'
         modalwindowDisplay: false,
         tableStatus: true,
         connection: null,
-        WebSocketLog: [],
+        InputLog: json,
         logs: [],
       }
     },
@@ -72,9 +87,21 @@ import StyleDefolt from '../../style/component.scss'
         console.log("Страрт CONT_MODEL - ")
         this.WebSocketLog.push("Send -- Страрт CONT_MODEL - ")
         this.connection.send("CONT_MODEL")
+      },
+      async StartModeling(){
+        DisplayLoad(false)
+        this.InputLog.push({
+          time: 0,
+          flightState: "start modelling!"
+        })
+        
+
+        let request = await FetchGet("/api/v1/modelling/satellite")
+        console.log(request)
       }
       
     },
+    /*
     created: function() {
       console.log("Start WebSocket ....")
       this.WebSocketLog.push("Start WebSocket ....")
@@ -112,7 +139,8 @@ import StyleDefolt from '../../style/component.scss'
           this.WebSocketLog.push("Connection closed....")
           console.log("Connection closed", event);
       };
-    }
+    }*/
+
   }
   </script>
 
@@ -121,6 +149,7 @@ import StyleDefolt from '../../style/component.scss'
 
 
 .log_list{
+  text-align: left;
   padding: 30px;
   background-color: black;
   color: #2e8000;
@@ -162,5 +191,32 @@ table{
       }
     }
   }
+}
+.Logitem{
+  display: flex;
+  div{
+    margin: 5px;
+  }
+}
+.infoTable{
+  color:white;
+  margin: 10px 10%;
+  width: 80%;
+  padding: 15px;
+
+  .infoSection{
+    text-align: left;
+    font-size: 20px;
+
+    .infoObject{
+      font-size: 16px;
+      margin-left: 15px;
+    }
+  }
+
+  .buttonStart{
+    border-bottom: 1px solid white;
+  }
+
 }
 </style>

@@ -58,8 +58,13 @@
       }
     },
     mounted (){
-      this.value = this.valueS
-      this.lable = this.valueS.goalName || "none"
+      try {
+        this.value = this.valueS || null
+        this.lable = this.valueS.goalName || "none"
+      } catch (error) {
+        this.value = null
+      }
+      
     }
 }
 </script>

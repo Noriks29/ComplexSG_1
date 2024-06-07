@@ -4,6 +4,7 @@
     <transition name="translate" mode="out-in"> 
       <component :is="activeComponent" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
     </transition> 
+    <LoadProcess />
    
     
 
@@ -13,13 +14,16 @@ import TemplateComponent from './components/TemplateComponent.vue'
 import NP from './components/NP.vue'
 import OG from './components/OG/OG.vue'
 import TypeKA from './components/TypeKA/TypeKA.vue';
-import FlightPlaner from './components/FlightPlaner/FlightPlaner.vue';
+import KA1 from './components/KA/KA1.vue';
 import SystemWindow from './components/System/SystemWindow.vue';
 import TargetDZZ from './components/TargetDZZ/TargetDZZ.vue'
-import SelectDiv from './components/SelectDiv.vue';
-import DateTime from './components/DateTime.vue'
+import EarthConstellation from './components/EarthConstellation/EarthConstellation.vue'
+import LoadProcess from './components/LoadProcess.vue'
+import EstimationConstellation from './components/EarthConstellation/EstimationConstellation.vue'
 import {CanvasBackground}  from './js/sky.js';
-import {adress} from './js/config_server.js';
+import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
+
+
 
 export default {
   name: 'App',
@@ -34,40 +38,31 @@ export default {
         console.log(nameObject.name,nameObject);
         this.activeComponent = nameObject.nameComponent
       },
-      ChangeSystemStatus(data){
+      async ChangeSystemStatus(data){
         this.systemStatus = data
-        console.log(this.systemStatus)
+        let response = await FetchPost('/api/v1/system/update', this.systemStatus)
+        console.log(response)
       }
     },
   async mounted() {
+    DisplayLoad(true)
     const canvasBG = new CanvasBackground('orb-canvas'); //запускаем звёзды
     canvasBG.start();
-
-    try {
-      const response = await fetch('http://'+adress+'/api/v1/system/get');
-      if (!response.ok) {
-          throw new Error('Network response was not ok');
-      }
-      else{
-        const result = await response.json();
-        console.log(result);
-        this.systemStatus = result;
-      }
-    } catch (error) {
-      console.error('Error during fetch:', error);
-    }
-
+    let rezult = await FetchGet('/api/v1/system/get')
+    this.systemStatus = rezult;
+    DisplayLoad(false)
   },
   components: {
     TemplateComponent,
     NP,
     OG,
     TypeKA,
-    FlightPlaner,
+    KA1,
     SystemWindow,
     TargetDZZ,
-    SelectDiv,
-    DateTime
+    EarthConstellation,
+    LoadProcess,
+    EstimationConstellation
   }
 }
 </script>
@@ -83,13 +78,7 @@ export default {
 
 }
 body{
-  /*background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(0,0,255,1) 50%, rgba(255,0,0,1) 100%);*/
   background: rgb(0, 0, 0);
-    /*background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 33%, rgba(0,0,255,1) 34%, rgba(0,0,255,1) 66%, rgba(255,0,0,1) 67%, rgba(255,0,0,1) 100%);
-    background-repeat: no-repeat;
-    backdrop-filter: none;
-    background-attachment: fixed;*/
-  //background-image: url('~@/assets/sky2.jpg'); 
   background-attachment: fixed;
   background-repeat: no-repeat;
   .orb-canvas{

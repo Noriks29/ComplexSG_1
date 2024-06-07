@@ -1,9 +1,4 @@
 <template>
-    <ModalWindow  v-if="modalwindowDisplay" mainText="Вы уверены что хотите выйти?" 
-        infoText="Не сохранённые изменения будут утеряны" 
-        trueText="Произвольное построение"
-        falseText="Построение по плоскостям"
-        @returnValue="GetValueModalWind"/>
     <TableData v-if="ShowTableID == true" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTableData"/>
     <div class="SelectDiv ">
       <div class="PanelDefault"
@@ -17,7 +12,6 @@
         </div>
         <div>
           
-          
         </div>
         
       </div>
@@ -29,6 +23,12 @@
             <option selected value="true">Произвольное построение</option>
             <option value="false">Плоскостное построение</option>
           </select></div>
+          <div>
+            <SelectDiv  
+                :dataOption="[{value: true, lable: 'Произвольное построение' },
+                  {value: false, lable: 'Плоскостное построение' },
+                ]" @valueSelect="SelectChange"/>
+          </div>
           <div>
             <button @click="AddRow" class="ButtonDefault"> Сохранить </button> 
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
@@ -44,11 +44,11 @@
             {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
           <div v-if="approved" class="ButtonApproved">
-            <button @click="SatartEditing" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+            <button @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>  
           </div>
           <div v-else class="ButtonApproved"> 
-            <button @click="SatartApproved" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+            <button @click="ChangeSystemStatus(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
         </div>
@@ -59,24 +59,18 @@
 
 <script>
 
-import jsons from '../../res/testOG.json'
 import TableData from './OG_tableFree.vue'
-import ModalWindow from '../ModalWindow.vue';
-import {adress} from '../../js/config_server.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+import SelectDiv from '../SelectDiv.vue';
 
   export default {
     name: 'SelectMode',
     data(){
         return{
-            dataJson: jsons,
+            dataJson: {},
             selectOG: {},
-            modalwindowDisplay: false,
-            DisplayList: false,
-            tableDisplay: false,
-            ShowTableID: -1,
-            TableNowInfo: "Орбитальная группировка не выбрана",
+            ShowTableID: false,
             approved: true,
-            datasave: true,
             addRowStart: false,
             selectedType: '',
             inputName: ''
@@ -90,15 +84,10 @@ import {adress} from '../../js/config_server.js'
     components:
     {
       TableData,
-      ModalWindow
+      SelectDiv
     },
     methods: {
-      ChangeDataSave(st){
-        this.datasave = st.datasave
-        console.log(st.datasave)
-      },
-        closeTableData(e) {
-            console.log(e)
+        closeTableData() {
             this.ShowTableID = false
             this.selectOG = {}
         },
@@ -137,46 +126,16 @@ import {adress} from '../../js/config_server.js'
               alert("Некоректные входные данные - '"+this.selectedType+"' - '"+this.inputName+"'")
             }
           },
-          SatartApproved(){
-            if(this.datasave){
-              this.approved = true
-              let dataSystem = this.systemStatus
-              dataSystem.constellationStatus = this.approved
-              this.$emit('ChangeSystemStatus', dataSystem)
-            }
-          },
-          ShowData(){
-            console.log(JSON.stringify(this.dataJson))
-          },
-          SatartEditing (){
-            this.approved = false
+          ChangeSystemStatus ( stat ){
+            this.approved = stat
             let dataSystem = this.systemStatus
             dataSystem.constellationStatus = this.approved
             this.$emit('ChangeSystemStatus', dataSystem)
           },
           setPost(datapost) {
-            this.ShowData()
-            console.log("Отправка на сервер")
-            try {
-              fetch('http://'+adress+'/api/v1/constellation/update',{
-                method:  'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(datapost)
-              })
-                .then(response => response.json())
-                .then(data => console.log(data))
-              } catch (error) {
-                  console.error('Error save:', error);
-              }
-          },
-          SatartSave(){
-            this.setPost(this.dataJson);
-            this.datasave = true
+            FetchPost("/api/v1/constellation/update", datapost)
           },
           GetValueModalWind(status) {
-            console.log(status.status);
             switch(status.status){
               case 1:
                 this.AddRow(true)
@@ -188,31 +147,15 @@ import {adress} from '../../js/config_server.js'
               default:
                 alert( "Ошибка!" );
             }
-            this.modalwindowDisplay = false
           },
-          ShowModalWindow() {
-              this.modalwindowDisplay = true
-          }
 
     },
     async mounted() {
+      DisplayLoad(true)
       this.approved = this.systemStatus.constellationStatus
-    try {
-        const response = await fetch('http://'+adress+'/api/v1/constellation/get/list');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        else{
-          const result = await response.json();
-          //let date = new Date();
-          //let datetime = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+" "+ date.getHours()+":"+ date.getMinutes()+":"+ date.getSeconds()
-          //console.log(result, datetime);
-          this.dataJson = result;
-        }
-    } catch (error) {
-        this.timefetch = "Error";
-        console.error('Error during fetch:', error);
-    }
+      let result = await FetchGet('/api/v1/constellation/get/list')
+      this.dataJson = result || {}
+      DisplayLoad(false)
     }
   }
   </script>

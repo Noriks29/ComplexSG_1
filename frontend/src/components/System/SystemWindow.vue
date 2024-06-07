@@ -83,7 +83,6 @@ import DateTime from '../DateTime.vue';
       },
       ChangeTime(obgTime){
         this.dataSystem[obgTime.id] = obgTime.time
-        console.log(obgTime, this.dataSystem)
         this.ChangeSystemStatus()
       },
       ChangeSystemStatus(){
@@ -93,7 +92,6 @@ import DateTime from '../DateTime.vue';
     },
     mounted(){
       this.dataSystem = this.systemStatus
-      console.log("data---",this.dataSystem)
     }
   }
   </script>

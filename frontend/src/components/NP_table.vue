@@ -38,7 +38,7 @@
         {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
         <div class="ButtonApproved">
-          <button v-if="approved" @click="SatartEditing" class="ButtonDefault"> <img src="../assets/edit.svg">Редактировать</button> 
+          <button v-if="approved" @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../assets/edit.svg">Редактировать</button> 
           <button v-if="approved" class="ButtonDefaultShadow"></button>  
         </div>
         <div class="ButtonApproved">
@@ -46,7 +46,7 @@
           <button v-if="!approved && !datasave" class="ButtonDefaultShadow"></button>
         </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="SatartApproved" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved" @click="ChangeSystemStatus(true)" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../assets/approve.svg">Утвердить</button>
           <button v-if="!approved && datasave" class="ButtonDefaultShadow"></button>
         </div>
       </div>
@@ -56,14 +56,13 @@
 
 <script>
 
-import jsons from '../res/test2.json'
-import {adress} from '../js/config_server.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../js/LoadDisplayMetod.js'
 
   export default {
     name: 'TableData',
     data() {
       return {
-        dataJson: jsons,
+        dataJson: [],
         approved: true,
         datasave: true
       }
@@ -75,71 +74,28 @@ import {adress} from '../js/config_server.js'
     },
     methods:
       {
-        ChangeTableStatusForPerent(){
-          this.$emit('changeState', {
-            state: this.datasave
-          })
-        },
         setPost() {
-          console.log("Отправка на сервер")
-          console.log(JSON.stringify(this.dataJson))
-          try {
-            fetch('http://'+adress+'/api/v1/earth/update/byList',{
-              method:  'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(this.dataJson)
-            })
-              .then(response => response.json())
-              .then(data => console.log(data))
-            } catch (error) {
-                this.timefetch = "Error";
-                console.error('Error save:', error);
-            }
-          
+          FetchPost("/api/v1/earth/update/byList", this.dataJson)
         },
         SatartSave(){
           this.setPost();
           this.datasave = true
-          this.ChangeTableStatusForPerent()
         },
-        SatartApproved(){
+        ChangeSystemStatus( stat ){
           if(this.datasave){
-            this.approved = true
-
+            this.approved = stat
             let dataSystem = this.systemStatus
             dataSystem.earthStatus = this.approved
             this.$emit('ChangeSystemStatus', dataSystem)
-
-            try {
-              fetch('http://'+adress+'/api/v1/constellation/set/status?status=true',{
-                method:  'POST'
-              })
-              .then(response => response.json())
-              .then(data => console.log(data))
-            } catch (error) {
-                this.timefetch = "Error";
-                console.error('Error approve:', error);
-            }
           }
-        },
-        SatartEditing (){
-          this.approved = false
-          let dataSystem = this.systemStatus
-          dataSystem.earthStatus = this.approved
-          this.$emit('ChangeSystemStatus', dataSystem)
         },
         AddRow(){
           var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'deleted': false, 'id': undefined};
           this.dataJson.push(addedRow);   
           this.datasave = false
-          this.ChangeTableStatusForPerent()
         },
         ChangeParam(event){
-          console.log(event.target, event.target.value, event.target.id)
           this.datasave = false
-          this.ChangeTableStatusForPerent()
           switch(event.target.name){
             case "nameEarthPoint":
               this.dataJson[event.target.id].nameEarthPoint = event.target.value
@@ -164,44 +120,25 @@ import {adress} from '../js/config_server.js'
           }
         },
         DeleteRow(index){
-            
             if (this.dataJson[index].id !== undefined) {
-              
               this.dataJson[index].deleted = true
             }
             else{
-              console.log(index)
               this.dataJson.splice(index,1)
             }
-            console.log(this.dataJson[index])
             this.datasave = false
-            this.ChangeTableStatusForPerent()
-            
         }
     },
     async mounted() {
+      
+      DisplayLoad(true)
       this.approved = this.systemStatus.earthStatus
-    try {
-
-        const response = await fetch('http://'+adress+'/api/v1/earth/get/list');
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        else{
-          const result = await response.json();
-          let date = new Date();
-          let datetime = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+" "+ date.getHours()+":"+ date.getMinutes()+":"+ date.getSeconds()
-          console.log(result, datetime);
-          this.dataJson = result;
-        }
-    } catch (error) {
-        this.timefetch = "Error";
-        console.error('Error during fetch:', error);
-    }
+      let result = await FetchGet('/api/v1/earth/get/list')
+      this.dataJson = result || {}
+      DisplayLoad(false)
 }
 
   }
-  //console.log(json)
 </script>
 
 
