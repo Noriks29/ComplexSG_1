@@ -97,6 +97,7 @@ import json from './test.json'
         
 
         let request = await FetchGet("/api/v1/modelling/satellite")
+        this.InputLog.push(request)
         console.log(request)
       }
       
