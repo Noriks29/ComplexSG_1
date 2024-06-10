@@ -1,6 +1,6 @@
 <template>
     <div class="ModalBack" id="loadProcess">
-        <div class="ModalWindow">
+        <div class="ModalWindow shape">
             <img src="../res/load.gif" alt="Идёт загрузка">
         </div>
     </div>
@@ -23,7 +23,7 @@
 
 
 
-<style>
+<style lang="scss">
 .ModalBack{
 
   top: 0px;
@@ -44,6 +44,35 @@
     padding: 30px;
     box-shadow: 0px 0px 100px rgba(0, 0, 0, 0.589);
   }
+
+  :root {
+	--background: #005;
+	--primary: #88D5BF;
+	--secondary: #5D6BF8;
+	--third: #e27fcb;
+}
+@keyframes morph {
+  0% {
+			border-radius:  70% 20% 20% 70% / 60% 30% 70% 40%;
+	} 
+	
+	50% {
+			border-radius:  20% 70% 70% 20% / 50% 60% 30% 60%;
+	}
+  
+	100% {
+		border-radius:  70% 20% 20% 70% / 60% 30% 70% 40%;
+	} 
+}
+
+.shape {
+  animation: morph 4s ease-in-out infinite;
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  border: 5px solid black;
+  transition: all 1s ease-in-out;
+  padding: 50px;
+  z-index: 5;
+}
 
 
 }
