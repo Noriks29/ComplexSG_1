@@ -26,6 +26,7 @@ async function FetchGet(http){
 
 }
 async function FetchPost(http,datapost){
+    DisplayLoad(true)
     try {
         const response = await fetch('http://'+adress+http,{
           method:  'POST',
@@ -38,14 +39,17 @@ async function FetchPost(http,datapost){
             throw new Error('Network response was not ok');
         }
         else{
+            DisplayLoad(false)
             return await response.json();
         }
         } catch (error) {
             console.log('Error save:', error);
             alert("ОШИБКА ОТПРАВКИ")
+            DisplayLoad(false)
             return error;
             
         }
+        
 
 }
 

@@ -15,9 +15,9 @@
             <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <div>
-                    <div>Начальное время расчетов:          {{ systemStatus.startTime }}</div>
-                    <div>Начало горизонта моделирования:    {{ systemStatus.modelingBegin }}</div>
-                    <div>Окончание горизонта моделирования: {{ systemStatus.modelingEnd }}</div>
+                    <div>Начальное время расчетов:           <b v-html=" CreateDateTime(systemStatus.startTime)"></b></div>
+                    <div>Начало горизонта моделирования:     <b v-html=" CreateDateTime(systemStatus.modelingBegin)"></b></div>
+                    <div>Окончание горизонта моделирования:  <b v-html=" CreateDateTime(systemStatus.modelingEnd)"></b></div>
                 </div>
             </div>
             Количество целей: {{ purposesJson }}
@@ -57,6 +57,7 @@
   <script>
 
 import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
+import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
 
@@ -107,6 +108,10 @@ import DefaultTable from '../DefaultTable.vue';
                   "end": 123256216323
               }]
             }
+        },
+        CreateDateTime(time){
+          let Dtime = UnixToDtime(time)
+          return Dtime.date + " " + Dtime.time
         },
         SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {

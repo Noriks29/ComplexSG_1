@@ -23,8 +23,7 @@
             v-show="!(data.deleted==true)"
           >
 
-            <td><input :id="index"  style="pointer-events: none;" name="idNode" class="small" 
-               :value="data.idNode"></td>
+            <td>{{ data.idNode }}</td>
             <td><input :id="index" name="altitude" class="small" 
               :value="data.altitude"></td>
             <td><input :id="index" name="eccentricity" class="small" 
@@ -62,7 +61,6 @@
   
   <script>
   
-  import jsons from '../../res/testOGFree.json'
   import {FetchPost} from '../../js/LoadDisplayMetod.js'
   
     export default {
@@ -79,7 +77,7 @@
 
       data() {
         return {
-          dataJson: jsons,
+          dataJson: [],
           dataJsonOG: {},
           TableDisplay: false,
           datasave: true

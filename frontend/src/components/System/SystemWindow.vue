@@ -35,19 +35,14 @@
           <tr>
             <th colspan="2" >Аспекты системы управления</th><th></th>
           </tr>
-          <tr class="active"><td>Inter sat</td><td>Межспутниковая связь</td><td><input id="Inter_sat" type="text"></td></tr>
-          <tr class="active"><td>Control</td><td>Управление орбитальной группировкой</td><td><input id="Control" type="text"></td></tr>
+          <tr class="active"><td>Inter sat</td><td>Межспутниковая связь</td><td><input id="interSatelliteCommunication" type="checkbox" @change="ChangeParam" :checked="systemStatus.interSatelliteCommunication"><label for="interSat">{{systemStatus.interSatelliteCommunication}}</label></td></tr>
+          <tr class="active"><td>Control</td><td>Управление орбитальной группировкой</td><td><input id="controlSystem" @change="ChangeParam" type="checkbox" :checked="systemStatus.controlSystem == 'Automated'"><label for="controlSystem">{{systemStatus.controlSystem}}</label></td></tr>
+
+          <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="systemStatus.step"><label for="step"></label></td></tr>
+          <tr class="active"><td>duration</td><td>Управление орбитальной группировкой</td><td><input id="duration" type="number" min="0" @change="ChangeParam" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>
          
         </table>
       </div>
-        <div class="PanelTable" v-if="!approved">
-        <div class="TableInfo PanelDefault">
-          <div class="ButtonApproved">
-            <button @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-            <button v-if="!datasave" class="ButtonDefaultShadow"><span>&#8203;</span></button>
-          </div>
-        </div>
-        </div>
       </div>
     </div>
   </template>
@@ -83,6 +78,27 @@ import DateTime from '../DateTime.vue';
       },
       ChangeTime(obgTime){
         this.dataSystem[obgTime.id] = obgTime.time
+        this.ChangeSystemStatus()
+      },
+      ChangeParam(target){
+        console.log(target, target.target.id, target.target.checked)
+        if(target.target.id == "interSatelliteCommunication"){
+          this.dataSystem.interSatelliteCommunication = target.target.checked
+        }
+        else if (target.target.id == "controlSystem") {
+          if(target.target.checked){
+            this.dataSystem.controlSystem = "Automated"
+          } else{
+            this.dataSystem.controlSystem = "Earth"
+          }
+        }
+        else if(target.target.id == "step"){
+          this.dataSystem.step = Math.floor(target.target.value)
+        }
+        else if(target.target.id == "duration"){
+          this.dataSystem.duration = Math.floor(target.target.value)
+        }
+        else return 0;
         this.ChangeSystemStatus()
       },
       ChangeSystemStatus(){

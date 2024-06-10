@@ -17,8 +17,7 @@
           @change="ChangeParam"
           v-show="!(data.deleted==true)"
         >
-          <td><input :id="index"  style="pointer-events: none;" name="idNode" class="small" 
-             :value="data.idNode"></td>
+          <td>{{ data.idNode }}</td>
           <td><input :id="index" name="nameEarthPoint"
              :value="data.nameEarthPoint"></td>
           <td><input :id="index" name="longitude" class="small" 

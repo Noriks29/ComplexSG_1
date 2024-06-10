@@ -5,16 +5,10 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-          
-          <div class="titleText">
-            Информация системы
-          </div>
-          <div>
-            <!--<SelectDiv  :dataOption="arr"/>-->
-          </div>
+        
     <div class="DataTable">
-        <h1>Эксперимент</h1>
-        <p>Заявки</p>
+        <h1 class="titleText">Эксперимент</h1>
+        <p class="titleText">Заявки</p>
       <div class="PanelDefault">
         
         <table class="TableDefault">
@@ -52,7 +46,7 @@
       </div>
     </div>
      <div class="DataTable">
-    <h1>Каталог</h1>
+    <h1 class="titleText">Каталог</h1>
       <div class="PanelDefault">
         
         <table class="TableDefault">
@@ -135,6 +129,7 @@ import DateTime from '../DateTime.vue';
           const element = this.catalogJson[i];
           this.arr.push({value: element, lable: element.goalName })
         }
+        console.log(this.arr)
 
       },
       AddRow(){
@@ -227,6 +222,7 @@ import DateTime from '../DateTime.vue';
       this.catalogJson = result || {}
       result = await FetchGet('/api/v1/satrequest/request/get/all')
       this.requestJson = result || {}
+      this.CreateSelectArr()
       DisplayLoad(false)
     }
   }

@@ -113,6 +113,7 @@
     overflow: hidden;
     pointer-events: none;
     
+    
 
     div{
       color: rgba(255, 255, 255, 0);
@@ -125,6 +126,7 @@
       border: 1px solid rgba(255, 255, 255, 1);
       border-top: 0px;
       pointer-events: auto;
+      background-color: #1c1c1c;
 
       div{
         color: rgba(255, 255, 255, 1);
