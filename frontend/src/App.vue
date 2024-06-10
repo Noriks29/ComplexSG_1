@@ -51,7 +51,7 @@ export default {
     let rezult = await FetchGet('/api/v1/system/get')
     this.systemStatus = rezult;
     console.log(this.systemStatus)
-    //DisplayLoad(false)
+    DisplayLoad(false)
   },
   components: {
     TemplateComponent,
