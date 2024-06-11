@@ -35,7 +35,9 @@
         type: String
       },
       valueS:{
-        type: Object
+        type: Object,
+        deep: true,
+        immediate: true,
       }
     },
     data() {
@@ -46,6 +48,12 @@
 
       }
     },
+    watch: { 
+        valueS: function(newVal) { // watch it
+          this.value = newVal.value
+          this.lable = newVal.lable
+        }
+      },
     methods: {
       ChangeSelect(index){
         this.lable = this.dataOption[index].lable
@@ -59,13 +67,16 @@
     },
     mounted (){
       try {
-        this.value = this.valueS || null
-        this.lable = this.valueS.goalName || "none"
+        this.value = this.valueS.value
+        this.lable = this.valueS.lable
       } catch (error) {
-        this.value = null
+        this.value = undefined
+        this.lable = undefined
+        console.log(error)
       }
       
-    }
+    },
+
 }
 </script>
 

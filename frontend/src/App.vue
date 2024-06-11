@@ -49,6 +49,7 @@ export default {
     const canvasBG = new CanvasBackground('orb-canvas'); //запускаем звёзды
     canvasBG.start();
     let rezult = await FetchGet('/api/v1/system/get')
+    console.log(rezult)
     this.systemStatus = rezult;
     console.log(this.systemStatus)
     DisplayLoad(false)

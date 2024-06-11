@@ -23,7 +23,7 @@
             v-show="!(data.deleted==true)"
           >
           <td>{{ index }}</td>
-          <td><SelectDiv  :dataOption="arr" :valueS="data.catalog" :id="index" @valueSelect="SelectChange"/></td>
+          <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
           <td>{{ data.catalog.lat }}</td>
           <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
@@ -129,7 +129,6 @@ import DateTime from '../DateTime.vue';
           const element = this.catalogJson[i];
           this.arr.push({value: element, lable: element.goalName })
         }
-        console.log(this.arr)
 
       },
       AddRow(){
@@ -155,7 +154,7 @@ import DateTime from '../DateTime.vue';
                       "term": Math.floor(Date.now()/1000),
                       "time": Math.floor(Date.now()/1000),
                       "idNode": {
-                          "entryId": 452,
+                          "entryId": 155,
                           "idNode": 1,
                       }, // тестово неизвестно где брать
                       "filter": false,
@@ -190,7 +189,8 @@ import DateTime from '../DateTime.vue';
         }
         if(target == 'request')
         {
-          FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+          let response = FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+          console.log(response)
           this.requestJsonsave = true
         }
       },

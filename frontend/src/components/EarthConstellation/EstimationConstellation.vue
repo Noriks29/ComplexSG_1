@@ -14,41 +14,37 @@
         <div class="PanelDefault">
             <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <div>
-                    <div>Начальное время расчетов:           <b v-html=" CreateDateTime(systemStatus.startTime)"></b></div>
-                    <div>Начало горизонта моделирования:     <b v-html=" CreateDateTime(systemStatus.modelingBegin)"></b></div>
-                    <div>Окончание горизонта моделирования:  <b v-html=" CreateDateTime(systemStatus.modelingEnd)"></b></div>
-                </div>
+                <table>
+                    <tr><td>Начальное время расчетов:</td>           <td v-html=" CreateDateTime(systemStatus.startTime)"></td></tr>
+                    <tr><td>Начало горизонта моделирования:</td>    <td v-html=" CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+                    <tr><td>Окончание горизонта моделирования:</td>  <td v-html=" CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+                    <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
+                    <tr><td>Количество целей:</td><td>{{ purposesJson }}</td></tr>
+                    <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
+                    <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.arbitraryConstructions.length }}</td></tr>
+                  </table>
             </div>
-            Количество целей: {{ purposesJson }}
         </div>
 
     </div>
     <div class="DataTable">
         <h1>Эксперимент</h1>
-        <p>Заявки</p>
       <div class="PanelDefault">
-        
+        <button @click="StartModelling">Начать эксперимент</button>
+        <button @click="ShowViViewWindow(AllResponse)">Отобразить таблицу</button>
         <table class="TableDefault">
           <tr>
-            <th>ОГ</th><th>Имя</th><th>Использование</th>
+            <th>Цель</th><th>Колличество окон видимости</th><th></th>
           </tr>
-          <tr
-          v-for="data, index in ConstellationJson"
+          <tr 
+            v-for="data,index in TableViewWindow"
             :key="index"
-            :class="!requestApproved ? 'active' :''"
-            @change="ChangeParamRequest"
           >
-            <td>{{ index }}</td>
-            <td>{{data.constellationName}}</td>
-            <td>{{"выбор"}}</td>
-          </tr>
+          <td>{{ data.name }}</td>
+          <td>{{ data.viewcount }}</td>
+          <td><button @click="ShowViViewWindow(data.data)">Отобразить таблицу</button></td>
+        </tr>
         </table>
-        <div class="CommandButtons"> 
-            <div>Количество окон видимости: {{ numberVisibilityWindows }}</div>
-            <div @click="CommandWork({}, 1)">C1</div>
-            <div @click="CommandWork({}, 2)">C2</div>
-        </div>
         </div>
     </div>
     </div>
@@ -56,10 +52,11 @@
   
   <script>
 
-import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
+import SelectDiv from '../SelectDiv.vue';
 
   export default {
     name: 'EstimationConstellation',
@@ -72,7 +69,8 @@ import DefaultTable from '../DefaultTable.vue';
         },
     },
     components:{
-      DefaultTable
+      DefaultTable,
+      SelectDiv
     },
     data(){
       return{
@@ -82,36 +80,78 @@ import DefaultTable from '../DefaultTable.vue';
         ShowDefaultTable: false,
         dataLableName: {},
         dataTable: [],
+        arr: [],
+        valueSS: {},
+        experimentObject: {
+          startTime: 0,
+          modellingBegin: 0,
+          modellingEnd: 0,
+          modellingStep: 0,
+          constellation: {
+            arbitraryConstructions: []
+          },
+        },
+        TableViewWindow:[],
+        AllResponse:[],
       }
     },
     methods: {
-        CommandWork(data, commandId){
-            console.log(commandId, data)
-            if(commandId == 2){
-              this.ShowDefaultTable = true
+        CommandWork(){
               this.dataLableName = [
                 {lable: "Отправитель", nameParam: "goalLabel"},
                 {lable: "Получатель", nameParam: "scLabel"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
-              //дальше мы типо запрашиваем данные
-              this.dataTable = [{
-                  "goalLabel": "GSFC",
-                  "scLabel": "8805",
-                  "begin": 123256216223,
-                  "end": 123256216223
-                }, {
-                  "goalLabel": "GSFC",
-                  "scLabel": "8803",
-                  "begin": 123256216323,
-                  "end": 123256216323
-              }]
+        },
+        ShowViViewWindow(data){
+          this.dataTable = data
+          this.ShowDefaultTable = true
+        },
+        CreateViewWindow(){
+          this.TableViewWindow = []
+          let fill = false
+          for (let index = 0; index < this.dataTable.length; index++) {
+            const element = this.dataTable[index];
+            for (let index_child = 0; index_child < this.TableViewWindow.length; index_child++) {
+              const element_child = this.TableViewWindow[index_child];
+              if(element_child.name == element.goalLabel)
+                {
+                  this.TableViewWindow[index_child].viewcount += 1
+                  this.TableViewWindow[index_child].data.push(element)
+                  fill = true
+                  break;
+                }
             }
+            if (fill == false) {
+              this.TableViewWindow.push({name: element.goalLabel, viewcount: 1, data: [element]})
+            }
+            fill = false
+          }
+          console.log(this.TableViewWindow)
+        },
+        async StartModelling(){
+          this.CommandWork()
+          console.log(this.experimentObject, JSON.stringify(this.experimentObject))
+          let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject)
+          try {
+            for (let index = 0; index < response.length; index++) {
+              response[index].end = this.CreateDateTime(response[index].end)
+              response[index].begin = this.CreateDateTime(response[index].begin)
+            }
+          } catch (error) {
+            console.log(error)
+          }
+          this.dataTable = await response
+          this.AllResponse = await response
+          this.CreateViewWindow()
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
           return Dtime.date + " " + Dtime.time
+        },
+        SelectChange(target){
+          this.experimentObject.constellation = target.value
         },
         SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {
@@ -125,7 +165,24 @@ import DefaultTable from '../DefaultTable.vue';
         let result = await FetchGet('/api/v1/satrequest/request/get/all')
         this.purposesJson = result.length || 0
         result = await FetchGet('/api/v1/constellation/get/list')
-        this.ConstellationJson = result || {}
+        this.ConstellationJson = await result
+        for (let i = 0; i < this.ConstellationJson.length; i++) {
+          const element = this.ConstellationJson[i];
+          this.arr.push({value: element, lable: element.constellationName })
+        }
+        this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
+
+        this.experimentObject.constellation = this.arr[0].value
+        this.experimentObject.startTime = this.systemStatus.startTime
+        this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
+        this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
+        this.experimentObject.modellingStep = this.systemStatus.step
+        /*
+        "startTime": 1716595200,
+    "modellingStart": 1716615754,
+    "modellingEnd": 1716615754,
+    "modellingStep": 2,*/
+        console.log(this.systemStatus)
         DisplayLoad(false)
 
     }
