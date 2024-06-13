@@ -4,7 +4,9 @@
       <div class="closebutton"><button @click="CloseTable">
         <img src="../assets/close.svg"><span>&#8203;</span>
       </button></div>
-      <table class="TableDefault">
+      <div class="scroll-table">
+        <table class="TableDefault">
+<thead>
         <tr>
           <th 
             v-for="(data, index) in dataLableName"
@@ -13,6 +15,11 @@
             >{{ data.lable }}</th>
 
         </tr>
+        </thead>
+      </table>
+      <div class="scroll-table-body">
+      <table class="TableDefault">
+        <tbody>
         <tr
           v-for="(data, index) in dataTable"
           :key="index"
@@ -23,8 +30,11 @@
             :key="index"
           >{{ data[dataLable.nameParam] }}</td>
         </tr>
+      </tbody>
       </table>
     </div>
+    </div>
+  </div>
       
   </div>
 </template>
@@ -85,7 +95,6 @@
   z-index: 4;
   max-width: 100%;
   .TableDefault{
-    margin: 5% 1%;
     filter: drop-shadow(2px 4px 6px black);
 
   }
@@ -98,9 +107,15 @@
 }
 .PanelDefault{
   width: 95%;
-  .TableDefault{
-    width: 98%;
-  }
+  padding: 5px;
+
 }
+.scroll-table-body {
+	height: 70vh;
+
+}
+
+
+
 
 </style>

@@ -2,7 +2,7 @@
 <template>
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
     <transition name="translate" mode="out-in"> 
-      <component :is="activeComponent" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
+      <component :is="activeComponent" :ActiveComponent="ActiveComponents" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
     </transition> 
     <LoadProcess />
    
@@ -31,6 +31,16 @@ export default {
     return{
       activeComponent: "TemplateComponent",
       systemStatus: {},
+      ActiveComponents: {
+          NP: true,
+          OG: true,
+          TypeKA: true,
+          SystemWindow: true,
+          TargetDZZ: false,
+          EarthConstellation: false,
+          EstimationConstellation: false,
+          KA1: false
+        },
     };
   },
   methods: {
@@ -38,10 +48,38 @@ export default {
         console.log(nameObject.name,nameObject);
         this.activeComponent = nameObject.nameComponent
       },
+      ActiveComponentValidate(){
+        if(this.systemStatus.constellationStatus == true && this.systemStatus.earthStatus == true)
+        {
+          this.ActiveComponents = {
+            NP: true,
+            OG: true,
+            TypeKA: true,
+            SystemWindow: true,
+            TargetDZZ: true,
+            EarthConstellation: true,
+            EstimationConstellation: true,
+            KA1: true
+          }
+        }
+        else{
+          this.ActiveComponents = {
+            NP: true,
+            OG: true,
+            TypeKA: true,
+            SystemWindow: true,
+            TargetDZZ: false,
+            EarthConstellation: false,
+            EstimationConstellation: false,
+            KA1: false
+          }
+        }
+      },
       async ChangeSystemStatus(data){
         this.systemStatus = data
         let response = await FetchPost('/api/v1/system/update', this.systemStatus)
         console.log(response)
+        this.ActiveComponentValidate()
       }
     },
   async mounted() {
@@ -51,6 +89,7 @@ export default {
     let rezult = await FetchGet('/api/v1/system/get')
     console.log(rezult)
     this.systemStatus = rezult;
+    this.ActiveComponentValidate()
     console.log(this.systemStatus)
     DisplayLoad(false)
   },

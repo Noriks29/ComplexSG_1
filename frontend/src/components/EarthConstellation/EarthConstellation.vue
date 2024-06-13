@@ -15,18 +15,17 @@
             <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <div>
-                    <div>Начальное время расчетов:           <b v-html=" CreateDateTime(systemStatus.startTime)"></b></div>
-                    <div>Начало горизонта моделирования:     <b v-html=" CreateDateTime(systemStatus.modelingBegin)"></b></div>
-                    <div>Окончание горизонта моделирования:  <b v-html=" CreateDateTime(systemStatus.modelingEnd)"></b></div>
-                </div>
-                <div>
-                    <div><div>НП:</div>
-                        <div class="paddl">Статус: {{ systemStatus.earthStatus }}</div>
-                        <div class="paddl">Количество: {{ earthSize }}</div>
-                    </div>
-                    <div><div>ОГ:</div>
-                        <div class="paddl">Статус: {{ systemStatus.constellationStatus }}</div>
-                    </div>
+                  <tr><td>Начальное время расчетов:</td>
+                      <td v-html="CreateDateTime(systemStatus.startTime)"></td>
+                    </tr>
+                    <tr><td>Начало горизонта моделирования:</td>
+                      <td v-html="CreateDateTime(systemStatus.modelingBegin)"></td>
+                    </tr>
+                    <tr><td>Окончание горизонта моделирования:</td>
+                      <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
+                    </tr>
+                  <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
+                  <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
                 </div>
             </div>
         </div>
@@ -34,34 +33,13 @@
     </div>
     <div class="DataTable">
         <h1>Эксперимент</h1>
-        <p>Заявки</p>
-      <div class="PanelDefault">
-        
-        <table class="TableDefault">
-          <tr>
-            <th>Имя</th><th>Состав</th><th>Контакты</th><th>Связь с НП</th><th>Команды</th>
-          </tr>
-          <tr
-          v-for="data, index in ConstellationJson"
-            :key="index"
-            :class="!requestApproved ? 'active' :''"
-            @change="ChangeParamRequest"
-            v-show="!(data.deleted==true)"
-          >
-            <td>{{data.constellationName}}</td>
-            <td>{{data.arbitraryConstructions.length}}</td>
-            <td>{{0}}</td>
-            <td>{{"есть / нет"}}</td>
-            <td class="CommandButtons"> 
-                <div @click="CommandWork(data, 1)">C1</div>
-                <div @click="CommandWork(data, 2)">C2</div>
-                <div @click="CommandWork(data, 3)">C3</div>
-                <div @click="CommandWork(data, 4)">C4</div>
-                <div @click="CommandWork(data, 5)">C5</div>
-                <div @click="CommandWork(data, 6)">C6</div>
-            </td>
-          </tr>
-        </table>
+      <div class="PanelDefault FlexColumn">
+          <div><button @click="CommandWork(1)" class="ButtonCommand">C1 - рассчитать окна видимости</button></div>
+          <div><button @click="CommandWork(2)" class="ButtonCommand">C2 - показать окна видимости / плана контактов</button></div>
+          <div><button @click="CommandWork(3)" class="ButtonCommand">C3 - проверка ограничений</button></div>
+          <div><button @click="CommandWork(4)" class="ButtonCommand">C4 - визуальный анализ окон видимости / плана контактов</button></div>
+          <div><button @click="CommandWork(5)" class="ButtonCommand">C5 - расчёт плана контактов</button></div>
+          <div><button @click="CommandWork(6)" class="ButtonCommand">C6 - графическое представление плана контактов</button></div>
         </div>
         <div class="PanelTable">
       <div class="TableInfo PanelDefault">
@@ -85,6 +63,7 @@ import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
+import SelectDiv from '../SelectDiv.vue';
 
   export default {
     name: 'TargetDZZ',
@@ -97,7 +76,8 @@ import DefaultTable from '../DefaultTable.vue';
         },
     },
     components:{
-      DefaultTable
+      DefaultTable,
+      SelectDiv
     },
     data(){
       return{
@@ -106,11 +86,21 @@ import DefaultTable from '../DefaultTable.vue';
         ShowDefaultTable: false,
         dataLableName: {},
         dataTable: [],
+        experimentObject: {
+          startTime: 0,
+          modellingBegin: 0,
+          modellingEnd: 0,
+          modellingStep: 0,
+        },
+        arr: [],
+        TableViewWindow:[],
+        AllResponse:[],
+        valueSS: {},
       }
     },
     methods: {
-        CommandWork(data, commandId){
-            console.log(commandId, data)
+        CommandWork(commandId){
+            console.log(commandId)
             if(commandId == 2){
               this.ShowDefaultTable = true
               this.dataLableName = [
@@ -125,12 +115,7 @@ import DefaultTable from '../DefaultTable.vue';
                   "scLabel": "8805",
                   "begin": 123256216223,
                   "end": 123256216223
-                }, {
-                  "goalLabel": "GSFC",
-                  "scLabel": "8803",
-                  "begin": 123256216323,
-                  "end": 123256216323
-              }]
+                }]
             }
         },
         CreateDateTime(time){
@@ -148,8 +133,21 @@ import DefaultTable from '../DefaultTable.vue';
         DisplayLoad(true)
         let result = await FetchGet('/api/v1/earth/get/list')
         this.earthSize = result.length || 0
+
         result = await FetchGet('/api/v1/constellation/get/list')
-        this.ConstellationJson = result || {}
+        this.ConstellationJson = await result
+
+        for (let i = 0; i < this.ConstellationJson.length; i++) {
+          const element = this.ConstellationJson[i];
+          this.arr.push({value: element, lable: element.constellationName })
+        }
+        this.arr.push({value: {}, lable: "Все ОГ" })
+        this.valueSS = {value: {}, lable: "Все ОГ" }
+
+        this.experimentObject.startTime = this.systemStatus.startTime
+        this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
+        this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
+        this.experimentObject.modellingStep = this.systemStatus.step
         DisplayLoad(false)
 
     }
@@ -195,5 +193,37 @@ th{
     div{
         padding: 5px;
     }
+}
+.ButtonCommand{
+  background: #2b2b2b;
+  color: white;
+  border: 1px solid black;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: -3px 3px 1px black;
+  margin: 5px;
+  transition: all 0.2s;
+
+  &:hover{
+    box-shadow: -1px 1px 2px black;
+    background: #202020;
+  }
+  &:active{
+    border-radius: 5px;
+    background: #171717;
+    box-shadow: -3px 3px 10px black;
+  }
+  &.small{
+    padding: 5px;
+    font-size: 14px;
+    margin: 3px;
+  }
+}
+
+.FlexColumn{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 </style>

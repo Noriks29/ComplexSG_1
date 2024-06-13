@@ -11,13 +11,19 @@
             Оценка орбитального построения ОГ
           </div>
     <div class="DataTable"> <!-- Основной контейнер-->
-        <div class="PanelDefault">
+        <div class="PanelDefault" style="width: auto;">
             <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <table>
-                    <tr><td>Начальное время расчетов:</td>           <td v-html=" CreateDateTime(systemStatus.startTime)"></td></tr>
-                    <tr><td>Начало горизонта моделирования:</td>    <td v-html=" CreateDateTime(systemStatus.modelingBegin)"></td></tr>
-                    <tr><td>Окончание горизонта моделирования:</td>  <td v-html=" CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+                    <tr><td>Начальное время расчетов:</td>
+                      <td><DateTime :valueUnix="systemStatus.startTime" :name="'startTime'" @valueSelect="ChangeTimeSystem"/></td>
+                    </tr>
+                    <tr><td>Начало горизонта моделирования:</td>
+                      <td><DateTime :valueUnix="systemStatus.modelingBegin" :name="'modellingBegin'" @valueSelect="ChangeTimeSystem"/></td>
+                    </tr>
+                    <tr><td>Окончание горизонта моделирования:</td>
+                      <td><DateTime :valueUnix="systemStatus.modelingEnd" :name="'modellingEnd'" @valueSelect="ChangeTimeSystem"/></td>
+                    </tr>
                     <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
                     <tr><td>Количество целей:</td><td>{{ purposesJson }}</td></tr>
                     <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
@@ -29,22 +35,30 @@
     </div>
     <div class="DataTable">
         <h1>Эксперимент</h1>
-      <div class="PanelDefault">
-        <button @click="StartModelling">Начать эксперимент</button>
-        <button @click="ShowViViewWindow(AllResponse)">Отобразить таблицу</button>
-        <table class="TableDefault">
+      <div class="PanelDefault Width80">
+        <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
+        <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
+        <div class="scroll-table">
+          <table class="TableDefault"><thead>
           <tr>
-            <th>Цель</th><th>Колличество окон видимости</th><th></th>
+            <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
           </tr>
+        </thead>
+      </table>
+      <div class="scroll-table-body">
+      <table class="TableDefault">
+        <tbody>
           <tr 
             v-for="data,index in TableViewWindow"
             :key="index"
           >
           <td>{{ data.name }}</td>
           <td>{{ data.viewcount }}</td>
-          <td><button @click="ShowViViewWindow(data.data)">Отобразить таблицу</button></td>
+          <td><button @click="ShowViViewWindow(data.data)" class="ButtonCommand small">Отобразить таблицу</button></td>
         </tr>
+      </tbody>
         </table>
+        </div></div>
         </div>
     </div>
     </div>
@@ -57,6 +71,7 @@ import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
+import DateTime from '../DateTime.vue';
 
   export default {
     name: 'EstimationConstellation',
@@ -70,7 +85,8 @@ import SelectDiv from '../SelectDiv.vue';
     },
     components:{
       DefaultTable,
-      SelectDiv
+      SelectDiv,
+      DateTime
     },
     data(){
       return{
@@ -103,6 +119,10 @@ import SelectDiv from '../SelectDiv.vue';
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
+        },
+        ChangeTimeSystem(data){
+          this.experimentObject[data.name] = data.time
+          console.log(this.experimentObject, data)
         },
         ShowViViewWindow(data){
           this.dataTable = data
@@ -177,11 +197,6 @@ import SelectDiv from '../SelectDiv.vue';
         this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
         this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
         this.experimentObject.modellingStep = this.systemStatus.step
-        /*
-        "startTime": 1716595200,
-    "modellingStart": 1716615754,
-    "modellingEnd": 1716615754,
-    "modellingStep": 2,*/
         console.log(this.systemStatus)
         DisplayLoad(false)
 
@@ -204,10 +219,13 @@ th{
   border-bottom: 2px solid white;
 
 }
+.Width80{
+  width: 80%;
+}
 .PanelDefault{
     
     .SystemInfo{
-        display: flex;
+        display: inline-flex;
         flex-wrap: wrap;
         align-content: center;
         align-items: center;
@@ -220,6 +238,32 @@ th{
             padding-left: 15px;
         }
     }
+}
+.ButtonCommand{
+  background: #2b2b2b;
+  color: white;
+  border: 1px solid black;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: -3px 3px 1px black;
+  margin: 5px;
+  transition: all 0.2s;
+
+  &:hover{
+    box-shadow: -1px 1px 2px black;
+    background: #202020;
+  }
+  &:active{
+    border-radius: 5px;
+    background: #171717;
+    box-shadow: -3px 3px 10px black;
+  }
+  &.small{
+    padding: 5px;
+    font-size: 14px;
+    margin: 3px;
+  }
 }
 .CommandButtons{
     display: flex;

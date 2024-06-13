@@ -55,4 +55,13 @@ export default {
 
 
 <style lang="scss" scoped>
+.half-width input{
+  padding: 10px;
+  text-align: center;
+  pointer-events: auto;
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: white;
+}
 </style>

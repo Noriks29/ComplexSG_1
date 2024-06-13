@@ -1,22 +1,22 @@
 <template>
     <div class="SectionMenu">
       <div class="ButtonSection first">
-        <button @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
-        <button @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>ОГ</button>
-        <button @click="SelectComponent('TypeKA')">Типы КА</button>
-        <button @click="SelectComponent('SystemWindow')">Система</button>
-        <button @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
+        <button :class="ActiveComponent.NP ? 'active' : ''" @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
+        <button :class="ActiveComponent.OG ? 'active' : ''" @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>ОГ</button>
+        <button :class="ActiveComponent.TypeKA ? 'active' : ''" @click="SelectComponent('TypeKA')">Типы КА</button>
+        <button :class="ActiveComponent.SystemWindow ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
+        <button :class="ActiveComponent.TargetDZZ ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
       <div class="ButtonSection second">
-        <button @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>План контактов НП – ОГ</button>
+        <button :class="ActiveComponent.EarthConstellation ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>План контактов НП – ОГ</button>
         <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
-        <button @click="SelectComponent('EstimationConstellation')">Оценка ОГ</button>
+        <button :class="ActiveComponent.EstimationConstellation ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Оценка ОГ</button>
         <button>Реконфигурация</button>
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">
-        <button @click="SelectComponent('KA1')">КА</button>
+        <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SelectComponent('KA1')">КА</button>
         <button>КС 1</button>
         <button>КС 2</button>
         <button>КС 3</button>
@@ -31,9 +31,19 @@ export default {
     systemStatus:{
           type: Object
         },
+    ActiveComponent:{
+          type: Object
+        },
+    
+  },
+  data(){
+      return{
+
+    }
   },
   methods: {
     SelectComponent(nameComponent) {
+      if(this.ActiveComponent[nameComponent] == true)
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
@@ -76,49 +86,61 @@ export default {
 
 
       button{
-        background-color: rgba(61, 61, 61, 0.3);
+        
         transition: all 0.2s ease-out;
         border: none;
         color: white;
         flex: 1 0 auto;
-        border-bottom: 1px solid black;
-        border-left: 1px solid black;
+        
         font-size: 25px;
         overflow: hidden;
         text-decoration: none;
         position: relative;
-        
 
-        &:hover{
+        border-top: 1px solid black;
+        border-right: 1px solid black;
+        background-color: rgba(29, 29, 29, 0.4);
+        transform: translate(-1px, 1px);
+        pointer-events: none;
+
+        &.active{
+          pointer-events: all;
+          transform: translate(0px, 0px);
+          background-color: rgba(61, 61, 61, 0.3);
+          &:hover{
             background-color: rgba(90, 90, 90, 0.4);
             border: 2px solid rgba(0, 0, 0, 0.5);
             transform: translate(4px, -4px);
             box-shadow: -4px 4px 2px rgba(0, 0, 0, 0.6);
-        }
-        &:active{
-            background-color: rgba(29, 29, 29, 0.4);
-            border: 2px solid rgba(78, 78, 78, 0.5);
-            transform: translate(-1px, 1px);
-        }
-        &:before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(
-            120deg,
-            transparent,
-            rgba(114, 115, 194, 0.1),
-            transparent
-          );
-          transition: all 350ms;
-        }
-        &:hover:before {
-          left: 100%;
+          }
+          &:active{
+              background-color: rgba(29, 29, 29, 0.4);
+              border: 2px solid rgba(78, 78, 78, 0.5);
+              transform: translate(-1px, 1px);
+
+          }
+          &:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+              120deg,
+              transparent,
+              rgba(114, 115, 194, 0.1),
+              transparent
+            );
+            transition: all 350ms;
+          }
+          &:hover:before {
+            left: 100%;
+          }
+
         }
 
+        
         div{
           position: absolute;
           width: 10px;
