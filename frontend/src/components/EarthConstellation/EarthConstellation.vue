@@ -99,23 +99,32 @@ import SelectDiv from '../SelectDiv.vue';
       }
     },
     methods: {
-        CommandWork(commandId){
+       async CommandWork(commandId){
             console.log(commandId)
             if(commandId == 2){
+
               this.ShowDefaultTable = true
               this.dataLableName = [
-                {lable: "Отправитель", nameParam: "goalLabel"},
-                {lable: "Получатель", nameParam: "scLabel"},
+                {lable: "Отправитель", nameParam: "earthName"},
+                {lable: "Получатель", nameParam: "satelliteId"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
               //дальше мы типо запрашиваем данные
-              this.dataTable = [{
-                  "goalLabel": "GSFC",
-                  "scLabel": "8805",
-                  "begin": 123256216223,
-                  "end": 123256216223
-                }]
+              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all')
+              console.log(response)
+              this.dataTable = response
+              for (let index = 0; index < this.dataTable.length; index++) {
+                this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
+                this.dataTable[index].end = this.CreateDateTime(this.dataTable[index].end)
+                
+              }
+            }
+            if(commandId == 1){
+              DisplayLoad(true)
+              let response = await FetchGet('/api/v1/modelling/view/earth')
+              console.log(response)
+              DisplayLoad(false)
             }
         },
         CreateDateTime(time){

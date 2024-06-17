@@ -2,7 +2,7 @@
     <div class="main_contain">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../assets/exit.svg">
+              <img src="../../assets/exit.svg">
             </button>
           </div>
           
@@ -15,7 +15,8 @@
   
   <script>
 import TableData from './NP_table.vue'
-import StyleDefolt from '../style/component.scss'
+import StyleDefolt from '../../style/component.scss'
+//import GlobalStyle from '../../style/GlobalStyle.scss'
   export default {
     name: 'NP',
     components:
@@ -23,7 +24,8 @@ import StyleDefolt from '../style/component.scss'
     TableData,
     },
     css:{
-      StyleDefolt
+      StyleDefolt,
+      //GlobalStyle
     },
     data(){
       return{

@@ -27,7 +27,7 @@
                     <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
                     <tr><td>Количество целей:</td><td>{{ purposesJson }}</td></tr>
                     <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
-                    <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.arbitraryConstructions.length }}</td></tr>
+                    <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.satellites.length }}</td></tr>
                   </table>
             </div>
         </div>
@@ -104,7 +104,7 @@ import DateTime from '../DateTime.vue';
           modellingEnd: 0,
           modellingStep: 0,
           constellation: {
-            arbitraryConstructions: []
+            satellites: []
           },
         },
         TableViewWindow:[],
@@ -186,6 +186,7 @@ import DateTime from '../DateTime.vue';
         this.purposesJson = result.length || 0
         result = await FetchGet('/api/v1/constellation/get/list')
         this.ConstellationJson = await result
+        console.log(this.ConstellationJson)
         for (let i = 0; i < this.ConstellationJson.length; i++) {
           const element = this.ConstellationJson[i];
           this.arr.push({value: element, lable: element.constellationName })

@@ -8,6 +8,7 @@
         <table class="TableDefault">
 <thead>
         <tr>
+          <th>№</th>
           <th 
             v-for="(data, index) in dataLableName"
             :key="index"
@@ -24,6 +25,7 @@
           v-for="(data, index) in dataTable"
           :key="index"
         >
+        <td>{{index}}</td>
 
           <td
             v-for="(dataLable, index) in dataLableName"

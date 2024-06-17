@@ -113,9 +113,9 @@ import SelectDiv from '../SelectDiv.vue';
             {
               var addedRow = {
                       'constellationName' : this.inputName,
-                      'arbitraryConstructions' : [],
+                      'satellites' : [],
                       'id' : undefined, 'arbitraryFormation' : this.selectedType,
-                      'constellationOverviewList' : [], "statuswork" : "notSave"
+                      "statuswork" : "notSave"
                   };
               this.dataJson.push(addedRow);   
               this.datasave = false
@@ -154,6 +154,7 @@ import SelectDiv from '../SelectDiv.vue';
       this.approved = this.systemStatus.constellationStatus
       let result = await FetchGet('/api/v1/constellation/get/list')
       this.dataJson = result || {}
+      console.log(this.dataJson)
       DisplayLoad(false)
     }
   }

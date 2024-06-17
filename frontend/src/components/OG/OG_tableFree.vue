@@ -90,11 +90,10 @@
           },
           AddRow(){
             var addedRow = {
-                    'idNode' : 0,
                     'altitude' : 0, 'eccentricity' : 0,
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
-                    'deleted': false, 'id': undefined, 'modelSat' : 3, 'tableId' : this.dataJsonOG.id
+                    'deleted': false, 'satelliteId': undefined, 'tableId' : this.dataJsonOG.id
                 };
             this.dataJson.push(addedRow);   
             this.datasave = false
@@ -150,6 +149,7 @@
               else{
                 this.dataJsonOG.deleted=true
                 FetchPost('/api/v1/constellation/delete/byId?id='+this.dataJsonOG.id,{})
+                console.log(this.dataJsonOG)
               }
           },
           SatartSave() {
@@ -157,16 +157,17 @@
             this.dataJsonOG.statuswork = "Save"
             if(this.dataJsonOG.id === undefined)
             {
-              FetchPost('/api/v1/constellation/add',this.dataJsonOG)
+              FetchPost('/api/v1/constellation/update',this.dataJsonOG)
             }
             else{
-              FetchPost('/api/v1/constellation/arbitrary/update/byList',this.dataJson)
+              FetchPost('/api/v1/constellation/update',this.dataJsonOG)
             }
           }
       },
       mounted() {
         this.dataJsonOG = this.dataOGLocal
-        this.dataJson = this.dataJsonOG.arbitraryConstructions
+        console.log(this.dataJsonOG)
+        this.dataJson = this.dataJsonOG.satellites
         if(this.dataJsonOG.statuswork == "notSave")
           this.datasave = false
       }

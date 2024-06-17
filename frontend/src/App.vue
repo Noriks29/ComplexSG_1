@@ -11,7 +11,7 @@
 </template> 
 <script>
 import TemplateComponent from './components/TemplateComponent.vue'
-import NP from './components/NP.vue'
+import NP from './components/NP/NP.vue'
 import OG from './components/OG/OG.vue'
 import TypeKA from './components/TypeKA/TypeKA.vue';
 import KA1 from './components/KA/KA1.vue';

@@ -24,7 +24,7 @@
             :value="data.longitude"></td>
           <td><input :id="index" name="latitude" class="small" 
               :value="data.latitude"></td>
-          <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../assets/delete.svg" alt="Удалить"></td>
+          <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="addRowButton">
           <td colspan="5"><button @click="AddRow">Добавить наземный пункт</button></td>
@@ -37,15 +37,15 @@
         {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
         <div class="ButtonApproved">
-          <button v-if="approved" @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../assets/edit.svg">Редактировать</button> 
+          <button v-if="approved" @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
           <button v-if="approved" class="ButtonDefaultShadow"></button>  
         </div>
         <div class="ButtonApproved">
-          <button v-if="!approved" @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../assets/save.svg">Сохранить</button>
+          <button v-if="!approved" @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
           <button v-if="!approved && !datasave" class="ButtonDefaultShadow"></button>
         </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="ChangeSystemStatus(true)" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved" @click="ChangeSystemStatus(true)" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
           <button v-if="!approved && datasave" class="ButtonDefaultShadow"></button>
         </div>
       </div>
@@ -55,7 +55,7 @@
 
 <script>
 
-import {DisplayLoad, FetchGet, FetchPost} from '../js/LoadDisplayMetod.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 
   export default {
     name: 'TableData',
