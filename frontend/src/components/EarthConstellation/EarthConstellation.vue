@@ -105,8 +105,8 @@ import SelectDiv from '../SelectDiv.vue';
 
               this.ShowDefaultTable = true
               this.dataLableName = [
-                {lable: "Отправитель", nameParam: "earthName"},
-                {lable: "Получатель", nameParam: "satelliteId"},
+                {lable: "НП", nameParam: "earthName"},
+                {lable: "КА", nameParam: "satelliteId"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]

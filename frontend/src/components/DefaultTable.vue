@@ -91,7 +91,8 @@
 }
 .DataTable{
   backdrop-filter: blur(10px);
-  position: absolute;
+  position: fixed;
+  top: 1%;
   left: 0;
   width: 100%;
   z-index: 4;
@@ -113,7 +114,7 @@
 
 }
 .scroll-table-body {
-	height: 70vh;
+	height: 75vh;
 
 }
 

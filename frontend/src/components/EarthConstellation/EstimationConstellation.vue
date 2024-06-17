@@ -24,7 +24,7 @@
                     <tr><td>Окончание горизонта моделирования:</td>
                       <td><DateTime :valueUnix="systemStatus.modelingEnd" :name="'modellingEnd'" @valueSelect="ChangeTimeSystem"/></td>
                     </tr>
-                    <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
+                    <tr><td>Шаг моделирования:</td><td><input @change="ChangeStepSystem" type="number" min="0" :value="experimentObject.modellingStep"></td></tr>
                     <tr><td>Количество целей:</td><td>{{ purposesJson }}</td></tr>
                     <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
                     <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.satellites.length }}</td></tr>
@@ -122,7 +122,9 @@ import DateTime from '../DateTime.vue';
         },
         ChangeTimeSystem(data){
           this.experimentObject[data.name] = data.time
-          console.log(this.experimentObject, data)
+        },
+        ChangeStepSystem(data){
+          this.experimentObject.modellingStep = Number(data.target.value)
         },
         ShowViViewWindow(data){
           this.dataTable = data
@@ -273,5 +275,13 @@ th{
     div{
         padding: 5px;
     }
+}
+input{
+  padding: 10px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: white;
 }
 </style>
