@@ -23,7 +23,7 @@
         display: inline-flex;
         flex-direction: column;
         align-items: center;
-        height: 100%;
+        height: 99%;
         overflow-y: auto;
         overflow-x: hidden;
 
@@ -41,6 +41,11 @@
                 text-align: left;
                 font-size: 20px;
                 padding: 10px;
+                .Title{
+                    border-bottom: 1px solid;
+                    padding-bottom: 5px;
+                    text-align: center;
+                }
             }
 
             &.MaxWidth{
@@ -55,6 +60,14 @@
 
     }
     
+}
+input{
+    padding: 10px;
+    text-align: center;
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: white;
 }
 
 

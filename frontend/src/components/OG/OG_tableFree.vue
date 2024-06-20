@@ -4,17 +4,25 @@
         <div class="closebutton"><button @click="CloseTable">
           <img src="../../assets/close.svg"><span>&#8203;</span>
         </button></div>
+        <div class="scroll-table">
         <table class="TableDefault">
+        <thead>
+
           <tr>
-            <th>ID</th>
+            <th style="width: 80px;">ID</th>
             <th>Высота</th>
             <th>Эксцентриситет</th>
             <th>Наклон</th>
             <th>Долгота восходящего узла</th>
             <th>Аргумент ширины перигея</th>
             <th>Истинная аномалия</th>
-            <th v-if="!approved"><span>&#8203;</span></th>
+            <th v-if="!approved" class="small"><span>&#8203;</span></th>
           </tr>
+        </thead>
+      </table>
+      <div class="scroll-table-body">
+      <table class="TableDefault">
+        <tbody>
           <tr
             v-for="(data, index) in dataJson"
             :key="index"
@@ -23,37 +31,28 @@
             v-show="!(data.deleted==true)"
           >
 
-            <td>{{ data.idNode }}</td>
-            <td><input :id="index" name="altitude" class="small" 
+            <td class="input_imitation" >{{ data.idNode }}</td>
+            <td><input :id="index" name="altitude"
               :value="data.altitude"></td>
-            <td><input :id="index" name="eccentricity" class="small" 
+            <td><input :id="index" name="eccentricity" 
                 :value="data.eccentricity"></td>
-            <td><input :id="index" name="incline" class="small" 
+            <td><input :id="index" name="incline" 
                 :value="data.incline"></td>
-            <td><input :id="index" name="longitudeAscendingNode" class="small" 
+            <td><input :id="index" name="longitudeAscendingNode" 
                 :value="data.longitudeAscendingNode"></td>
-            <td><input :id="index" name="perigeeWidthArgument" class="small" 
+            <td><input :id="index" name="perigeeWidthArgument" 
                 :value="data.perigeeWidthArgument"></td>
-            <td><input :id="index" name="trueAnomaly" class="small" 
+            <td><input :id="index" name="trueAnomaly"
                 :value="data.trueAnomaly"></td>
-            <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            <td v-if="!approved" :id="index" @click="DeleteRow(index)"  class="small" style="text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="10"><button @click="AddRow">Добавить КА</button></td>
+            <td colspan="8"><button @click="AddRow">Добавить КА</button></td>
           </tr> 
-        </table>
-        <div class="PanelTable" v-if="!approved">
-        <div class="TableInfo PanelDefault">
-          <div class="ButtonApproved">
-            <button @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-            <button v-if="!datasave" class="ButtonDefaultShadow"><span>&#8203;</span></button>
-          </div>
-          <div class="ButtonApproved">
-            <button  @click="DeleteRowOG" class="ButtonDefault"><img src="../../assets/save.svg">Удалить орбитальную группировку</button>
-            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
-          </div>
-        </div>
-        </div>
+        </tbody>
+      </table>
+    </div>
+    </div>
       </div>
         
     </div>
@@ -86,22 +85,21 @@
       methods:
         {
           CloseTable(){
-            this.$emit('closetable', true)
+            this.SatartSave()
+            //this.$emit('closetable', true)
           },
           AddRow(){
             var addedRow = {
                     'altitude' : 0, 'eccentricity' : 0,
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
+                    'phaseShift': null, plane:null, position:null,
                     'deleted': false, 'satelliteId': undefined, 'tableId' : this.dataJsonOG.id
                 };
             this.dataJson.push(addedRow);   
-            this.datasave = false
-            this.dataJsonOG.statuswork = "notSave"
+
           },
           ChangeParam(event){
-            this.datasave = false
-            this.dataJsonOG.statuswork = "notSave"
             switch(event.target.name){
               case "altitude":{
                 this.dataJson[event.target.id].altitude = Number(event.target.value)
@@ -130,10 +128,9 @@
               default:
                 alert( "Ошибка!" );
             }
+            
           },
           DeleteRow(index){
-              this.datasave = false
-              this.dataJsonOG.statuswork = "notSave"
               if (this.dataJson[index].id === undefined) {
                 this.dataJson.splice(index,1)
               }
@@ -141,41 +138,35 @@
                 this.dataJson[index].deleted = true
               }
           },
-          DeleteRowOG(){
-              if (this.dataJsonOG.id === undefined) {
-
-                this.dataJsonOG.deleted=true
-              }
-              else{
-                this.dataJsonOG.deleted=true
-                FetchPost('/api/v1/constellation/delete/byId?id='+this.dataJsonOG.id,{})
-                console.log(this.dataJsonOG)
-              }
-          },
-          SatartSave() {
-            this.datasave = true
-            this.dataJsonOG.statuswork = "Save"
-            if(this.dataJsonOG.id === undefined)
-            {
-              FetchPost('/api/v1/constellation/update',this.dataJsonOG)
-            }
-            else{
-              FetchPost('/api/v1/constellation/update',this.dataJsonOG)
-            }
+          async SatartSave() {
+            console.log(this.dataJsonOG)
+            await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
+            //console.log(response)
+            
           }
+          
       },
       mounted() {
         this.dataJsonOG = this.dataOGLocal
         console.log(this.dataJsonOG)
         this.dataJson = this.dataJsonOG.satellites
-        if(this.dataJsonOG.statuswork == "notSave")
-          this.datasave = false
       }
     }
   </script>
   
   
   <style lang="scss" scoped>
+
+  .input_imitation{
+    text-align: center;
+    font-size: 18px;
+    vertical-align: middle;
+    width: 80px;
+  }
+  input{
+    width: 100%;
+    height: 100%;
+  }
   .closebutton{
     display: flex;
     margin: 20px;
@@ -190,15 +181,15 @@
   }
   .DataTable{
     backdrop-filter: blur(10px);
-    position: absolute;
+    position: fixed;
+    top: 1%;
     left: 0;
     width: 100%;
     z-index: 4;
     max-width: 100%;
     .TableDefault{
-      margin: 5% 1%;
       filter: drop-shadow(2px 4px 6px black);
-
+  
     }
     .PanelTable{
       position: sticky;
@@ -209,9 +200,18 @@
   }
   .PanelDefault{
     width: 95%;
-    .TableDefault{
-      width: 98%;
-    }
+    padding: 5px;
+  
+  }
+  .scroll-table-body {
+    height: 75vh;
   }
 
+  .iconDelete{
+    width: 60% !important; 
+    height: 100% !important;
+  }
+  th{
+    text-align: center !important;
+  }
   </style>
