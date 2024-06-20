@@ -13,8 +13,7 @@ function UnixToDtime(time){
     return {time: time1, date: time2}
 }
 
-
 export {
     DTimeToUnix,
-    UnixToDtime
+    UnixToDtime,
 }

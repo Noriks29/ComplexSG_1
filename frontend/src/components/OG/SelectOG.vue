@@ -1,5 +1,6 @@
 <template>
     <TableData v-if="ShowTableID == true" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTableData"/>
+    <CreateOGPanel v-if="false" />
     <div class="SelectDivPanel ">
       <div class="PanelDefault"
         v-for="data, index in dataJson"
@@ -58,6 +59,7 @@
 import TableData from './OG_tableFree.vue'
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import SelectDiv from '../SelectDiv.vue';
+import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
 
   export default {
     name: 'SelectMode',
@@ -80,7 +82,8 @@ import SelectDiv from '../SelectDiv.vue';
     components:
     {
       TableData,
-      SelectDiv
+      SelectDiv,
+      CreateOGPanel
     },
     methods: {
         closeTableData() {

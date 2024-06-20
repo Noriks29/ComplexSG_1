@@ -1,9 +1,10 @@
 .main_contain {
     position: relative;
-    min-height: 85vh;
-    max-width: 100%;
-    padding: 15px;
     font-size: 20px;
+    height: 95%;
+    max-height: 92vh;
+    padding-top: 40px;
+    color: white;
 
     .ToMenuButtonDiv {
         position: fixed;
@@ -13,8 +14,67 @@
         border: none;
         background: none;
 
-        .ToMenuButtonDiv img {
+        img{
             width: 30px;
         }
     }
+
+    .ContentDiv{
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        .TitleText{
+            font-size: 30px;
+        }
+
+        .Panel{
+            background-color: rgba(151, 151, 151, 0.15);
+            box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+            border: 2px solid rgba(0, 0, 0, 0.25);
+            margin: 3px 0px;
+
+            table{
+                text-align: left;
+                font-size: 20px;
+                padding: 10px;
+            }
+
+            &.MaxWidth{
+                width: 100%;
+            }
+            progress{
+                width: 90%;
+                height: 20px;
+            }
+        }
+
+
+    }
+    
+}
+
+
+body{
+    background: black;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    margin: 0px;
+    height: 98vh;
+    position: relative;
+    padding: 5px;
+    overflow: hidden;
+}
+
+#app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    height: 100%;
+    color: #2c3e50;
+    padding: 5px;
 }

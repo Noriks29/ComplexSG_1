@@ -1,146 +1,179 @@
 <template>
     <div class="main_contain">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
-          
-          <div class="titleText" @click="StartLog">
-             <button  @click="StartLog">Продолжить моделирование</button>
-          </div>
-          <div class="infoTable PanelDefault">
-            <div>КА</div>
-            <div class="infoSection">
-              <div>
-                Тип эксперимента
-                <div class="infoObject">- A. Планирование съемок без прогнозирования баланса заряда АКБ</div>
-                <div class="infoObject">- B. Планирование съемок и моделирование полета без обратной связи</div>
-                <div class="infoObject">- C. Планирование съемок и моделирование полета с обратной связью</div>
-              </div>
-              <div>
-                Доставка данных 
-                <div class="infoObject">- Earth. Сеансы связи КА - НП</div>
-                <div class="infoObject">- Net. Коммуникационная сеть </div>
-              </div>
-              <div>
-                Режим моделирования 
-                <div class="infoObject">- 0: Непрерывный</div>
-                <div class="infoObject">- 1. Пошаговый</div>
-              </div>
-            </div>
-            <div class="buttonStart" @click="StartModeling">Начать моделирование</div>
-          </div>
-          <div class="log_list">
-            <div v-for="data, index in InputLog"
-            :key="index"
-            class="Logitem">
-            <div>{{ data }}</div>
-              <!--<div>{{ data.time }}</div>
-              
-              <div>{{ data.type }}</div>
-              <div>{{ data.idReceiver }}</div>
-              <div v-if="data.order">
-                <div v-for="dataunder, indexunder in data.order"
-                  :key="indexunder"
-                >
-                  {{ dataunder }}
-                </div>
-              </div>
-              <div v-else-if="data.flightState">{{ data.flightState }}</div>
-              <div v-else >{{ data }}</div>-->
-
-            </div>
-            
-          </div>
+      <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
+      <div>
+        <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+          <img src="../../assets/exit.svg">
+        </button>
       </div>
+
+      <div class="ContentDiv">
+        <h1 class="TitleText">Моделирование КА</h1>
+
+        <div class="Panel">
+          <table>
+              <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
+              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+              <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+              <tr><td>Количество заявок:</td><td>{{ purposesJson }}</td></tr>
+              <tr><td>Количество НП:</td><td>{{ earthSize }}</td></tr>
+              <tr><td>Количество КА:</td><td></td></tr>
+              <tr 
+                v-for="(data, index) in ConstellationJson"
+                :key="index"
+              >
+              <td></td><td> - {{ data.constellationName }}: {{ data.satellites.length }} КА</td>
+              </tr>
+          </table>
+        </div>
+        <div class="Panel MaxWidth">
+          <div>
+            <fieldset>
+              <legend>Тип эксперимента:</legend>
+              <div>
+                <input type="radio" name="typeEx" value="1" checked />
+                <label>Планирование заявок</label>
+              </div>
+              <div>
+                <input type="radio" name="typeEx" value="2" />
+                <label>Планирование заявок и планирование полёта</label>
+              </div>
+              <div>
+                <input type="radio" name="typeEx" value="3" />
+                <label>Планирование заявок и моделирование полёта</label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div>
+            <fieldset>
+              <legend>Режим моделирования:</legend>
+              <div>
+                <input type="radio" name="typeModelling" value="1" checked />
+                <label>Непрерывное моделирование</label>
+              </div>
+              <div>
+                <input type="radio" name="typeModelling" value="2" />
+                <label>Пошаговое моделирование</label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <div class="Panel MaxWidth">
+          <p>Ход моделирования</p>
+          <progress id="progress" max="100" :value="progressValue"></progress>
+        </div>
+
+
+        <div class="Panel MaxWidth">
+          <div>
+            <button @click="StartModelling">Начать</button>
+            <button @click="progressValue--">Продолжить</button>
+          </div>
+        </div>
+
+        <div class="Panel MaxWidth">
+          <div class="PanelWork">
+
+            <div class="colum FlexColum">
+              <button>Лог движка</button>
+              <button @click="ShowLogEvent">Лог событий</button>
+            </div>
+
+            <table class="colum">
+              <tr>
+                <td>Съёмка целей</td>
+                <td><button>План</button></td>
+                <td><button>Лог</button></td>
+              </tr>
+              <tr>
+                <td>Доставка данных</td>
+                <td><button>План</button></td>
+              </tr>
+              <tr>
+                <td>План полёта</td>
+                <td><button>План</button></td>
+                <td><button>Лог</button></td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+
+
+      </div>
+
+      
+
+    </div>
 </template>
   
 <script>
-import StyleDefolt from '../../style/component.scss'
-import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
-import json from './test.json'
+
+import { UnixToDtime } from '@/js/WorkWithDTime';
+import { FetchGet, DisplayLoad } from '@/js/LoadDisplayMetod';
+import DefaultTable from '@/components/DefaultTable.vue'
   export default {
     name: 'FlightPlaner',
-    css:{
-      StyleDefolt
-    },
     data(){
       return{
-        modalwindowDisplay: false,
-        tableStatus: true,
-        connection: null,
-        InputLog: json,
-        logs: [],
+        earthSize: 0,
+        purposesJson: 0,
+        ConstellationJson: [],
+        progressValue: 0,
+        ShowDefaultTable: false,
+        dataLableName: [{label: "data", nameParam: "data"}],
+        dataModelling: [],
+        dataTable: []
       }
+    },
+    components:{
+      DefaultTable
+    },
+    props:{
+        systemStatus:{
+            type: Object
+        },
     },
     methods: {
       SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
+          this.$emit('updateParentComponent', {nameComponent: nameComponent})
       },
-      ChangeTableStatus(state){
-        this.tableStatus = state.state
-      },
-      StartLog(){
-        console.log("Страрт CONT_MODEL - ")
-        this.WebSocketLog.push("Send -- Страрт CONT_MODEL - ")
-        this.connection.send("CONT_MODEL")
-      },
-      async StartModeling(){
+      CreateDateTime(time){
+          let Dtime = UnixToDtime(time)
+          return Dtime.date + " " + Dtime.time
+        },
+      async StartModelling(){
+        DisplayLoad(true)
+        this.progressValue = 20
+        let rezult = await FetchGet('/api/v1/modelling/satellite')
+        console.log(await rezult)
+        this.dataModelling = rezult
+        this.progressValue = 100
         DisplayLoad(false)
-        this.InputLog.push({
-          time: 0,
-          flightState: "start modelling!"
-        })
+      },
+      ShowLogEvent(){
         
-
-        let request = await FetchGet("/api/v1/modelling/satellite")
-        this.InputLog.push(request)
-        console.log(request)
+        this.dataTable = [{data: this.dataModelling}]
+        console.log(this.dataTable)
+        this.ShowDefaultTable = true
       }
-      
     },
-    /*
-    created: function() {
-      console.log("Start WebSocket ....")
-      this.WebSocketLog.push("Start WebSocket ....")
-      this.connection = new WebSocket("ws://localhost:10001/IPC_CLIENT_FRONT")
-      
+    async mounted(){
+      DisplayLoad(true)
+      let result = await FetchGet('/api/v1/earth/get/list')
+      this.earthSize = result.length || 0
 
-      //подключение
-      this.connection.onmessage = (event) => {
-          console.log(event)
-          
-          try {
-              this.logs.push(JSON.parse(event.data.replace('[EOF]','')));
-              this.WebSocketLog.push(JSON.parse(event.data.replace('[EOF]','')))
-          } catch (error) {
-            this.logs.push("Не удалось преобразовать входные данные в обьект "+event.data);
-            this.WebSocketLog.push("Не удалось преобразовать входные данные в обьект "+event.data)
-          }
-      }
-      this.connection.onopen = (event) => {
-        //удачное подключение
-        //this.WebSocketLog.push(event)
-        console.log(event)
-        this.WebSocketLog.push("Successfully connected to the echo websocket server...")
-        console.log("Successfully connected to the echo websocket server...")
-      }
+      result = await FetchGet('/api/v1/satrequest/request/get/all')
+      this.purposesJson = result.length || 0
 
-      // если возникла ошибка
-      this.connection.onerror = (error) => {
-          this.WebSocketLog.push("WebSocket Error")
-          console.log(`WebSocket Error: `, error);
-          //alert("На WebSocket ошибка")
-      };
-      // если соединение закрыто
-      this.connection.onclose = (event) => {
-          this.WebSocketLog.push("Connection closed....")
-          console.log("Connection closed", event);
-      };
-    }*/
+      result = await FetchGet('/api/v1/constellation/get/list')
+      this.ConstellationJson = await result
+
+      DisplayLoad(false)
+    }
+
 
   }
   </script>
@@ -148,76 +181,30 @@ import json from './test.json'
 
 <style lang="scss" scoped>
 
-
-.log_list{
+fieldset{
   text-align: left;
-  padding: 30px;
-  background-color: black;
-  color: #2e8000;
+}
+.PanelWork{
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border: 1px solid #2e8000;
-  margin: 20px 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 
-  div{
-    border-bottom: 1px solid #2e8000;
+  .colum{
+    flex: 1;
+
+
   }
-}
-.flex_contain{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-table{
-  width: 95%;
-  background-color: black;
-  padding: 10px;
-  border: 2px solid blue;
-  border-radius: 10px;
-  color: white;
-  tr{
-    th{
-      padding: 5px 0px;
-      border-bottom: 1px solid blue;
 
-    }
-    td{
-      padding: 5px 0px;
-      &.td_flex_row{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
+  .FlexColum{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+
+    button{
+      margin: 5px;
     }
   }
 }
-.Logitem{
-  display: flex;
-  div{
-    margin: 5px;
-  }
-}
-.infoTable{
-  color:white;
-  margin: 10px 10%;
-  width: 80%;
-  padding: 15px;
 
-  .infoSection{
-    text-align: left;
-    font-size: 20px;
-
-    .infoObject{
-      font-size: 16px;
-      margin-left: 15px;
-    }
-  }
-
-  .buttonStart{
-    border-bottom: 1px solid white;
-  }
-
-}
 </style>

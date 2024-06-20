@@ -1,15 +1,4 @@
-.ToMenuButtonDiv{
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 0px;
-    border: none;
-    background: none;
 
-    img{
-      width: 30px;
-    }
-  }
 
   .button_flex{
       height: 100%;
@@ -20,12 +9,7 @@
       align-items: center;
   }
   
-  .main_contain{
-    height: 85vh;
-    max-width: 100%;
-    padding: 1%;
-    font-size: 20px;
-  }   
+  
   .button_level{
       display: flex;
       flex-wrap: wrap;

@@ -15,6 +15,7 @@
   <script>
 import Select from './SelectOG.vue'
 import MainStyle from '../../style/component.scss'
+  import GlobalStyle from '@/style/GlobalStyle.scss'
 
 
   export default {
@@ -31,7 +32,8 @@ import MainStyle from '../../style/component.scss'
         },
     },
     css:{
-      MainStyle
+      MainStyle,
+      GlobalStyle
     },
     components:
     {

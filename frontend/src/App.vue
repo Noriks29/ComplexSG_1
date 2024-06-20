@@ -23,10 +23,15 @@ import EstimationConstellation from './components/EarthConstellation/EstimationC
 import {CanvasBackground}  from './js/sky.js';
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
 
+import GlobalStyle from './style/GlobalStyle.scss'
+
 
 
 export default {
   name: 'App',
+  css:{
+    GlobalStyle
+  },
   data() {
     return{
       activeComponent: "TemplateComponent",
@@ -109,19 +114,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-
-}
 body{
-  background: rgb(0, 0, 0);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
   .orb-canvas{
     position: fixed;
     top: 0;
