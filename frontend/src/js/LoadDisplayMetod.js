@@ -26,6 +26,7 @@ async function FetchGet(http){
 
 }
 async function FetchPost(http,datapost){
+    console.log(JSON.stringify(datapost))
     DisplayLoad(true)
     try {
         const response = await fetch('http://'+adress+http,{

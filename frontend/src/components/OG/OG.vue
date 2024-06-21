@@ -72,7 +72,7 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
     data() {
       return {
         OGTableExists: false,
-        dataJson: {},
+        dataJson: [],
         selectOG: undefined,
         approved: true,
         addRowTable: false,
@@ -98,14 +98,13 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
             nameComponent: nameComponent
         })
       },
-      closeTable(table) {
+      async closeTable(table) {
+        await this.reFetch()
         if(table == "dataOG"){
           this.selectOG = undefined
-          this.reFetch()
         }
         if(table == "CreateOG"){
           this.addRowTable = false
-          this.reFetch()
         }
       },
       ChangeSystemStatus ( stat ){
@@ -115,8 +114,9 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
         this.$emit('ChangeSystemStatus', dataSystem)
       },
       async reFetch(){
+        this.dataJson = []
         let result = await FetchGet('/api/v1/constellation/get/list')
-        this.dataJson = result
+        this.dataJson = await result
       },
       async DeleteRowOG(data){
         await FetchPost('/api/v1/constellation/delete/byId?id='+data.id,{})
@@ -128,7 +128,7 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
       DisplayLoad(true)
       this.approved = this.systemStatus.constellationStatus
       let result = await FetchGet('/api/v1/constellation/get/list')
-      this.dataJson = result || {}
+      this.dataJson = result || []
       console.log(this.dataJson)
       DisplayLoad(false)
     },

@@ -84,9 +84,9 @@
       },
       methods:
         {
-          CloseTable(){
-            this.SatartSave()
-            //this.$emit('closetable', true)
+          async CloseTable(){
+            await this.SatartSave()
+            this.$emit('closetable', true)
           },
           AddRow(){
             var addedRow = {
@@ -94,7 +94,7 @@
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
                     'phaseShift': null, plane:null, position:null,
-                    'deleted': false, 'satelliteId': undefined, 'tableId' : this.dataJsonOG.id
+                    'deleted': false, 'satelliteId': undefined
                 };
             this.dataJson.push(addedRow);   
 
@@ -131,7 +131,7 @@
             
           },
           DeleteRow(index){
-              if (this.dataJson[index].id === undefined) {
+              if (this.dataJson[index].satelliteId === undefined) {
                 this.dataJson.splice(index,1)
               }
               else{
@@ -140,8 +140,8 @@
           },
           async SatartSave() {
             console.log(this.dataJsonOG)
-            await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
-            //console.log(response)
+            let responce = await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
+            console.log(responce)
             
           }
           
@@ -162,6 +162,9 @@
     font-size: 18px;
     vertical-align: middle;
     width: 80px;
+  }
+  td{
+    vertical-align: middle;
   }
   input{
     width: 100%;
