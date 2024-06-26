@@ -148,14 +148,18 @@ import DefaultTable from '@/components/DefaultTable.vue'
         DisplayLoad(true)
         this.progressValue = 20
         let rezult = await FetchGet('/api/v1/modelling/satellite')
-        console.log(await rezult)
+        console.log("Результат", await rezult)
         this.dataModelling = rezult
         this.progressValue = 100
         DisplayLoad(false)
       },
       ShowLogEvent(){
-        
-        this.dataTable = [{data: this.dataModelling}]
+        for (let index = 0; index < this.dataModelling.length; index++) {
+          const element = this.dataModelling[index];
+          this.dataTable.push({data: element})
+          
+        }
+        //this.dataTable = [{data: this.dataModelling}]
         console.log(this.dataTable)
         this.ShowDefaultTable = true
       }

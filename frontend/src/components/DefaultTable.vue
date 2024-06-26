@@ -8,7 +8,7 @@
         <table class="TableDefault">
 <thead>
         <tr>
-          <th>№</th>
+          <th class="smallTh">№</th>
           <th 
             v-for="(data, index) in dataLableName"
             :key="index"
@@ -25,7 +25,7 @@
           v-for="(data, index) in dataTable"
           :key="index"
         >
-        <td>{{index}}</td>
+        <td class="smallTh">{{index}}</td>
 
           <td
             v-for="(dataLable, index) in dataLableName"
@@ -116,5 +116,8 @@
 .scroll-table-body {
 	height: 75vh;
 
+}
+.smallTh{
+  width: 50px;
 }
 </style>
