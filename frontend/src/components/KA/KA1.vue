@@ -154,6 +154,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
         DisplayLoad(false)
       },
       ShowLogEvent(){
+        this.dataTable = []
         for (let index = 0; index < this.dataModelling.length; index++) {
           const element = this.dataModelling[index];
           this.dataTable.push({data: element})
