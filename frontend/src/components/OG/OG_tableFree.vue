@@ -10,12 +10,15 @@
 
           <tr>
             <th style="width: 80px;">ID</th>
+            <th style="width: 80px;" v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
+            <th style="width: 80px;" v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
             <th>Высота</th>
             <th>Эксцентриситет</th>
             <th>Наклон</th>
             <th>Долгота восходящего узла</th>
             <th>Аргумент ширины перигея</th>
-            <th>Истинная аномалия</th>
+            <th v-if="dataJsonOG.arbitraryFormation === false">Фазовый сдвиг</th>
+            <th v-else>Истинная аномалия</th>
             <th v-if="!approved" class="small"><span>&#8203;</span></th>
           </tr>
         </thead>
@@ -32,6 +35,8 @@
           >
 
             <td class="input_imitation" >{{ data.idNode }}</td>
+            <td class="input_imitation" v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
+            <td class="input_imitation" v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
             <td><input :id="index" name="altitude"
               :value="data.altitude"></td>
             <td><input :id="index" name="eccentricity" 
@@ -211,7 +216,7 @@
   }
 
   .iconDelete{
-    width: 60% !important; 
+    width: 30% !important; 
     height: 100% !important;
   }
   th{
