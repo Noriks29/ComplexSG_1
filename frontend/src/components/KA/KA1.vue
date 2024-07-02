@@ -10,6 +10,12 @@
       <div class="ContentDiv">
         <h1 class="TitleText">Моделирование КА</h1>
 
+        <div class="Panel MaxWidth SelectMode">
+          <div><img  @click="mode--" :class="mode < 1 ? 'disable' : ''" src="../../assets/arrow1.png" alt="назад"></div>
+          <div v-html="ModeLableCreate()"></div>
+          <div><img  @click="mode++" :class="mode > 2 ? 'disable' : ''" src="../../assets/arrow2.png" alt="назад"></div>
+        </div>
+
         <div class="Panel">
           <table>
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
@@ -76,27 +82,27 @@
         <div class="Panel MaxWidth">
           <div class="PanelWork">
 
-            <div class="colum FlexColum">
-              <button>Лог движка</button>
-              <button @click="ShowLogEvent">Лог событий</button>
-            </div>
-
             <table class="colum">
               <tr>
-                <td>Съёмка целей</td>
-                <td><button>План</button></td>
-                <td><button>Лог</button></td>
+                <td>Заявки</td>
+                <td><button>План выполнения</button></td>
+                <td><button>План доставки</button></td>
+                <td><button>Невыполнимые</button></td>
+                <td><button>Лог выполнения</button></td>
               </tr>
               <tr>
-                <td>Доставка данных</td>
-                <td><button>План</button></td>
+                <td>КА</td>
+                <td><button @click="ShowShootingPlan">План съёмок</button></td>
+                <td><button>План доставки</button></td>
+                <td><button>План полёта</button></td>
+                <td><button>Лог полёта</button></td>
               </tr>
               <tr>
-                <td>План полёта</td>
-                <td><button>План</button></td>
-                <td><button>Лог</button></td>
+                <td></td>
+                <td colspan="4"><button @click="ShowLogEvent">Лог движка</button></td>
               </tr>
             </table>
+
 
           </div>
         </div>
@@ -118,6 +124,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
     name: 'FlightPlaner',
     data(){
       return{
+        mode: 0,
         earthSize: 0,
         purposesJson: 0,
         ConstellationJson: [],
@@ -125,7 +132,8 @@ import DefaultTable from '@/components/DefaultTable.vue'
         ShowDefaultTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: [],
-        dataTable: []
+        dataTable: [],
+        E77: {}
       }
     },
     components:{
@@ -155,15 +163,53 @@ import DefaultTable from '@/components/DefaultTable.vue'
       },
       ShowLogEvent(){
         this.dataTable = []
+        this.dataLableName = [{label: "data", nameParam: "data"}]
         for (let index = 0; index < this.dataModelling.length; index++) {
           const element = this.dataModelling[index];
-          this.dataTable.push({data: element})
-          
+          this.dataTable.push({data: element}) 
         }
-        //this.dataTable = [{data: this.dataModelling}]
         console.log(this.dataTable)
         this.ShowDefaultTable = true
-      }
+      },
+      ShowShootingPlan(){
+        console.log(this.E77)
+        this.dataTable = []
+        this.dataLableName = [
+          {lable: "Заявка", nameParam: "orderId"},
+          {lable: "Цель", nameParam: "targetName"},
+          {lable: "Начало видимости", nameParam: "ws"},
+          {lable: "Окончание видимости", nameParam: "we"},
+          {lable: "Разворот", nameParam: "transition"},
+          {lable: "Начало съёмки", nameParam: "ts"},
+          {lable: "Окончаниие съёмки", nameParam: "te"},
+          {lable: "Тангаж", nameParam: "pitch"},
+          {lable: "Крен", nameParam: "roll"},
+        ]
+        for (let index = 0; index < this.E77.VisualFormsData.VisualFormsDataShooting.length; index++) {
+          const element = this.E77.VisualFormsData.VisualFormsDataShooting[index];
+          this.dataTable.push(element) 
+        }
+        console.log(this.dataTable[0],this.dataLableName, "fsdfdfds" )
+        this.ShowDefaultTable = true
+      },
+      ModeLableCreate(){
+        if(this.mode > 3 || this.mode < 0){
+          this.mode = 0
+          alert("ошибка, сброс")
+        }
+        switch (this.mode) {
+          case 0:
+            return 'Один КА'
+          case 1:
+            return 'ОГ с доставкой данных в сеансах связи КА-НП'
+          case 2:
+            return 'ОГ с доставкой данных по коммуникационной сети'
+          case 3:
+            return 'ОГ «рой» с доставкой данных в сеансах связи КА-НП'
+          default:
+            break;
+        }
+      },
     },
     async mounted(){
       DisplayLoad(true)
@@ -175,6 +221,53 @@ import DefaultTable from '@/components/DefaultTable.vue'
 
       result = await FetchGet('/api/v1/constellation/get/list')
       this.ConstellationJson = await result
+
+      this.E77 = {
+        "time":	1716623030.0800357,
+        "type":	"E77",
+        "idReceiver":	0,
+        "idSender":	66,
+        "VisualFormsData":	{
+          "idNode":	0,
+          "idSat":	0,
+          "state":	0,
+          "VisualFormsDataShooting":	[{
+              "idNode":	66,
+              "orderId":	1,
+              "targetName":	"Samara",
+              "ws":	1716622999.9995081,
+              "we":	1716623104.9995062,
+              "ts":	38647.499507146422,
+              "te":	38657.499507146422,
+              "transition":	22,
+              "roll":	-16.43999999681488,
+              "pitch":	5.8250000911299153
+            }, {
+              "idNode":	66,
+              "orderId":	2,
+              "targetName":	"Penza",
+              "ws":	1716623015.0000358,
+              "we":	1716623110.0000341,
+              "ts":	38686.718784451514,
+              "te":	38696.718784451514,
+              "transition":	29,
+              "roll":	26.16843750447908,
+              "pitch":	-23.397812372495533
+            }, {
+              "idNode":	66,
+              "orderId":	3,
+              "targetName":	"Saranck",
+              "ws":	1716623030.0000355,
+              "we":	1716623125.0000339,
+              "ts":	38713.6719089497,
+              "te":	38723.6719089497,
+              "transition":	15,
+              "roll":	22.162500005573968,
+              "pitch":	-32.933749874585772
+            }],
+          "nShooting":	3
+        }
+      }
 
       DisplayLoad(false)
     }
@@ -210,6 +303,27 @@ fieldset{
       margin: 5px;
     }
   }
+}
+.SelectMode{
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  height: 45px;
+  font-size: 18px;
+  div{
+    img{
+      width: 40px;
+      &:active{
+        width: 30px;
+      }
+      &.disable{
+        pointer-events: none;
+      }
+    }
+  }
+  
 }
 
 </style>

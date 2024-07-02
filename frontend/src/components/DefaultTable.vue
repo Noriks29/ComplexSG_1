@@ -10,7 +10,7 @@
         <tr>
           <th class="smallTh">№</th>
           <th 
-            v-for="(data, index) in dataLableName"
+            v-for="(data, index) in data"
             :key="index"
             :name="data.nameParam"
             >{{ data.lable }}</th>
@@ -50,16 +50,16 @@
     name: 'TableData',
     props: {
       dataLableName:{
-        type: Object
+        type: Array
       },
       dataTable:{
-        type: Object
+        type: Array
       },
     },
 
     data() {
       return {
-        //dataJson: jsons,
+        data: {}
       }
     },
     methods:
@@ -70,6 +70,7 @@
         
     },
     mounted() {
+      this.data = this.dataLableName
       console.log(this.dataLableName, this.dataTable)
     }
   }

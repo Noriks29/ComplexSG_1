@@ -1,6 +1,8 @@
 <template>
     <div class="Panel_flex_column">
         <div class="Column_contain">
+            <SelectDiv  :dataOption="[{value:'data.earthPoint', lable:'data.earthPoint.nameEarthPoint'}]" :valueS="{value:'data.earthPoint', lable:'data.earthPoint.nameEarthPoint'}"  @valueSelect="console.log"/>
+            
             <div class="Description">
                 <p> Описание </p>
                 <div class="KaIMG"><img src="./KA_A.png" alt="Картинка"></div>
@@ -126,7 +128,9 @@
   
 <script>
 
+import { FetchGet } from "@/js/LoadDisplayMetod";
 import jsons from "../../res/testAK1.json"
+import SelectDiv from '../SelectDiv.vue';
 
 export default {
     name: 'KAInfo',
@@ -135,6 +139,9 @@ export default {
             dataJson: jsons,
         }
     },
+    components:{
+        SelectDiv
+    },
     methods:{
         ShowData(){
             console.log(this.dataJson[0].Name)
@@ -142,6 +149,10 @@ export default {
         SortData(data, type){
             return data.filter(data => data.Type == type)
         }
+    },
+    async mounted(){
+        let result = await FetchGet('/api/v1/modelsat/all/modelsat')
+        console.log(result)
     }
   }
 </script>

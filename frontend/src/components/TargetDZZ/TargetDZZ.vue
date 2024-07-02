@@ -20,7 +20,7 @@
         
         <table class="TableDefault">
           <tr>
-            <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
+            <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
           </tr>
           <tr
           v-for="data, index in requestJson"
@@ -31,11 +31,13 @@
           >
           <td>{{ index }}</td>
           <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
+          
           <td>{{ data.catalog.lat }}</td>
           <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
+          <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="index" @valueSelect="SelectChangeNP"/></td>
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
-          <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
           <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
+          <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
           <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
             <tr class="addRowButton">
@@ -60,7 +62,6 @@
           ><td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
             <td><input :id="index" name="lat" type="text" :value="data.lat"></td>
             <td><input :id="index" name="lon" type="text" :value="data.lon"></td>
-            <td><input :id="index" name="alt" type="text" :value="data.alt"></td>
             <td><input :id="index" name="alt" type="text" :value="data.alt"></td>
             <td><button @click="AddRowRequest(data)">Добавить в заявку</button></td>
             <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
@@ -103,7 +104,8 @@ import DateTime from '../DateTime.vue';
 
         requestJson: [],
 
-        arr: []
+        arr: [],
+        arrNP: []
       }
     },
     methods: {
@@ -117,6 +119,10 @@ import DateTime from '../DateTime.vue';
         this.SatartSave('request')
       },
       SelectChange(e){
+        this.requestJson[e.id].catalog = e.value
+        this.SatartSave('request')
+      },
+      SelectChangeNP(e){
         this.requestJson[e.id].catalog = e.value
         this.SatartSave('request')
       },
@@ -150,10 +156,7 @@ import DateTime from '../DateTime.vue';
                       "priory": 3,
                       "term": this.systemStatus.modelingBegin,
                       "time": this.systemStatus.modelingEnd,
-                      "idNode": {
-                          "entryId": 155,
-                          "idNode": 1,
-                      }, // тестово неизвестно где брать
+                      "earthPoint": this.arrNP[0].value,
                       "filter": false,
                       "deleted": null, 'role': "newRow"
                 };
@@ -217,6 +220,13 @@ import DateTime from '../DateTime.vue';
       this.catalogJson = result || {}
       result = await FetchGet('/api/v1/satrequest/request/get/all')
       this.requestJson = result || {}
+      result = await FetchGet('/api/v1/earth/get/list')
+      console.log(result)
+      for (let i = 0; i < result.length; i++) {
+          const element = result[i];
+          this.arrNP.push({value: element, lable: element.nameEarthPoint })
+        }
+        console.log(this.requestJson, this.catalogJson)
       this.CreateSelectArr()
       DisplayLoad(false)
     }
