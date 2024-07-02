@@ -7,10 +7,10 @@
           </div>
           <div>
             <button class="ChangeViewMode Right" v-if='viewmode < 1' @click="viewmode++">
-              <img src="../../assets/exit.svg">
+              <img src="../../assets/arrow2.png">
             </button>
             <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="viewmode--">
-              <img src="../../assets/exit.svg">
+              <img src="../../assets/arrow1.png">
             </button>
           </div>  
           <h1 class="titleText">Эксперимент</h1>
@@ -36,8 +36,9 @@
           <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
           <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="index" @valueSelect="SelectChangeNP"/></td>
           <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
-          <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
           <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
+          <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
+          
           <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
             <tr class="addRowButton">
@@ -52,18 +53,19 @@
         
         <table class="TableDefault">
           <tr>
-            <th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th>
+            <th></th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th>
           </tr>
           <tr v-for="data, index in catalogJson"
             :key="index"
             :class="!catalogApproved ? 'active' :''"
             @change="ChangeParam"
             v-show="!(data.deleted==true)"
-          ><td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
+          >
+            <td><button @click="AddRowRequest(data)">+</button></td>  
+            <td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
             <td><input :id="index" name="lat" type="text" :value="data.lat"></td>
             <td><input :id="index" name="lon" type="text" :value="data.lon"></td>
             <td><input :id="index" name="alt" type="text" :value="data.alt"></td>
-            <td><button @click="AddRowRequest(data)">Добавить в заявку</button></td>
             <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr class="addRowButton">
@@ -238,6 +240,7 @@ import DateTime from '../DateTime.vue';
   display: inline-flex;
   flex-direction: column;
   flex-wrap: nowrap;
+  width: 90%;
 }
 td{
   text-align: left;

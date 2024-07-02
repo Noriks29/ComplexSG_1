@@ -172,6 +172,16 @@ import DefaultTable from '@/components/DefaultTable.vue'
         this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
+        console.log(this.dataModelling)
+        for (let index = 0; index < this.dataModelling.length; index++) {
+          const element = JSON.parse(this.dataModelling[index]);
+          console.log(element)
+          if(element.type == "E77"){
+            this.E77 = element
+            break
+          }
+          
+        }
         console.log(this.E77)
         this.dataTable = []
         this.dataLableName = [
@@ -187,6 +197,13 @@ import DefaultTable from '@/components/DefaultTable.vue'
         ]
         for (let index = 0; index < this.E77.VisualFormsData.VisualFormsDataShooting.length; index++) {
           const element = this.E77.VisualFormsData.VisualFormsDataShooting[index];
+          element.ws = UnixToDtime(element.ws).time
+          element.we = UnixToDtime(element.we).time
+          element.ts = UnixToDtime(element.ts).time
+          element.te = UnixToDtime(element.te).time
+          element.pitch =  Math.round(element.pitch * 100) / 100
+          element.roll =  Math.round(element.roll * 100) / 100
+          
           this.dataTable.push(element) 
         }
         console.log(this.dataTable[0],this.dataLableName, "fsdfdfds" )

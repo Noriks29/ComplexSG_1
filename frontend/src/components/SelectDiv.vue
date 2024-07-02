@@ -4,7 +4,6 @@
             <div>
               {{ lable }}
             </div>
-            <button>#</button>
         </div>
         <div class="Options" :class="displayList ?  'active' : ''">
         <div 

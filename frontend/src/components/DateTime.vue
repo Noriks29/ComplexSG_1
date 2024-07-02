@@ -64,4 +64,10 @@ export default {
   font-size: 18px;
   color: white;
 }
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1)
+}
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1)
+}
 </style>
