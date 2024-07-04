@@ -1,7 +1,7 @@
 <template>
     <div class="Panel_flex_column">
         <div class="Column_contain">
-            <SelectDiv  :dataOption="[{value:'data.earthPoint', lable:'data.earthPoint.nameEarthPoint'}]" :valueS="{value:'data.earthPoint', lable:'data.earthPoint.nameEarthPoint'}"  @valueSelect="console.log"/>
+            <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
             
             <div class="Description">
                 <p> Описание </p>
@@ -137,6 +137,8 @@ export default {
     data(){
         return{
             dataJson: jsons,
+            KatypeList: [],
+            SelectKA: {}
         }
     },
     components:{
@@ -148,11 +150,27 @@ export default {
         },
         SortData(data, type){
             return data.filter(data => data.Type == type)
+        },
+        ChangeKA(data){
+            console.log(data)
+            console.log(this.dataJson)
+            for (let index = 0; index < data.value.operatingParameter.length; index++) {
+                const element = data.value.operatingParameter[index];
+                console.log(element)
+                this.dataJson[0].prm[element.operationParamId - 1].value = element.value || 0
+            }
+            console.log(this.dataJson)
         }
     },
     async mounted(){
         let result = await FetchGet('/api/v1/modelsat/all/modelsat')
         console.log(result)
+        for (let index = 0; index < result.length; index++) {
+            const element = result[index];
+            this.KatypeList.push({lable: element.modelName, value: element})
+        }
+        console.log(this.KatypeList)
+        this.SelectKA = this.KatypeList[0]
     }
   }
 </script>

@@ -12,7 +12,7 @@
         <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
         <button :class="ActiveComponent.EstimationConstellation ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Оценка ОГ</button>
-        <button>Реконфигурация</button>
+        <button :class="ActiveComponent.TargetRoad ? 'active' : ''" @click="SelectComponent('TargetRoad')">Маршрут обхода целей</button>
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">

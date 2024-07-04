@@ -20,6 +20,7 @@ import TargetDZZ from './components/TargetDZZ/TargetDZZ.vue'
 import EarthConstellation from './components/EarthConstellation/EarthConstellation.vue'
 import LoadProcess from './components/LoadProcess.vue'
 import EstimationConstellation from './components/EarthConstellation/EstimationConstellation.vue'
+import TargetRoad from './components/TargetRoad/TargetRoad.vue';
 import {CanvasBackground}  from './js/sky.js';
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
 
@@ -41,6 +42,7 @@ export default {
           OG: true,
           TypeKA: true,
           SystemWindow: true,
+          TargetRoad: false,
           TargetDZZ: false,
           EarthConstellation: false,
           EstimationConstellation: false,
@@ -64,6 +66,7 @@ export default {
             TargetDZZ: true,
             EarthConstellation: true,
             EstimationConstellation: true,
+            TargetRoad: true,
             KA1: true
           }
         }
@@ -73,6 +76,7 @@ export default {
             OG: true,
             TypeKA: true,
             SystemWindow: true,
+            TargetRoad: false,
             TargetDZZ: false,
             EarthConstellation: false,
             EstimationConstellation: false,
@@ -108,7 +112,8 @@ export default {
     TargetDZZ,
     EarthConstellation,
     LoadProcess,
-    EstimationConstellation
+    EstimationConstellation,
+    TargetRoad
   }
 }
 </script>
