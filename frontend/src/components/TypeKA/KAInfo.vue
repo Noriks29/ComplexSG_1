@@ -1,17 +1,38 @@
 <template>
-    <div class="Panel_flex_column">
-        <div class="Column_contain">
-            <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
+    <div class="main_contain">
+        <div>
+            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+              <img src="../../assets/exit.svg">
+            </button>
+          </div>
+
+        <h1 class="TitleText">Типы космических аппаратов</h1>
+        <div class="ContentDiv">
             
-            <div class="Description">
+            <div class="Panel">
+                <p>Выбор КА</p>
+                <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
+
+                <p>Информация</p>
+
+                <div @click="viewPanel = 1">Описание</div>
+                <div @click="viewPanel = 2">Целевая аппаратура</div>
+                <div @click="viewPanel = 3">Бортовые устройства</div>
+                <div @click="viewPanel = 4">Бортовые устройства с постоянным потреблением энергии</div>
+                <div @click="viewPanel = 5">Бортовые устройства с переменным потреблением</div>
+                <div @click="viewPanel = 6">Параметры функционирования</div>
+            </div>
+
+            <div class="Panel" v-if="viewPanel == 1">
                 <p> Описание </p>
                 <div class="KaIMG"><img src="./KA_A.png" alt="Картинка"></div>
                 <div>
                     <div v-html="dataJson[0].Description"></div>
                 </div>
             </div>
-            <div class="PanelInfo">
-                <p @click="ShowData"> Целевая аппаратура </p>
+
+            <div class="Panel" v-if="viewPanel == 2">
+                <p> Целевая аппаратура </p>
                 <div>
                     <table class="TableDefault PanelDefault">
                         <tr>
@@ -28,7 +49,7 @@
                     </table>
                 </div>
             </div>
-            <div class="PanelInfo">
+            <div class="Panel" v-if="viewPanel == 3">
                 <p> Бортовые устройства </p>
                 <div>
                     <table class="TableDefault PanelDefault">
@@ -48,9 +69,7 @@
                     </table>
                 </div>
             </div>
-        </div>
-        <div class="Column_contain">
-            <div class="PanelInfo">
+            <div class="Panel" v-if="viewPanel == 4">
                 <p> Бортовые устройства с постоянным потреблением энергии </p>
                 <div>
                     <table class="TableDefault PanelDefault">
@@ -70,7 +89,8 @@
                     </table>
                 </div>
             </div>
-            <div class="PanelInfo">
+
+            <div class="Panel" v-if="viewPanel == 5">
                 <p> Бортовые устройства с переменным потреблением </p>
                 <div>
                     <table class="TableDefault PanelDefault">
@@ -90,7 +110,8 @@
                     </table>
                 </div>
             </div>
-            <div class="PanelInfo">
+
+            <div class="Panel" v-if="viewPanel == 6">
                 <p>Параметры функционирования</p>
                 <div>
                     <table class="TableDefault PanelDefault">
@@ -122,8 +143,21 @@
                     </table>
                 </div>
             </div>
+            
+
         </div>
     </div>
+        <div class="Column_contain">
+            <div class="PanelInfo">
+                
+            </div>
+            <div class="PanelInfo">
+                
+            </div>
+            <div class="PanelInfo">
+                
+            </div>
+        </div>
 </template>
   
 <script>
@@ -138,7 +172,8 @@ export default {
         return{
             dataJson: jsons,
             KatypeList: [],
-            SelectKA: {}
+            SelectKA: {},
+            viewPanel: 1
         }
     },
     components:{
@@ -176,6 +211,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.ContentDiv{
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-around;
+
+    .Panel{
+        flex:1;
+        margin: 10px;
+    }
+}
 
 .Panel_flex_column{
     display: flex;

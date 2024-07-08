@@ -7,78 +7,38 @@
             </button>
           </div>
           
-          <div class="titleText">
-            Оценка орбитального построения ОГ
-          </div>
-    <div class="DataTable"> <!-- Основной контейнер-->
-        <div class="PanelDefault" style="width: auto;">
-            <div>Парамертры системы</div>
-            <div class="SystemInfo">
-                <table>
-                    <tr><td>Начальное время расчетов:</td>
-                      <td><DateTime :valueUnix="systemStatus.startTime" :name="'startTime'" @valueSelect="ChangeTimeSystem"/></td>
-                    </tr>
-                    <tr><td>Начало горизонта моделирования:</td>
-                      <td><DateTime :valueUnix="systemStatus.modelingBegin" :name="'modellingBegin'" @valueSelect="ChangeTimeSystem"/></td>
-                    </tr>
-                    <tr><td>Окончание горизонта моделирования:</td>
-                      <td><DateTime :valueUnix="systemStatus.modelingEnd" :name="'modellingEnd'" @valueSelect="ChangeTimeSystem"/></td>
-                    </tr>
-                  </table>
-            </div>
+    <div class="ContentDiv">
+        <h1 class="TitleText">Моделирование КА</h1>
+        <div class="Panel">
+          <table  style="border-bottom: 1px solid white;">
+              <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
+              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+              <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+          </table>
+          <p>Цели</p>
+          <table style="width: 100%;">
+            <tr
+                v-for="data, index in purposesJson"
+                :key="index"
+            >
+                <td> {{ index }}</td>
+                <td> {{ data.catalog.goalName }}</td>
+                <td> {{ data.catalog.lat }}</td>
+                <td> {{ data.catalog.lon }}</td>
+                <td> {{ data.catalog.alt }}</td>
+            </tr>
+          </table>
+        </div>
+        <div class="Panel MaxWidth">
+            <div class="flexrow">
+            <button class="ButtonCommand">Найти маршруты</button>
+            <div>Маршрут 1 из N</div>
+            <button class="ButtonCommand">Показать на карте</button>
+        </div>
         </div>
 
     </div>
 
-    <div class="DataTable"> <!-- Основной контейнер-->
-        <div class="PanelDefault" style="width: auto;">
-            <div>Цели</div>
-            <div class="SystemInfo">
-                <table>
-                    <tr
-                        v-for="data, index in purposesJson"
-                        :key="index"
-                    >
-                        <td> {{ index }}</td>
-                        <td> {{ data.catalog.goalName }}</td>
-                        <td> {{ data.catalog.lat }}</td>
-                        <td> {{ data.catalog.lon }}</td>
-                        <td> {{ data.catalog.alt }}</td>
-                    </tr>
-                  </table>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="DataTable">
-        <h1>Эксперимент</h1>
-      <div class="PanelDefault Width80">
-        <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
-        <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
-        <div class="scroll-table">
-          <table class="TableDefault"><thead>
-          <tr>
-            <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
-          </tr>
-        </thead>
-      </table>
-      <div class="scroll-table-body">
-      <table class="TableDefault">
-        <tbody>
-          <tr 
-            v-for="data,index in TableViewWindow"
-            :key="index"
-          >
-          <td>{{ data.name }}</td>
-          <td>{{ data.viewcount }}</td>
-          <td><button @click="ShowViViewWindow(data.data)" class="ButtonCommand small">Отобразить таблицу</button></td>
-        </tr>
-      </tbody>
-        </table>
-        </div></div>
-        </div>
-    </div>
     </div>
   </template>
   
@@ -88,7 +48,6 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
-import DateTime from '../DateTime.vue';
 
   export default {
     name: 'TargetRoad',
@@ -102,7 +61,6 @@ import DateTime from '../DateTime.vue';
     },
     components:{
       DefaultTable,
-      DateTime
     },
     data(){
       return{
@@ -128,24 +86,6 @@ import DateTime from '../DateTime.vue';
       }
     },
     methods: {
-        CommandWork(){
-              this.dataLableName = [
-                {lable: "Отправитель", nameParam: "goalLabel"},
-                {lable: "Получатель", nameParam: "scLabel"},
-                {lable: "Начало", nameParam: "begin"},
-                {lable: "Конец", nameParam: "end"},
-              ]
-        },
-        ChangeTimeSystem(data){
-          this.experimentObject[data.name] = data.time
-        },
-        ChangeStepSystem(data){
-          this.experimentObject.modellingStep = Number(data.target.value)
-        },
-        ShowViViewWindow(data){
-          this.dataTable = data
-          this.ShowDefaultTable = true
-        },
         CreateViewWindow(){
           this.TableViewWindow = []
           let fill = false
@@ -285,5 +225,11 @@ input{
     background: none;
     font-size: 18px;
     color: white;
+}
+.flexrow{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: nowrap;
 }
 </style>

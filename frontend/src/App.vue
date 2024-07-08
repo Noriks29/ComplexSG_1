@@ -1,7 +1,25 @@
 
 <template>
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
-    <transition name="translate" mode="out-in"> 
+    <div v-if="login == undefined" class="ModalLoginBack">
+      <div class="ModalLoginPanel">
+        <h1>Вход в систему</h1>
+        <div class="ModalLoginForm">
+          <div>
+            <label for="login">Login: </label>
+            <input type="text" id="login">
+          </div>
+          <div>
+            <label for="password">Password: </label>
+            <input type="password" id="password">
+          </div>
+          <div>
+            <button @click="StartLogin">Войти</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <transition name="translate" mode="out-in" v-if="login"> 
       <component :is="activeComponent" :ActiveComponent="ActiveComponents" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
     </transition> 
     <LoadProcess />
@@ -48,12 +66,21 @@ export default {
           EstimationConstellation: false,
           KA1: false
         },
+      login: undefined,
     };
   },
   methods: {
       ChangeComponents(nameObject) {
         console.log(nameObject.name,nameObject);
         this.activeComponent = nameObject.nameComponent
+      },
+      StartLogin(){
+        const login = document.getElementById('login').value
+        const password = document.getElementById('password').value
+        console.log(login, password)
+        this.login = 432432
+        //добавить волидацию и добавить запрос
+        this.StartSystem() 
       },
       ActiveComponentValidate(){
         if(this.systemStatus.constellationStatus == true && this.systemStatus.earthStatus == true)
@@ -89,18 +116,21 @@ export default {
         let response = await FetchPost('/api/v1/system/update', this.systemStatus)
         console.log(response)
         this.ActiveComponentValidate()
+      },
+      async StartSystem(){
+        DisplayLoad(true)
+        const canvasBG = new CanvasBackground('orb-canvas'); //запускаем звёзды
+        canvasBG.start();
+        let rezult = await FetchGet('/api/v1/system/get')
+        console.log(rezult)
+        this.systemStatus = rezult;
+        this.ActiveComponentValidate()
+        console.log(this.systemStatus)
+        DisplayLoad(false)
       }
     },
   async mounted() {
-    DisplayLoad(true)
-    const canvasBG = new CanvasBackground('orb-canvas'); //запускаем звёзды
-    canvasBG.start();
-    let rezult = await FetchGet('/api/v1/system/get')
-    console.log(rezult)
-    this.systemStatus = rezult;
-    this.ActiveComponentValidate()
-    console.log(this.systemStatus)
-    DisplayLoad(false)
+    
   },
   components: {
     TemplateComponent,
@@ -127,6 +157,37 @@ body{
     height: 100vh;
     width: 100vw;
     z-index: -1;
+  }
+
+  .ModalLoginBack{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .ModalLoginPanel{
+      background-color: #d1c3c3;
+      border-radius: 10px;
+      padding: 30px;
+
+      .ModalLoginForm{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        div{
+          padding: 10px 0px;
+
+          &:last-child{
+            width: 100%;
+          }
+        }
+      }
+    }
   }
 }
 </style>

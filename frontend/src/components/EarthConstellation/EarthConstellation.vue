@@ -14,7 +14,7 @@
         <div class="PanelDefault">
             <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <div>
+                <table>
                   <tr><td>Начальное время расчетов:</td>
                       <td v-html="CreateDateTime(systemStatus.startTime)"></td>
                     </tr>
@@ -25,8 +25,8 @@
                       <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
                     </tr>
                   <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
-                  <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
-                </div>
+                  <tr><td>Орбитальная группировка КА ДЗЗ:</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
+                </table>
             </div>
         </div>
 
@@ -113,7 +113,10 @@ import SelectDiv from '../SelectDiv.vue';
               //дальше мы типо запрашиваем данные
               let response = await FetchGet('/api/v1/modelling/data/earth-sat/all')
               console.log(response)
-              this.dataTable = response
+              this.dataTable = await response
+              this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
+              console.log(this.dataTable, "tttt")
+              
               for (let index = 0; index < this.dataTable.length; index++) {
                 this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
                 this.dataTable[index].end = this.CreateDateTime(this.dataTable[index].end)
@@ -150,8 +153,8 @@ import SelectDiv from '../SelectDiv.vue';
           const element = this.ConstellationJson[i];
           this.arr.push({value: element, lable: element.constellationName })
         }
-        this.arr.push({value: {}, lable: "Все ОГ" })
-        this.valueSS = {value: {}, lable: "Все ОГ" }
+        this.arr.push({value: {}, lable: "Все ОГ ДЗЗ" })
+        this.valueSS = {value: {}, lable: "Все ОГ ДЗЗ" }
 
         this.experimentObject.startTime = this.systemStatus.startTime
         this.experimentObject.modellingEnd = this.systemStatus.modelingEnd

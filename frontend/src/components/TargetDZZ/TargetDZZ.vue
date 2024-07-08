@@ -13,73 +13,93 @@
               <img src="../../assets/arrow1.png">
             </button>
           </div>  
-          <h1 class="titleText">Эксперимент</h1>
-    <div class="DataTable" v-if="viewmode == 0">
-        <p class="titleText">Заявки</p>
-      <div class="PanelDefault">
-        
-        <table class="TableDefault">
-          <tr>
-            <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
-          </tr>
-          <tr
-          v-for="data, index in requestJson"
-            :key="index"
-            :class="!requestApproved ? 'active' :''"
-            @change="ChangeParamRequest"
-            v-show="!(data.deleted==true)"
-          >
-          <td>{{ index }}</td>
-          <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
-          
-          <td>{{ data.catalog.lat }}</td>
-          <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
-          <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="index" @valueSelect="SelectChangeNP"/></td>
-          <td><input :id="index" name="priory" type="text" :value="data.priory"></td>
-          <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
-          <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
-          
-          <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-          </tr>
+    <div class="ContentDiv">
+        <h1 class="TitleText">Эксперимент</h1>
+        <div class="Panel">
+            <div>Парамертры системы</div>
+            <div class="SystemInfo">
+                <table>
+                  <tr><td>Начальное время расчетов:</td>
+                      <td v-html="CreateDateTime(systemStatus.startTime)"></td>
+                    </tr>
+                    <tr><td>Начало горизонта моделирования:</td>
+                      <td v-html="CreateDateTime(systemStatus.modelingBegin)"></td>
+                    </tr>
+                    <tr><td>Окончание горизонта моделирования:</td>
+                      <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
+                    </tr>
+                  </table>
+            </div>
+            <div>
+              <button @click="viewmode=0">Заявки ДЗЗ</button>
+              <button @click="viewmode=1">Каталог целей</button>
+            </div>
+        </div>
+        <p v-if="viewmode == 0">Заявки</p>
+        <div class="Panel" v-if="viewmode == 0">
+            <table class="TableDefault">
+              <tr>
+                <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
+              </tr>
+              <tr
+              v-for="data, index in requestJson"
+                :key="index"
+                :class="!requestApproved ? 'active' :''"
+                @change="ChangeParamRequest"
+                v-show="!(data.deleted==true)"
+              >
+              <td>{{ index }}</td>
+              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
+              
+              <td>{{ data.catalog.lat }}</td>
+              <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
+              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="index" @valueSelect="SelectChangeNP"/></td>
+              <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
+              <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
+              <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
+              
+              <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              </tr>
+                <tr class="addRowButton">
+                <td colspan="9"><button @click="AddRowRequest(catalogJson[0])">Добавить заявку</button></td>
+              </tr>   
+            </table>
+        </div>
+
+        <p v-if="viewmode == 1">Каталог</p>
+        <div class="Panel" v-if="viewmode == 1">
+          <table class="TableDefault">
+            <tr>
+              <th>Цель</th><th>Заявки</th><th></th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th>
+            </tr>
+            <tr v-for="data, index in catalogJson"
+              :key="index"
+              :class="!catalogApproved ? 'active' :''"
+              @change="ChangeParam"
+              v-show="!(data.deleted==true)"
+            >
+              <td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
+              <td style="text-align: center;">{{data.countRequest}}</td>
+              <td><button @click="AddRowRequest(data)">+</button></td>  
+              <td><input :id="index" name="lat" type="number" :value="data.lat"></td>
+              <td><input :id="index" name="lon" type="number" :value="data.lon"></td>
+              <td><input :id="index" name="alt" type="number" :value="data.alt"></td>
+              <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            </tr>
             <tr class="addRowButton">
-            <td colspan="9"><button @click="AddRowRequest(catalogJson[0])">Добавить заявку</button></td>
-          </tr>   
-        </table>
+              <td colspan="7"><button @click="AddRow">Добавить</button></td>
+            </tr> 
+          </table>
         </div>
     </div>
-     <div class="DataTable"  v-if="viewmode == 1">
-    <h1 class="titleText">Каталог</h1>
-      <div class="PanelDefault">
-        
-        <table class="TableDefault">
-          <tr>
-            <th></th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th>
-          </tr>
-          <tr v-for="data, index in catalogJson"
-            :key="index"
-            :class="!catalogApproved ? 'active' :''"
-            @change="ChangeParam"
-            v-show="!(data.deleted==true)"
-          >
-            <td><button @click="AddRowRequest(data)">+</button></td>  
-            <td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
-            <td><input :id="index" name="lat" type="text" :value="data.lat"></td>
-            <td><input :id="index" name="lon" type="text" :value="data.lon"></td>
-            <td><input :id="index" name="alt" type="text" :value="data.alt"></td>
-            <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-          </tr>
-          <tr class="addRowButton">
-            <td colspan="5"><button @click="AddRow">Добавить</button></td>
-          </tr> 
-        </table>
-        </div>
-      </div>
+
     </div>
   </template>
   
   <script>
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+import { UnixToDtime } from '@/js/WorkWithDTime.js';
 import MainStyle from '../../style/component.scss'
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
@@ -116,6 +136,10 @@ import DateTime from '../DateTime.vue';
             nameComponent: nameComponent
         })
       },
+      CreateDateTime(time){
+          let Dtime = UnixToDtime(time)
+          return Dtime.date + " " + Dtime.time
+        },
       ChangeTime(obgtime){
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.SatartSave('request')
@@ -208,10 +232,28 @@ import DateTime from '../DateTime.vue';
       async ReFetch(){
         let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
         this.catalogJson = result || {}
+        for (let index = 0; index < this.catalogJson.length; index++) {
+          this.catalogJson[index].countRequest = 0;
+        }
         result = await FetchGet('/api/v1/satrequest/request/get/all')
         this.requestJson = result || {}
+        for (let index = 0; index < this.requestJson.length; index++) {
+          const element = this.requestJson[index].catalog.goalId
+          for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
+            if(element == this.catalogJson[indexii].goalId){
+              this.catalogJson[indexii].countRequest++;
+              break
+            }
+          }
+        }
+        result = await FetchGet('/api/v1/earth/get/list')
+        for (let i = 0; i < result.length; i++) {
+            const element = result[i];
+            this.arrNP.push({value: element, lable: element.nameEarthPoint })
+          }
+          console.log(this.requestJson, this.catalogJson)
         this.CreateSelectArr()
-      }
+        }
       
     },
     
@@ -220,10 +262,21 @@ import DateTime from '../DateTime.vue';
       DisplayLoad(true)
       let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
       this.catalogJson = result || {}
+      for (let index = 0; index < this.catalogJson.length; index++) {
+        this.catalogJson[index].countRequest = 0;
+      }
       result = await FetchGet('/api/v1/satrequest/request/get/all')
       this.requestJson = result || {}
+      for (let index = 0; index < this.requestJson.length; index++) {
+        const element = this.requestJson[index].catalog.goalId
+        for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
+          if(element == this.catalogJson[indexii].goalId){
+            this.catalogJson[indexii].countRequest++;
+            break
+          }
+        }
+      }
       result = await FetchGet('/api/v1/earth/get/list')
-      console.log(result)
       for (let i = 0; i < result.length; i++) {
           const element = result[i];
           this.arrNP.push({value: element, lable: element.nameEarthPoint })
@@ -241,9 +294,18 @@ import DateTime from '../DateTime.vue';
   flex-direction: column;
   flex-wrap: nowrap;
   width: 90%;
+  
+  .ContentDiv{
+    height: 100%;
+    overflow-y: unset; 
+    overflow-x: unset;
+  }
 }
 td{
   text-align: left;
+  input[type=number]{
+    width: 100%;
+  }
 
 }
 th{
@@ -268,5 +330,9 @@ th{
   img{
     width: 30px;
   }
+}
+.SystemInfo{
+  display: flex;
+  justify-content: center;
 }
 </style>

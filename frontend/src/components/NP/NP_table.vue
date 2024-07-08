@@ -15,7 +15,6 @@
           :key="index"
           :class="!approved ? 'active' :''"
           @change="ChangeParam"
-          v-show="!(data.deleted==true)"
         >
           <td>{{ data.idNode }}</td>
           <td><input :id="index" name="nameEarthPoint"
@@ -40,13 +39,9 @@
           <button v-if="approved" @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
           <button v-if="approved" class="ButtonDefaultShadow"></button>  
         </div>
-        <div class="ButtonApproved">
-          <button v-if="!approved" @click="SatartSave" :class="!datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-          <button v-if="!approved && !datasave" class="ButtonDefaultShadow"></button>
-        </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="ChangeSystemStatus(true)" :class="datasave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
-          <button v-if="!approved && datasave" class="ButtonDefaultShadow"></button>
+          <button v-if="!approved" @click="ChangeSystemStatus(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved" class="ButtonDefaultShadow"></button>
         </div>
       </div>
     </div>
@@ -63,7 +58,6 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
       return {
         dataJson: [],
         approved: true,
-        datasave: true
       }
     },
     props:{
@@ -73,28 +67,22 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
     },
     methods:
       {
-        setPost() {
-          FetchPost("/api/v1/earth/update/byList", this.dataJson)
-        },
-        SatartSave(){
-          this.setPost();
-          this.datasave = true
+        async setPost() {
+          await FetchPost("/api/v1/earth/update/byList", this.dataJson)
         },
         ChangeSystemStatus( stat ){
-          if(this.datasave){
             this.approved = stat
             let dataSystem = this.systemStatus
             dataSystem.earthStatus = this.approved
             this.$emit('ChangeSystemStatus', dataSystem)
-          }
         },
-        AddRow(){
+        async AddRow(){
           var addedRow = {'idNode' : 0, 'nameEarthPoint' : "__NULL__", 'longitude' : 0, 'latitude' : 0, 'deleted': false, 'id': undefined};
           this.dataJson.push(addedRow);   
-          this.datasave = false
+          await this.setPost()
+          await this.ReFetch()
         },
         ChangeParam(event){
-          this.datasave = false
           switch(event.target.name){
             case "nameEarthPoint":
               this.dataJson[event.target.id].nameEarthPoint = event.target.value
@@ -117,19 +105,20 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             default:
               alert( "Ошибка!" );
           }
+          this.setPost()
         },
-        DeleteRow(index){
-            if (this.dataJson[index].id !== undefined) {
-              this.dataJson[index].deleted = true
-            }
-            else{
-              this.dataJson.splice(index,1)
-            }
-            this.datasave = false
+        async DeleteRow(index){
+            this.dataJson[index].deleted = true
+            await this.setPost()
+            await this.ReFetch()
+        },
+        async ReFetch(){
+          let result = await FetchGet('/api/v1/earth/get/list')
+          this.dataJson = result
         }
     },
     async mounted() {
-      
+      alert( document.cookie);
       DisplayLoad(true)
       this.approved = this.systemStatus.earthStatus
       let result = await FetchGet('/api/v1/earth/get/list')
