@@ -1,6 +1,5 @@
 <template>
     <div class="DataTable">
-      <div class="PanelDefault">
         <div class="closebutton"><button @click="CloseTable">
           <img src="../../assets/close.svg"><span>&#8203;</span>
         </button></div>
@@ -9,9 +8,9 @@
         <thead>
 
           <tr>
-            <th style="width: 80px;">ID</th>
-            <th style="width: 80px;" v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
-            <th style="width: 80px;" v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
+            <th style="width: 50px;">ID</th>
+            <th v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
+            <th v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
             <th>Высота</th>
             <th>Эксцентриситет</th>
             <th>Наклон</th>
@@ -19,7 +18,7 @@
             <th>Аргумент ширины перигея</th>
             <th v-if="dataJsonOG.arbitraryFormation === false">Фазовый сдвиг</th>
             <th v-else>Истинная аномалия</th>
-            <th v-if="!approved" class="small"><span>&#8203;</span></th>
+            <th v-if="!approved" style="width: 50px;" ><span>&#8203;</span></th>
           </tr>
         </thead>
       </table>
@@ -34,22 +33,22 @@
             v-show="!(data.deleted==true)"
           >
 
-            <td class="input_imitation" >{{ data.idNode }}</td>
-            <td class="input_imitation" v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
-            <td class="input_imitation" v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
-            <td><input :id="index" name="altitude"
+            <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
+            <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
+            <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
+            <td><input :id="index" name="altitude" type="number"
               :value="data.altitude"></td>
-            <td><input :id="index" name="eccentricity" 
+            <td><input :id="index" name="eccentricity" type="number"
                 :value="data.eccentricity"></td>
             <td><input :id="index" name="incline" 
                 :value="data.incline"></td>
-            <td><input :id="index" name="longitudeAscendingNode" 
+            <td><input :id="index" name="longitudeAscendingNode" type="number"
                 :value="data.longitudeAscendingNode"></td>
-            <td><input :id="index" name="perigeeWidthArgument" 
+            <td><input :id="index" name="perigeeWidthArgument" type="number"
                 :value="data.perigeeWidthArgument"></td>
-            <td><input :id="index" name="trueAnomaly"
+            <td><input :id="index" name="trueAnomaly" type="number"
                 :value="data.trueAnomaly"></td>
-            <td v-if="!approved" :id="index" @click="DeleteRow(index)"  class="small" style="text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            <td v-if="!approved" :id="index" @click="DeleteRow(index)" style="width: 50px; text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
             <td colspan="8"><button @click="AddRow">Добавить КА</button></td>
@@ -57,9 +56,7 @@
         </tbody>
       </table>
     </div>
-    </div>
-      </div>
-        
+    </div>     
     </div>
   </template>
   
@@ -162,18 +159,15 @@
   
   <style lang="scss" scoped>
 
-  .input_imitation{
-    text-align: center;
-    font-size: 18px;
-    vertical-align: middle;
-    width: 80px;
-  }
   td{
     vertical-align: middle;
+    padding: 0px 15px !important;
   }
   input{
     width: 100%;
-    height: 100%;
+    height: 32px;
+    font-size: 14px;
+    padding: 0px;
   }
   .closebutton{
     display: flex;
@@ -188,16 +182,23 @@
     }
   }
   .DataTable{
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     position: fixed;
-    top: 1%;
+    top: 0%;
     left: 0;
-    width: 100%;
+    width: 98%;
     z-index: 4;
-    max-width: 100%;
+    max-width: 98%;
+    height: 100vh;
+    padding: 1%;
+    font-size: 14px !important;
     .TableDefault{
       filter: drop-shadow(2px 4px 6px black);
-  
+      border-spacing: 0px;
+      background: #0e0e0e;
+      background: linear-gradient(140deg, #282828 0%, #1c1c1c 15%, #0a0a0a 100%);
+      padding-bottom: 10px;
     }
     .PanelTable{
       position: sticky;
@@ -206,20 +207,24 @@
       width: 90%;
     }
   }
-  .PanelDefault{
-    width: 95%;
-    padding: 5px;
-  
-  }
   .scroll-table-body {
     height: 75vh;
   }
 
   .iconDelete{
-    width: 30% !important; 
-    height: 100% !important;
+    width: 30px; 
   }
   th{
     text-align: center !important;
   }
+  .addRowButton button{
+                    background: none;
+                    border: none;
+                    width: 100%;
+                    height: 100%;
+                    padding: 10px 0px;
+                    font-size: 14px;
+                    color: white;
+                    margin: 10px 0px;
+                  }
   </style>

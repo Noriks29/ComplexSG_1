@@ -1,6 +1,10 @@
 
 <template>
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
+    <div class="idSesion" v-if="login != undefined">
+      id: {{ login }}
+      <button @click="Log_out">Выйти</button>
+    </div>
     <div v-if="login == undefined" class="ModalLoginBack">
       <div class="ModalLoginPanel">
         <h1>Вход в систему</h1>
@@ -19,7 +23,7 @@
         </div>
       </div>
     </div>
-    <transition name="translate" mode="out-in" v-if="login"> 
+    <transition name="translate" mode="out-in" v-else>
       <component :is="activeComponent" :ActiveComponent="ActiveComponents" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
     </transition> 
     <LoadProcess />
@@ -66,7 +70,7 @@ export default {
           EstimationConstellation: false,
           KA1: false
         },
-      login: undefined,
+        login: undefined
     };
   },
   methods: {
@@ -78,9 +82,13 @@ export default {
         const login = document.getElementById('login').value
         const password = document.getElementById('password').value
         console.log(login, password)
-        this.login = 432432
-        //добавить волидацию и добавить запрос
+        localStorage.setItem('id', 14344);
+        this.login = 324324
         this.StartSystem() 
+      },
+      Log_out(){
+        delete localStorage.id
+        this.login = undefined
       },
       ActiveComponentValidate(){
         if(this.systemStatus.constellationStatus == true && this.systemStatus.earthStatus == true)
@@ -126,11 +134,16 @@ export default {
         this.systemStatus = rezult;
         this.ActiveComponentValidate()
         console.log(this.systemStatus)
+        
         DisplayLoad(false)
       }
     },
   async mounted() {
-    
+    console.log(localStorage.id)
+    if(localStorage.id != undefined){
+      this.login = localStorage.id
+      this.StartSystem()
+    }
   },
   components: {
     TemplateComponent,
@@ -189,6 +202,12 @@ body{
       }
     }
   }
+}
+.idSesion{
+  position: fixed;
+    right: 10px;
+    color: white;
+    border-bottom: 1px solid;
 }
 </style>
 

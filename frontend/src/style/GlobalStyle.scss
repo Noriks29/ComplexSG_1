@@ -1,6 +1,6 @@
 .main_contain {
     position: relative;
-    font-size: 20px;
+    font-size: 16px;
     height: 95%;
     max-height: 92vh;
     padding-top: 40px;
@@ -26,9 +26,10 @@
         height: 99%;
         overflow-y: auto;
         overflow-x: hidden;
+        min-width: 60%;
 
         .TitleText{
-            font-size: 30px;
+            font-size: 25px;
         }
 
         .Panel{
@@ -38,36 +39,140 @@
             margin: 3px 0px;
 
             table{
-                text-align: left;
-                font-size: 20px;
+                text-align: center;
+                font-size: 14px;
                 padding: 10px;
+                border-spacing: 0px;
+                min-width: 100%;
                 .Title{
                     border-bottom: 1px solid;
                     padding-bottom: 5px;
                     text-align: center;
                 }
+
+                .addRowButton button{
+                    background: none;
+                    border: none;
+                    width: 100%;
+                    height: 100%;
+                    padding: 10px 0px;
+                    font-size: 16px;
+                    color: white;
+                  }
+                tr{
+                    td{
+                        .iconDelete{
+                            width: 25px;
+                            height: 25px;
+                          }
+                    }
+                }   
             }
 
             &.MaxWidth{
-                width: 100%;
+                min-width: 100%;
             }
             progress{
                 width: 90%;
                 height: 20px;
             }
+
+            &.TableInfo{
+                display: inline-flex;
+                flex-wrap: nowrap;
+                align-items: center;
+                justify-content: space-evenly;
+                position: sticky;
+                bottom: 10px;
+                padding: 10px;
+                  div{
+                    &.Yes{
+                      margin: 5px;
+                      border-bottom: 2px solid green;
+                    }
+                    &.No{
+                      margin: 5px;
+                      border-bottom: 2px solid red;
+                    }
+                  }
+                  .ButtonApproved
+                   {
+                    height: 100%;
+                    position: relative;
+                    button{
+                      padding: 7px;
+                      width: 100%;
+                      color: #FFFFFF;
+                      display: flex;
+                      flex-direction: row;
+                      img{
+                        width: 30px;
+                        margin-right: 5px;
+                      }
+                      &.disabled{
+                        pointer-events:none;
+                      }
+                      &.ButtonDefault{
+                        clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
+                        background: linear-gradient(90deg, rgba(53,0,245,1) 0%, rgba(172,0,245,1) 100%);
+                        border: none;
+                        font-size: 18px;
+                        align-items: center;
+                        transition: all 1s;
+                        &.Empty{
+                          border: 2px solid white;
+                          background: none;
+                        }
+                        &:before{
+                            content: "";
+                            position: absolute;
+                            top: 0;
+                            left: -100%;
+                            width: 100%;
+                            height: 100%;
+                            background: linear-gradient(
+                                120deg,
+                                transparent,
+                                rgba(146, 148, 248, 0.4),
+                                transparent
+                                );
+                            transition: all 650ms;
+                        }
+                        &:hover{
+                            &:before{left: 100%;}
+                        }
+                      }
+                      &.ButtonDefaultShadow{
+                        clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
+                        background: linear-gradient(90deg, rgba(53,0,245,0.5) 0%, rgba(172,0,245,0.5) 100%);
+                        position: absolute;
+                        z-index: -1;
+                        content: "";
+                        width: 100%;
+                        height: 100%;
+                        left: 5px;
+                        top: 3px;
+                        }
+                    } 
+                } 
+            }
         }
-
-
-    }
-    
+    }   
 }
 input{
     padding: 10px;
     text-align: center;
     border: none;
     background: none;
-    font-size: 18px;
+    font-size: 14px;
     color: white;
+
+    &.disable{
+        pointer-events: none;
+    }
+    &.small{
+        width: 100px;
+    }
 }
 
 
@@ -88,6 +193,69 @@ body{
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     height: 100%;
-    color: #2c3e50;
+    color: white;
     padding: 5px;
+}
+
+
+
+
+.scroll-table-body {
+	height: 100%;
+	overflow-x: auto;
+	margin-top: 0px;
+	margin-bottom: 20px;
+}
+.scroll-table{
+  table {
+    width:100%;
+    table-layout: fixed;
+  }
+  thead th {
+    font-weight: bold;
+    text-align: left;
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  tbody td {
+    text-align: left;
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+  } 
+  ::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 10px rgb(255, 255, 255); 
+  } 
+  ::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 10px rgb(0,0,0); 
+  }
+}
+
+.ButtonCommand{
+  background: #2b2b2b;
+  color: white;
+  border: 1px solid black;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: -3px 3px 1px black;
+  margin: 5px;
+  transition: all 0.2s;
+
+  &:hover{
+    box-shadow: -1px 1px 2px black;
+    background: #202020;
+  }
+  &:active{
+    border-radius: 5px;
+    background: #171717;
+    box-shadow: -3px 3px 10px black;
+  }
+  &.small{
+    padding: 5px;
+    font-size: 14px;
+    margin: 3px;
+  }
 }

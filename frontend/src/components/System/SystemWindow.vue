@@ -5,15 +5,13 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-          
-          <div class="titleText">
-            Информация системы
-          </div>
-          <div class="DataTable">
-      <div class="PanelDefault">
-        <table class="TableDefault">
+      <div class="ContentDiv">
+        <div class="TitleText">Информация системы</div>
+
+        <div class="Panel MaxWidth">
+          <table class="TableDefault">
           <tr>
-            <th colspan="2" >Исходные данные. Космическая система (КС) и связь</th><th></th>
+            <th colspan="2" class="Title">Исходные данные. Космическая система (КС) и связь</th><th></th>
           </tr>
           <tr><td>Earth</td><td>Список и координаты наземных пунктов</td><td id="earthStatus">{{dataSystem.earthStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
           <tr><td>Constellation</td><td>Список и построение КА в ОГ </td><td id="constellationStatus">{{dataSystem.constellationStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
@@ -21,7 +19,7 @@
           <tr><td>Sat-Sat</td><td>План контактов между КА</td><td id="satSatStatus">{{dataSystem.satSatStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
           <tr><td>Grid</td><td>Опорный фрагмент сети связи</td><td id="gridStatus">{{dataSystem.gridStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
           <tr>
-            <th colspan="2" >Горизонт времени моделирования</th><th></th>
+            <th colspan="2" class="Title">Горизонт времени моделирования</th><th></th>
           </tr>
           <tr class="active"><td>S_begin</td><td>Начальное время расчетов</td><td>
             <DateTime :valueUnix="systemStatus.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
@@ -33,7 +31,7 @@
             <DateTime :valueUnix="systemStatus.modelingEnd" :id="'modelingEnd'" @valueSelect="ChangeTime"/>
           </td></tr>
           <tr>
-            <th colspan="2" >Аспекты системы управления</th><th></th>
+            <th colspan="2" class="Title">Аспекты системы управления</th><th></th>
           </tr>
           <tr class="active"><td>Inter sat</td><td>Межспутниковая связь</td><td><input id="interSatelliteCommunication" type="checkbox" @change="ChangeParam" :checked="systemStatus.interSatelliteCommunication"><label for="interSat">{{systemStatus.interSatelliteCommunication}}</label></td></tr>
           <tr class="active"><td>Control</td><td>Управление орбитальной группировкой</td><td><input id="controlSystem" @change="ChangeParam" type="checkbox" :checked="systemStatus.controlSystem == 'Automated'"><label for="controlSystem">{{systemStatus.controlSystem}}</label></td></tr>
@@ -42,20 +40,16 @@
           <tr class="active"><td>duration</td><td>Продолжительность съёмки</td><td><input id="duration" type="number" min="0" @change="ChangeParam" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>
          
         </table>
-      </div>
+        </div>
       </div>
     </div>
   </template>
   
   <script>
-import MainStyle from '../../style/component.scss'
 import DateTime from '../DateTime.vue';
 
   export default {
     name: 'SystemWindow',
-    css:{
-      MainStyle
-    },
     props:{
     systemStatus:{
           type: Object

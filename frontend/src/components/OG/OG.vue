@@ -7,13 +7,11 @@
               <img src="../../assets/exit.svg"><span>&#8203;</span>
             </button>
           </div>
-          <div class="ContentDiv">
-            <h1 class="TitleText">
-              Список орбитальных группировок
-            </h1>
+    <div class="ContentDiv">
+        <h1 class="TitleText">Список орбитальных группировок</h1>
           
     <div class="SelectDivPanel Panel MaxWidth">
-      <table>
+      <table style="border-spacing: 0 1em;">
         <tr v-for="data, index in dataJson"
           :key="index"
           v-show="!(data.deleted==true)"
@@ -28,13 +26,10 @@
           <td @click="addRowTable = true" colspan="3" style="text-align: center;">Добавить орбитальную группировку</td>
         </tr>
       </table>
+    </div>
           
      
-    
-      <div class='DataTable'>
-        
-        <div class="PanelTable">
-        <div class="TableInfo PanelDefault">
+    <div class="Panel TableInfo MaxWidth">
           <div :class="approved ? 'Yes' :'No'">
             {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
@@ -46,22 +41,12 @@
             <button @click="ChangeSystemStatus(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
-        </div>
-        </div>
-      </div>
     </div>
-
-
-
-
-          </div>
-      </div>
-  </template>
+  </div>
+</div>
+</template>
   
   <script>
-import MainStyle from '../../style/component.scss'
-import GlobalStyle from '@/style/GlobalStyle.scss'
-
 import TableData from './OG_tableFree.vue'
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
@@ -82,10 +67,6 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
     systemStatus:{
           type: Object
         },
-    },
-    css:{
-      MainStyle,
-      GlobalStyle
     },
     components:
     {
@@ -138,11 +119,9 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
 
 <style lang="scss" scoped>
 .SelectDivPanel{
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
     .DataTable{
     width: 100%;
 
@@ -163,11 +142,9 @@ table{
 }
 
 .PanelDefault{
-  width: 90%;
-  max-width: 95%;
-  padding: 20px;
-
-
+  background-color: rgba(151, 151, 151, 0.15);
+  box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+  border: 2px solid rgba(0, 0, 0, 0.25);
 }
 
 

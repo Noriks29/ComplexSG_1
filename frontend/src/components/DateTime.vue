@@ -56,12 +56,12 @@ export default {
 
 <style lang="scss" scoped>
 .half-width input{
-  padding: 10px;
+  padding: 4px;
   text-align: center;
   pointer-events: auto;
   border: none;
   background: none;
-  font-size: 18px;
+  font-size: 14px;
   color: white;
 }
 input[type="date"]::-webkit-calendar-picker-indicator {

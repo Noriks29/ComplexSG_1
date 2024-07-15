@@ -7,12 +7,10 @@
             </button>
           </div>
           
-          <div class="titleText">
-            Оценка орбитального построения ОГ
-          </div>
-    <div class="DataTable"> <!-- Основной контейнер-->
-        <div class="PanelDefault" style="width: auto;">
-            <div>Парамертры системы</div>
+      <div class="ContentDiv">
+        <div class="TitleText">Оценка орбитального построения ОГ</div>
+        <div class="Panel">
+          <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <table>
                     <tr><td>Начальное время расчетов:</td>
@@ -31,53 +29,46 @@
                   </table>
             </div>
         </div>
-
-    </div>
-    <div class="DataTable">
-        <h1>Эксперимент</h1>
-      <div class="PanelDefault Width80">
-        <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
-        <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
-        <div class="scroll-table">
-          <table class="TableDefault"><thead>
-          <tr>
-            <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
-          </tr>
-        </thead>
-      </table>
-      <div class="scroll-table-body">
-      <table class="TableDefault">
-        <tbody>
-          <tr 
-            v-for="data,index in TableViewWindow"
-            :key="index"
-          >
-          <td>{{ data.name }}</td>
-          <td>{{ data.viewcount }}</td>
-          <td><button @click="ShowViViewWindow(data.data)" class="ButtonCommand small">Отобразить таблицу</button></td>
-        </tr>
-      </tbody>
-        </table>
-        </div></div>
+        <div class="Panel">
+          <div>Эксперимент</div>
+          <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
+          <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
+          <div class="scroll-table">
+            <table class="TableDefault"><thead>
+            <tr>
+              <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
+            </tr>
+           </thead>
+            </table>
+            <div class="scroll-table-body">
+              <table class="TableDefault">
+                <tbody>
+                  <tr 
+                    v-for="data,index in TableViewWindow"
+                    :key="index"
+                  >
+                    <td>{{ data.name }}</td>
+                    <td>{{ data.viewcount }}</td>
+                    <td><button @click="ShowViViewWindow(data.data)" class="ButtonCommand small">Отобразить таблицу</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div></div>
         </div>
-    </div>
-    </div>
+      </div>
+      </div>
   </template>
   
   <script>
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
-import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
 
   export default {
     name: 'EstimationConstellation',
-    css:{
-      MainStyle
-    },
     props:{
         systemStatus:{
             type: Object
@@ -208,12 +199,7 @@ import DateTime from '../DateTime.vue';
   </script>
 
 <style lang="scss" scoped>
-.main_contain{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  color: white;
-}
+
 td{
   text-align: left;
 
@@ -222,66 +208,13 @@ th{
   border-bottom: 2px solid white;
 
 }
-.Width80{
-  width: 80%;
-}
-.PanelDefault{
-    
-    .SystemInfo{
-        display: inline-flex;
-        flex-wrap: wrap;
-        align-content: center;
-        align-items: center;
-        color: white;
-        text-align: left;
-        padding: 10px;
-        justify-content: space-around;
 
-        .paddl{
-            padding-left: 15px;
-        }
-    }
-}
-.ButtonCommand{
-  background: #2b2b2b;
-  color: white;
-  border: 1px solid black;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 10px;
-  box-shadow: -3px 3px 1px black;
-  margin: 5px;
-  transition: all 0.2s;
 
-  &:hover{
-    box-shadow: -1px 1px 2px black;
-    background: #202020;
-  }
-  &:active{
-    border-radius: 5px;
-    background: #171717;
-    box-shadow: -3px 3px 10px black;
-  }
-  &.small{
-    padding: 5px;
-    font-size: 14px;
-    margin: 3px;
-  }
-}
-.CommandButtons{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    div{
-        padding: 5px;
-    }
-}
 input{
-  padding: 10px;
-    text-align: center;
+  padding: 10px 10px 10px 0px;
+    text-align: left;
     border: none;
     background: none;
-    font-size: 18px;
     color: white;
 }
 </style>

@@ -1,17 +1,18 @@
 <template>
     <div class="main_contain">
-      <div class="PanelDefault ContentDiv">
         <div class="closebutton"><button @click="CloseTable">
           <img src="../../assets/close.svg"><span>&#8203;</span>
         </button></div>
-
+      <div class="ContentDiv">
         <div class="flexrow">
           <div class="inputdiv"><input type="text" v-model="OG_Param.inputName"></div>
           <div class="SelectDivInFlex">
             <SelectDiv  
                 :dataOption="[{value: true, lable: 'Произвольное построение' },
                   {value: false, lable: 'Системное построение' },
-                ]" @valueSelect="SelectChange"/>
+                ]" 
+                :valueS="{value: true, lable: 'Произвольное построение' }"
+                @valueSelect="SelectChange"/>
           </div>
           <div>
             <button @click="AddOG" class="ButtonDefault">Создать</button> 
@@ -37,9 +38,8 @@
 
         </table>
       </div>
-
-    </div>  
     </div>
+    </div>  
 </template>
   
   <script>
@@ -150,10 +150,9 @@
   
   <style lang="scss" scoped>
   .closebutton{
-    display: flex;
-    margin: 20px;
-    flex-direction: row-reverse;
-    position: absolute;
+    margin: 10px !important;
+    z-index: 15;
+    position: relative;
     right: 60px;
     button{
       background: none;
@@ -177,21 +176,24 @@
     padding: 5px;
     margin: 0% 5%;
     width: 90%;
-    height: 96%
+    height: 90% !important;
+    filter: drop-shadow(2px 4px 6px black);
+    background: #0e0e0e;
+    background: linear-gradient(140deg, #282828 0%, #1c1c1c 15%, #0a0a0a 100%);
   }
 
 
   .flexrow{
+
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin-top: 50px;
+    margin-top: 10px;
     width: 99%;
 
     div{
       margin: 0px 25px;
-      position: relative;
 
       &.inputdiv{
         flex: 1;
@@ -204,9 +206,8 @@
       }
 
       input{
-        height: 40px;
+        height: 15px;
         width: 98%;
-        font-size: 20px;
         padding: 1%;
       }
 
@@ -216,5 +217,32 @@
       }
     }
 
+  }
+
+
+  .closebutton{
+    display: flex;
+    margin: 20px;
+    flex-direction: row-reverse;
+    button{
+      background: none;
+      border: none;
+      img{
+        width: 25px;
+      }
+    }
+  }
+  .DataTable{
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0%;
+    left: 0;
+    width: 98%;
+    z-index: 4;
+    max-width: 98%;
+    height: 100vh;
+    padding: 1%;
+    font-size: 14px !important;
   }
   </style>
