@@ -7,7 +7,8 @@
     </div>
     <div v-if="login == undefined" class="ModalLoginBack">
       <div class="ModalLoginPanel">
-        <h1>Вход в систему</h1>
+        <h1 v-if="!modeLogin">Вход в систему</h1>
+        <h1 v-else>Создайте аккаунт</h1>
         <div class="ModalLoginForm">
           <div>
             <label for="login">Login: </label>
@@ -18,7 +19,9 @@
             <input type="password" id="password">
           </div>
           <div>
-            <button @click="StartLogin">Войти</button>
+            <button v-if="!modeLogin" @click="modeLogin=true" class="ButtonCommand">Создать пользователя</button>
+            <button v-else @click="console.log('Пользователь добавлен')" class="ButtonCommand">Создать пользователя</button>
+            <button v-if="!modeLogin" @click="StartLogin" class="ButtonCommand login">Войти <img src="./assets/arrow2.png" alt=""></button>
           </div>
         </div>
       </div>
@@ -70,7 +73,8 @@ export default {
           EstimationConstellation: false,
           KA1: false
         },
-        login: undefined
+        login: undefined,
+        modeLogin: false
     };
   },
   methods: {
@@ -183,9 +187,12 @@ body{
     justify-content: center;
 
     .ModalLoginPanel{
-      background-color: #d1c3c3;
       border-radius: 10px;
       padding: 30px;
+      font-size: var(--font-size);
+      background-color: var(--color-background-color);
+      box-shadow: -4px 3px 1px var(--color-box-shadow);
+      border: 1px solid rgba(0, 0, 0, 0.5);
 
       .ModalLoginForm{
         display: flex;
@@ -194,7 +201,9 @@ body{
 
         div{
           padding: 10px 0px;
-
+          input{
+            border-bottom: 1px solid white;
+          }
           &:last-child{
             width: 100%;
           }
@@ -208,6 +217,17 @@ body{
     right: 10px;
     color: white;
     border-bottom: 1px solid;
+}
+.login{
+  position: relative;
+  padding-right: 35px;
+  img{
+    height: 60%;
+    position: absolute;
+    top: 20%;
+    right: 0px;
+    bottom: 20%;
+  }
 }
 </style>
 

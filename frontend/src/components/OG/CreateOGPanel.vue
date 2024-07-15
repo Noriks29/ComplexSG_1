@@ -20,6 +20,7 @@
         </div>
       <div class="Panel" v-if="OG_Param.type === false">
         <table @change="ChangeGenerateParam">
+            <tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="SelectChangeKA"/></td></tr>
             <tr><td>Количество плоскостей</td><td><input name="numberOfPlane" type="number" value="0"></td></tr>
             <tr><td>Количество позиций в плоскости</td><td><input name="positionPlane" type="number" value="0"></td></tr>
             <tr><td>Высота</td><td><input name="altitude" type="number" value="0"></td></tr>
@@ -45,7 +46,7 @@
   <script>
   
   import SelectDiv from '../SelectDiv.vue';
-  import { FetchPost } from '@/js/LoadDisplayMetod';
+  import { FetchPost, FetchGet } from '@/js/LoadDisplayMetod';
 
   
     export default {
@@ -59,13 +60,17 @@
             OG_Param:{
                 inputName: undefined,
                 type: undefined
-            }
+            },
+            KaModels: []
         }
       },
       methods:
         {
           CloseTable(){
             this.$emit('closetable', true)
+          },
+          SelectChangeKA(data){
+            this.OG_Param.parametersCalculation.modelSat.id = data.value
           },
           ChangeGenerateParam(target){
             console.log(target.target.name, target.target.value)
@@ -83,7 +88,7 @@
                 inputName: this.OG_Param.inputName,
                 type: false,
                 parametersCalculation: {
-                  numberOfPlane: 0, positionPlane: 0, altitude: 0, eccentricity: 0, incline: 0, longitudeOfPlane1: 0, spacecraftOfLongitude: 0, perigeeWidthArgument: 0, firstPositionInPlane1: 0, spacecraftSpacing: 0, phaseShift: 0
+                  numberOfPlane: 0, positionPlane: 0, altitude: 0, eccentricity: 0, incline: 0, longitudeOfPlane1: 0, spacecraftOfLongitude: 0, perigeeWidthArgument: 0, firstPositionInPlane1: 0, spacecraftSpacing: 0, phaseShift: 0, modelSat:{id:1}
                 }
               }
             }
@@ -102,12 +107,17 @@
                     "incline": 0,
                     "longitudeAscendingNode": 0,
                     "perigeeWidthArgument": 0,
-                    "trueAnomaly": 0}
+                    "trueAnomaly": 0,
+                    "modelSat": {
+                    "id": 1
+                    }
+                  }
                   ],
                   'arbitraryFormation' : this.OG_Param.type,
 
                   
                 };
+                console.log(addedRow)
                 let responce = await FetchPost('/api/v1/constellation/update',addedRow)
                 
                 if(responce.type == "SUCCESS"){
@@ -143,7 +153,14 @@
             }
           }
           
-      }
+        },
+        async mounted(){
+          let result = await FetchGet('/api/v1/modelsat/all')
+          this.KaModels = []
+          for (let index = 0; index < result.length; index++) {
+            this.KaModels.push({value: result[index].id, lable:  result[index].modelName});
+          }
+        }
     }
   </script>
   

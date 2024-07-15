@@ -7,14 +7,13 @@
             </button>
           </div>
           
-          <div class="titleText">
-            План контактов НП – ОГ
-          </div>
-    <div class="DataTable"> <!-- Основной контейнер-->
-        <div class="PanelDefault">
-            <div>Парамертры системы</div>
+          
+    <div class="ContentDiv">
+      <div class="TitleText">План контактов НП – ОГ</div>
+      <div class="Panel">
+          <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <table>
+              <table>
                   <tr><td>Начальное время расчетов:</td>
                       <td v-html="CreateDateTime(systemStatus.startTime)"></td>
                     </tr>
@@ -29,11 +28,9 @@
                 </table>
             </div>
         </div>
-
-    </div>
-    <div class="DataTable">
-        <h1>Эксперимент</h1>
-      <div class="PanelDefault FlexColumn">
+    <div class="Panel MaxWidth">
+      <p>Эксперимент</p>
+      <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">C1 - рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">C2 - показать окна видимости / плана контактов</button></div>
           <div><button @click="CommandWork(3)" class="ButtonCommand">C3 - проверка ограничений</button></div>
@@ -41,8 +38,8 @@
           <div><button @click="CommandWork(5)" class="ButtonCommand">C5 - расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">C6 - графическое представление плана контактов</button></div>
         </div>
-        <div class="PanelTable">
-      <div class="TableInfo PanelDefault">
+      </div>
+      <div class="TableInfo Panel MaxWidth">
         <div class="ButtonApproved">
           <button v-if="requestApproved" @click="SatartEditing('request')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
           <button v-if="requestApproved" class="ButtonDefaultShadow"></button>  
@@ -51,7 +48,6 @@
           <button v-if="!requestApproved" @click="SatartSave('request')" :class="!requestJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
           <button v-if="!requestApproved && !requestJsonsave" class="ButtonDefaultShadow"></button>
         </div>
-      </div>
       </div>
     </div>
     </div>
@@ -205,32 +201,6 @@ th{
     div{
         padding: 5px;
     }
-}
-.ButtonCommand{
-  background: #2b2b2b;
-  color: white;
-  border: 1px solid black;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 10px;
-  box-shadow: -3px 3px 1px black;
-  margin: 5px;
-  transition: all 0.2s;
-
-  &:hover{
-    box-shadow: -1px 1px 2px black;
-    background: #202020;
-  }
-  &:active{
-    border-radius: 5px;
-    background: #171717;
-    box-shadow: -3px 3px 10px black;
-  }
-  &.small{
-    padding: 5px;
-    font-size: 14px;
-    margin: 3px;
-  }
 }
 
 .FlexColumn{

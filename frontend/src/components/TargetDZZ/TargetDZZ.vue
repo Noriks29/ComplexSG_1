@@ -58,6 +58,8 @@
               <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
               
+              
+              
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
                 <tr class="addRowButton">
@@ -100,15 +102,11 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { UnixToDtime } from '@/js/WorkWithDTime.js';
-import MainStyle from '../../style/component.scss'
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
 
   export default {
     name: 'TargetDZZ',
-    css:{
-      MainStyle
-    },
     components:{
       SelectDiv,
       DateTime
@@ -180,8 +178,8 @@ import DateTime from '../DateTime.vue';
                       "catalog": catalog,
                       "orderId": this.catalogJson.length + 1,
                       "priory": 3,
-                      "term": this.systemStatus.modelingBegin,
-                      "time": this.systemStatus.modelingEnd,
+                      "term": this.systemStatus.modelingEnd,
+                      "time": this.systemStatus.modelingBegin,
                       "earthPoint": this.arrNP[0].value,
                       "filter": false,
                       "deleted": null, 'role': "newRow"

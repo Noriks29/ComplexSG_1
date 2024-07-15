@@ -1,12 +1,11 @@
 <template>
   <div class="DataTable">
-    <div class="PanelDefault">
       <div class="closebutton"><button @click="CloseTable">
         <img src="../assets/close.svg"><span>&#8203;</span>
       </button></div>
       <div class="scroll-table">
         <table class="TableDefault">
-<thead>
+      <thead>
         <tr>
           <th class="smallTh">№</th>
           <th 
@@ -36,8 +35,6 @@
       </table>
     </div>
     </div>
-  </div>
-      
   </div>
 </template>
 
@@ -93,7 +90,7 @@
 .DataTable{
   backdrop-filter: blur(10px);
   position: fixed;
-  top: 1%;
+  top: 0%;
   left: 0;
   width: 100%;
   z-index: 4;
@@ -120,5 +117,14 @@
 }
 .smallTh{
   width: 50px;
+}
+.scroll-table{
+  margin: 0% 2%;
+    background-color: rgba(151, 151, 151, 0.15);
+    box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
+    border: 2px solid rgba(0, 0, 0, 0.25);
+}
+tr{
+  background-color: rgba(0, 0, 0, 0.755);
 }
 </style>

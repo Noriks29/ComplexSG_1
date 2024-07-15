@@ -10,12 +10,6 @@
       <div class="ContentDiv">
         <h1 class="TitleText">Моделирование КА</h1>
 
-        <div class="Panel MaxWidth SelectMode">
-          <div><img  @click="mode--" :class="mode < 1 ? 'disable' : ''" src="../../assets/arrow1.png" alt="назад"></div>
-          <div v-html="ModeLableCreate()"></div>
-          <div><img  @click="mode++" :class="mode > 2 ? 'disable' : ''" src="../../assets/arrow2.png" alt="назад"></div>
-        </div>
-
         <div class="Panel">
           <table>
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>

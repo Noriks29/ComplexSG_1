@@ -6,21 +6,21 @@
           </button>
         </div>
 
-      <h1 class="TitleText">Типы космических аппаратов</h1>
+      
       <div class="ContentDiv">
-          
+       
           <div class="Panel Select" >
+            <h1 class="TitleText">Типы космических аппаратов</h1>
               <p>Выбор КА</p>
               <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
 
               <p>Информация</p>
-
-              <div @click="viewPanel = 1">Описание</div>
-              <div @click="viewPanel = 2">Целевая аппаратура</div>
-              <div @click="viewPanel = 3">Бортовые устройства</div>
-              <div @click="viewPanel = 4">Бортовые устройства с постоянным потреблением энергии</div>
-              <div @click="viewPanel = 5">Бортовые устройства с переменным потреблением</div>
-              <div @click="viewPanel = 6">Параметры функционирования</div>
+              <div @click="viewPanel = 1">• Описание</div>
+              <div @click="viewPanel = 2">• Целевая аппаратура</div>
+              <div @click="viewPanel = 3">• Бортовые устройства</div>
+              <div @click="viewPanel = 4">• Бортовые устройства с постоянным потреблением энергии</div>
+              <div @click="viewPanel = 5">• Бортовые устройства с переменным потреблением</div>
+              <div @click="viewPanel = 6">• Параметры функционирования</div>
           </div>
 
           <div class="Panel" v-if="viewPanel == 1">
@@ -147,17 +147,6 @@
 
       </div>
   </div>
-      <div class="Column_contain">
-          <div class="PanelInfo">
-              
-          </div>
-          <div class="PanelInfo">
-              
-          </div>
-          <div class="PanelInfo">
-              
-          </div>
-      </div>
 </template>
 
 <script>
@@ -205,7 +194,7 @@ export default {
       }
   },
   async mounted(){
-      let result = await FetchGet('/api/v1/modelsat/all/modelsat')
+      let result = await FetchGet('/api/v1/modelsat/all')
       console.log(result)
       for (let index = 0; index < result.length; index++) {
           const element = result[index];
@@ -220,20 +209,25 @@ export default {
 <style lang="scss" scoped>
 
 .ContentDiv{
-  width: 100%;
-  flex-direction: row;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  justify-content: space-around;
+    width: 96%;
+    padding: 5px 2%;
+    flex-direction: row !important;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-around;
 
   .Panel{
-      flex:1;
+      flex:2;
       margin: 10px;
       min-width: 600px;
+      max-height: 90%;
+      height: 100%;
+      padding: 20px;
+      overflow-y: auto;
 
       &.Select{
+        flex: 0;
         text-align: left;
-        padding: 20px;
       }
   }
 }

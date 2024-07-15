@@ -9,7 +9,7 @@
           
       <div class="ContentDiv">
         <div class="TitleText">Оценка орбитального построения ОГ</div>
-        <div class="Panel">
+        <div class="Panel ">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <table>
@@ -29,11 +29,11 @@
                   </table>
             </div>
         </div>
-        <div class="Panel">
+        <div class="Panel MaxWidth">
           <div>Эксперимент</div>
           <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
           <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
-          <div class="scroll-table">
+          <div class="scroll-table" v-if="TableViewWindow.length > 0">
             <table class="TableDefault"><thead>
             <tr>
               <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>

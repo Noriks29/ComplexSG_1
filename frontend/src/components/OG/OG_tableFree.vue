@@ -9,6 +9,7 @@
 
           <tr>
             <th style="width: 50px;">ID</th>
+            <th>Модель КА</th>
             <th v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
             <th v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
             <th>Высота</th>
@@ -34,6 +35,7 @@
           >
 
             <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
+            <td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[data.modelSat.id-1]" :id="index" @valueSelect="SelectChangeKA"/></td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"
@@ -62,7 +64,8 @@
   
   <script>
   
-  import {FetchPost} from '../../js/LoadDisplayMetod.js'
+  import {FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+  import SelectDiv from '../SelectDiv.vue';
   
     export default {
       name: 'TableData',
@@ -75,13 +78,17 @@
         },
 
       },
+      components:{
+        SelectDiv
+      },
 
       data() {
         return {
           dataJson: [],
           dataJsonOG: {},
           TableDisplay: false,
-          datasave: true
+          datasave: true,
+          KaModels: []
         }
       },
       methods:
@@ -96,8 +103,10 @@
                     'incline' : 0, 'longitudeAscendingNode' : 0,
                     'perigeeWidthArgument' : 0, 'trueAnomaly' : 0,
                     'phaseShift': null, plane:null, position:null,
-                    'deleted': false, 'satelliteId': undefined
+                    'deleted': false, 'satelliteId': undefined,
+                    "modelSat": {"id": this.KaModels[0].value}
                 };
+            console.log(addedRow, this.KaModels)
             this.dataJson.push(addedRow);   
 
           },
@@ -132,6 +141,11 @@
             }
             
           },
+          SelectChangeKA(data){
+            console.log(data)
+            this.dataJson[data.id].modelSat.id = data.value
+
+          },
           DeleteRow(index){
               if (this.dataJson[index].satelliteId === undefined) {
                 this.dataJson.splice(index,1)
@@ -148,10 +162,17 @@
           }
           
       },
-      mounted() {
+      async mounted() {
         this.dataJsonOG = this.dataOGLocal
         console.log(this.dataJsonOG)
         this.dataJson = this.dataJsonOG.satellites
+        let result = await FetchGet('/api/v1/modelsat/all')
+        this.KaModels = []
+        for (let index = 0; index < result.length; index++) {
+          this.KaModels.push({value: result[index].id, lable:  result[index].modelName});
+        }
+        console.log(this.KaModels)
+
       }
     }
   </script>
