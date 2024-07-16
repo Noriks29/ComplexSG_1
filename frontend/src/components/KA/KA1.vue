@@ -28,7 +28,7 @@
         </div>
         <div class="Panel MaxWidth">
           <div>
-            <fieldset>
+            <fieldset  @change="ChangeInputRadio">
               <legend>Тип эксперимента:</legend>
               <div>
                 <input type="radio" name="typeEx" value="1" checked />
@@ -46,7 +46,7 @@
           </div>
 
           <div>
-            <fieldset>
+            <fieldset  @change="ChangeInputRadio">
               <legend>Режим моделирования:</legend>
               <div>
                 <input type="radio" name="typeModelling" value="1" checked />
@@ -59,9 +59,9 @@
             </fieldset>
           </div>
         </div>
-
+         
         <div class="Panel MaxWidth">
-          <p>Ход моделирования</p>
+          <p @click="console.log(userFields)">Ход моделирования</p>
           <progress id="progress" max="100" :value="progressValue"></progress>
         </div>
 
@@ -112,7 +112,7 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import { FetchGet, DisplayLoad } from '@/js/LoadDisplayMetod';
+import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
   export default {
     name: 'FlightPlaner',
@@ -127,7 +127,8 @@ import DefaultTable from '@/components/DefaultTable.vue'
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: [],
         dataTable: [],
-        E77: {}
+        E77: {},
+        earthList: []
       }
     },
     components:{
@@ -146,10 +147,23 @@ import DefaultTable from '@/components/DefaultTable.vue'
           let Dtime = UnixToDtime(time)
           return Dtime.date + " " + Dtime.time
         },
+      ChangeInputRadio(target){
+        console.log(target.target.name, target.target.value)
+      },
       async StartModelling(){
         DisplayLoad(true)
         this.progressValue = 20
-        let rezult = await FetchGet('/api/v1/modelling/satellite')
+        console.log(this.ConstellationJson)
+        let Ka = this.ConstellationJson[0].satellites[0]
+
+        let dataPost = {
+            "experimentType": 1,
+            "modellingMode": 1,
+            "satellite": Ka,
+            "earthPoint": this.earthList[0]
+        }
+        console.log(dataPost)
+        let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
         this.dataModelling = rezult
         this.progressValue = 100
@@ -225,60 +239,15 @@ import DefaultTable from '@/components/DefaultTable.vue'
     async mounted(){
       DisplayLoad(true)
       let result = await FetchGet('/api/v1/earth/get/list')
-      this.earthSize = result.length || 0
+      this.earthSize = result.length
+      this.earthList = result
 
       result = await FetchGet('/api/v1/satrequest/request/get/all')
       this.purposesJson = result.length || 0
 
       result = await FetchGet('/api/v1/constellation/get/list')
-      this.ConstellationJson = await result
+      this.ConstellationJson = result
 
-      this.E77 = {
-        "time":	1716623030.0800357,
-        "type":	"E77",
-        "idReceiver":	0,
-        "idSender":	66,
-        "VisualFormsData":	{
-          "idNode":	0,
-          "idSat":	0,
-          "state":	0,
-          "VisualFormsDataShooting":	[{
-              "idNode":	66,
-              "orderId":	1,
-              "targetName":	"Samara",
-              "ws":	1716622999.9995081,
-              "we":	1716623104.9995062,
-              "ts":	38647.499507146422,
-              "te":	38657.499507146422,
-              "transition":	22,
-              "roll":	-16.43999999681488,
-              "pitch":	5.8250000911299153
-            }, {
-              "idNode":	66,
-              "orderId":	2,
-              "targetName":	"Penza",
-              "ws":	1716623015.0000358,
-              "we":	1716623110.0000341,
-              "ts":	38686.718784451514,
-              "te":	38696.718784451514,
-              "transition":	29,
-              "roll":	26.16843750447908,
-              "pitch":	-23.397812372495533
-            }, {
-              "idNode":	66,
-              "orderId":	3,
-              "targetName":	"Saranck",
-              "ws":	1716623030.0000355,
-              "we":	1716623125.0000339,
-              "ts":	38713.6719089497,
-              "te":	38723.6719089497,
-              "transition":	15,
-              "roll":	22.162500005573968,
-              "pitch":	-32.933749874585772
-            }],
-          "nShooting":	3
-        }
-      }
 
       DisplayLoad(false)
     }
