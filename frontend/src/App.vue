@@ -2,8 +2,9 @@
 <template>
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
     <div class="idSesion" v-if="login != undefined">
-      id: {{ login }}
-      <button @click="Log_out">Выйти</button>
+      <div>login: {{ login }}
+      <button @click="Log_out">Выйти</button></div>
+      <SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" />
     </div>
     <div v-if="login == undefined" class="ModalLoginBack">
       <div class="ModalLoginPanel">
@@ -20,7 +21,7 @@
           </div>
           <div>
             <button v-if="!modeLogin" @click="modeLogin=true" class="ButtonCommand">Создать пользователя</button>
-            <button v-else @click="console.log('Пользователь добавлен')" class="ButtonCommand">Создать пользователя</button>
+            <button v-else @click="AddClient" class="ButtonCommand">Создать пользователя</button>
             <button v-if="!modeLogin" @click="StartLogin" class="ButtonCommand login">Войти <img src="./assets/arrow2.png" alt=""></button>
           </div>
         </div>
@@ -48,6 +49,7 @@ import EstimationConstellation from './components/EarthConstellation/EstimationC
 import TargetRoad from './components/TargetRoad/TargetRoad.vue';
 import {CanvasBackground}  from './js/sky.js';
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
+import SelectDiv from './components/SelectDiv.vue';
 
 import GlobalStyle from './style/GlobalStyle.scss'
 
@@ -74,7 +76,9 @@ export default {
           KA1: false
         },
         login: undefined,
-        modeLogin: false
+        modeLogin: false,
+        workplaceList: [],
+        idworkplace: 0
     };
   },
   methods: {
@@ -86,6 +90,12 @@ export default {
         const login = document.getElementById('login').value
         const password = document.getElementById('password').value
         console.log(login, password)
+        /*let output = {
+            "nameUser": login,
+            "email": login,
+            "password": password
+          }*/
+        //let result = await FetchPost("/api/v1/authentication/user/login",output)
         localStorage.setItem('id', 14344);
         this.login = 324324
         this.StartSystem() 
@@ -93,6 +103,43 @@ export default {
       Log_out(){
         delete localStorage.id
         this.login = undefined
+      },
+      async AddClient(){
+        let login = document.getElementById("login").value
+        let password = document.getElementById('password').value
+        if(login != '' && password != ''){
+          let output = {
+            "nameUser": login,
+            "email": login,
+            "password": password
+          }
+          /*
+          let result = await FetchPost('/api/v1/authentication/user/create', output)*/
+          console.log(output)
+
+
+          let result = [
+            {
+                "workspaceName": "New workplace1",
+                "accessKey": "85979012-1432-4973-8b3e-ce4526b97070"
+            },
+            {
+                "workspaceName": "New workplace2",
+                "accessKey": "53453455-1432-5464-8b3e-ce4526b97070"
+            }
+          ]
+          this.workplaceList = []
+          for (let index = 0; index < result.length; index++) {
+            this.workplaceList.push({value: result[index], lable: result[index].workspaceName})
+            
+          }
+          localStorage.setItem('login', login);
+          localStorage.setItem('password', password);
+          localStorage.setItem('workplace', this.workplaceList[0])
+      
+          this.idworkplace = 0
+          this.login = login
+        }
       },
       ActiveComponentValidate(){
         if(this.systemStatus.constellationStatus == true && this.systemStatus.earthStatus == true)
@@ -160,7 +207,8 @@ export default {
     EarthConstellation,
     LoadProcess,
     EstimationConstellation,
-    TargetRoad
+    TargetRoad,
+    SelectDiv
   }
 }
 </script>
@@ -216,7 +264,10 @@ body{
   position: fixed;
     right: 10px;
     color: white;
+    
+  &:first-child{
     border-bottom: 1px solid;
+  }
 }
 .login{
   position: relative;

@@ -31,8 +31,8 @@
                   </table>
             </div>
             <div>
-              <button @click="viewmode=0">Заявки ДЗЗ</button>
-              <button @click="viewmode=1">Каталог целей</button>
+              <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
+              <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
             </div>
         </div>
         <p v-if="viewmode == 0">Заявки</p>

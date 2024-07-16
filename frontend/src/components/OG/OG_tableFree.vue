@@ -35,20 +35,20 @@
           >
 
             <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
-            <td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[data.modelSat.id-1]" :id="index" @valueSelect="SelectChangeKA"/></td>
+            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="KaModels[data.modelSat.id-1]" :id="index" @valueSelect="SelectChangeKA" /></td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
-            <td><input :id="index" name="altitude" type="number"
+            <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"
               :value="data.altitude"></td>
-            <td><input :id="index" name="eccentricity" type="number"
+            <td><input :id="index" name="eccentricity" type="number" :class="approved ? 'disable' : ''"
                 :value="data.eccentricity"></td>
             <td><input :id="index" name="incline" 
                 :value="data.incline"></td>
-            <td><input :id="index" name="longitudeAscendingNode" type="number"
+            <td><input :id="index" name="longitudeAscendingNode" type="number" :class="approved ? 'disable' : ''"
                 :value="data.longitudeAscendingNode"></td>
-            <td><input :id="index" name="perigeeWidthArgument" type="number"
+            <td><input :id="index" name="perigeeWidthArgument" type="number" :class="approved ? 'disable' : ''"
                 :value="data.perigeeWidthArgument"></td>
-            <td><input :id="index" name="trueAnomaly" type="number"
+            <td><input :id="index" name="trueAnomaly" type="number" :class="approved ? 'disable' : ''"
                 :value="data.trueAnomaly"></td>
             <td v-if="!approved" :id="index" @click="DeleteRow(index)" style="width: 50px; text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
@@ -248,4 +248,7 @@
                     color: white;
                     margin: 10px 0px;
                   }
+  .disable{
+    pointer-events: none;
+  }
   </style>
