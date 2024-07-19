@@ -4,12 +4,11 @@
     <div class="idSesion" v-if="login != undefined">
       <div>login: {{ login }}
       <button @click="Log_out">Выйти</button></div>
-      <SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" />
+      <SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" @valueSelect="ChangeWorkSpace"/>
     </div>
     <div v-if="login == undefined" class="ModalLoginBack">
       <div class="ModalLoginPanel">
-        <h1 v-if="!modeLogin">Вход в систему</h1>
-        <h1 v-else>Создайте аккаунт</h1>
+        <h1>Вход в систему</h1>
         <div class="ModalLoginForm">
           <div>
             <label for="login">Login: </label>
@@ -20,9 +19,7 @@
             <input type="password" id="password">
           </div>
           <div>
-            <button v-if="!modeLogin" @click="modeLogin=true" class="ButtonCommand">Создать пользователя</button>
-            <button v-else @click="AddClient" class="ButtonCommand">Создать пользователя</button>
-            <button v-if="!modeLogin" @click="StartLogin" class="ButtonCommand login">Войти <img src="./assets/arrow2.png" alt=""></button>
+            <button @click="StartLogin" class="ButtonCommand login">Войти <img src="./assets/arrow2.png" alt=""></button>
           </div>
         </div>
       </div>
@@ -76,7 +73,6 @@ export default {
           KA1: false
         },
         login: undefined,
-        modeLogin: false,
         workplaceList: [],
         idworkplace: 0
     };
@@ -86,60 +82,46 @@ export default {
         console.log(nameObject.name,nameObject);
         this.activeComponent = nameObject.nameComponent
       },
+      ChangeWorkSpace(data){
+        console.log(data.value.accessKey)
+        localStorage.setItem('data', data.value.accessKey)
+        console.log(localStorage)
+      },
       StartLogin(){
         const login = document.getElementById('login').value
         const password = document.getElementById('password').value
-        console.log(login, password)
-        /*let output = {
+        let data = {
             "nameUser": login,
             "email": login,
             "password": password
-          }*/
-        //let result = await FetchPost("/api/v1/authentication/user/login",output)
-        localStorage.setItem('id', 14344);
-        this.login = 324324
-        this.StartSystem() 
+        }     
+        this.VerifyWorkSapce(data)
       },
-      Log_out(){
-        delete localStorage.id
-        this.login = undefined
-      },
-      async AddClient(){
-        let login = document.getElementById("login").value
-        let password = document.getElementById('password').value
-        if(login != '' && password != ''){
-          let output = {
-            "nameUser": login,
-            "email": login,
-            "password": password
-          }
-          /*
-          let result = await FetchPost('/api/v1/authentication/user/create', output)*/
-          console.log(output)
-
-
-          let result = [
-            {
-                "workspaceName": "New workplace1",
-                "accessKey": "85979012-1432-4973-8b3e-ce4526b97070"
-            },
-            {
-                "workspaceName": "New workplace2",
-                "accessKey": "53453455-1432-5464-8b3e-ce4526b97070"
-            }
-          ]
+      async VerifyWorkSapce(data){
+        let result = await FetchPost("/api/v1/authentication/user/login",data)
+        console.log(result)
+        if(result.length > 0){
+          localStorage.setItem('nameUser', data.nameUser);
+          localStorage.setItem('email',  data.email);
+          localStorage.setItem('password',  data.password);
+          localStorage.setItem('data', result[0].accessKey)
           this.workplaceList = []
           for (let index = 0; index < result.length; index++) {
-            this.workplaceList.push({value: result[index], lable: result[index].workspaceName})
-            
+            this.workplaceList.push({lable: result[index].workspaceName, value: result[index]})
           }
-          localStorage.setItem('login', login);
-          localStorage.setItem('password', password);
-          localStorage.setItem('workplace', this.workplaceList[0])
-      
+          this.workplaceList.push({lable: "Test", value: result[0]})
           this.idworkplace = 0
-          this.login = login
+          this.login = data.nameUser
+          this.StartSystem() 
         }
+      },
+      Log_out(){
+        localStorage.removeItem('nameUser')
+        localStorage.removeItem('data')
+        localStorage.removeItem('email')
+        localStorage.removeItem('password')
+        this.workplaceList = []
+        this.login = undefined
       },
       ActiveComponentValidate(){
         if(this.systemStatus.constellationStatus == true && this.systemStatus.earthStatus == true)
@@ -190,10 +172,15 @@ export default {
       }
     },
   async mounted() {
-    console.log(localStorage.id)
-    if(localStorage.id != undefined){
-      this.login = localStorage.id
-      this.StartSystem()
+    
+    if(localStorage.nameUser != undefined && localStorage.email != undefined && localStorage.password != undefined){
+      let data = {
+            "nameUser": localStorage.nameUser,
+            "email": localStorage.email,
+            "password": localStorage.password
+      }
+      this.VerifyWorkSapce(data)
+
     }
   },
   components: {

@@ -10,8 +10,9 @@ function DisplayLoad(status){
     }
 }
 async function FetchGet(http){
+    let AcsessKey = localStorage.data
     try {
-        const response = await fetch('http://'+adress+http);
+        const response = await fetch('http://'+adress+http+'?accessKey='+AcsessKey);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -27,9 +28,11 @@ async function FetchGet(http){
 }
 async function FetchPost(http,datapost){
     console.log(JSON.stringify(datapost))
+    let AcsessKey = localStorage.data
     DisplayLoad(true)
+
     try {
-        const response = await fetch('http://'+adress+http,{
+        const response = await fetch('http://'+adress+http+'?accessKey='+AcsessKey,{
           method:  'POST',
           headers: {
             'Content-Type': 'application/json'

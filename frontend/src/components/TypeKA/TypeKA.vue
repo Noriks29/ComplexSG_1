@@ -27,7 +27,7 @@
               <p> Описание </p>
               <div class="KaIMG"><img src="./KA_A.png" alt="Картинка"></div>
               <div>
-                  <div v-html="dataJson[0].Description"></div>
+                  <div>{{ SelectKA.value.description }}</div>
               </div>
           </div>
 
@@ -117,29 +117,29 @@
                   <table class="TableDefault PanelDefault" @change="ChangeParamKa">
                       <tr><th colspan="3">Параметры разворота</th></tr>
                           <tr><td>Ускорение / замедление КА</td>
-                              <td><input type="number" id="0" :value="dataJson[0].prm[0].value"></td><td>гр/с<sup>2</sup></td></tr>
+                              <td><input type="number" id="0" :value="SelectKA.value.operatingParameter.acceleration || 0"></td><td>гр/с<sup>2</sup></td></tr>
                           <tr><td>Максимальная скорость вращения КА</td>
-                            <td><input type="number" id="1" :value="dataJson[0].prm[1].value"></td><td>гр/с</td></tr>
+                            <td><input type="number" id="1" :value="SelectKA.value.operatingParameter.maxRotationSpeed || 0"></td><td>гр/с</td></tr>
                           <tr><td>Время стабилизации</td>
-                            <td><input type="number" id="2" :value="dataJson[0].prm[2].value"></td><td>с</td></tr>
+                            <td><input type="number" id="2" :value="SelectKA.value.operatingParameter.stabilizationTime"></td><td>с</td></tr>
                       <tr><th colspan="3">Скорость передачи данных</th></tr>
                           <tr><td>Скорость передачи данных КА - КА</td>
-                            <td><input type="number" id="3" :value="dataJson[0].prm[3].value"></td><td>Мб/с</td></tr>
+                            <td><input type="number" id="3" :value="SelectKA.value.operatingParameter.dataTransferSatSat"></td><td>Мб/с</td></tr>
                           <tr><td>Скорость передачи данных КА - НП</td>
-                            <td><input type="number" id="4" :value="dataJson[0].prm[4].value"></td><td>Мб/с</td></tr>
+                            <td><input type="number" id="4" :value="SelectKA.value.operatingParameter.dataTransferEarthSat"></td><td>Мб/с</td></tr>
                       <tr><th colspan="3">Максимальные углы съемки</th></tr>
                           <tr><td>Крен</td>
-                            <td><input type="number" id="5" :value="dataJson[0].prm[5].value"></td><td>Гр.</td></tr>
+                            <td><input type="number" id="5" :value="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
                           <tr><td>Тангаж</td>
-                            <td><input type="number" id="6" :value="dataJson[0].prm[6].value"></td><td>Гр.</td></tr>
+                            <td><input type="number" id="6" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
                       <tr><th colspan="3">Аккумуляторная батарея</th></tr>
                           <tr><td>Емкость</td>
-                            <td><input type="number" id="7" :value="dataJson[0].prm[7].value"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="7" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>Вт-ч</td></tr>
                           <tr><td>Минимальный уровень заряда</td>
-                            <td><input type="number" id="8" :value="dataJson[0].prm[8].value"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="8" :value="SelectKA.value.operatingParameter.minCharge"></td><td>Вт-ч</td></tr>
                       <tr><th colspan="3">Память</th></tr>
                           <tr><td>Объем памяти</td>
-                            <td><input type="number" id="9" :value="dataJson[0].prm[9].value"></td><td>ГБ</td></tr>
+                            <td><input type="number" id="9" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
                   </table>
               </div>
           </div>
@@ -161,7 +161,11 @@ export default {
       return{
           dataJson: jsons,
           KatypeList: [],
-          SelectKA: {},
+          SelectKA: {
+            value:{
+                description: ""
+            }
+          },
           viewPanel: 1
       }
   },
@@ -169,20 +173,14 @@ export default {
       SelectDiv
   },
   methods:{
-      ShowData(){
-          console.log(this.dataJson[0].Name)
-      },
       SortData(data, type){
           return data.filter(data => data.Type == type)
       },
       ChangeKA(data){
+        console.log(this.SelectKA, data)
+
           console.log(data)
-          for (let index = 0; index < data.value.operatingParameter.length; index++) {
-              const element = data.value.operatingParameter[index];
-              console.log(element)
-              this.dataJson[0].prm[element.operationParamId - 1].value = element.value || 0
-          }
-          console.log(this.dataJson)
+          this.SelectKA = {lable: data.value.modelName, value: data.value}
       },
       SelectComponent(nameComponent) {
         this.$emit('updateParentComponent', {
@@ -195,13 +193,14 @@ export default {
   },
   async mounted(){
       let result = await FetchGet('/api/v1/modelsat/all')
-      console.log(result)
+      console.log("process",result)
       for (let index = 0; index < result.length; index++) {
           const element = result[index];
           this.KatypeList.push({lable: element.modelName, value: element})
       }
       console.log(this.KatypeList)
       this.SelectKA = this.KatypeList[0]
+      
   }
 }
 </script>
