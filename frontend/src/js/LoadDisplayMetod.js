@@ -26,11 +26,12 @@ async function FetchGet(http){
     }
 
 }
-async function FetchPost(http,datapost){
+async function FetchPost(http,datapost,dopparamhttp){
     console.log(JSON.stringify(datapost))
     let AcsessKey = localStorage.data
-    DisplayLoad(true)
-
+    if(dopparamhttp != undefined){
+        AcsessKey = AcsessKey +"&"+dopparamhttp
+    }
     try {
         const response = await fetch('http://'+adress+http+'?accessKey='+AcsessKey,{
           method:  'POST',
@@ -43,18 +44,13 @@ async function FetchPost(http,datapost){
             throw new Error('Network response was not ok');
         }
         else{
-            DisplayLoad(false)
             return await response.json();
         }
         } catch (error) {
             console.log('Error save:', error);
             alert("ОШИБКА ОТПРАВКИ")
-            DisplayLoad(false)
             return error;
-            
         }
-        
-
 }
 
 export{

@@ -35,7 +35,7 @@
           >
 
             <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
-            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="KaModels[data.modelSat.id-1]" :id="index" @valueSelect="SelectChangeKA" /></td>
+            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
             <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"
@@ -53,7 +53,7 @@
             <td v-if="!approved" :id="index" @click="DeleteRow(index)" style="width: 50px; text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="8"><button @click="AddRow">Добавить КА</button></td>
+            <td colspan="8"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
           </tr> 
         </tbody>
       </table>
@@ -88,7 +88,8 @@
           dataJsonOG: {},
           TableDisplay: false,
           datasave: true,
-          KaModels: []
+          KaModels: [],
+          KaLableId: {}
         }
       },
       methods:
@@ -106,45 +107,15 @@
                     'deleted': false, 'satelliteId': undefined,
                     "modelSat": {"id": this.KaModels[0].value}
                 };
-            console.log(addedRow, this.KaModels)
             this.dataJson.push(addedRow);   
 
           },
           ChangeParam(event){
-            switch(event.target.name){
-              case "altitude":{
-                this.dataJson[event.target.id].altitude = Number(event.target.value)
-                break;
-              }
-              case "eccentricity":{
-                this.dataJson[event.target.id].eccentricity = Number(event.target.value)
-                break;
-              }
-              case "incline":{
-                this.dataJson[event.target.id].incline = Number(event.target.value)
-                break;
-              }
-              case "longitudeAscendingNode":{
-                this.dataJson[event.target.id].longitudeAscendingNode = Number(event.target.value)
-                break;
-              }
-              case "perigeeWidthArgument":{
-                this.dataJson[event.target.id].perigeeWidthArgument = Number(event.target.value)
-                break;
-              }
-              case "trueAnomaly":{
-                this.dataJson[event.target.id].trueAnomaly = Number(event.target.value)
-                break;
-              }
-              default:
-                alert( "Ошибка!" );
-            }
-            
+            this.dataJson[event.target.id][event.target.name] = event.target.value
           },
           SelectChangeKA(data){
-            console.log(data)
+            console.log(this.dataJson[data.id].modelSat, data.value)
             this.dataJson[data.id].modelSat.id = data.value
-
           },
           DeleteRow(index){
               if (this.dataJson[index].satelliteId === undefined) {
@@ -155,7 +126,6 @@
               }
           },
           async SatartSave() {
-            console.log(this.dataJsonOG)
             let responce = await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
             console.log(responce)
             
@@ -164,14 +134,16 @@
       },
       async mounted() {
         this.dataJsonOG = this.dataOGLocal
-        console.log(this.dataJsonOG)
         this.dataJson = this.dataJsonOG.satellites
         let result = await FetchGet('/api/v1/modelsat/all')
         this.KaModels = []
         for (let index = 0; index < result.length; index++) {
-          this.KaModels.push({value: result[index].id, lable:  result[index].modelName});
+          this.KaModels.push({value:result[index].id, lable: result[index].modelName})
+          this.KaLableId[result[index].id] = result[index].modelName
+
         }
-        console.log(this.KaModels)
+        console.log("KaModels:",this.KaModels)
+        console.log("dataJson:", this.dataJson)
 
       }
     }

@@ -1,6 +1,5 @@
 <template>
     <div class="main_contain">
-          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
@@ -8,7 +7,7 @@
           </div>
           
     <div class="ContentDiv">
-        <h1 class="TitleText">Моделирование КА</h1>
+        <h1 class="TitleText">Маршрут обхода целей</h1>
         <div class="Panel">
           <table  style="border-bottom: 1px solid white;">
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
@@ -35,6 +34,11 @@
             <div>Маршрут 1 из N</div>
             <button class="ButtonCommand">Показать на карте</button>
         </div>
+        <div class="MiniMapPanel">
+          <div id="map" style="width: 90vw; height: 500px;"></div>
+          тут типо карта
+
+        </div>
         </div>
 
     </div>
@@ -44,10 +48,14 @@
   
   <script>
 
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
-import DefaultTable from '../DefaultTable.vue';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import shadow from 'leaflet/dist/images/marker-shadow.png';
+import "leaflet/dist/leaflet.css";
 
   export default {
     name: 'TargetRoad',
@@ -59,77 +67,19 @@ import DefaultTable from '../DefaultTable.vue';
             type: Object
         },
     },
-    components:{
-      DefaultTable,
-    },
     data(){
       return{
-        ConstellationJson: [],
-        purposesJson: 0,
-        numberVisibilityWindows: 0,
-        ShowDefaultTable: false,
-        dataLableName: {},
-        dataTable: [],
-        arr: [],
-        valueSS: {},
-        experimentObject: {
-          startTime: 0,
-          modellingBegin: 0,
-          modellingEnd: 0,
-          modellingStep: 0,
-          constellation: {
-            satellites: []
-          },
-        },
-        TableViewWindow:[],
-        AllResponse:[],
+        purposesJson: [],
+        catalogList: []
       }
     },
     methods: {
-        CreateViewWindow(){
-          this.TableViewWindow = []
-          let fill = false
-          for (let index = 0; index < this.dataTable.length; index++) {
-            const element = this.dataTable[index];
-            for (let index_child = 0; index_child < this.TableViewWindow.length; index_child++) {
-              const element_child = this.TableViewWindow[index_child];
-              if(element_child.name == element.goalLabel)
-                {
-                  this.TableViewWindow[index_child].viewcount += 1
-                  this.TableViewWindow[index_child].data.push(element)
-                  fill = true
-                  break;
-                }
-            }
-            if (fill == false) {
-              this.TableViewWindow.push({name: element.goalLabel, viewcount: 1, data: [element]})
-            }
-            fill = false
-          }
-          console.log(this.TableViewWindow)
-        },
         async StartModelling(){
-          this.CommandWork()
-          console.log(this.experimentObject, JSON.stringify(this.experimentObject))
-          let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject)
-          try {
-            for (let index = 0; index < response.length; index++) {
-              response[index].end = this.CreateDateTime(response[index].end)
-              response[index].begin = this.CreateDateTime(response[index].begin)
-            }
-          } catch (error) {
-            console.log(error)
-          }
-          this.dataTable = await response
-          this.AllResponse = await response
-          this.CreateViewWindow()
+
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
           return Dtime.date + " " + Dtime.time
-        },
-        SelectChange(target){
-          this.experimentObject.constellation = target.value
         },
         SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {
@@ -142,7 +92,52 @@ import DefaultTable from '../DefaultTable.vue';
         DisplayLoad(true)
         let result = await FetchGet('/api/v1/satrequest/request/get/all')
         this.purposesJson = result
-        console.log(this.systemStatus)
+        var map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
+        L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
+        {
+            foo: 'bar', 
+            key: '383118983d4a867dd2d367451720d724',
+            minZoom: 2, 
+            maxZoom: 15,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        let DefaultIcon = new L.icon({
+        iconUrl: icon,
+        shadowUrl: shadow,
+        iconRetinaUrl: icon2x
+        });
+        L.Marker.prototype.options.icon = DefaultIcon;
+
+        for (let index = 0; index < this.purposesJson.length; index++) {
+          const element = this.purposesJson[index];
+          L.marker([element.catalog.lat, element.catalog.lon], {opacity: 0.5}).addTo(map);
+        }
+        var linecount = this.purposesJson.length - 1
+        if(linecount > 1){
+          let colorArr = ["#00FF00"]
+          let color = [0, 255, 0]
+          let step =  Math.floor(570 / linecount)
+          for (let index = 1; index < linecount; index++) {
+            color[0] += step
+            if(color[0] > 255){
+              color[1] -= color[0] - 255
+              color[0] = 255
+            }
+            let r = Number(color[0]).toString(16)
+            if(r.length< 2) {r = "0"+r}
+            let g = Number(color[1]).toString(16)
+            if(g.length< 2) {g = "0"+g}
+            colorArr.push("#"+r+g+Number(color[2]).toString(16)+"0")
+          }
+          for (let index = 0; index < this.purposesJson.length-1; index++) {
+            L.polyline([new L.LatLng(this.purposesJson[index].catalog.lat, this.purposesJson[index].catalog.lon), new L.LatLng(this.purposesJson[index+1].catalog.lat, this.purposesJson[index+1].catalog.lon)], {color: colorArr[index], weight: 3, stroke: true}).addTo(map);
+          }
+        }
+        /*
+        setInterval(() => {
+
+          console.log("!")
+        }, 2000);*/
         DisplayLoad(false)
 
     }
@@ -232,4 +227,15 @@ input{
     justify-content: space-around;
     flex-wrap: nowrap;
 }
+
+
+
+#map{
+  background-color: #2b2b2b;
+  .leaflet-map-pane{
+            pointer-events: none;
+        }
+
+}
+
 </style>

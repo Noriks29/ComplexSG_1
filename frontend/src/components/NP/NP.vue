@@ -12,7 +12,7 @@
     
     <div class="Panel MaxWidth">
       <table>
-        <tr>
+        <tr v-if="dataJson.length > 0">
           <th>ID</th>
           <th>Название</th>
           <th>Широта</th>
@@ -35,7 +35,10 @@
           <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="addRowButton">
-          <td colspan="5"><button @click="AddRow">Добавить наземный пункт</button></td>
+          <td colspan="5"><button @click="AddRow">
+            <img src="../../assets/add.png" alt="" class="addButtonIcon">
+            Добавить наземный пункт
+          </button></td>
         </tr> 
       </table>
     </div>

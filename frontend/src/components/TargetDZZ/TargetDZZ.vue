@@ -53,7 +53,7 @@
               
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
-              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="index" @valueSelect="SelectChangeNP"/></td>
+              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChangeNP"/></td>
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
@@ -63,7 +63,7 @@
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
                 <tr class="addRowButton">
-                <td colspan="9"><button @click="AddRowRequest(catalogJson[0])">Добавить заявку</button></td>
+                <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
               </tr>   
             </table>
         </div>
@@ -76,20 +76,19 @@
             </tr>
             <tr v-for="data, index in catalogJson"
               :key="index"
-              :class="!catalogApproved ? 'active' :''"
               @change="ChangeParam"
               v-show="!(data.deleted==true)"
             >
               <td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
               <td style="text-align: center;">{{data.countRequest}}</td>
-              <td><button @click="AddRowRequest(data)">+</button></td>  
+              <td><img @click="AddRowRequest(data)" src="../../assets/add.png" alt="" class="addButtonIcon"></td>  
               <td><input :id="index" name="lat" type="number" :value="data.lat"></td>
               <td><input :id="index" name="lon" type="number" :value="data.lon"></td>
               <td><input :id="index" name="alt" type="number" :value="data.alt"></td>
               <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
             </tr>
             <tr class="addRowButton">
-              <td colspan="7"><button @click="AddRow">Добавить</button></td>
+              <td colspan="7"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
           </table>
         </div>

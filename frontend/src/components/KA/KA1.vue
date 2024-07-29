@@ -68,8 +68,8 @@
 
         <div class="Panel MaxWidth">
           <div>
-            <button @click="StartModelling">Начать</button>
-            <button @click="progressValue--">Продолжить</button>
+            <button @click="StartModelling" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать</button>
+            <button @click="progressValue--" class="ButtonCommand">Продолжить</button>
           </div>
         </div>
 
@@ -79,21 +79,21 @@
             <table class="colum">
               <tr>
                 <td>Заявки</td>
-                <td><button>План выполнения</button></td>
-                <td><button>План доставки</button></td>
-                <td><button>Невыполнимые</button></td>
-                <td><button>Лог выполнения</button></td>
+                <td><button class="ButtonCommand">План выполнения</button></td>
+                <td><button class="ButtonCommand">План доставки</button></td>
+                <td><button class="ButtonCommand">Невыполнимые</button></td>
+                <td><button class="ButtonCommand">Лог выполнения</button></td>
               </tr>
               <tr>
                 <td>КА</td>
-                <td><button @click="ShowShootingPlan">План съёмок</button></td>
-                <td><button>План доставки</button></td>
-                <td><button>План полёта</button></td>
-                <td><button>Лог полёта</button></td>
+                <td><button @click="ShowShootingPlan" class="ButtonCommand">План съёмок</button></td>
+                <td><button class="ButtonCommand">План доставки</button></td>
+                <td><button class="ButtonCommand">План полёта</button></td>
+                <td><button class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="4"><button @click="ShowLogEvent">Лог движка</button></td>
+                <td colspan="4"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
               </tr>
             </table>
 
@@ -153,7 +153,6 @@ import DefaultTable from '@/components/DefaultTable.vue'
       async StartModelling(){
         DisplayLoad(true)
         this.progressValue = 20
-        console.log(this.ConstellationJson)
         let Ka = this.ConstellationJson[0].satellites[0]
 
         let dataPost = {
@@ -163,6 +162,8 @@ import DefaultTable from '@/components/DefaultTable.vue'
             "earthPoint": this.earthList[0]
         }
         console.log(dataPost)
+        let rezulttestnow = await FetchPost('/api/v1/modelling/traversing', dataPost)
+        console.log(rezulttestnow)
         let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
         this.dataModelling = rezult
@@ -176,21 +177,17 @@ import DefaultTable from '@/components/DefaultTable.vue'
           const element = this.dataModelling[index];
           this.dataTable.push({data: element}) 
         }
-        console.log(this.dataTable)
         this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
-        console.log(this.dataModelling)
         for (let index = 0; index < this.dataModelling.length; index++) {
           const element = JSON.parse(this.dataModelling[index]);
-          console.log(element)
           if(element.type == "E77"){
             this.E77 = element
             break
           }
           
         }
-        console.log(this.E77)
         this.dataTable = []
         this.dataLableName = [
           {lable: "Заявка", nameParam: "orderId"},
@@ -214,7 +211,6 @@ import DefaultTable from '@/components/DefaultTable.vue'
           
           this.dataTable.push(element) 
         }
-        console.log(this.dataTable[0],this.dataLableName, "fsdfdfds" )
         this.ShowDefaultTable = true
       },
       ModeLableCreate(){
@@ -269,7 +265,9 @@ fieldset{
 
   .colum{
     flex: 1;
-
+    button{
+      width: 99%;
+    }
 
   }
 

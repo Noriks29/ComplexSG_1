@@ -207,5 +207,12 @@ th{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  div{
+    width: 100%;
+    button{
+      width: 96%;
+      text-align: start;
+    }
+  }
 }
 </style>

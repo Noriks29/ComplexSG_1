@@ -98,7 +98,7 @@
             {
               if(this.OG_Param.type === true)
               {
-
+                console.log(this.KaModels)
                 let addedRow = {
                   'constellationName' : this.OG_Param.inputName,
                   'satellites' : [
@@ -109,7 +109,7 @@
                     "perigeeWidthArgument": 0,
                     "trueAnomaly": 0,
                     "modelSat": {
-                    "id": 1
+                    "id": this.KaModels[0].value
                     }
                   }
                   ],

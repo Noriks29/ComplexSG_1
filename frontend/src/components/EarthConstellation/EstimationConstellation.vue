@@ -144,6 +144,7 @@ import DateTime from '../DateTime.vue';
           console.log(this.TableViewWindow)
         },
         async StartModelling(){
+          DisplayLoad(true)
           this.CommandWork()
           console.log(this.experimentObject, JSON.stringify(this.experimentObject))
           let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject)
@@ -158,6 +159,7 @@ import DateTime from '../DateTime.vue';
           this.dataTable = await response
           this.AllResponse = await response
           this.CreateViewWindow()
+          DisplayLoad(false)
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)

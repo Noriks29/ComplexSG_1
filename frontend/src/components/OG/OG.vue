@@ -23,7 +23,7 @@
           <td class="iconDelete" v-if="!approved" @click="DeleteRowOG(data)"><img  src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="PanelDefault">
-          <td @click="addRowTable = true" colspan="3" style="text-align: center;">Добавить орбитальную группировку</td>
+          <td @click="addRowTable = true" colspan="3" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</td>
         </tr>
       </table>
     </div>
@@ -100,7 +100,7 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
         this.dataJson = await result
       },
       async DeleteRowOG(data){
-        await FetchPost('/api/v1/constellation/delete/byId?id='+data.id,{})
+        await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
         this.selectOG = undefined
         this.reFetch()
       },

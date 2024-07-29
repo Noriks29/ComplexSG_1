@@ -3,7 +3,7 @@
     <canvas class="orb-canvas" id="orb-canvas"></canvas>
     <div class="idSesion" v-if="login != undefined">
       <div>login: {{ login }}
-      <button @click="Log_out">Выйти</button></div>
+      <button class="logoutbutton"><img src="./assets/logout.png" alt=""  @click="Log_out">Выйти</button></div>
       <SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" @valueSelect="ChangeWorkSpace"/>
     </div>
     <div v-if="login == undefined" class="ModalLoginBack">
@@ -52,6 +52,7 @@ import GlobalStyle from './style/GlobalStyle.scss'
 
 
 
+
 export default {
   name: 'App',
   css:{
@@ -83,9 +84,16 @@ export default {
         this.activeComponent = nameObject.nameComponent
       },
       ChangeWorkSpace(data){
-        console.log(data.value.accessKey)
-        localStorage.setItem('data', data.value.accessKey)
-        console.log(localStorage)
+        if(data.value.accessKey == undefined){
+          console.log("Тут будет добавление области")
+          alert("Режим в разрабоке")
+        }
+        else{
+          console.log(data.value.accessKey)
+          localStorage.setItem('data', data.value.accessKey)
+          console.log(localStorage)
+        }
+
       },
       StartLogin(){
         const login = document.getElementById('login').value
@@ -99,7 +107,6 @@ export default {
       },
       async VerifyWorkSapce(data){
         let result = await FetchPost("/api/v1/authentication/user/login",data)
-        console.log(result)
         if(result.length > 0){
           localStorage.setItem('nameUser', data.nameUser);
           localStorage.setItem('email',  data.email);
@@ -109,7 +116,7 @@ export default {
           for (let index = 0; index < result.length; index++) {
             this.workplaceList.push({lable: result[index].workspaceName, value: result[index]})
           }
-          this.workplaceList.push({lable: "Test", value: result[0]})
+          this.workplaceList.push({lable: "Добавить проект", value: {}})
           this.idworkplace = 0
           this.login = data.nameUser
           this.StartSystem() 
