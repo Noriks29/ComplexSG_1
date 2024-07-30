@@ -162,8 +162,6 @@ import DefaultTable from '@/components/DefaultTable.vue'
             "earthPoint": this.earthList[0]
         }
         console.log(dataPost)
-        let rezulttestnow = await FetchPost('/api/v1/modelling/traversing', dataPost)
-        console.log(rezulttestnow)
         let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
         this.dataModelling = rezult
@@ -184,6 +182,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
           const element = JSON.parse(this.dataModelling[index]);
           if(element.type == "E77"){
             this.E77 = element
+            console.log(element)
             break
           }
           
