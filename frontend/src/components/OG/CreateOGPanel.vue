@@ -59,7 +59,7 @@
         return {
             OG_Param:{
                 inputName: undefined,
-                type: undefined
+                type: true
             },
             KaModels: []
         }
