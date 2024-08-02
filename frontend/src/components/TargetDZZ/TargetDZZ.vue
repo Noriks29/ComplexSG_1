@@ -175,7 +175,7 @@ import DateTime from '../DateTime.vue';
         var addedRow = {
                       "requestId": undefined,
                       "catalog": catalog,
-                      "orderId": this.catalogJson.length + 1,
+                      "orderId": this.requestJson.length + 1,
                       "priory": 3,
                       "term": this.systemStatus.modelingEnd,
                       "time": this.systemStatus.modelingBegin,

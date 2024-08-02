@@ -1,0 +1,128 @@
+[
+    { 
+        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
+        "VisualFormsData": { 
+            "idNode": 0, "idSat": 0, "state": 0, 
+            "VisualFormsDataShooting": [
+                {
+                    "orderId": 1,
+                    "targetName": "np1",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 12,
+                    "te": 40,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 2,
+                    "targetName": "np2",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 45,
+                    "te": 60,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 3,
+                    "targetName": "np3",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 70,
+                    "te": 100,
+                    "pitch": 0,
+                    "roll": 0
+                }
+            ],
+            "nShooting": 0 
+        }
+    },
+    { 
+        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
+        "VisualFormsData": { 
+            "idNode": 0, "idSat": 0, "state": 0, 
+            "VisualFormsDataShooting": [
+                {
+                    "orderId": 1,
+                    "targetName": "np1",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 12,
+                    "te": 40,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 3,
+                    "targetName": "np3",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 45,
+                    "te": 60,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 2,
+                    "targetName": "np2",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 70,
+                    "te": 100,
+                    "pitch": 0,
+                    "roll": 0
+                }
+            ],
+            "nShooting": 0 
+        }
+    },
+    { 
+        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
+        "VisualFormsData": { 
+            "idNode": 0, "idSat": 0, "state": 0, 
+            "VisualFormsDataShooting": [
+                {
+                    "orderId": 2,
+                    "targetName": "np2",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 12,
+                    "te": 40,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 3,
+                    "targetName": "np3",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 45,
+                    "te": 60,
+                    "pitch": 0,
+                    "roll": 0
+                },
+                {
+                    "orderId": 1,
+                    "targetName": "np1",
+                    "ws": 0,
+                    "we": 12523,
+                    "transition": 0,
+                    "ts": 70,
+                    "te": 100,
+                    "pitch": 0,
+                    "roll": 0
+                }
+            ],
+            "nShooting": 0 
+        }
+    }
+]
