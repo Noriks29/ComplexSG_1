@@ -40,7 +40,12 @@
         <div class="Panel MaxWidth">
             <div class="flexrow">
             <button class="ButtonCommand" @click="StartModelling">Найти маршруты</button>
-            <div><button @click="selectroadID<1 ? console.log('не надо') : selectroadID--">-</button>Маршрут {{ selectroadID+1 }} из {{ roadList.length }}<button  @click="selectroadID==roadList.length-1 ? console.log('не надо') : selectroadID++">+</button></div>
+            <div>
+              <button class="ListButton" @click="selectroadID<1 ? console.log('не надо') : selectroadID--">
+              <img src="../../assets/arrow2bold.png" alt="-"></button>
+              Маршрут {{ selectroadID+1 }} из {{ roadList.length }}
+              <button class="ListButton" @click="selectroadID==roadList.length-1 ? console.log('не надо') : selectroadID++">
+                <img src="../../assets/arrow1bold.png" alt="+"></button></div>
             <button class="ButtonCommand" @click="CreateMap">Показать на карте</button>
             </div>
         </div>
@@ -349,6 +354,14 @@ input{
 .tergetRoad td{
   padding: 10px;
   border-bottom: 1px solid;
+}
+
+.ListButton{
+  border: none;
+  background: none;
+  img{
+    width: 20px;
+  }
 }
 
 </style>
