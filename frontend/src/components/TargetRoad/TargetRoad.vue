@@ -29,7 +29,7 @@
                 v-for="data, index in purposesJson"
                 :key="index"
             >
-                <td> {{ index }}</td>
+                <td> {{ data.orderId }}</td>
                 <td> {{ data.catalog.goalName }}</td>
                 <td> {{ data.catalog.lat }}</td>
                 <td> {{ data.catalog.lon }}</td>
@@ -44,8 +44,8 @@
             <button class="ButtonCommand" @click="CreateMap">Показать на карте</button>
             </div>
         </div>
-        <div class="Panel MaxWidth">
-          <table style="width: 100%;">
+        <div class="Panel MaxWidth tergetRoad">
+          <table style="width: 100%;" v-if="roadList.length > 0">
             <tr
                 v-for="data, index in roadList[selectroadID].VisualFormsData.VisualFormsDataShooting"
                 :key="index"
@@ -78,7 +78,6 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
 import "leaflet/dist/leaflet.css";
-import testjson from '../../res/test_E77.json'
 
   export default {
     name: 'TargetRoad',
@@ -93,18 +92,18 @@ import testjson from '../../res/test_E77.json'
     data(){
       return{
         purposesJson: [],
-        roadList: testjson,
+        roadList: [],
         selectroad: {},
         selectroadID: 0,
         showMap: false,
-        map: undefined
+        map: undefined,
+        mapPoint: []
       }
     },
     methods: {
         async StartModelling(){
-          console.log(this.roadList)
+          DisplayLoad(true)
           let Ka = await FetchGet('/api/v1/constellation/get/list')
-          console.log(Ka[0].satellites[0])
           let Np = await FetchGet('/api/v1/earth/get/list')
           let data = {
             "experimentType": 1,
@@ -113,8 +112,26 @@ import testjson from '../../res/test_E77.json'
             "earthPoint": Np[0]
         }
           console.log(data)
-          let rezult = FetchPost("/api/v1/modelling/traversing", data)
+          this.roadList = []
+          let rezult = await FetchPost("/api/v1/modelling/traversing", data)
           console.log(rezult)
+          for (let index = 0; index < rezult.length; index++) {
+            const element = JSON.parse(rezult[index]);
+            element.VisualFormsData.VisualFormsDataShooting
+            for (let i = 0; i < element.VisualFormsData.VisualFormsDataShooting.length; i++) {
+              element.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].pitch*1000)/1000
+              element.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].roll*1000)/1000
+              element.VisualFormsData.VisualFormsDataShooting[i].te = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].te)
+              element.VisualFormsData.VisualFormsDataShooting[i].ts = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].ts)
+              element.VisualFormsData.VisualFormsDataShooting[i].we = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].we)
+              element.VisualFormsData.VisualFormsDataShooting[i].ws = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].ws)
+              
+            }
+            console.log(element)
+            this.roadList.push(element)
+          }
+          DisplayLoad(false)
+          console.log(this.roadList)
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
@@ -127,28 +144,28 @@ import testjson from '../../res/test_E77.json'
         },
         async CreateMap(){
           this.showMap = true
+          this.mapPoint = []
           console.log(await document.getElementById("map"))
-          console.log(this.roadList[this.selectroadID])
           this.selectroad = this.roadList[this.selectroadID].VisualFormsData.VisualFormsDataShooting
           for (let index = 0; index < this.selectroad.length; index++) {
             const id = this.selectroad[index].orderId;
-            console.log(id)
             for (let i = 0; i < this.purposesJson.length; i++) {
               const element = this.purposesJson[i];
-              //if(element.orderId)
-              console.log(element)
-              //  тут начинается обработка заявок
-              
+              if(element.orderId == id){
+                this.selectroad[index].data = element.catalog
+                break
+              }
             }
           }
+          console.log(this.selectroad)
 
 
 
           this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
           L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
           {
-            foo: 'bar', 
-            key: '383118983d4a867dd2d367451720d724',
+            //foo: 'bar', 
+            //key: '383118983d4a867dd2d367451720d724',
             minZoom: 2, 
             maxZoom: 15,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -159,11 +176,19 @@ import testjson from '../../res/test_E77.json'
                 iconRetinaUrl: icon2x
           });
           L.Marker.prototype.options.icon = DefaultIcon;
-            for (let index = 0; index < this.purposesJson.length; index++) {
-              const element = this.purposesJson[index];
-              L.marker([element.catalog.lat, element.catalog.lon], {opacity: 0.5}).addTo(this.map);
-            }
-            var linecount = this.purposesJson.length - 1
+
+
+          for (let index = 0; index < this.selectroad.length; index++) {
+            const element = this.selectroad[index];
+            console.log(element.data)
+            this.mapPoint.push(L.circle([element.data.lat, element.data.lon], 15500, {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.2
+            }).addTo(this.map))
+            this.mapPoint[this.mapPoint.length-1].bindPopup(element.targetName);
+          }
+            var linecount = this.selectroad.length - 1
             if(linecount > 1){
               let colorArr = ["#00FF00"]
               let color = [0, 255, 0]
@@ -180,8 +205,8 @@ import testjson from '../../res/test_E77.json'
                 if(g.length< 2) {g = "0"+g}
                 colorArr.push("#"+r+g+Number(color[2]).toString(16)+"0")
               }
-              for (let index = 0; index < this.purposesJson.length-1; index++) {
-                L.polyline([new L.LatLng(this.purposesJson[index].catalog.lat, this.purposesJson[index].catalog.lon), new L.LatLng(this.purposesJson[index+1].catalog.lat, this.purposesJson[index+1].catalog.lon)], {color: colorArr[index], weight: 3, stroke: true}).addTo(this.map);
+              for (let index = 0; index < this.selectroad.length-1; index++) {
+                L.polyline([new L.LatLng(this.selectroad[index].data.lat, this.selectroad[index].data.lon), new L.LatLng(this.selectroad[index+1].data.lat, this.selectroad[index+1].data.lon)], {color: colorArr[index], weight: 3, stroke: true}).addTo(this.map);
               }
           }
         }
@@ -319,6 +344,11 @@ input{
   }
 }
 
+}
+
+.tergetRoad td{
+  padding: 10px;
+  border-bottom: 1px solid;
 }
 
 </style>

@@ -1,128 +1,322 @@
-[
-    { 
-        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
-        "VisualFormsData": { 
-            "idNode": 0, "idSat": 0, "state": 0, 
-            "VisualFormsDataShooting": [
-                {
-                    "orderId": 1,
-                    "targetName": "np1",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 12,
-                    "te": 40,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 2,
-                    "targetName": "np2",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 45,
-                    "te": 60,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 3,
-                    "targetName": "np3",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 70,
-                    "te": 100,
-                    "pitch": 0,
-                    "roll": 0
-                }
-            ],
-            "nShooting": 0 
+[{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                        "idNode":       66,
+                        "orderId":      1,
+                        "targetName":   "Samara",
+                        "ws":   1716623290.0000663,
+                        "we":   1716623385.0000646,
+                        "ts":   38890.000066207722,
+                        "te":   38900.000066207722,
+                        "transition":   0,
+                        "roll": -24.684737459725344,
+                        "pitch":        41.977516476259268
+                },{
+                                "idNode":       66,
+                                "orderId":      6,
+                                "targetName":   "Samara",
+                                "ws":   1716623290.0000663,
+                                "we":   1716623385.0000646,
+                                "ts":   38890.000066207722,
+                                "te":   38900.000066207722,
+                                "transition":   0,
+                                "roll": -24.684737459725344,
+                                "pitch":        41.977516476259268
+                        }, {
+                                "idNode":       66,
+                                "orderId":      7,
+                                "targetName":   "Penza",
+                                "ws":   1716623300.000066,
+                                "we":   1716623400.0000644,
+                                "ts":   38957.656314897176,
+                                "te":   38967.656314897176,
+                                "transition":   57,
+                                "roll": 17.221188835092367,
+                                "pitch":        -8.04754345117815
+                        }],
+                "nShooting":    3
         }
-    },
-    { 
-        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
-        "VisualFormsData": { 
-            "idNode": 0, "idSat": 0, "state": 0, 
-            "VisualFormsDataShooting": [
-                {
-                    "orderId": 1,
-                    "targetName": "np1",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 12,
-                    "te": 40,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 3,
-                    "targetName": "np3",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 45,
-                    "te": 60,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 2,
-                    "targetName": "np2",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 70,
-                    "te": 100,
-                    "pitch": 0,
-                    "roll": 0
-                }
-            ],
-            "nShooting": 0 
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      1,
+                                "targetName":   "Samara",
+                                "ws":   1716623290.0000663,
+                                "we":   1716623385.0000646,
+                                "ts":   38890.000066207722,
+                                "te":   38900.000066207722,
+                                "transition":   0,
+                                "roll": -24.684737459725344,
+                                "pitch":        41.977516476259268
+                        }, {
+                                "idNode":       66,
+                                "orderId":      2,
+                                "targetName":   "Penza",
+                                "ws":   1716623300.000066,
+                                "we":   1716623400.0000644,
+                                "ts":   38957.656314897176,
+                                "te":   38967.656314897176,
+                                "transition":   57,
+                                "roll": 17.221188835092367,
+                                "pitch":        -8.04754345117815
+                        }, {
+                                "idNode":       66,
+                                "orderId":      4,
+                                "targetName":   "Vladimir",
+                                "ws":   1716623375.0000646,
+                                "we":   1716623440.0000637,
+                                "ts":   39008.515689002743,
+                                "te":   39018.515689002743,
+                                "transition":   40,
+                                "roll": 39.3331312248703,
+                                "pitch":        -2.9771410743837388
+                        }],
+                "nShooting":    3
         }
-    },
-    { 
-        "time": 1716584400.08, "type": "E77test", "idReceiver": 0, "idSender": 38, 
-        "VisualFormsData": { 
-            "idNode": 0, "idSat": 0, "state": 0, 
-            "VisualFormsDataShooting": [
-                {
-                    "orderId": 2,
-                    "targetName": "np2",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 12,
-                    "te": 40,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 3,
-                    "targetName": "np3",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 45,
-                    "te": 60,
-                    "pitch": 0,
-                    "roll": 0
-                },
-                {
-                    "orderId": 1,
-                    "targetName": "np1",
-                    "ws": 0,
-                    "we": 12523,
-                    "transition": 0,
-                    "ts": 70,
-                    "te": 100,
-                    "pitch": 0,
-                    "roll": 0
-                }
-            ],
-            "nShooting": 0 
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      1,
+                                "targetName":   "Samara",
+                                "ws":   1716623290.0000663,
+                                "we":   1716623385.0000646,
+                                "ts":   38890.000066207722,
+                                "te":   38900.000066207722,
+                                "transition":   0,
+                                "roll": -24.684737459725344,
+                                "pitch":        41.977516476259268
+                        }, {
+                                "idNode":       66,
+                                "orderId":      3,
+                                "targetName":   "Saranck",
+                                "ws":   1716623315.0000658,
+                                "we":   1716623420.0000639,
+                                "ts":   38947.65631512666,
+                                "te":   38957.65631512666,
+                                "transition":   47,
+                                "roll": 14.222988331476481,
+                                "pitch":        17.1886557954431
+                        }, {
+                                "idNode":       66,
+                                "orderId":      4,
+                                "targetName":   "Vladimir",
+                                "ws":   1716623375.0000646,
+                                "we":   1716623440.0000637,
+                                "ts":   38998.2031892184,
+                                "te":   39008.2031892184,
+                                "transition":   40,
+                                "roll": 39.5374045872918,
+                                "pitch":        7.72520832784999
+                        }],
+                "nShooting":    3
         }
-    }
-]
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      1,
+                                "targetName":   "Samara",
+                                "ws":   1716623290.0000663,
+                                "we":   1716623385.0000646,
+                                "ts":   38890.000066207722,
+                                "te":   38900.000066207722,
+                                "transition":   0,
+                                "roll": -24.684737459725344,
+                                "pitch":        41.977516476259268
+                        }, {
+                                "idNode":       66,
+                                "orderId":      5,
+                                "targetName":   "Kazan",
+                                "ws":   1716623325.0000656,
+                                "we":   1716623420.0000639,
+                                "ts":   38925.0000655884,
+                                "te":   38935.0000655884,
+                                "transition":   22,
+                                "roll": -22.645988905013944,
+                                "pitch":        40.171251030375267
+                        }, {
+                                "idNode":       66,
+                                "orderId":      3,
+                                "targetName":   "Saranck",
+                                "ws":   1716623315.0000658,
+                                "we":   1716623420.0000639,
+                                "ts":   38999.609439110573,
+                                "te":   39009.609439110573,
+                                "transition":   64,
+                                "roll": 12.35918183067003,
+                                "pitch":        -32.065381776518919
+                        }],
+                "nShooting":    3
+        }
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      1,
+                                "targetName":   "Samara",
+                                "ws":   1716623290.0000663,
+                                "we":   1716623385.0000646,
+                                "ts":   38890.000066207722,
+                                "te":   38900.000066207722,
+                                "transition":   0,
+                                "roll": -24.684737459725344,
+                                "pitch":        41.977516476259268
+                        }, {
+                                "idNode":       66,
+                                "orderId":      5,
+                                "targetName":   "Kazan",
+                                "ws":   1716623325.0000656,
+                                "we":   1716623420.0000639,
+                                "ts":   38925.0000655884,
+                                "te":   38935.0000655884,
+                                "transition":   22,
+                                "roll": -22.645988905013944,
+                                "pitch":        40.171251030375267
+                        }, {
+                                "idNode":       66,
+                                "orderId":      4,
+                                "targetName":   "Vladimir",
+                                "ws":   1716623375.0000646,
+                                "we":   1716623440.0000637,
+                                "ts":   38992.1875643442,
+                                "te":   39002.1875643442,
+                                "transition":   57,
+                                "roll": 39.655896231215358,
+                                "pitch":        13.754508483695155
+                        }],
+                "nShooting":    3
+        }
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      2,
+                                "targetName":   "Penza",
+                                "ws":   1716623300.000066,
+                                "we":   1716623400.0000644,
+                                "ts":   38900.000066030771,
+                                "te":   38910.000066030771,
+                                "transition":   0,
+                                "roll": 19.227080551646246,
+                                "pitch":        41.499823765820778
+                        }, {
+                                "idNode":       66,
+                                "orderId":      3,
+                                "targetName":   "Saranck",
+                                "ws":   1716623315.0000658,
+                                "we":   1716623420.0000639,
+                                "ts":   38942.461002728269,
+                                "te":   38952.461002728269,
+                                "transition":   32,
+                                "roll": 14.407522829514605,
+                                "pitch":        21.9303610681753
+                        }, {
+                                "idNode":       66,
+                                "orderId":      5,
+                                "targetName":   "Kazan",
+                                "ws":   1716623325.0000656,
+                                "we":   1716623420.0000639,
+                                "ts":   39010.000063907355,
+                                "te":   39020.000063907355,
+                                "transition":   57,
+                                "roll": -25.263350292898444,
+                                "pitch":        -33.805171631246537
+                        }],
+                "nShooting":    3
+        }
+},
+{
+        "time": 0,
+        "type": "E77",
+        "idReceiver":   0,
+        "idSender":     0,
+        "VisualFormsData":      {
+                "idNode":       0,
+                "idSat":        0,
+                "state":        0,
+                "VisualFormsDataShooting":      [{
+                                "idNode":       66,
+                                "orderId":      2,
+                                "targetName":   "Penza",
+                                "ws":   1716623300.000066,
+                                "we":   1716623400.0000644,
+                                "ts":   38900.000066030771,
+                                "te":   38910.000066030771,
+                                "transition":   0,
+                                "roll": 19.227080551646246,
+                                "pitch":        41.499823765820778
+                        }, {
+                                "idNode":       66,
+                                "orderId":      3,
+                                "targetName":   "Saranck",
+                                "ws":   1716623315.0000658,
+                                "we":   1716623420.0000639,
+                                "ts":   38942.461002728269,
+                                "te":   38952.461002728269,
+                                "transition":   32,
+                                "roll": 14.407522829514605,
+                                "pitch":        21.9303610681753
+                        }, {
+                                "idNode":       66,
+                                "orderId":      4,
+                                "targetName":   "Vladimir",
+                                "ws":   1716623375.0000646,
+                                "we":   1716623440.0000637,
+                                "ts":   38992.1875643442,
+                                "te":   39002.1875643442,
+                                "transition":   39,
+                                "roll": 39.655896231215358,
+                                "pitch":        13.754508483695155
+                        }],
+                "nShooting":    3
+        }
+}]
