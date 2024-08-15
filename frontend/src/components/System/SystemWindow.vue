@@ -38,8 +38,14 @@
 
           <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="systemStatus.step"><label for="step"></label></td></tr>
           <tr class="active"><td>duration</td><td>Продолжительность съёмки</td><td><input id="duration" type="number" min="0" @change="ChangeParam" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>
-         
         </table>
+        </div>
+        <div class="Panel MaxWidth">
+          <button @click="SaveWorkplace">Сохранить копию данных</button>
+          <label class="input-file">
+            <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json">		
+            <span>Открыть файл</span>
+          </label>
         </div>
       </div>
     </div>
@@ -47,6 +53,8 @@
   
   <script>
 import DateTime from '../DateTime.vue';
+import {FetchGet} from '../../js/LoadDisplayMetod'
+import { saveAs } from 'file-saver';
 
   export default {
     name: 'SystemWindow',
@@ -69,6 +77,49 @@ import DateTime from '../DateTime.vue';
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
+      },
+      async SaveWorkplace(){
+        let dataLoad = {}
+        let result = await FetchGet('/api/v1/earth/get/list')
+        for (let index = 0; index < result.length; index++) {
+          let new_data = result[index];
+          new_data.id = undefined
+          new_data.idNode = undefined
+          result[index] = new_data
+        }
+        dataLoad.earth = result
+
+        result = await FetchGet('/api/v1/system/get')
+        dataLoad.system = result
+
+        result = await FetchGet('/api/v1/constellation/get/list')
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          element.id = undefined
+          for (let jindex = 0; jindex < element.satellites.length; jindex++) {
+            const j_element = element.satellites[jindex];
+            j_element.idNode = undefined
+            //не забудь про modelsat.id
+            element.satellites[jindex] = j_element
+          }
+          result[index] = element 
+        }
+        dataLoad.constellation = result
+
+        result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          element.goalId = undefined
+          result[index] = element
+        }
+        dataLoad.catalog = result
+
+        console.log(JSON.stringify(dataLoad, null, 2))
+        var fileName = 'myData.json';
+        var fileToSave = new Blob([JSON.stringify(dataLoad, null, 2)], {
+            type: 'application/json'
+        });
+        saveAs(fileToSave, fileName);
       },
       ChangeTime(obgTime){
         this.dataSystem[obgTime.id] = obgTime.time
@@ -98,6 +149,37 @@ import DateTime from '../DateTime.vue';
       ChangeSystemStatus(){
         this.$emit('ChangeSystemStatus', this.dataSystem)
       },
+      LoadFile(data){
+        const reader = new FileReader();
+        if (data.target.files[0]) {
+          var file = data.target.files[0];
+          reader.readAsText(file);
+          reader.addEventListener('load', () => {
+            this.ReloadDataBaseFromFile(reader.result);
+          });
+          reader.addEventListener('error', () => {
+            console.error(`Произошла ошибка при чтении файла`);
+          });
+        }
+      },
+      ReloadDataBaseFromFile(json){
+        try {
+          let dataJson = JSON.parse(json)
+          console.log(dataJson)
+          try {
+            dataJson.system.systemId = this.dataSystem.systemId
+            this.dataSystem = dataJson.system
+            this.ChangeSystemStatus()
+          } catch (error) {
+            console.log(error)
+          }
+
+        } catch (error) {
+          console.log(error)
+          alert("Ошибка чтения")
+        }
+
+      }
       
     },
     mounted(){
@@ -124,4 +206,41 @@ th{
     border-left: 1px solid white;
   }
 }
+.input-file span{
+  background: white;
+    height: 100%;
+    border: 1px solid #0000004f;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    display: flex;
+    color: black;
+    align-items: center;
+    flex-direction: row;
+    padding: 5px;
+}
+.input-file {
+	position: relative;
+	display: inline-block;
+  height: 100%;
+}
+.input-file span {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+}
+.input-file input[type=file] {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	display: block;
+	width: 0;
+	height: 0;
+}
+
+
+
 </style>

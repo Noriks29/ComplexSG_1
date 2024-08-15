@@ -16,10 +16,7 @@
         <button>Обработка ТМИ</button>
       </div>
       <div class="ButtonSection third">
-        <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SelectComponent('KA1')">КА</button>
-        <button>КС 1</button>
-        <button>КС 2</button>
-        <button>КС 3</button>
+        <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SelectComponent('KA1')">Моделирование</button>
       </div>
     </div>
 </template>

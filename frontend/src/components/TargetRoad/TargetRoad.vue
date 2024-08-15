@@ -25,6 +25,13 @@
           </table>
           <p>Цели</p>
           <table style="width: 100%;">
+            <tr>
+                <td>id</td>
+                <td>Имя</td>
+                <td>Долгота</td>
+                <td>Широта</td>
+                <td>Высота</td>
+            </tr>
             <tr
                 v-for="data, index in purposesJson"
                 :key="index"
@@ -51,6 +58,17 @@
         </div>
         <div class="Panel MaxWidth tergetRoad">
           <table style="width: 100%;" v-if="roadList.length > 0">
+            <tr>
+                <td> id цели</td>
+                <td> Имя </td>
+                <td>ws</td>
+                <td>we</td>
+                <td>transition</td>
+                <td>ts</td>
+                <td>te</td>
+                <td>pitch</td>
+                <td>roll</td>
+            </tr>
             <tr
                 v-for="data, index in roadList[selectroadID].VisualFormsData.VisualFormsDataShooting"
                 :key="index"
@@ -124,19 +142,20 @@ import "leaflet/dist/leaflet.css";
             const element = JSON.parse(rezult[index]);
             element.VisualFormsData.VisualFormsDataShooting
             for (let i = 0; i < element.VisualFormsData.VisualFormsDataShooting.length; i++) {
-              element.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].pitch*1000)/1000
-              element.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].roll*1000)/1000
-              element.VisualFormsData.VisualFormsDataShooting[i].te = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].te)
-              element.VisualFormsData.VisualFormsDataShooting[i].ts = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].ts)
-              element.VisualFormsData.VisualFormsDataShooting[i].we = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].we)
-              element.VisualFormsData.VisualFormsDataShooting[i].ws = this.CreateDateTime(element.VisualFormsData.VisualFormsDataShooting[i].ws)
+              element.VisualFormsData.VisualFormsDataShooting[i].orderId++
+              element.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].pitch*100)/100
+              element.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].roll*100)/100
+              element.VisualFormsData.VisualFormsDataShooting[i].te = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].te).time
+              element.VisualFormsData.VisualFormsDataShooting[i].ts = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ts).time
+              element.VisualFormsData.VisualFormsDataShooting[i].we = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].we).time
+              element.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ws).time
               
             }
             console.log(element)
             this.roadList.push(element)
           }
           DisplayLoad(false)
-          console.log(this.roadList)
+          console.log(JSON.stringify(this.roadList))
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
@@ -163,9 +182,6 @@ import "leaflet/dist/leaflet.css";
             }
           }
           console.log(this.selectroad)
-
-
-
           this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
           L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
           {

@@ -53,8 +53,9 @@
                   </tr>
                 </tbody>
               </table>
-            </div></div>
+            </div></div>  
         </div>
+        <div id="plot_OG" style="width: 95vw; height: 70vh;"></div>
       </div>
       </div>
   </template>
@@ -66,6 +67,9 @@ import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
+import tt from '../../res/tt.json'
+
+import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'EstimationConstellation',
@@ -99,7 +103,7 @@ import DateTime from '../DateTime.vue';
           },
         },
         TableViewWindow:[],
-        AllResponse:[],
+        AllResponse: tt,
       }
     },
     methods: {
@@ -146,8 +150,9 @@ import DateTime from '../DateTime.vue';
         async StartModelling(){
           DisplayLoad(true)
           this.CommandWork()
-          console.log(this.experimentObject, JSON.stringify(this.experimentObject))
+          //console.log(this.experimentObject, JSON.stringify(this.experimentObject))
           let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject)
+          
           try {
             for (let index = 0; index < response.length; index++) {
               response[index].end = this.CreateDateTime(response[index].end)
@@ -156,13 +161,47 @@ import DateTime from '../DateTime.vue';
           } catch (error) {
             console.log(error)
           }
+          console.log(JSON.stringify(response))
           this.dataTable = await response
           this.AllResponse = await response
           this.CreateViewWindow()
+
+          const divel = document.getElementById("plot_OG")
+          let y_Axis = []
+          let x_Axis = []
+          let base = []
+          let text = []
+          for (let index = 0; index < response.length; index++) {
+            const element = response[index];
+            y_Axis.push(element.goalLabel)
+            x_Axis.push(this.CreateDateTime((Date.parse(element.end) - Date.parse(element.begin))/1000  - 10800))
+            base.push(element.begin)
+            text.push(UnixToDtime(Date.parse(element.begin)/1000).time+" - "+UnixToDtime(Date.parse(element.end)/1000).time)
+          }
+          console.log(y_Axis, x_Axis, base)
+          Plotly.newPlot(divel, [{
+            type: 'bar',
+            y: y_Axis,
+            x: x_Axis,
+            orientation: 'h',
+            base: base,
+            text: text
+            /*
+            marker:{
+                color: GrafColor
+            },*/
+          },],
+          {
+            title: 'Окна видимости',
+          }
+        )
+
           DisplayLoad(false)
+
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
+          console.log(Dtime.date + " " + Dtime.time)
           return Dtime.date + " " + Dtime.time
         },
         SelectChange(target){
@@ -195,6 +234,7 @@ import DateTime from '../DateTime.vue';
         this.experimentObject.modellingStep = this.systemStatus.step
         console.log(this.systemStatus)
         DisplayLoad(false)
+
 
     }
   }
