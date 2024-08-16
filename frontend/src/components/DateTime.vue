@@ -47,8 +47,13 @@ export default {
     },
     mounted (){
       this.timeUnix = this.valueUnix;
-      console.log(this.timeUnix, this.valueUnix )
       this.SetValue(this.timeUnix)
+    },
+    watch:{
+      valueUnix( newValue/*, oldValue*/) {
+          this.timeUnix = newValue;
+          this.SetValue(this.timeUnix)
+      }
     }
 }
 </script>

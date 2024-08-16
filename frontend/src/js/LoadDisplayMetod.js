@@ -27,7 +27,7 @@ async function FetchGet(http){
 
 }
 async function FetchPost(http,datapost,dopparamhttp){
-    console.log(JSON.stringify(datapost))
+    //console.log(JSON.stringify(datapost))
     let AcsessKey = localStorage.data
     if(dopparamhttp != undefined){
         AcsessKey = AcsessKey +"&"+dopparamhttp

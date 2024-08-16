@@ -22,13 +22,13 @@
             <th colspan="2" class="Title">Горизонт времени моделирования</th><th></th>
           </tr>
           <tr class="active"><td>S_begin</td><td>Начальное время расчетов</td><td>
-            <DateTime :valueUnix="systemStatus.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
+            <DateTime :valueUnix="dataSystem.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
           </td></tr>
           <tr class="active"><td>H_begin</td><td>Начало горизонта моделирования</td><td>
-            <DateTime :valueUnix="systemStatus.modelingBegin" :id="'modelingBegin'"  @valueSelect="ChangeTime"/>
+            <DateTime :valueUnix="dataSystem.modelingBegin" :id="'modelingBegin'"  @valueSelect="ChangeTime"/>
           </td></tr>
           <tr class="active"><td>H_end</td><td>Окончание горизонта моделирования</td><td>
-            <DateTime :valueUnix="systemStatus.modelingEnd" :id="'modelingEnd'" @valueSelect="ChangeTime"/>
+            <DateTime :valueUnix="dataSystem.modelingEnd" :id="'modelingEnd'" @valueSelect="ChangeTime"/>
           </td></tr>
           <tr>
             <th colspan="2" class="Title">Аспекты системы управления</th><th></th>
@@ -41,7 +41,7 @@
         </table>
         </div>
         <div class="Panel MaxWidth">
-          <button @click="SaveWorkplace">Сохранить копию данных</button>
+          <button @click="SaveWorkplace" class="ButtonCommand">Сохранить копию данных</button>
           <label class="input-file">
             <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json">		
             <span>Открыть файл</span>
@@ -53,7 +53,7 @@
   
   <script>
 import DateTime from '../DateTime.vue';
-import {FetchGet} from '../../js/LoadDisplayMetod'
+import {FetchGet, FetchPost, DisplayLoad} from '../../js/LoadDisplayMetod'
 import { saveAs } from 'file-saver';
 
   export default {
@@ -99,6 +99,7 @@ import { saveAs } from 'file-saver';
           for (let jindex = 0; jindex < element.satellites.length; jindex++) {
             const j_element = element.satellites[jindex];
             j_element.idNode = undefined
+            j_element.satelliteId = undefined
             //не забудь про modelsat.id
             element.satellites[jindex] = j_element
           }
@@ -162,27 +163,84 @@ import { saveAs } from 'file-saver';
           });
         }
       },
-      ReloadDataBaseFromFile(json){
+      async ReloadDataBaseFromFile(json){
+        DisplayLoad(true)
         try {
           let dataJson = JSON.parse(json)
-          console.log(dataJson)
           try {
             dataJson.system.systemId = this.dataSystem.systemId
             this.dataSystem = dataJson.system
             this.ChangeSystemStatus()
           } catch (error) {
             console.log(error)
+            alert("Ошибка перезаписи")
           }
-
+          try {
+            if(dataJson.earth != undefined){
+              let result = await FetchGet('/api/v1/earth/get/list')
+              let new_Np = dataJson.earth
+              for (let index = 0; index < result.length; index++) {
+                const element = result[index]
+                element.deleted = true
+                new_Np.push(element)
+              }
+              let response = await FetchPost("/api/v1/earth/update/byList", new_Np)
+              console.log(response)
+            }
+          } catch (error) {
+            console.log(error)
+            alert("Ошибка перезаписи")
+          }
+          try {
+            if(dataJson.constellation != undefined){
+              let result = await FetchGet('/api/v1/constellation/get/list')
+              for (let index = 0; index < result.length; index++) {
+                const element = result[index];
+                let response = await FetchPost('/api/v1/constellation/delete/byId',{},'id='+element.id)
+                console.log(response)
+              }
+              let modelsat = await FetchGet('/api/v1/modelsat/all')
+              for (let index = 0; index < dataJson.constellation.length; index++) {
+                const element = dataJson.constellation[index];
+                for (let satellites_index = 0; satellites_index < element.satellites.length; satellites_index++) {
+                  const satellites = element.satellites[satellites_index];
+                  satellites.modelSat = {
+                    id: modelsat[0].id
+                  }
+                  element.satellites[satellites_index] = satellites
+                }
+                let responce = await FetchPost('/api/v1/constellation/update',element)
+                console.log(responce)
+              }
+            }
+          } catch (error) {
+            console.log(error)
+            alert("Ошибка перезаписи")
+          }
+          try {
+            if(dataJson.catalog != undefined){
+              let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+              for (let index = 0; index < result.length; index++) {
+                const element = result[index];
+                element.deleted = true
+                dataJson.catalog.push(element)
+              }
+              let responce = await FetchPost("/api/v1/satrequest/catalog/update", dataJson.catalog)
+              console.log(responce)
+            }    
+          } catch (error) {
+            console.log(error)
+            alert("Ошибка перезаписи")
+          }
         } catch (error) {
           console.log(error)
           alert("Ошибка чтения")
         }
-
+        DisplayLoad(false)
       }
       
     },
-    mounted(){
+    created(){
       this.dataSystem = this.systemStatus
     }
   }
@@ -206,22 +264,18 @@ th{
     border-left: 1px solid white;
   }
 }
-.input-file span{
-  background: white;
-    height: 100%;
-    border: 1px solid #0000004f;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    display: flex;
-    color: black;
-    align-items: center;
-    flex-direction: row;
-    padding: 5px;
-}
 .input-file {
-	position: relative;
-	display: inline-block;
-  height: 100%;
+	background: #2b2b2b;
+  color: white;
+  border: 1px solid black;
+  padding: 14px;
+  font-size: var(--font-size);
+  border-radius: 10px;
+  box-shadow: -3px 3px 1px black;
+  margin: 5px;
+  transition: all 0.2s;
+  position: relative;
+  display: inline-block;
 }
 .input-file span {
   position: relative;
@@ -231,6 +285,13 @@ th{
   display: flex;
   vertical-align: middle;
   text-align: center;
+  background: none;
+  height: 100%;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  color: white;
+  align-items: center;
+  flex-direction: row;
 }
 .input-file input[type=file] {
 	position: absolute;
