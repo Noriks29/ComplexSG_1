@@ -119,6 +119,12 @@ import SelectDiv from '../SelectDiv.vue';
                 
               }
             }
+            if(commandId == 5){
+              DisplayLoad(true)
+              let result = await FetchGet("/api/v1/modelling/contact-plan/sat-earth")
+              console.log(result)
+              DisplayLoad(false)
+            }
             if(commandId == 1){
               DisplayLoad(true)
               let response = await FetchGet('/api/v1/modelling/view/earth')

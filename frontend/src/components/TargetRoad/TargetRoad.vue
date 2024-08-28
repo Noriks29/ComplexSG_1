@@ -117,7 +117,7 @@ import "leaflet/dist/leaflet.css";
         purposesJson: [],
         roadList: [],
         selectroad: {},
-        selectroadID: 0,
+        selectroadID: -1,
         showMap: false,
         map: undefined,
         mapPoint: []
@@ -151,9 +151,10 @@ import "leaflet/dist/leaflet.css";
               element.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ws).time
               
             }
-            console.log(element)
             this.roadList.push(element)
           }
+          if(this.roadList.length > 0) 
+            {this.selectroadID = 0}
           DisplayLoad(false)
           console.log(JSON.stringify(this.roadList))
         },
@@ -174,14 +175,13 @@ import "leaflet/dist/leaflet.css";
           for (let index = 0; index < this.selectroad.length; index++) {
             const id = this.selectroad[index].orderId;
             for (let i = 0; i < this.purposesJson.length; i++) {
-              const element = this.purposesJson[i];
-              if(element.orderId == id){
-                this.selectroad[index].data = element.catalog
+              const element = this.purposesJson[i].catalog;
+              if(element.goalId + 1 == id){
+                this.selectroad[index].data = element
                 break
               }
             }
           }
-          console.log(this.selectroad)
           this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
           L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
           {

@@ -32,8 +32,10 @@
         <div class="Panel MaxWidth">
           <div>Эксперимент</div>
           <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
-          <button @click="ShowViViewWindow(AllResponse)" class="ButtonCommand">Отобразить все результаты</button>
-          <div class="scroll-table" v-if="TableViewWindow.length > 0">
+          <button @click="ShowViViewWindow(AllResponse)" v-if="TableViewWindow.length > 0" class="ButtonCommand">Отобразить все результаты</button>
+          <button @click="viewmode = 1" v-if="viewmode == 2 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить таблицу</button>
+          <button @click="viewmode = 2" v-if="viewmode == 1 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить график</button>
+          <div class="scroll-table" v-if="TableViewWindow.length > 0 && viewmode == 1">
             <table class="TableDefault"><thead>
             <tr>
               <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
@@ -55,7 +57,7 @@
               </table>
             </div></div>  
         </div>
-        <div id="plot_OG" style="width: 95vw; height: 70vh;"></div>
+        <div :style="viewmode == 2? 'display:block;' : 'display: none;'" id="plot_OG" style="width: 95vw; height: 70vh;"></div>
       </div>
       </div>
   </template>
@@ -104,13 +106,14 @@ import Plotly from 'plotly.js-dist'
         },
         TableViewWindow:[],
         AllResponse: tt,
+        viewmode: 2,
       }
     },
     methods: {
         CommandWork(){
               this.dataLableName = [
                 {lable: "Отправитель", nameParam: "goalLabel"},
-                {lable: "Получатель", nameParam: "scLabel"},
+                {lable: "КА", nameParam: "scLabel"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]

@@ -117,29 +117,29 @@
                   <table class="TableDefault PanelDefault" @change="ChangeParamKa">
                       <tr><th colspan="3">Параметры разворота</th></tr>
                           <tr><td>Ускорение / замедление КА</td>
-                              <td><input type="number" id="0" :value="SelectKA.value.operatingParameter.acceleration || 0"></td><td>гр/с<sup>2</sup></td></tr>
+                              <td><input type="number" id="acceleration" :value="SelectKA.value.operatingParameter.acceleration || 0"></td><td>гр/с<sup>2</sup></td></tr>
                           <tr><td>Максимальная скорость вращения КА</td>
-                            <td><input type="number" id="1" :value="SelectKA.value.operatingParameter.maxRotationSpeed || 0"></td><td>гр/с</td></tr>
+                            <td><input type="number" id="maxRotationSpeed" :value="SelectKA.value.operatingParameter.maxRotationSpeed || 0"></td><td>гр/с</td></tr>
                           <tr><td>Время стабилизации</td>
-                            <td><input type="number" id="2" :value="SelectKA.value.operatingParameter.stabilizationTime"></td><td>с</td></tr>
+                            <td><input type="number" id="stabilizationTime" :value="SelectKA.value.operatingParameter.stabilizationTime"></td><td>с</td></tr>
                       <tr><th colspan="3">Скорость передачи данных</th></tr>
                           <tr><td>Скорость передачи данных КА - КА</td>
-                            <td><input type="number" id="3" :value="SelectKA.value.operatingParameter.dataTransferSatSat"></td><td>Мб/с</td></tr>
+                            <td><input type="number" id="dataTransferSatSat" :value="SelectKA.value.operatingParameter.dataTransferSatSat"></td><td>Мб/с</td></tr>
                           <tr><td>Скорость передачи данных КА - НП</td>
-                            <td><input type="number" id="4" :value="SelectKA.value.operatingParameter.dataTransferEarthSat"></td><td>Мб/с</td></tr>
+                            <td><input type="number" id="dataTransferEarthSat" :value="SelectKA.value.operatingParameter.dataTransferEarthSat"></td><td>Мб/с</td></tr>
                       <tr><th colspan="3">Максимальные углы съемки</th></tr>
                           <tr><td>Крен</td>
-                            <td><input type="number" id="5" :value="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
+                            <td><input type="number" id="lurch" :value="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
                           <tr><td>Тангаж</td>
-                            <td><input type="number" id="6" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
+                            <td><input type="number" id="pitch" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
                       <tr><th colspan="3">Аккумуляторная батарея</th></tr>
                           <tr><td>Емкость</td>
-                            <td><input type="number" id="7" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="accCapacity" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>Вт-ч</td></tr>
                           <tr><td>Минимальный уровень заряда</td>
-                            <td><input type="number" id="8" :value="SelectKA.value.operatingParameter.minCharge"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>Вт-ч</td></tr>
                       <tr><th colspan="3">Память</th></tr>
                           <tr><td>Объем памяти</td>
-                            <td><input type="number" id="9" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
+                            <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
                   </table>
               </div>
           </div>
@@ -151,15 +151,14 @@
 
 <script>
 
-import { FetchGet } from "@/js/LoadDisplayMetod";
-import jsons from "../../res/testAK1.json"
+import { FetchGet, FetchPost } from "@/js/LoadDisplayMetod";
 import SelectDiv from '../SelectDiv.vue';
 
 export default {
   name: 'KAInfo',
   data(){
       return{
-          dataJson: jsons,
+          dataJson: [],
           KatypeList: [],
           SelectKA: {
             value:{
@@ -189,6 +188,9 @@ export default {
       },
       ChangeParamKa(target){
         console.log(target.target.value, target.target.id, this.SelectKA.value.id)
+        this.SelectKA.value.operatingParameter[target.target.id] = Number(target.target.value)
+        FetchPost("/api/v1/modelsat/update", this.SelectKA.value)
+        console.log(this.SelectKA)
       }
   },
   async mounted(){
