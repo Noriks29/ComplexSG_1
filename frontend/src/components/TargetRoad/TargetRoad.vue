@@ -134,29 +134,50 @@ import "leaflet/dist/leaflet.css";
             "satellite": Ka[0].satellites[0],
             "earthPoint": Np[0]
         }
-          console.log(data)
           this.roadList = []
           let rezult = await FetchPost("/api/v1/modelling/traversing", data)
-          console.log(rezult)
           for (let index = 0; index < rezult.length; index++) {
             const element = JSON.parse(rezult[index]);
-            element.VisualFormsData.VisualFormsDataShooting
-            for (let i = 0; i < element.VisualFormsData.VisualFormsDataShooting.length; i++) {
-              element.VisualFormsData.VisualFormsDataShooting[i].orderId++
-              element.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].pitch*100)/100
-              element.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].roll*100)/100
-              element.VisualFormsData.VisualFormsDataShooting[i].te = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].te).time
-              element.VisualFormsData.VisualFormsDataShooting[i].ts = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ts).time
-              element.VisualFormsData.VisualFormsDataShooting[i].we = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].we).time
-              element.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ws).time
-              
+            if(element.type == "E67"){
+              console.log(element.TraversingData.plans)
+              for (let i = 0; i < element.TraversingData.plans.length; i++) {
+                element.TraversingData.plans[i];
+                let new77 = {
+                  VisualFormsData: {
+                    VisualFormsDataShooting: element.TraversingData.plans[i]["plan["+i+"]"]
+                  }
+                }
+                for (let i = 0; i < new77.VisualFormsData.VisualFormsDataShooting.length; i++) {
+                  new77.VisualFormsData.VisualFormsDataShooting[i].orderId++
+                  new77.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(new77.VisualFormsData.VisualFormsDataShooting[i].pitch*100)/100
+                  new77.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(new77.VisualFormsData.VisualFormsDataShooting[i].roll*100)/100
+                  new77.VisualFormsData.VisualFormsDataShooting[i].te = UnixToDtime(new77.VisualFormsData.VisualFormsDataShooting[i].te).time
+                  new77.VisualFormsData.VisualFormsDataShooting[i].ts = UnixToDtime(new77.VisualFormsData.VisualFormsDataShooting[i].ts).time
+                  new77.VisualFormsData.VisualFormsDataShooting[i].we = UnixToDtime(new77.VisualFormsData.VisualFormsDataShooting[i].we).time
+                  new77.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(new77.VisualFormsData.VisualFormsDataShooting[i].ws).time
+                }
+                this.roadList.push(new77)
+              }
             }
-            this.roadList.push(element)
+            else{
+              //element.VisualFormsData.VisualFormsDataShooting
+              for (let i = 0; i < element.VisualFormsData.VisualFormsDataShooting.length; i++) {
+                element.VisualFormsData.VisualFormsDataShooting[i].orderId++
+                element.VisualFormsData.VisualFormsDataShooting[i].pitch = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].pitch*100)/100
+                element.VisualFormsData.VisualFormsDataShooting[i].roll = Math.floor(element.VisualFormsData.VisualFormsDataShooting[i].roll*100)/100
+                element.VisualFormsData.VisualFormsDataShooting[i].te = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].te).time
+                element.VisualFormsData.VisualFormsDataShooting[i].ts = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ts).time
+                element.VisualFormsData.VisualFormsDataShooting[i].we = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].we).time
+                element.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ws).time
+              }
+              this.roadList.push(element)
+              console.log(element)
+            }
           }
           if(this.roadList.length > 0) 
             {this.selectroadID = 0}
           DisplayLoad(false)
-          console.log(JSON.stringify(this.roadList))
+          console.log(this.roadList)
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
@@ -198,6 +219,15 @@ import "leaflet/dist/leaflet.css";
           });
           L.Marker.prototype.options.icon = DefaultIcon;
 
+          for (let i = 0; i < this.purposesJson.length; i++) {
+              const element = this.purposesJson[i].catalog;
+              console.log(element)
+              this.mapPoint.push(L.circle([element.lat, element.lon], 12000, {
+                color: 'blue',
+                fillColor: '#f03',
+                fillOpacity: 0.1
+              }).addTo(this.map))
+            }
 
           for (let index = 0; index < this.selectroad.length; index++) {
             const element = this.selectroad[index];
@@ -207,8 +237,10 @@ import "leaflet/dist/leaflet.css";
                 fillColor: '#f03',
                 fillOpacity: 0.2
             }).addTo(this.map))
+            
             this.mapPoint[this.mapPoint.length-1].bindPopup(element.targetName);
           }
+          
             var linecount = this.selectroad.length - 1
             if(linecount > 1){
               let colorArr = ["#00FF00"]
