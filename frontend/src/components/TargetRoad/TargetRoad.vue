@@ -47,6 +47,7 @@
         <div class="Panel MaxWidth">
             <div class="flexrow">
             <button class="ButtonCommand" @click="StartModelling">Найти маршруты</button>
+            <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
             <div>
               <button class="ListButton" @click="selectroadID<1 ? console.log('не надо') : selectroadID--">
               <img src="../../assets/arrow2bold.png" alt="-"></button>
@@ -120,7 +121,8 @@ import "leaflet/dist/leaflet.css";
         selectroadID: -1,
         showMap: false,
         map: undefined,
-        mapPoint: []
+        mapPoint: [], 
+        nIteration: undefined
       }
     },
     methods: {
@@ -138,8 +140,10 @@ import "leaflet/dist/leaflet.css";
           let rezult = await FetchPost("/api/v1/modelling/traversing", data)
           for (let index = 0; index < rezult.length; index++) {
             const element = JSON.parse(rezult[index]);
+            console.log(element)
             if(element.type == "E67"){
               console.log(element.TraversingData.plans)
+              this.nIteration = element.TraversingData.nIteration
               for (let i = 0; i < element.TraversingData.plans.length; i++) {
                 element.TraversingData.plans[i];
                 let new77 = {
@@ -170,7 +174,7 @@ import "leaflet/dist/leaflet.css";
                 element.VisualFormsData.VisualFormsDataShooting[i].we = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].we).time
                 element.VisualFormsData.VisualFormsDataShooting[i].ws = UnixToDtime(element.VisualFormsData.VisualFormsDataShooting[i].ws).time
               }
-              this.roadList.push(element)
+              //this.roadList.push(element)//убрана обработка E77
               console.log(element)
             }
           }
