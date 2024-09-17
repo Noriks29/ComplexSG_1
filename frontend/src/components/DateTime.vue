@@ -2,6 +2,7 @@
     <div class="half-width" :id="id+name" @change="SelectValue">
               <input type="date" id="date" name="date" value="2012-12-12">
               <input type="time" id="time" name="time" value="00:00" class="active" step="2">
+              <div>МСК</div>
     </div>
 </template>
 
@@ -74,5 +75,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1)
+}
+.half-width{
+  display: flex;
+  align-items: center;
 }
 </style>

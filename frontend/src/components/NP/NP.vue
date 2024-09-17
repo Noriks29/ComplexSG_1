@@ -28,10 +28,10 @@
           <td>{{ data.idNode }}</td>
           <td><input :id="index" name="nameEarthPoint" :class="approved ? 'disable' : ''"
              :value="data.nameEarthPoint"></td>
-          <td><input :id="index" type="number" name="longitude" class="small" :class="approved ? 'disable' : ''"
-            :value="data.longitude"></td>
-          <td><input :id="index" type="number" name="latitude" class="small" :class="approved ? 'disable' : ''" 
-              :value="data.latitude"></td>
+          <td><input :id="index" type="number" name="latitude" class="small" :class="approved ? 'disable' : ''"
+            :value="data.latitude"></td>
+          <td><input :id="index" type="number" name="longitude" class="small" :class="approved ? 'disable' : ''" 
+              :value="data.longitude"></td>
           <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="addRowButton">
