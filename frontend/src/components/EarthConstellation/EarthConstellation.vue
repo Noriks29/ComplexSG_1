@@ -134,7 +134,7 @@ import SelectDiv from '../SelectDiv.vue';
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time
+          return Dtime.date + " " + Dtime.time + " МСК"
         },
         SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {

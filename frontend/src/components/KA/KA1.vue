@@ -145,7 +145,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
       },
       CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time
+          return Dtime.date + " " + Dtime.time + " МСК"
         },
       ChangeInputRadio(target){
         console.log(target.target.name, target.target.value)

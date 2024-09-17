@@ -131,10 +131,9 @@ import "leaflet/dist/leaflet.css";
           let Ka = await FetchGet('/api/v1/constellation/get/list')
           let Np = await FetchGet('/api/v1/earth/get/list')
           let data = {
-            "experimentType": 1,
-            "modellingMode": 1,
             "satellite": Ka[0].satellites[0],
-            "earthPoint": Np[0]
+            "earthPoint": Np[0],
+            "iterationMax": 10
         }
           this.roadList = []
           let rezult = await FetchPost("/api/v1/modelling/traversing", data)
@@ -185,7 +184,7 @@ import "leaflet/dist/leaflet.css";
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time
+          return Dtime.date + " " + Dtime.time + " МСК"
         },
         SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {

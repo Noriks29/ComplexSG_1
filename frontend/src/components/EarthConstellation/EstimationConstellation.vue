@@ -205,7 +205,7 @@ import Plotly from 'plotly.js-dist'
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
           console.log(Dtime.date + " " + Dtime.time)
-          return Dtime.date + " " + Dtime.time
+          return Dtime.date + " " + Dtime.time + " МСК"
         },
         SelectChange(target){
           this.experimentObject.constellation = target.value

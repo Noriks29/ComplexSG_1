@@ -135,7 +135,7 @@ import DateTime from '../DateTime.vue';
       },
       CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time
+          return Dtime.date + " " + Dtime.time + " МСК"
         },
       ChangeTime(obgtime){
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
