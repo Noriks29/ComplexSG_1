@@ -9,7 +9,7 @@
             <button class="ChangeViewMode Right" v-if='viewmode < 1' @click="viewmode++">
               <img src="../../assets/arrow2.png">
             </button>
-            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="viewmode--">
+            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="CreateMap">
               <img src="../../assets/arrow1.png">
             </button>
           </div>  
@@ -31,7 +31,7 @@
                   </table>
             </div>
             <div>
-              <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
+              <button @click="CreateMap" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
             </div>
         </div>
@@ -50,7 +50,6 @@
               >
               <td>{{ index }}</td>
               <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
-              
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
               <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChangeNP"/></td>
@@ -58,14 +57,15 @@
               <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
               
-              
-              
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
                 <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
               </tr>   
             </table>
+            <div>
+              <div id="map"></div>
+            </div> 
         </div>
 
         <p v-if="viewmode == 1">Каталог</p>
@@ -103,6 +103,10 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { UnixToDtime } from '@/js/WorkWithDTime.js';
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
+import L from 'leaflet';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import shadow from 'leaflet/dist/images/marker-shadow.png';
 
   export default {
     name: 'TargetDZZ',
@@ -124,7 +128,9 @@ import DateTime from '../DateTime.vue';
         requestJson: [],
 
         arr: [],
-        arrNP: []
+        arrNP: [],
+        map: {},
+        mapPoint: []
       }
     },
     methods: {
@@ -202,9 +208,8 @@ import DateTime from '../DateTime.vue';
         }
         if(target == 'request')
         {
-          let response = await FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+          await FetchPost("/api/v1/satrequest/request/update", this.requestJson)
           await this.ReFetch()
-          console.log(response)
         }
       },
       ChangeParam(target){
@@ -250,6 +255,35 @@ import DateTime from '../DateTime.vue';
           }
           console.log(this.requestJson, this.catalogJson)
         this.CreateSelectArr()
+        },
+        async CreateMap(){
+          this.viewmode = 0
+          this.map = {}
+          console.log(await document.getElementById("map"))
+
+          this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
+          L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
+          {
+            minZoom: 2, 
+            maxZoom: 15,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(this.map);
+          let DefaultIcon = new L.icon({
+                iconUrl: icon,
+                shadowUrl: shadow,
+                iconRetinaUrl: icon2x
+          });
+          L.Marker.prototype.options.icon = DefaultIcon;
+          this.mapPoint = []
+          for (let i = 0; i < this.requestJson.length; i++) {
+              const element = this.requestJson[i].catalog;
+              console.log(element)
+              this.mapPoint.push(L.circle([element.lat, element.lon], 17000, {
+                color: 'blue',
+                fillColor: '#f03',
+                fillOpacity: 0.1
+              }).addTo(this.map))
+          }
         }
       
     },
@@ -281,7 +315,8 @@ import DateTime from '../DateTime.vue';
         console.log(this.requestJson, this.catalogJson)
       this.CreateSelectArr()
       DisplayLoad(false)
-    }
+      this.CreateMap()
+    },
   }
   </script>
 
@@ -331,5 +366,17 @@ th{
 .SystemInfo{
   display: flex;
   justify-content: center;
+}
+#map{
+  background-color: #2b2b2b;
+  position: relative;
+    outline-style: none;
+    height: 80vh;
+    width: 94%;
+    left: 3%;
+    right: 3%;
+  .leaflet-map-pane{
+            pointer-events: none;
+        }
 }
 </style>
