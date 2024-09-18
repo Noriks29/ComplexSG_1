@@ -22,6 +22,7 @@
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
               <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
               <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+              <tr><td>Выбранный КА в ОГ</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
           </table>
           <p>Цели</p>
           <table style="width: 100%;">
@@ -47,7 +48,7 @@
         <div class="Panel MaxWidth">
             <div class="flexrow">
             <button class="ButtonCommand" @click="StartModelling">Найти маршруты</button>
-            <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
+            <div><input type="number" id="iterationMax" value="10" style="width: 100px;"></div>
             <div>
               <button class="ListButton" @click="selectroadID<1 ? console.log('не надо') : selectroadID--">
               <img src="../../assets/arrow2bold.png" alt="-"></button>
@@ -58,6 +59,7 @@
             </div>
         </div>
         <div class="Panel MaxWidth tergetRoad">
+          <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
           <table style="width: 100%;" v-if="roadList.length > 0">
             <tr>
                 <td> id цели</td>
@@ -98,6 +100,7 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import MainStyle from '../../style/component.scss'
 import L from 'leaflet';
+import SelectDiv from "../SelectDiv.vue"
 import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
@@ -113,6 +116,9 @@ import "leaflet/dist/leaflet.css";
             type: Object
         },
     },
+    components:{
+      SelectDiv
+    },
     data(){
       return{
         purposesJson: [],
@@ -122,18 +128,20 @@ import "leaflet/dist/leaflet.css";
         showMap: false,
         map: undefined,
         mapPoint: [], 
-        nIteration: undefined
+        nIteration: undefined,
+        arr: [],
+        valueSS: {},
+        selectKA: {}
       }
     },
     methods: {
         async StartModelling(){
           DisplayLoad(true)
-          let Ka = await FetchGet('/api/v1/constellation/get/list')
           let Np = await FetchGet('/api/v1/earth/get/list')
           let data = {
-            "satellite": Ka[0].satellites[0],
+            "satellite": this.selectKA,
             "earthPoint": Np[0],
-            "iterationMax": 10
+            "iterationMax": document.getElementById("iterationMax").value
         }
           this.roadList = []
           let rezult = await FetchPost("/api/v1/modelling/traversing", data)
@@ -190,6 +198,10 @@ import "leaflet/dist/leaflet.css";
           this.$emit('updateParentComponent', {
               nameComponent: nameComponent
           })
+        },
+        SelectChange(target){
+          this.selectKA = target.value
+          console.log(this.selectKA)
         },
         async CreateMap(){
           this.showMap = true
@@ -273,7 +285,19 @@ import "leaflet/dist/leaflet.css";
         let result = await FetchGet('/api/v1/satrequest/request/get/all')
         this.purposesJson = result
         console.log(result)
-        
+
+        result = await FetchGet('/api/v1/constellation/get/list')
+        for (let i = 0; i < result.length; i++) {
+          
+          for (let index = 0; index < result[i].satellites.length; index++) {
+            const element = result[i].satellites[index];
+            console.log(element)
+            this.arr.push({value: element, lable: element.idNode + " - " + result[i].constellationName})
+          }
+          
+        }
+        this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
+        this.selectKA = this.arr[0].value
         //this.showMap = false
 
         DisplayLoad(false)
