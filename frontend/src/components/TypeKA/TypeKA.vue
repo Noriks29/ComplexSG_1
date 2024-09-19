@@ -138,7 +138,7 @@
                           <tr><td>Минимальный уровень заряда</td>
                             <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>Вт-ч</td></tr>
                       <tr><th colspan="3">Память</th></tr>
-                          <tr><td>Объем памяти</td>
+                          <tr><td>Объем памяти КА</td>
                             <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
                         <tr><td>Объем заявки</td>
                             <td><input type="number" id="shootingDataVolume" :value="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>??</td></tr>
