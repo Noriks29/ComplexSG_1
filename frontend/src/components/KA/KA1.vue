@@ -59,7 +59,7 @@
             </fieldset>
           </div>
         </div>
-         
+        
         <div class="Panel MaxWidth">
           <p @click="console.log(userFields)">Ход моделирования</p>
           <progress id="progress" max="100" :value="progressValue"></progress>
@@ -73,23 +73,23 @@
           </div>
         </div>
 
-        <div class="Panel MaxWidth">
+        <div class="Panel MaxWidth" v-if="dataModelling.length > 0">
           <div class="PanelWork">
 
             <table class="colum">
               <tr>
                 <td>Заявки</td>
-                <td><button class="ButtonCommand">План выполнения</button></td>
-                <td><button class="ButtonCommand">План доставки</button></td>
-                <td><button class="ButtonCommand">Невыполнимые</button></td>
-                <td><button class="ButtonCommand">Лог выполнения</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
               <tr>
                 <td>КА</td>
-                <td><button @click="ShowShootingPlan" class="ButtonCommand">План съёмок</button></td>
-                <td><button class="ButtonCommand">План доставки</button></td>
-                <td><button class="ButtonCommand">План полёта</button></td>
-                <td><button class="ButtonCommand">Лог полёта</button></td>
+                <td><button @click="ShowShootingPlan" :class="(modellingRezult.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
+                <td><button @click="EventE78" :class="(modellingRezult.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
                 <td></td>
@@ -128,7 +128,13 @@ import DefaultTable from '@/components/DefaultTable.vue'
         dataModelling: [],
         dataTable: [],
         E77: {},
-        earthList: []
+        earthList: [],
+        modellingRezult: {
+          log: [],
+          E77: [],
+          E78: [],
+          hide: []
+        }
       }
     },
     components:{
@@ -143,8 +149,11 @@ import DefaultTable from '@/components/DefaultTable.vue'
       SelectComponent(nameComponent) {
           this.$emit('updateParentComponent', {nameComponent: nameComponent})
       },
-      CreateDateTime(time){
+      CreateDateTime(time, text = true){
           let Dtime = UnixToDtime(time)
+          if(!text){
+            return Dtime.date + " " + Dtime.time
+          }
           return Dtime.date + " " + Dtime.time + " МСК"
         },
       ChangeInputRadio(target){
@@ -165,28 +174,47 @@ import DefaultTable from '@/components/DefaultTable.vue'
         let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
         this.dataModelling = rezult
+        this.ParceModellingRezult()
         this.progressValue = 100
+
         DisplayLoad(false)
+      },
+      ParceModellingRezult(){
+        this.modellingRezult = {
+          log: [],
+          E77: [],
+          E78: [],
+          hide: []
+        }
+        //console.log(this.dataModelling)
+        this.dataModelling.forEach(e => {
+          try {
+            const element = JSON.parse(e)
+            element.time = this.CreateDateTime(element.time, false)
+            this.modellingRezult.log.push(element)
+            if(element.type == "E77"){
+              this.modellingRezult.E77.push(element)
+            }
+            else if (element.type == "E78"){
+              this.modellingRezult.E78.push(element)
+            }
+          } catch (error) {
+            console.log(error)
+            this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + e)
+          }
+        });
+        console.log(this.modellingRezult)
       },
       ShowLogEvent(){
         this.dataTable = []
         this.dataLableName = [{label: "data", nameParam: "data"}]
-        for (let index = 0; index < this.dataModelling.length; index++) {
-          const element = this.dataModelling[index];
+        for (let index = 0; index < this.modellingRezult.log.length; index++) {
+          const element = this.modellingRezult.log[index];
           this.dataTable.push({data: element}) 
         }
         this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
-        for (let index = 0; index < this.dataModelling.length; index++) {
-          const element = JSON.parse(this.dataModelling[index]);
-          if(element.type == "E77"){
-            this.E77 = element
-            console.log(element)
-            break
-          }
-          
-        }
         this.dataTable = []
         this.dataLableName = [
           {lable: "Заявка", nameParam: "orderId"},
@@ -199,18 +227,20 @@ import DefaultTable from '@/components/DefaultTable.vue'
           {lable: "Тангаж", nameParam: "pitch"},
           {lable: "Крен", nameParam: "roll"},
         ]
-        for (let index = 0; index < this.E77.VisualFormsData.VisualFormsDataShooting.length; index++) {
-          const element = this.E77.VisualFormsData.VisualFormsDataShooting[index];
+        for (let index = 0; index < this.modellingRezult.E77[0].VisualFormsData.VisualFormsDataShooting.length; index++) {
+          const element = this.modellingRezult.E77[0].VisualFormsData.VisualFormsDataShooting[index];
           element.ws = UnixToDtime(element.ws).time
           element.we = UnixToDtime(element.we).time
           element.ts = UnixToDtime(element.ts).time
           element.te = UnixToDtime(element.te).time
           element.pitch =  Math.round(element.pitch * 100) / 100
           element.roll =  Math.round(element.roll * 100) / 100
-          
           this.dataTable.push(element) 
         }
         this.ShowDefaultTable = true
+      },
+      EventE78(){
+        console.log(this.modellingRezult.E78)
       },
       ModeLableCreate(){
         if(this.mode > 3 || this.mode < 0){
@@ -253,6 +283,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
 
 
 <style lang="scss" scoped>
+
 
 fieldset{
   text-align: left;
@@ -301,6 +332,10 @@ fieldset{
     }
   }
   
+}
+.ContentDiv{
+  height: fit-content;
+
 }
 
 </style>

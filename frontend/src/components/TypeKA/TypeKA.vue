@@ -141,7 +141,7 @@
                           <tr><td>Объем памяти КА</td>
                             <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
                         <tr><td>Объем заявки</td>
-                            <td><input type="number" id="shootingDataVolume" :value="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>??</td></tr>
+                            <td><input type="number" id="shootingDataVolume" :value="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>ГБ</td></tr>
                   </table>
               </div>
           </div>

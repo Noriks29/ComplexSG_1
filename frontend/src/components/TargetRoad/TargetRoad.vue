@@ -307,12 +307,6 @@ import "leaflet/dist/leaflet.css";
   </script>
 
 <style lang="scss" scoped>
-.main_contain{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  color: white;
-}
 td{
   text-align: left;
 }

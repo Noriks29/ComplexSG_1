@@ -4,7 +4,7 @@
     <div class="idSesion" v-if="login != undefined">
       <div>login: {{ login }}
       <button class="logoutbutton"><img src="./assets/logout.png" alt=""  @click="Log_out">Выйти</button></div>
-      <SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" @valueSelect="ChangeWorkSpace"/>
+      <!--<SelectDiv :dataOption="workplaceList"  :valueS="workplaceList[idworkplace]" @valueSelect="ChangeWorkSpace"/>-->
     </div>
     <div v-if="login == undefined" class="ModalLoginBack">
       <div class="ModalLoginPanel">
@@ -258,6 +258,7 @@ body{
   position: fixed;
     right: 10px;
     color: white;
+    z-index: 2;
     
   &:first-child{
     border-bottom: 1px solid;

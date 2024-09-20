@@ -41,10 +41,14 @@ async function FetchPost(http,datapost,dopparamhttp){
           body: JSON.stringify(datapost)
         })
         if (!response.ok) {
+            let rezult = await response.json()
+            console.log(rezult)
             throw new Error('Network response was not ok');
         }
         else{
-            return await response.json();
+            let rezult = await response.json()
+            //console.log(rezult)
+            return rezult;
         }
         } catch (error) {
             console.log('Error save:', error);
