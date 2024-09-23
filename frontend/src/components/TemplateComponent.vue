@@ -7,7 +7,7 @@
         <button :class="ActiveComponent.SystemWindow ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
         <button :class="ActiveComponent.TargetDZZ ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки ДЗЗ</button>
       </div>
-      <div class="ButtonSection second">
+      <div class="ButtonSection second" v-if="button_mode != 'pavlov'">
         <button :class="ActiveComponent.EarthConstellation ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>План контактов НП – ОГ</button>
         <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
@@ -15,13 +15,18 @@
         <button :class="ActiveComponent.TargetRoad ? 'active' : ''" @click="SelectComponent('TargetRoad')">Маршрут обхода целей</button>
         <button>Обработка ТМИ</button>
       </div>
-      <div class="ButtonSection third">
+      <div class="ButtonSection third"  v-if="button_mode != 'pavlov'">
         <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SelectComponent('KA1')">Моделирование</button>
+      </div>
+      <div class="ButtonSection third" v-else>
+        <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>
       </div>
     </div>
 </template>
 
 <script>
+//import { FetchGet } from '@/js/LoadDisplayMetod';
+import { adress  } from "../js/config_server";
 export default {
   name: 'TemplateComponent',
   props:{
@@ -35,7 +40,7 @@ export default {
   },
   data(){
       return{
-
+        button_mode: "standart"
     }
   },
   methods: {
@@ -44,8 +49,24 @@ export default {
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
+      },
+      async SavePavlov(){
+        console.log("gjt[fkb]")
+        let AcsessKey = localStorage.data
+        const el = document.getElementById("downloadButtonPavlov")
+        el.href = 'http://'+adress+"/api/v1/modelling/ballistic?accessKey="+AcsessKey
+        el.click()
+        //console.log(el)
+        //let rezult = await FetchGet("/api/v1/modelling/ballistic")
+        //console.log(rezult)
       }
+    },
+  mounted(){
+    //console.log(localStorage)
+    if (localStorage.nameUser == "pavlov") {
+      this.button_mode = "pavlov"
     }
+  }
 }
 
 </script>
