@@ -1,6 +1,7 @@
 <template>
     <div class="main_contain">
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
+      <E78Table v-if="ShowE78Table" :dataTable="modellingRezult.E78" @closetable="ShowE78Table = false"/>
       <div>
         <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
           <img src="../../assets/exit.svg">
@@ -114,6 +115,7 @@
 import { UnixToDtime } from '@/js/WorkWithDTime';
 import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
+import E78Table from './E78Table.vue';
   export default {
     name: 'FlightPlaner',
     data(){
@@ -124,6 +126,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
         ConstellationJson: [],
         progressValue: 0,
         ShowDefaultTable: false,
+        ShowE78Table: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: [],
         dataTable: [],
@@ -138,7 +141,8 @@ import DefaultTable from '@/components/DefaultTable.vue'
       }
     },
     components:{
-      DefaultTable
+      DefaultTable,
+      E78Table
     },
     props:{
         systemStatus:{
@@ -170,7 +174,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
             "satellite": Ka,
             "earthPoint": this.earthList[0]
         }
-        console.log(dataPost)
+        //console.log(dataPost)
         let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
         this.dataModelling = rezult
@@ -240,7 +244,8 @@ import DefaultTable from '@/components/DefaultTable.vue'
         this.ShowDefaultTable = true
       },
       EventE78(){
-        console.log(this.modellingRezult.E78)
+        //console.log(this.modellingRezult.E78)
+        this.ShowE78Table = true
       },
       ModeLableCreate(){
         if(this.mode > 3 || this.mode < 0){
