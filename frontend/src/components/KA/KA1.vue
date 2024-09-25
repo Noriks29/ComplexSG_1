@@ -88,7 +88,7 @@
               <tr>
                 <td>КА</td>
                 <td><button @click="ShowShootingPlan" :class="(modellingRezult.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
-                <td><button @click="EventE78" :class="(modellingRezult.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><button @click="EventE78" :class="(modellingRezult.E78.lenght < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
@@ -177,9 +177,16 @@ import E78Table from './E78Table.vue';
         //console.log(dataPost)
         let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
         console.log("Результат", await rezult)
-        this.dataModelling = rezult
-        this.ParceModellingRezult()
-        this.progressValue = 100
+        if(rezult.length < 1){
+          alert("Пустой результат моделирования")
+          this.progressValue = 50
+        }
+        else{
+          this.dataModelling = rezult
+          this.ParceModellingRezult()
+          this.progressValue = 100
+        }
+        
 
         DisplayLoad(false)
       },
@@ -197,10 +204,15 @@ import E78Table from './E78Table.vue';
             element.time = this.CreateDateTime(element.time, false)
             this.modellingRezult.log.push(element)
             if(element.type == "E77"){
-              this.modellingRezult.E77.push(element)
+              if (element.VisualFormsData.VisualFormsDataShooting.lenght > 0) {
+                this.modellingRezult.E77.push(element)
+              }
+              
             }
             else if (element.type == "E78"){
-              this.modellingRezult.E78.push(element)
+              if (element.dataDownPlan.partsPlan.lenght > 0) {
+                this.modellingRezult.E78.push(element)
+              }
             }
           } catch (error) {
             console.log(error)

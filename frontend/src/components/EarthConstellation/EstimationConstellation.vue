@@ -48,6 +48,7 @@
                   <tr 
                     v-for="data,index in TableViewWindow"
                     :key="index"
+                    :class="(data.viewcount == 0) ? 'redtrbg' : ''"
                   >
                     <td>{{ data.name }}</td>
                     <td>{{ data.viewcount }}</td>
@@ -128,9 +129,11 @@ import Plotly from 'plotly.js-dist'
           this.dataTable = data
           this.ShowDefaultTable = true
         },
-        CreateViewWindow(){
+        async CreateViewWindow(){
           this.TableViewWindow = []
           let fill = false
+          let result = await FetchGet('/api/v1/satrequest/request/get/all')
+
           for (let index = 0; index < this.dataTable.length; index++) {
             const element = this.dataTable[index];
             for (let index_child = 0; index_child < this.TableViewWindow.length; index_child++) {
@@ -148,7 +151,21 @@ import Plotly from 'plotly.js-dist'
             }
             fill = false
           }
-          console.log(this.TableViewWindow)
+          console.log(this.TableViewWindow, result)
+          for (let index = 0; index < result.length; index++) {
+            const element = result[index];
+            let flag_add = false
+            for (let id = 0; id < this.TableViewWindow.length; id++) {
+              const e = this.TableViewWindow[id];
+              if(element.catalog.goalName == e.name){
+                flag_add = true
+                break
+              }
+            }
+            if(!flag_add){
+              this.TableViewWindow.push({name: element.catalog.goalName, viewcount: 0, data: [{begin: null, end: null, goalLabel: element.catalog.goalName, scLabel: null}]})
+            }
+          }
         },
         async StartModelling(){
           DisplayLoad(true)
@@ -164,7 +181,7 @@ import Plotly from 'plotly.js-dist'
           } catch (error) {
             console.log(error)
           }
-          console.log(JSON.stringify(response))
+          //console.log(JSON.stringify(response))
           this.dataTable = await response
           this.AllResponse = await response
           this.CreateViewWindow()
@@ -261,5 +278,8 @@ input{
     border: none;
     background: none;
     color: white;
+}
+.redtrbg{
+  background-color: #88010194;
 }
 </style>
