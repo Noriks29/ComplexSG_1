@@ -204,13 +204,13 @@ import E78Table from './E78Table.vue';
             element.time = this.CreateDateTime(element.time, false)
             this.modellingRezult.log.push(element)
             if(element.type == "E77"){
-              if (element.VisualFormsData.VisualFormsDataShooting.lenght > 0) {
+              if (element.VisualFormsData.VisualFormsDataShooting.length > 0) {
                 this.modellingRezult.E77.push(element)
               }
               
             }
             else if (element.type == "E78"){
-              if (element.dataDownPlan.partsPlan.lenght > 0) {
+              if (element.dataDownPlan.partsPlan.length > 0) {
                 this.modellingRezult.E78.push(element)
               }
             }
@@ -219,7 +219,6 @@ import E78Table from './E78Table.vue';
             this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + e)
           }
         });
-        console.log(this.modellingRezult)
       },
       ShowLogEvent(){
         this.dataTable = []
@@ -256,7 +255,6 @@ import E78Table from './E78Table.vue';
         this.ShowDefaultTable = true
       },
       EventE78(){
-        //console.log(this.modellingRezult.E78)
         this.ShowE78Table = true
       },
       ModeLableCreate(){

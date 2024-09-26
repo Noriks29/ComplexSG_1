@@ -76,7 +76,6 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
         
     },
     mounted() {
-      console.log( this.dataTable)
       //this.rebuild_data = []
       this.rebuild_data.push({
               timeEndConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeEndConnect,

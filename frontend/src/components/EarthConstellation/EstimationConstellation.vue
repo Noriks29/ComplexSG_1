@@ -280,6 +280,6 @@ input{
     color: white;
 }
 .redtrbg{
-  background-color: #88010194;
+  background-color: #88010162;
 }
 </style>
