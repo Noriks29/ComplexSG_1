@@ -35,6 +35,7 @@
 
 //import jsons from '../../res/testOGFree.json'
 import { UnixToDtime } from '../../js/WorkWithDTime'
+import { FetchGet } from '../../js/LoadDisplayMetod'
 
   export default {
     name: 'E78Data',
@@ -60,10 +61,10 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
             htmlcode += "<tr><td rowspan="+element.orderList.length+">" + element.gsId + "</td><td rowspan="+element.orderList.length+">" + element.scId + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeStartConnect) + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeEndConnect) + "</td>"
-            htmlcode += "<td rowspan="+element.orderList.length+">"+ "element.capacity" +"</td><td>" + element.orderList[0].idOrder + "</td><td>" + element.orderList[0].capacity + "</td><td>" + element.orderList[0].dataVolume + "</td></tr>"
+            htmlcode += "<td>"+ element.orderList[0].capacity +"</td><td>" + element.orderList[0].idOrder + "</td><td>" + element.orderList[0].dataVolume + "</td><td>" + element.orderList[0].dataVolumeContact + "</td></tr>"
             for (let i = 1; i < element.orderList.length; i++) {
               const el = element.orderList[i];
-              htmlcode += "<tr><td>" + el.idOrder + "</td><td>" + el.dataVolume + "</td><td>" + el.dataVolumeContact  + "</td></tr>"
+              htmlcode += "<tr><td>" + el.capacity + "</td><td>" + el.idOrder + "</td><td>" + el.dataVolume + "</td><td>" + el.dataVolumeContact  + "</td></tr>"
             }
           }
           return htmlcode
@@ -75,8 +76,9 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
         },
         
     },
-    mounted() {
+    async mounted() {
       //this.rebuild_data = []
+
       this.rebuild_data.push({
               timeEndConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeEndConnect,
               timeStartConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeStartConnect,
@@ -105,6 +107,26 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           }
       }
       console.log(this.rebuild_data)
+      let GS = await FetchGet('/api/v1/earth/get/list')
+      let Request = await FetchGet('/api/v1/satrequest/request/get/all')
+      for (let index = 0; index < this.rebuild_data.length; index++) {
+        const element = this.rebuild_data[index];
+        console.log(element, GS, Request)
+        for (let i = 0; i < GS.length; i++) {
+          if(element.gsId == GS[i].id){
+            element.gsId = GS[i].nameEarthPoint
+            break
+          }
+        }
+        for (let i = 0; i < element.orderList.length; i++) {
+          for (let j = 0; j < Request.length; j++) {
+            if(element.orderList[i].idOrder == Request[j].catalog.goalId){
+              element.orderList[i].idOrder = Request[j].catalog.goalName
+            }
+            
+          }
+        }
+      }
     }
   }
 </script>
