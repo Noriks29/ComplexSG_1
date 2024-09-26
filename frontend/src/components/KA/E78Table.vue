@@ -60,10 +60,10 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
             htmlcode += "<tr><td rowspan="+element.orderList.length+">" + element.gsId + "</td><td rowspan="+element.orderList.length+">" + element.scId + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeStartConnect) + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeEndConnect) + "</td>"
-            htmlcode += "<td rowspan="+element.orderList.length+"> ?? </td><td>" + element.orderList[0].idOrder + "</td><td>" + element.orderList[0].capacity + "</td><td>" + element.orderList[0].dataVolume + "</td></tr>"
+            htmlcode += "<td rowspan="+element.orderList.length+">"+ "element.capacity" +"</td><td>" + element.orderList[0].idOrder + "</td><td>" + element.orderList[0].capacity + "</td><td>" + element.orderList[0].dataVolume + "</td></tr>"
             for (let i = 1; i < element.orderList.length; i++) {
               const el = element.orderList[i];
-              htmlcode += "<tr><td>" + el.idOrder + "</td><td>" + el.capacity + "</td><td>" + el.dataVolume + "</td></tr>"
+              htmlcode += "<tr><td>" + el.idOrder + "</td><td>" + el.dataVolume + "</td><td>" + el.dataVolumeContact  + "</td></tr>"
             }
           }
           return htmlcode
@@ -82,14 +82,14 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
               timeStartConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeStartConnect,
               scId: this.dataTable[0].dataDownPlan.partsPlan[0].scId,
               gsId: this.dataTable[0].dataDownPlan.partsPlan[0].gsId,
-              orderList: [{ idOrder: this.dataTable[0].dataDownPlan.partsPlan[0].idOrder , capacity: this.dataTable[0].dataDownPlan.partsPlan[0].capacity, dataVolume: this.dataTable[0].dataDownPlan.partsPlan[0].dataVolume}]
+              orderList: [{ idOrder: this.dataTable[0].dataDownPlan.partsPlan[0].idOrder , capacity: this.dataTable[0].dataDownPlan.partsPlan[0].capacity, dataVolume: this.dataTable[0].dataDownPlan.partsPlan[0].dataVolume,  dataVolumeContact: this.dataTable[0].dataDownPlan.partsPlan[0].dataVolumeContact}]
             })
       for (let index = 1; index < this.dataTable[0].dataDownPlan.partsPlan.length; index++) {
         const element = this.dataTable[0].dataDownPlan.partsPlan[index];
         let flag_push = false
         for (let i = 0; i < this.rebuild_data.length; i++) {
           if (this.rebuild_data[i].gsId == element.gsId && this.rebuild_data[i].scId == element.scId) {
-            this.rebuild_data[i].orderList.push({idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume})
+            this.rebuild_data[i].orderList.push({idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume,  dataVolumeContact: element.dataVolumeContact})
             flag_push = true
             break
           }
@@ -100,7 +100,7 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
               timeStartConnect: element.timeStartConnect,
               scId: element.scId,
               gsId: element.gsId,
-              orderList: [{idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume}]
+              orderList: [{idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume, dataVolumeContact: element.dataVolumeContact}]
             })
           }
       }
