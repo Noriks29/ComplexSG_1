@@ -204,8 +204,9 @@ import E78Table from './E78Table.vue';
             element.time = this.CreateDateTime(element.time, false)
             this.modellingRezult.log.push(element)
             if(element.type == "E77"){
-              if (element.VisualFormsData.VisualFormsDataShooting.length > 0) {
-                this.modellingRezult.E77.push(element)
+              for (let index = 0; index < element.VisualFormsData.VisualFormsDataShooting.length; index++) {
+                const e = Object.assign({}, element.VisualFormsData.VisualFormsDataShooting[index]);
+                this.modellingRezult.E77.push(e)
               }
               
             }
@@ -219,6 +220,7 @@ import E78Table from './E78Table.vue';
             this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + e)
           }
         });
+        console.log(this.modellingRezult)
       },
       ShowLogEvent(){
         this.dataTable = []
@@ -230,6 +232,7 @@ import E78Table from './E78Table.vue';
         this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
+        console.log(this.modellingRezult)
         this.dataTable = []
         this.dataLableName = [
           {lable: "Заявка", nameParam: "orderId"},
@@ -242,8 +245,8 @@ import E78Table from './E78Table.vue';
           {lable: "Тангаж", nameParam: "pitch"},
           {lable: "Крен", nameParam: "roll"},
         ]
-        for (let index = 0; index < this.modellingRezult.E77[0].VisualFormsData.VisualFormsDataShooting.length; index++) {
-          const element = this.modellingRezult.E77[0].VisualFormsData.VisualFormsDataShooting[index];
+        for (let index = 0; index < this.modellingRezult.E77.length; index++) {
+          let element = Object.assign({}, this.modellingRezult.E77[index]);
           element.ws = UnixToDtime(element.ws).time
           element.we = UnixToDtime(element.we).time
           element.ts = UnixToDtime(element.ts).time
