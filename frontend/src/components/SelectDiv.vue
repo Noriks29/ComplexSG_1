@@ -1,6 +1,6 @@
 <template>
     <div class="SelectDiv">
-        <div class="SelectedValue" :class="displayList ?  'active' : ''"  @click="displayList = !displayList">
+        <div class="SelectedValue" :class="displayList ?  'active' : ''"  @click="DisplayList">
             <div>
               {{ lable }}
             </div>
@@ -62,6 +62,22 @@
       },
       PostValue() {
         this.$emit('valueSelect', {value: this.value, id: this.id})
+      },
+      DisplayList(){
+        if(this.displayList){
+          this.displayList = false
+        }
+        else{
+          this.displayList = true
+          let flag = true
+          document.getElementById("app").addEventListener("click", function CloseWindow(e) {
+            console.log(e)
+            if(flag){
+              this.displayList = false
+              document.getElementById("app").removeEventListener("click", CloseWindow)
+            }
+          })
+        }
       }
     },
     mounted (){
