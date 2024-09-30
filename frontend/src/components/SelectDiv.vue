@@ -114,7 +114,7 @@
   }
 
   .Options{
-    z-index: 3;
+    z-index: 500;
     position: absolute;
     width: 100%;
     top: 100%;

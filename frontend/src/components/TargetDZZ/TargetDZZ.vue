@@ -44,18 +44,17 @@
               <tr
               v-for="data, index in requestJson"
                 :key="index"
-                :class="!requestApproved ? 'active' :''"
                 @change="ChangeParamRequest"
                 v-show="!(data.deleted==true)"
               >
               <td>{{ index }}</td>
-              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="index" @valueSelect="SelectChange"/></td>
+              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange"/></td>
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
               <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChangeNP"/></td>
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
-              <td><DateTime :valueUnix="data.time" :id="index" :name="'time'" @valueSelect="ChangeTime"/></td>
-              <td><DateTime :valueUnix="data.term" :id="index" :name="'term'"  @valueSelect="ChangeTime"/></td>
+              <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
+              <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
               
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
@@ -148,11 +147,13 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         this.SatartSave('request')
       },
       SelectChange(e){
+        console.log(e,  this.requestJson)
         this.requestJson[e.id].catalog = e.value
         this.SatartSave('request')
       },
       SelectChangeNP(e){
-        this.requestJson[e.id].catalog = e.value
+        console.log(e,  this.requestJson)
+        this.requestJson[e.id].earthPoint = e.value
         this.SatartSave('request')
       },
       CreateSelectArr(){
@@ -232,6 +233,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         this.SatartSave('request')
       },
       async ReFetch(){
+        this.arrNP = []
         let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
         this.catalogJson = result || {}
         for (let index = 0; index < this.catalogJson.length; index++) {
@@ -289,7 +291,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
     },
     
     async mounted() {
-      console.log(this.systemStatus)
+      //console.log(this.systemStatus)
       DisplayLoad(true)
       let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
       this.catalogJson = result || {}
@@ -312,7 +314,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           const element = result[i];
           this.arrNP.push({value: element, lable: element.nameEarthPoint })
         }
-        console.log(this.requestJson, this.catalogJson)
+        //console.log(this.requestJson, this.catalogJson)
       this.CreateSelectArr()
       DisplayLoad(false)
       this.CreateMap()
