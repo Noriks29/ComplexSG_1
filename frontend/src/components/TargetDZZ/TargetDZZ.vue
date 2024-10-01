@@ -63,6 +63,9 @@
               </tr>   
             </table>
             <div>
+              <div id="DrawKARoad">
+                <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
+                <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button></div>
               <div id="map"></div>
             </div> 
         </div>
@@ -125,6 +128,10 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         selectCatalog: null,
 
         requestJson: [],
+
+        KAArray: [],
+        SelectKa: {},
+        KatoDraw: {},
 
         arr: [],
         arrNP: [],
@@ -280,12 +287,30 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           for (let i = 0; i < this.requestJson.length; i++) {
               const element = this.requestJson[i].catalog;
               console.log(element)
-              this.mapPoint.push(L.circle([element.lat, element.lon], 17000, {
+              this.mapPoint.push(L.circle([element.lat, element.lon], 21000, {
                 color: 'blue',
                 fillColor: '#f03',
                 fillOpacity: 0.1
               }).addTo(this.map))
           }
+        },
+        ChangeKaDraw(e){
+          this.KatoDraw = e.value
+        },
+        async GetKARoad(){
+          let color = document.getElementById("inputColorKa")
+          console.log(this.KatoDraw, color.value)
+          let road = await FetchPost("/api/v1/modelling/gps/coordinates", this.KatoDraw)
+          console.log(road, this.map, new L.LatLng(59.932936, 30.311349))
+
+          
+          let arrayPoint = []
+          for (let index = 0; index < road.length; index+=1) {
+            const element = road[index];
+            arrayPoint.push({lat: element.latitude, lng: element.longitude})
+          }
+          console.log(arrayPoint, color.value)
+          L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
         }
       
     },
@@ -293,6 +318,17 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
     async mounted() {
       //console.log(this.systemStatus)
       DisplayLoad(true)
+
+      let Ka = await FetchGet('/api/v1/constellation/get/list')
+      Ka.forEach(OG => {
+        OG.satellites.forEach(element =>{
+          this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.idNode })
+        })
+      });
+      this.SelectKa = this.KAArray[0]
+      this.KatoDraw = this.SelectKa.value
+      //console.log(this.KAArray)
+
       let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
       this.catalogJson = result || {}
       for (let index = 0; index < this.catalogJson.length; index++) {
@@ -380,5 +416,25 @@ th{
   .leaflet-map-pane{
             pointer-events: none;
         }
+}
+
+#DrawKARoad{
+  display: flex;
+  align-items: center;
+  padding: 5px 20px;
+  margin: 0px 40px;
+
+  #inputColorKa{
+  height: 50px;
+  width: 100px;
+  padding: 0px;
+  margin: 5px 40px;
+  }
+  .ButtonCommand{
+    margin: 5px 40px;
+  }
+
+  
+  
 }
 </style>
