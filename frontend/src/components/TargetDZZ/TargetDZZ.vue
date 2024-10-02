@@ -298,19 +298,36 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           this.KatoDraw = e.value
         },
         async GetKARoad(){
+          DisplayLoad(true)
           let color = document.getElementById("inputColorKa")
-          console.log(this.KatoDraw, color.value)
-          let road = await FetchPost("/api/v1/modelling/gps/coordinates", this.KatoDraw)
-          console.log(road, this.map, new L.LatLng(59.932936, 30.311349))
+          let colors = ['#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#990000','#009900','#999900','#000099','#ffcc00','#00ffcc','#cc0000','#00cc00','#cccc00','#0000cc','#ee0000','#00ee00','#eeee00','#00eeee','#aaaa00']
+          if (this.KatoDraw == undefined) {
+            let roads = await FetchGet("/api/v1/modelling/gps/coordinates")
+            console.log(roads)
+            let colorid = 0
+            roads.forEach(road => {
+              let arrayPoint = []
+              for (let index = 0; index < road.coordinates.length; index+=1) {
+                const element = road.coordinates[index];
+                arrayPoint.push({lat: element.latitude, lng: element.longitude})
+              }
+              L.polyline(arrayPoint, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
+              colorid++
+            });
 
-          
-          let arrayPoint = []
-          for (let index = 0; index < road.length; index+=1) {
-            const element = road[index];
-            arrayPoint.push({lat: element.latitude, lng: element.longitude})
           }
-          console.log(arrayPoint, color.value)
-          L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
+          else{
+            //console.log(this.KatoDraw, color.value)
+            let road = await FetchPost("/api/v1/modelling/gps/sat/coordinates", {}, "satelliteId="+this.KatoDraw.satelliteId)
+            //console.log(road, this.map, new L.LatLng(59.932936, 30.311349))
+            let arrayPoint = []
+            for (let index = 0; index < road.length; index+=1) {
+              const element = road[index];
+              arrayPoint.push({lat: element.latitude, lng: element.longitude})
+            }
+            L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
+          }
+          DisplayLoad(false)
         }
       
     },
@@ -320,6 +337,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
       DisplayLoad(true)
 
       let Ka = await FetchGet('/api/v1/constellation/get/list')
+      this.KAArray.push({value: undefined, lable: "Все КА" })
       Ka.forEach(OG => {
         OG.satellites.forEach(element =>{
           this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.idNode })
