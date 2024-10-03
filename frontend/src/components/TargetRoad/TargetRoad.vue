@@ -211,9 +211,9 @@ import "leaflet/dist/leaflet.css";
           for (let index = 0; index < this.selectroad.length; index++) {
             const id = this.selectroad[index].orderId;
             for (let i = 0; i < this.purposesJson.length; i++) {
-              const element = this.purposesJson[i].catalog;
-              if(element.goalId + 1 == id){
-                this.selectroad[index].data = element
+              const element = this.purposesJson[i];
+              if(element.requestId + 1 == id){
+                this.selectroad[index].data = element.catalog
                 break
               }
             }
@@ -233,10 +233,10 @@ import "leaflet/dist/leaflet.css";
                 iconRetinaUrl: icon2x
           });
           L.Marker.prototype.options.icon = DefaultIcon;
-
+          console.log(this.purposesJson)
           for (let i = 0; i < this.purposesJson.length; i++) {
               const element = this.purposesJson[i].catalog;
-              console.log(element)
+              console.log([element.lat, element.lon])
               this.mapPoint.push(L.circle([element.lat, element.lon], 12000, {
                 color: 'blue',
                 fillColor: '#f03',
@@ -246,7 +246,7 @@ import "leaflet/dist/leaflet.css";
 
           for (let index = 0; index < this.selectroad.length; index++) {
             const element = this.selectroad[index];
-            console.log(element.data)
+            console.log(element)
             this.mapPoint.push(L.circle([element.data.lat, element.data.lon], 15500, {
                 color: 'red',
                 fillColor: '#f03',

@@ -293,6 +293,16 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
                 fillOpacity: 0.1
               }).addTo(this.map))
           }
+          
+          this.arrNP.forEach(element => {
+            console.log(element.value)
+            console.log(element)
+              this.mapPoint.push(L.circle([element.value.latitude, element.value.longitude], 17000, {
+                color: 'green',
+                fillColor: '#121100',
+                fillOpacity: 0.4
+              }).addTo(this.map))
+          });
         },
         ChangeKaDraw(e){
           this.KatoDraw = e.value
