@@ -2,6 +2,7 @@
     <div class="main_contain">
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
       <E78Table v-if="ShowE78Table" :dataTable="modellingRezult.E78" @closetable="ShowE78Table = false"/>
+      <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
       <div>
         <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
           <img src="../../assets/exit.svg">
@@ -80,7 +81,7 @@
             <table class="colum">
               <tr>
                 <td>Заявки</td>
-                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
+                <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
@@ -116,6 +117,7 @@ import { UnixToDtime } from '@/js/WorkWithDTime';
 import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 import E78Table from './E78Table.vue';
+import E77E78 from './E77E78.vue';
   export default {
     name: 'FlightPlaner',
     data(){
@@ -127,6 +129,7 @@ import E78Table from './E78Table.vue';
         progressValue: 0,
         ShowDefaultTable: false,
         ShowE78Table: false,
+        ShowE77E78Table: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: [],
         dataTable: [],
@@ -142,7 +145,8 @@ import E78Table from './E78Table.vue';
     },
     components:{
       DefaultTable,
-      E78Table
+      E78Table,
+      E77E78
     },
     props:{
         systemStatus:{
@@ -259,6 +263,9 @@ import E78Table from './E78Table.vue';
       },
       EventE78(){
         this.ShowE78Table = true
+      },
+      EventE77E78(){
+        this.ShowE77E78Table = true
       },
       ModeLableCreate(){
         if(this.mode > 3 || this.mode < 0){
