@@ -12,7 +12,7 @@
             <th>Модель КА</th>
             <th v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
             <th v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
-            <th>Высота</th>
+            <th>Большая полуось</th>
             <th>Эксцентриситет</th>
             <th>Наклон</th>
             <th>Долгота восходящего узла</th>

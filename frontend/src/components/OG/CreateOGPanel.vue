@@ -23,7 +23,7 @@
             <tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="SelectChangeKA"/></td></tr>
             <tr><td>Количество плоскостей</td><td><input name="numberOfPlane" type="number" value="0"></td></tr>
             <tr><td>Количество позиций в плоскости</td><td><input name="positionPlane" type="number" value="0"></td></tr>
-            <tr><td>Высота</td><td><input name="altitude" type="number" value="0"></td></tr>
+            <tr><td>Большая полуось</td><td><input name="altitude" type="number" value="0"></td></tr>
             <tr><td>Эксцентриситет</td><td><input name="eccentricity" type="number" value="0"></td></tr>
             <tr><td>Наклон</td><td><input name="incline" type="number" value="0"></td></tr>
 
