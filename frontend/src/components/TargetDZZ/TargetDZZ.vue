@@ -241,12 +241,12 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
       },
       async ReFetch(){
         this.arrNP = []
-        let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+        let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
         this.catalogJson = result || {}
         for (let index = 0; index < this.catalogJson.length; index++) {
           this.catalogJson[index].countRequest = 0;
         }
-        result = await FetchGet('/api/v1/satrequest/request/get/all')
+        result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.requestJson = result || {}
         for (let index = 0; index < this.requestJson.length; index++) {
           const element = this.requestJson[index].catalog.goalId
@@ -257,7 +257,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
             }
           }
         }
-        result = await FetchGet('/api/v1/earth/get/list')
+        result = await FetchGet('/api/v1/earth/get/list') || []
         for (let i = 0; i < result.length; i++) {
             const element = result[i];
             this.arrNP.push({value: element, lable: element.nameEarthPoint })
@@ -312,7 +312,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           let color = document.getElementById("inputColorKa")
           let colors = ['#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#990000','#009900','#999900','#000099','#ffcc00','#00ffcc','#cc0000','#00cc00','#cccc00','#0000cc','#ee0000','#00ee00','#eeee00','#00eeee','#aaaa00']
           if (this.KatoDraw == undefined) {
-            let roads = await FetchGet("/api/v1/modelling/gps/coordinates")
+            let roads = await FetchGet("/api/v1/modelling/gps/coordinates") || []
             console.log(roads)
             let colorid = 0
             roads.forEach(road => {
@@ -328,7 +328,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           }
           else{
             //console.log(this.KatoDraw, color.value)
-            let road = await FetchPost("/api/v1/modelling/gps/sat/coordinates", {}, "satelliteId="+this.KatoDraw.satelliteId)
+            let road = await FetchPost("/api/v1/modelling/gps/sat/coordinates", {}, "satelliteId="+this.KatoDraw.satelliteId) || []
             //console.log(road, this.map, new L.LatLng(59.932936, 30.311349))
             let arrayPoint = []
             for (let index = 0; index < road.length; index+=1) {
@@ -346,7 +346,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
       //console.log(this.systemStatus)
       DisplayLoad(true)
 
-      let Ka = await FetchGet('/api/v1/constellation/get/list')
+      let Ka = await FetchGet('/api/v1/constellation/get/list') || []
       this.KAArray.push({value: undefined, lable: "Все КА" })
       Ka.forEach(OG => {
         OG.satellites.forEach(element =>{
@@ -357,12 +357,12 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
       this.KatoDraw = this.SelectKa.value
       //console.log(this.KAArray)
 
-      let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+      let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
       this.catalogJson = result || {}
       for (let index = 0; index < this.catalogJson.length; index++) {
         this.catalogJson[index].countRequest = 0;
       }
-      result = await FetchGet('/api/v1/satrequest/request/get/all')
+      result = await FetchGet('/api/v1/satrequest/request/get/all') || []
       this.requestJson = result || {}
       for (let index = 0; index < this.requestJson.length; index++) {
         const element = this.requestJson[index].catalog.goalId
@@ -373,7 +373,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           }
         }
       }
-      result = await FetchGet('/api/v1/earth/get/list')
+      result = await FetchGet('/api/v1/earth/get/list') || []
       for (let i = 0; i < result.length; i++) {
           const element = result[i];
           this.arrNP.push({value: element, lable: element.nameEarthPoint })

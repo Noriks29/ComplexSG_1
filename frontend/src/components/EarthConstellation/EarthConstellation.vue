@@ -33,20 +33,10 @@
       <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">C1 - рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">C2 - показать окна видимости / плана контактов</button></div>
-          <div><button @click="CommandWork(3)" class="ButtonCommand">C3 - проверка ограничений</button></div>
-          <div><button @click="CommandWork(4)" class="ButtonCommand">C4 - визуальный анализ окон видимости / плана контактов</button></div>
+          <div><button @click="CommandWork(3)" class="ButtonCommand disable">C3 - проверка ограничений</button></div>
+          <div><button @click="CommandWork(4)" class="ButtonCommand disable">C4 - визуальный анализ окон видимости / плана контактов</button></div>
           <div><button @click="CommandWork(5)" class="ButtonCommand">C5 - расчёт плана контактов</button></div>
-          <div><button @click="CommandWork(6)" class="ButtonCommand">C6 - графическое представление плана контактов</button></div>
-        </div>
-      </div>
-      <div class="TableInfo Panel MaxWidth">
-        <div class="ButtonApproved">
-          <button v-if="requestApproved" @click="SatartEditing('request')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
-          <button v-if="requestApproved" class="ButtonDefaultShadow"></button>  
-        </div>
-        <div class="ButtonApproved">
-          <button v-if="!requestApproved" @click="SatartSave('request')" :class="!requestJsonsave ? '' :'Empty disabled'" class="ButtonDefault"> <img src="../../assets/save.svg">Сохранить</button>
-          <button v-if="!requestApproved && !requestJsonsave" class="ButtonDefaultShadow"></button>
+          <div><button @click="CommandWork(6)" class="ButtonCommand disable">C6 - графическое представление плана контактов</button></div>
         </div>
       </div>
     </div>
@@ -107,11 +97,9 @@ import SelectDiv from '../SelectDiv.vue';
                 {lable: "Конец", nameParam: "end"},
               ]
               //дальше мы типо запрашиваем данные
-              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all')
-              console.log(response)
+              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
               this.dataTable = await response
               this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
-              console.log(this.dataTable, "tttt")
               
               for (let index = 0; index < this.dataTable.length; index++) {
                 this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
@@ -121,14 +109,12 @@ import SelectDiv from '../SelectDiv.vue';
             }
             if(commandId == 5){
               DisplayLoad(true)
-              let result = await FetchGet("/api/v1/modelling/contact-plan/sat-earth")
-              console.log(result)
+              await FetchGet("/api/v1/modelling/contact-plan/sat-earth")
               DisplayLoad(false)
             }
             if(commandId == 1){
               DisplayLoad(true)
-              let response = await FetchGet('/api/v1/modelling/view/earth')
-              console.log(response)
+              await FetchGet('/api/v1/modelling/view/earth')
               DisplayLoad(false)
             }
         },
@@ -145,10 +131,10 @@ import SelectDiv from '../SelectDiv.vue';
     
     async mounted() {
         DisplayLoad(true)
-        let result = await FetchGet('/api/v1/earth/get/list')
+        let result = await FetchGet('/api/v1/earth/get/list') || []
         this.earthSize = result.length || 0
 
-        result = await FetchGet('/api/v1/constellation/get/list')
+        result = await FetchGet('/api/v1/constellation/get/list') || []
         this.ConstellationJson = await result
 
         for (let i = 0; i < this.ConstellationJson.length; i++) {

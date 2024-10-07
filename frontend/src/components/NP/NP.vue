@@ -127,7 +127,7 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
         },
         async ReFetch(){
           let result = await FetchGet('/api/v1/earth/get/list')
-          this.dataJson = result
+          this.dataJson = result || []
         }
       
     },
@@ -135,7 +135,7 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
       DisplayLoad(true)
       this.approved = this.systemStatus.earthStatus
       let result = await FetchGet('/api/v1/earth/get/list')
-      this.dataJson = result || {}
+      this.dataJson = result || []
       DisplayLoad(false)
     }
   }

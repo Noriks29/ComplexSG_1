@@ -73,7 +73,7 @@
             this.OG_Param.parametersCalculation.modelSat.id = data.value
           },
           ChangeGenerateParam(target){
-            console.log(target.target.name, target.target.value)
+            //console.log(target.target.name, target.target.value)
             this.OG_Param.parametersCalculation[target.target.name] = Number(target.target.value)
           },
           SelectChange(data){
@@ -98,7 +98,7 @@
             {
               if(this.OG_Param.type === true)
               {
-                console.log(this.KaModels)
+                //console.log(this.KaModels)
                 let addedRow = {
                   'constellationName' : this.OG_Param.inputName,
                   'satellites' : [
@@ -117,15 +117,15 @@
 
                   
                 };
-                console.log(addedRow)
-                let responce = await FetchPost('/api/v1/constellation/update',addedRow)
+                //console.log(addedRow)
+                let responce = await FetchPost('/api/v1/constellation/update',addedRow) || {}
                 
                 if(responce.type == "SUCCESS"){
                   this.CloseTable()
                 }
                 else{
                   alert("Ошибка добавления")
-                  console.log(responce)
+                  //console.log(responce)
                 }
 
               }
@@ -136,7 +136,7 @@
                   'arbitraryFormation' : this.OG_Param.type,
                 };
                 console.log(addedRow)
-                let responce = await FetchPost('/api/v1/constellation/calc/planar',addedRow)
+                let responce = await FetchPost('/api/v1/constellation/calc/planar',addedRow) || {}
                 
                 if(responce.type == "SUCCESS"){
                   this.CloseTable()
@@ -155,7 +155,7 @@
           
         },
         async mounted(){
-          let result = await FetchGet('/api/v1/modelsat/all')
+          let result = await FetchGet('/api/v1/modelsat/all') || []
           this.KaModels = []
           for (let index = 0; index < result.length; index++) {
             this.KaModels.push({value: result[index].id, lable:  result[index].modelName});

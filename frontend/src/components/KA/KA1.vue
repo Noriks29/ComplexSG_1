@@ -33,15 +33,15 @@
             <fieldset  @change="ChangeInputRadio">
               <legend>Тип эксперимента:</legend>
               <div>
-                <input type="radio" name="typeEx" value="1" checked />
+                <input type="radio" name="experimentType" value="1" checked />
                 <label>Планирование заявок</label>
               </div>
               <div>
-                <input type="radio" name="typeEx" value="2" />
+                <input type="radio" name="experimentType" value="2" />
                 <label>Планирование заявок и планирование полёта</label>
               </div>
               <div>
-                <input type="radio" name="typeEx" value="3" />
+                <input type="radio" name="experimentType" value="3" />
                 <label>Планирование заявок и моделирование полёта</label>
               </div>
             </fieldset>
@@ -51,11 +51,11 @@
             <fieldset  @change="ChangeInputRadio">
               <legend>Режим моделирования:</legend>
               <div>
-                <input type="radio" name="typeModelling" value="1" checked />
+                <input type="radio" name="modellingMode" value="1" checked />
                 <label>Непрерывное моделирование</label>
               </div>
               <div>
-                <input type="radio" name="typeModelling" value="2" />
+                <input type="radio" name="modellingMode" value="2" />
                 <label>Пошаговое моделирование</label>
               </div>
             </fieldset>
@@ -122,7 +122,6 @@ import E77E78 from './E77E78.vue';
     name: 'FlightPlaner',
     data(){
       return{
-        mode: 0,
         earthSize: 0,
         purposesJson: 0,
         ConstellationJson: [],
@@ -133,8 +132,11 @@ import E77E78 from './E77E78.vue';
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: [],
         dataTable: [],
-        E77: {},
         earthList: [],
+        modellingSettings:{
+          experimentType: 1,
+          modellingMode: 1
+        },
         modellingRezult: {
           log: [],
           E77: [],
@@ -165,21 +167,16 @@ import E77E78 from './E77E78.vue';
           return Dtime.date + " " + Dtime.time + " МСК"
         },
       ChangeInputRadio(target){
-        console.log(target.target.name, target.target.value)
+        this.modellingSettings[target.target.name] = Number(target.target.value)
       },
       async StartModelling(){
         DisplayLoad(true)
         this.progressValue = 20
-        let Ka = this.ConstellationJson[0].satellites[0]
-
         let dataPost = {
-            "experimentType": 1,
-            "modellingMode": 1,
-            "satellite": Ka,
-            "earthPoint": this.earthList[0]
+            "experimentType": this.modellingSettings.experimentType,
+            "modellingMode": this.modellingSettings.modellingMode,
         }
-        //console.log(dataPost)
-        let rezult = await FetchPost('/api/v1/modelling/satellite', dataPost)
+        let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || []
         console.log("Результат", await rezult)
         if(rezult.length < 1){
           alert("Пустой результат моделирования")
@@ -266,36 +263,18 @@ import E77E78 from './E77E78.vue';
       },
       EventE77E78(){
         this.ShowE77E78Table = true
-      },
-      ModeLableCreate(){
-        if(this.mode > 3 || this.mode < 0){
-          this.mode = 0
-          alert("ошибка, сброс")
-        }
-        switch (this.mode) {
-          case 0:
-            return 'Один КА'
-          case 1:
-            return 'ОГ с доставкой данных в сеансах связи КА-НП'
-          case 2:
-            return 'ОГ с доставкой данных по коммуникационной сети'
-          case 3:
-            return 'ОГ «рой» с доставкой данных в сеансах связи КА-НП'
-          default:
-            break;
-        }
-      },
+      }
     },
     async mounted(){
       DisplayLoad(true)
-      let result = await FetchGet('/api/v1/earth/get/list')
+      let result = await FetchGet('/api/v1/earth/get/list') || []
       this.earthSize = result.length
       this.earthList = result
 
-      result = await FetchGet('/api/v1/satrequest/request/get/all')
+      result = await FetchGet('/api/v1/satrequest/request/get/all') || []
       this.purposesJson = result.length || 0
 
-      result = await FetchGet('/api/v1/constellation/get/list')
+      result = await FetchGet('/api/v1/constellation/get/list') || []
       this.ConstellationJson = result
 
 

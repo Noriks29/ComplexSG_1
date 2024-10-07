@@ -137,14 +137,14 @@ import "leaflet/dist/leaflet.css";
     methods: {
         async StartModelling(){
           DisplayLoad(true)
-          let Np = await FetchGet('/api/v1/earth/get/list')
+          let Np = await FetchGet('/api/v1/earth/get/list') || []
           let data = {
             "satellite": this.selectKA,
             "earthPoint": Np[0],
             "iterationMax": document.getElementById("iterationMax").value
         }
           this.roadList = []
-          let rezult = await FetchPost("/api/v1/modelling/traversing", data)
+          let rezult = await FetchPost("/api/v1/modelling/traversing", data) || []
           for (let index = 0; index < rezult.length; index++) {
             const element = JSON.parse(rezult[index]);
             console.log(element)
@@ -282,11 +282,11 @@ import "leaflet/dist/leaflet.css";
     
     async mounted() {
         DisplayLoad(true)
-        let result = await FetchGet('/api/v1/satrequest/request/get/all')
+        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result
         console.log(result)
 
-        result = await FetchGet('/api/v1/constellation/get/list')
+        result = await FetchGet('/api/v1/constellation/get/list') || []
         for (let i = 0; i < result.length; i++) {
           
           for (let index = 0; index < result[i].satellites.length; index++) {

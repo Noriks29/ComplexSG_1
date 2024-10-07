@@ -132,7 +132,7 @@ import Plotly from 'plotly.js-dist'
         async CreateViewWindow(){
           this.TableViewWindow = []
           let fill = false
-          let result = await FetchGet('/api/v1/satrequest/request/get/all')
+          let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
 
           for (let index = 0; index < this.dataTable.length; index++) {
             const element = this.dataTable[index];
@@ -171,7 +171,7 @@ import Plotly from 'plotly.js-dist'
           DisplayLoad(true)
           this.CommandWork()
           //console.log(this.experimentObject, JSON.stringify(this.experimentObject))
-          let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject)
+          let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject) || []
           
           try {
             for (let index = 0; index < response.length; index++) {
@@ -181,7 +181,6 @@ import Plotly from 'plotly.js-dist'
           } catch (error) {
             console.log(error)
           }
-          //console.log(JSON.stringify(response))
           this.dataTable = await response
           this.AllResponse = await response
           this.CreateViewWindow()
@@ -236,9 +235,9 @@ import Plotly from 'plotly.js-dist'
     
     async mounted() {
         DisplayLoad(true)
-        let result = await FetchGet('/api/v1/satrequest/request/get/all')
+        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
-        result = await FetchGet('/api/v1/constellation/get/list')
+        result = await FetchGet('/api/v1/constellation/get/list') || []
         this.ConstellationJson = await result
         console.log(this.ConstellationJson)
         for (let i = 0; i < this.ConstellationJson.length; i++) {
