@@ -100,19 +100,19 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             case "nameEarthPoint":
               this.dataJson[event.target.id].nameEarthPoint = event.target.value
               break;
-            case "longitude":{
+            case "latitude":{
               let longitudecorrect = Number(event.target.value)
               if(longitudecorrect < -90) longitudecorrect = -90
               if(longitudecorrect > 90) longitudecorrect = 90
-              this.dataJson[event.target.id].longitude = longitudecorrect
+              this.dataJson[event.target.id].latitude = longitudecorrect
               break;
             }
-            case "latitude":
+            case "longitude":
             {
               let latitudecorrect = Number(event.target.value)
               if(latitudecorrect < -180) latitudecorrect = -180
               if(latitudecorrect > 180) latitudecorrect = 180
-              this.dataJson[event.target.id].latitude = latitudecorrect
+              this.dataJson[event.target.id].longitude = latitudecorrect
               break;
             }
             default:
