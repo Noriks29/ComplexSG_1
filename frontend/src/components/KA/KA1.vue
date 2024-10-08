@@ -176,14 +176,14 @@ import E77E78 from './E77E78.vue';
             "experimentType": this.modellingSettings.experimentType,
             "modellingMode": this.modellingSettings.modellingMode,
         }
-        let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || []
+        let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || {engineLogResponse: []}
         console.log("Результат", await rezult)
-        if(rezult.length < 1){
+        if(rezult.engineLogResponse.length < 1){
           alert("Пустой результат моделирования")
           this.progressValue = 50
         }
         else{
-          this.dataModelling = rezult
+          this.dataModelling = rezult.engineLogResponse
           this.ParceModellingRezult()
           this.progressValue = 100
         }
@@ -199,14 +199,13 @@ import E77E78 from './E77E78.vue';
           hide: []
         }
         //console.log(this.dataModelling)
-        this.dataModelling.forEach(e => {
+        this.dataModelling.forEach(element => {
           try {
-            const element = JSON.parse(e)
             element.time = this.CreateDateTime(element.time, false)
             this.modellingRezult.log.push(element)
             if(element.type == "E77"){
-              for (let index = 0; index < element.VisualFormsData.VisualFormsDataShooting.length; index++) {
-                const e = Object.assign({}, element.VisualFormsData.VisualFormsDataShooting[index]);
+              for (let index = 0; index < element.visualFormsData.visualFormsDataShooting.length; index++) {
+                const e = Object.assign({}, element.visualFormsData.visualFormsDataShooting[index]);
                 this.modellingRezult.E77.push(e)
               }
               
@@ -217,8 +216,8 @@ import E77E78 from './E77E78.vue';
               }
             }
           } catch (error) {
-            console.log(error)
-            this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + e)
+            console.log(error, element)
+            this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + element)
           }
         });
         console.log(this.modellingRezult)
