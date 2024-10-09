@@ -1,7 +1,7 @@
 <template>
     <div class="main_contain">
-      <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
-      <E78Table v-if="ShowE78Table" :dataTable="modellingRezult.E78" @closetable="ShowE78Table = false"/>
+      <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
+      <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
       <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
       <div>
         <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
@@ -75,7 +75,7 @@
           </div>
         </div>
 
-        <div class="Panel MaxWidth" v-if="dataModelling.length > 0">
+        <div class="Panel MaxWidth" v-if="dataModelling.engineLogResponse.length > 0">
           <div class="PanelWork">
 
             <table class="colum">
@@ -87,15 +87,16 @@
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
               <tr>
-                <td>КА</td>
-                <td><button @click="ShowShootingPlan" :class="(modellingRezult.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
-                <td><button @click="EventE78" :class="(modellingRezult.E78.lenght < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td>
+                <td><button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
+                <td><button @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="4"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
+                <td colspan="3"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
+                <td colspan="1"><button @click="ShowLogSMAO" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
               </tr>
             </table>
 
@@ -116,6 +117,7 @@
 import { UnixToDtime } from '@/js/WorkWithDTime';
 import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
+import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
   export default {
@@ -127,10 +129,13 @@ import E77E78 from './E77E78.vue';
         ConstellationJson: [],
         progressValue: 0,
         ShowDefaultTable: false,
+        PreWrapDefaultTable: false,
         ShowE78Table: false,
         ShowE77E78Table: false,
         dataLableName: [{label: "data", nameParam: "data"}],
-        dataModelling: [],
+        dataModelling: {
+          engineLogResponse: []
+        },
         dataTable: [],
         earthList: [],
         modellingSettings:{
@@ -142,13 +147,22 @@ import E77E78 from './E77E78.vue';
           E77: [],
           E78: [],
           hide: []
-        }
+        },
+        modellingRezultSelect:{
+          E77: [],
+          E78: [],
+          selectKA: undefined
+        },
+
+        arr: [],
+        valueSS: {},
       }
     },
     components:{
       DefaultTable,
       E78Table,
-      E77E78
+      E77E78,
+      SelectDiv
     },
     props:{
         systemStatus:{
@@ -183,7 +197,7 @@ import E77E78 from './E77E78.vue';
           this.progressValue = 50
         }
         else{
-          this.dataModelling = rezult.engineLogResponse
+          this.dataModelling = rezult
           this.ParceModellingRezult()
           this.progressValue = 100
         }
@@ -193,21 +207,33 @@ import E77E78 from './E77E78.vue';
       },
       ParceModellingRezult(){
         this.modellingRezult = {
+          Smao: [],
           log: [],
           E77: [],
           E78: [],
           hide: []
         }
-        //console.log(this.dataModelling)
-        this.dataModelling.forEach(element => {
+        this.modellingRezultSelect = {
+          E77: [],
+          E78: [],
+          selectKA: this.modellingRezultSelect.selectKA
+        }
+        try {
+          this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)
+        } catch (error) {
+          console.log(error)
+        }
+        this.dataModelling.engineLogResponse.forEach(element => {
           try {
             element.time = this.CreateDateTime(element.time, false)
             this.modellingRezult.log.push(element)
             if(element.type == "E77"){
+              let oneE77 = {idSender:  element.idSender, data: []}
               for (let index = 0; index < element.visualFormsData.visualFormsDataShooting.length; index++) {
                 const e = Object.assign({}, element.visualFormsData.visualFormsDataShooting[index]);
-                this.modellingRezult.E77.push(e)
+                oneE77.data.push(e)
               }
+              this.modellingRezult.E77.push(oneE77)
               
             }
             else if (element.type == "E78"){
@@ -220,6 +246,7 @@ import E77E78 from './E77E78.vue';
             this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + element)
           }
         });
+        this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
         console.log(this.modellingRezult)
       },
       ShowLogEvent(){
@@ -229,10 +256,20 @@ import E77E78 from './E77E78.vue';
           const element = this.modellingRezult.log[index];
           this.dataTable.push({data: element}) 
         }
+        this.PreWrapDefaultTable = false
+        this.ShowDefaultTable = true
+      },
+      ShowLogSMAO(){
+        this.dataTable = []
+        this.dataLableName = [{label: "data", nameParam: "data"}]
+        for (let index = 0; index < this.modellingRezult.Smao.length; index++) {
+          const element = this.modellingRezult.Smao[index];
+          this.dataTable.push({data: element}) 
+        }
+        this.PreWrapDefaultTable = true
         this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
-        console.log(this.modellingRezult)
         this.dataTable = []
         this.dataLableName = [
           {lable: "Заявка", nameParam: "orderId"},
@@ -245,8 +282,8 @@ import E77E78 from './E77E78.vue';
           {lable: "Тангаж", nameParam: "pitch"},
           {lable: "Крен", nameParam: "roll"},
         ]
-        for (let index = 0; index < this.modellingRezult.E77.length; index++) {
-          let element = Object.assign({}, this.modellingRezult.E77[index]);
+        for (let index = 0; index < this.modellingRezultSelect.E77.length; index++) {
+          let element = Object.assign({}, this.modellingRezultSelect.E77[index]);
           element.ws = UnixToDtime(element.ws).time
           element.we = UnixToDtime(element.we).time
           element.ts = UnixToDtime(element.ts).time
@@ -255,6 +292,7 @@ import E77E78 from './E77E78.vue';
           element.roll =  Math.round(element.roll * 100) / 100
           this.dataTable.push(element) 
         }
+        this.PreWrapDefaultTable = false
         this.ShowDefaultTable = true
       },
       EventE78(){
@@ -262,6 +300,29 @@ import E77E78 from './E77E78.vue';
       },
       EventE77E78(){
         this.ShowE77E78Table = true
+      },
+      SelectChange(target){
+          //this.modellingRezultSelect.selectKA = target.value
+          //console.log(this.modellingRezultSelect.selectKA, target.value)
+          this.modellingRezultSelect_FillById(target.value)
+        },
+      modellingRezultSelect_FillById(id){
+        this.modellingRezultSelect = {
+          E77: [],
+          E78: [],
+          selectKA: id
+        }
+        this.modellingRezult.E77.forEach(E77 =>{
+          if (E77.idSender == id) {
+            this.modellingRezultSelect.E77 = E77.data
+          }
+        })
+        this.modellingRezult.E78.forEach(E78 =>{
+          if (E78.idSender == id) {
+            this.modellingRezultSelect.E78 = E78.dataDownPlan.partsPlan
+          }
+        })
+        console.log(this.modellingRezultSelect)
       }
     },
     async mounted(){
@@ -275,7 +336,15 @@ import E77E78 from './E77E78.vue';
 
       result = await FetchGet('/api/v1/constellation/get/list') || []
       this.ConstellationJson = result
-
+        for (let i = 0; i < result.length; i++) {
+          
+          for (let index = 0; index < result[i].satellites.length; index++) {
+            const element = result[i].satellites[index];
+            this.arr.push({value: element.idNode, lable: element.idNode + " - " + result[i].constellationName})
+          }
+        }
+        this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
+        this.modellingRezultSelect.selectKA = this.arr[0].value
 
       DisplayLoad(false)
     }

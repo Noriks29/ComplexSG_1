@@ -275,6 +275,13 @@ body{
     box-shadow: inset -1px 1px 2px black;
     border: 1px solid #31313173;
   }
+  &.icon{
+    padding: 5px 15px;
+    width: fit-content;
+    img{
+      width: 32px;
+    }
+  }
 }
 .leaflet-attribution-flag{
   width: 0 !important;

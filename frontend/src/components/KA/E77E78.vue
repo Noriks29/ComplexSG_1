@@ -28,7 +28,7 @@
   
   <script>
   
-  import { FetchGet } from '@/js/LoadDisplayMetod';
+import { FetchGet } from '@/js/LoadDisplayMetod';
 import { UnixToDtime } from '../../js/WorkWithDTime'
   //import { FetchGet } from '../../js/LoadDisplayMetod'
   
@@ -47,7 +47,7 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
         return {
           data: [],
           rebuild_data: [],
-          NP: {}
+          priory: {}
         }
       },
       methods:
@@ -62,13 +62,14 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           },
           CreateTableBody(){
           let htmlcode = ""
+    
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
-            htmlcode += "<tr><td rowspan="+element.data78.length+">" + (index+1) + "</td><td rowspan="+element.data78.length+">" + element.data77.targetName + "</td><td rowspan="+element.data78.length+">" + "--" + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.ws) + "</td>"
+            htmlcode += "<tr><td rowspan="+element.data78.length+">" + (index+1) + "</td><td rowspan="+element.data78.length+">" + element.data77.targetName + "</td><td rowspan="+element.data78.length+">" + this.priory[element.data77.orderId] + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.ws) + "</td>"
             htmlcode += "<td rowspan="+element.data78.length+">" + element.data78[0].scId + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.te) + "</td>"
-            htmlcode += "<td>"+ this.CreateDateTime(element.data78[0].timeEndConnect) +"</td><td>" + this.NP[element.data78[0].gsId] + "</td></tr>"
+            htmlcode += "<td>"+ this.CreateDateTime(element.data78[0].timeEndConnect) +"</td><td>" + element.data78[0].earthPointName + "</td></tr>"
             for (let i = 1; i < element.data78.length; i++) {
-              htmlcode += "<tr><td>"+ this.CreateDateTime(element.data78[i].timeEndConnect) +"</td><td>" + this.NP[element.data78[i].gsId] + "</td></tr>"
+              htmlcode += "<tr><td>"+ this.CreateDateTime(element.data78[i].timeEndConnect) +"</td><td>" + element.data78[i].earthPointName + "</td></tr>"
             }
           }
           return htmlcode
@@ -76,21 +77,29 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           
       },
       async mounted() {
-        let NPlist = await FetchGet('/api/v1/earth/get/list')
-        NPlist.forEach(element => {
-            this.NP[element.idNode] = element.nameEarthPoint
-        });
+        console.log(this.dataTable1, this.dataTable2)
+        let target = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        target.forEach(el => {
+          this.priory[el.requestId] = el.priory
+        })
         this.rebuild_data = []
-        let dataE78 = this.dataTable2[0].dataDownPlan.partsPlan
-        this.dataTable1.forEach(element => {
-            let data2 = []
-            dataE78.forEach(element2 => {
-                if (element.orderId == element2.idOrder) {
-                    data2.push(element2)
-                }
+        for (let i = 0; i < this.dataTable2.length; i++) {
+          const dataE78 = this.dataTable2[i].dataDownPlan.partsPlan
+          this.dataTable1.forEach(E77 => {
+            if(E77.idSender == this.dataTable2[i].idSender){
+              E77.data.forEach(element => {
+                let data2 = []
+                dataE78.forEach(element2 => {
+                    if (element.orderId == element2.idOrder) {
+                        data2.push(element2)
+                    }
+                });
+                this.rebuild_data.push({data77: element, data78: data2})
             });
-            this.rebuild_data.push({data77: element, data78: data2})
-        });
+            }
+          }) 
+        }
+        console.log(this.rebuild_data)
       }
     }
   </script>

@@ -29,6 +29,7 @@
           <td
             v-for="(dataLable, index) in dataLableName"
             :key="index"
+            :class="(prevrap) ? 'prevrap': ''"
           >{{ data[dataLable.nameParam] }}</td>
         </tr>
       </tbody>
@@ -52,6 +53,9 @@
       dataTable:{
         type: Array
       },
+      prevrap:{
+        type: Boolean
+      }
     },
 
     data() {
@@ -126,5 +130,8 @@
 }
 tr{
   background-color: rgba(0, 0, 0, 0.755);
+}
+.prevrap{
+  white-space: pre-wrap;
 }
 </style>

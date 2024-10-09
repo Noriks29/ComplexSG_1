@@ -33,9 +33,7 @@
 
 <script>
 
-//import jsons from '../../res/testOGFree.json'
 import { UnixToDtime } from '../../js/WorkWithDTime'
-import { FetchGet } from '../../js/LoadDisplayMetod'
 
   export default {
     name: 'E78Data',
@@ -60,38 +58,41 @@ import { FetchGet } from '../../js/LoadDisplayMetod'
           let htmlcode = ""
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
-            htmlcode += "<tr><td rowspan="+element.orderList.length+">" + element.gsId + "</td><td rowspan="+element.orderList.length+">" + element.scId + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeStartConnect) + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeEndConnect) + "</td>"
-            htmlcode += "<td>"+ element.orderList[0].capacity +"</td><td>" + element.orderList[0].idOrder + "</td><td>" + element.orderList[0].dataVolume + "</td><td>" + element.orderList[0].dataVolumeContact + "</td></tr>"
+            htmlcode += "<tr><td rowspan="+element.orderList.length+">" + element.orderList[0].earthPointName + "</td><td rowspan="+element.orderList.length+">" + element.scId + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeStartConnect) + "</td><td rowspan="+element.orderList.length+">" + this.CreateDateTime(element.timeEndConnect) + "</td>"
+            htmlcode += "<td>"+ element.orderList[0].capacity +"</td><td>" + element.orderList[0].orderName + "</td><td>" + element.orderList[0].dataVolume + "</td><td>" + element.orderList[0].dataVolumeContact + "</td></tr>"
             for (let i = 1; i < element.orderList.length; i++) {
               const el = element.orderList[i];
-              htmlcode += "<tr><td>" + el.capacity + "</td><td>" + el.idOrder + "</td><td>" + el.dataVolume + "</td><td>" + el.dataVolumeContact  + "</td></tr>"
+              htmlcode += "<tr><td>" + el.capacity + "</td><td>" + el.orderName + "</td><td>" + el.dataVolume + "</td><td>" + el.dataVolumeContact  + "</td></tr>"
             }
           }
           return htmlcode
         },
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          console.log(time)
           return Dtime.time + " МСК"
         },
         
     },
     async mounted() {
-      //this.rebuild_data = []
-
+      console.log("E78 mount", this.dataTable)
       this.rebuild_data.push({
-              timeEndConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeEndConnect,
-              timeStartConnect: this.dataTable[0].dataDownPlan.partsPlan[0].timeStartConnect,
-              scId: this.dataTable[0].dataDownPlan.partsPlan[0].scId,
-              gsId: this.dataTable[0].dataDownPlan.partsPlan[0].gsId,
-              orderList: [{ idOrder: this.dataTable[0].dataDownPlan.partsPlan[0].idOrder , capacity: this.dataTable[0].dataDownPlan.partsPlan[0].capacity, dataVolume: this.dataTable[0].dataDownPlan.partsPlan[0].dataVolume,  dataVolumeContact: this.dataTable[0].dataDownPlan.partsPlan[0].dataVolumeContact}]
+              timeEndConnect: this.dataTable[0].timeEndConnect,
+              timeStartConnect: this.dataTable[0].timeStartConnect,
+              scId: this.dataTable[0].scId,
+              gsId: this.dataTable[0].gsId,
+              orderList: [{ idOrder: this.dataTable[0].idOrder, 
+                orderName: this.dataTable[0].orderName, 
+                earthPointName: this.dataTable[0].earthPointName, 
+                capacity: this.dataTable[0].capacity, 
+                dataVolume: this.dataTable[0].dataVolume,  
+                dataVolumeContact: this.dataTable[0].dataVolumeContact}]
             })
-      for (let index = 1; index < this.dataTable[0].dataDownPlan.partsPlan.length; index++) {
-        const element = this.dataTable[0].dataDownPlan.partsPlan[index];
+      for (let index = 1; index < this.dataTable.length; index++) {
+        const element = this.dataTable[index];
         let flag_push = false
         for (let i = 0; i < this.rebuild_data.length; i++) {
           if (this.rebuild_data[i].gsId == element.gsId && this.rebuild_data[i].scId == element.scId) {
-            this.rebuild_data[i].orderList.push({idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume,  dataVolumeContact: element.dataVolumeContact})
+            this.rebuild_data[i].orderList.push({idOrder: element.idOrder, orderName: element.orderName, earthPointName: element.earthPointName, capacity: element.capacity, dataVolume: element.dataVolume, dataVolumeContact: element.dataVolumeContact})
             flag_push = true
             break
           }
@@ -102,31 +103,11 @@ import { FetchGet } from '../../js/LoadDisplayMetod'
               timeStartConnect: element.timeStartConnect,
               scId: element.scId,
               gsId: element.gsId,
-              orderList: [{idOrder: element.idOrder , capacity: element.capacity, dataVolume: element.dataVolume, dataVolumeContact: element.dataVolumeContact}]
+              orderList: [{idOrder: element.idOrder, orderName: element.orderName, earthPointName: element.earthPointName, capacity: element.capacity, dataVolume: element.dataVolume, dataVolumeContact: element.dataVolumeContact}]
             })
           }
       }
-      console.log(this.rebuild_data)
-      let GS = await FetchGet('/api/v1/earth/get/list')
-      let Request = await FetchGet('/api/v1/satrequest/request/get/all')
-      for (let index = 0; index < this.rebuild_data.length; index++) {
-        const element = this.rebuild_data[index];
-        console.log(element, GS, Request)
-        for (let i = 0; i < GS.length; i++) {
-          if(element.gsId == GS[i].id){
-            element.gsId = GS[i].nameEarthPoint
-            break
-          }
-        }
-        for (let i = 0; i < element.orderList.length; i++) {
-          for (let j = 0; j < Request.length; j++) {
-            if(element.orderList[i].idOrder == Request[j].catalog.goalId){
-              element.orderList[i].idOrder = Request[j].catalog.goalName
-            }
-            
-          }
-        }
-      }
+      console.log("rebuild_data",this.rebuild_data)
     }
   }
 </script>
