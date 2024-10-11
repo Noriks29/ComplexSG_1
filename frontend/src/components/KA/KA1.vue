@@ -10,7 +10,7 @@
       </div>
 
       <div class="ContentDiv">
-        <h1 class="TitleText">Моделирование КА</h1>
+        <h1 class="TitleText">Моделирование</h1>
 
         <div class="Panel">
           <table>
@@ -46,32 +46,13 @@
               </div>
             </fieldset>
           </div>
-
-          <div>
-            <fieldset  @change="ChangeInputRadio">
-              <legend>Режим моделирования:</legend>
-              <div>
-                <input type="radio" name="modellingMode" value="1" checked />
-                <label>Непрерывное моделирование</label>
-              </div>
-              <div>
-                <input type="radio" name="modellingMode" value="2" />
-                <label>Пошаговое моделирование</label>
-              </div>
-            </fieldset>
-          </div>
         </div>
         
-        <div class="Panel MaxWidth">
-          <p @click="console.log(userFields)">Ход моделирования</p>
-          <progress id="progress" max="100" :value="progressValue"></progress>
-        </div>
 
 
         <div class="Panel MaxWidth">
           <div>
             <button @click="StartModelling" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать</button>
-            <button @click="progressValue--" class="ButtonCommand">Продолжить</button>
           </div>
         </div>
 
@@ -127,7 +108,6 @@ import E77E78 from './E77E78.vue';
         earthSize: 0,
         purposesJson: 0,
         ConstellationJson: [],
-        progressValue: 0,
         ShowDefaultTable: false,
         PreWrapDefaultTable: false,
         ShowE78Table: false,
@@ -185,21 +165,18 @@ import E77E78 from './E77E78.vue';
       },
       async StartModelling(){
         DisplayLoad(true)
-        this.progressValue = 20
         let dataPost = {
             "experimentType": this.modellingSettings.experimentType,
             "modellingMode": this.modellingSettings.modellingMode,
         }
         let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || {engineLogResponse: []}
         console.log("Результат", await rezult)
-        if(rezult.engineLogResponse.length < 1){
-          alert("Пустой результат моделирования")
-          this.progressValue = 50
-        }
-        else{
+        if(rezult.engineLogResponse.length > 0){
           this.dataModelling = rezult
           this.ParceModellingRezult()
-          this.progressValue = 100
+        }
+        else{
+          console.log("нет результата")
         }
         
 
