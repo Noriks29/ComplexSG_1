@@ -62,10 +62,10 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           },
           CreateTableBody(){
           let htmlcode = ""
-    
+          console.log(this.rebuild_data)
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
-            htmlcode += "<tr><td rowspan="+element.data78.length+">" + (index+1) + "</td><td rowspan="+element.data78.length+">" + element.data77.targetName + "</td><td rowspan="+element.data78.length+">" + this.priory[element.data77.orderId] + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.ws) + "</td>"
+            htmlcode += "<tr><td rowspan="+element.data78.length+">" + (index+1) + "</td><td rowspan="+element.data78.length+">" + element.data77.targetName + "</td><td rowspan="+element.data78.length+">" + this.priory[element.data77.orderId] + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data78[0].timeAppearanceOrder) + "</td>"
             htmlcode += "<td rowspan="+element.data78.length+">" + element.data78[0].scId + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.te) + "</td>"
             htmlcode += "<td>"+ this.CreateDateTime(element.data78[0].timeEndConnect) +"</td><td>" + element.data78[0].earthPointName + "</td></tr>"
             for (let i = 1; i < element.data78.length; i++) {
