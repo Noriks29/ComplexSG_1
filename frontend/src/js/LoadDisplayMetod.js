@@ -72,8 +72,43 @@ async function FetchPost(http,datapost,dopparamhttp){
         }
 }
 
+
+async function FetchPostFile(http,datapost){
+    if(ShowFetchData) console.log(datapost)
+    let AcsessKey = localStorage.data
+    let MODE = window.location.search
+    let add = adress
+    if(MODE == "?DEV")
+        add = adressDEV
+    try {
+        const response = await fetch('http://'+add+http+'?accessKey='+AcsessKey,{
+          method:  'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          body: datapost
+        })
+        if (!response.ok) {
+            let rezult = await response.json()
+            if(ShowFetchData) console.log(http,rezult)
+            throw new Error(rezult.MESSAGE);
+        }
+        else{
+            let rezult = await response.json()
+            if(ShowFetchData) console.log(http, rezult)
+            return rezult;
+        }
+        } catch (error) {
+            console.log('Error save:', error);
+            alert("ОШИБКА ОТПРАВКИ  " + error)
+            return undefined;
+        }
+}
+
+
 export{
     DisplayLoad,
     FetchGet,
-    FetchPost
+    FetchPost,
+    FetchPostFile
 }

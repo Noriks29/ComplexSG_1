@@ -43,7 +43,7 @@
         <div class="Panel MaxWidth">
           <button @click="SaveWorkplace" class="ButtonCommand">Сохранить копию данных</button>
           <label class="input-file">
-            <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json">		
+            <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
             <span>Открыть файл</span>
           </label>
         </div>
@@ -53,7 +53,7 @@
   
   <script>
 import DateTime from '../DateTime.vue';
-import {FetchGet, FetchPost, DisplayLoad} from '../../js/LoadDisplayMetod'
+import {FetchGet, FetchPostFile, DisplayLoad} from '../../js/LoadDisplayMetod'
 import { saveAs } from 'file-saver';
 
   export default {
@@ -90,6 +90,7 @@ import { saveAs } from 'file-saver';
         dataLoad.earth = result
 
         result = await FetchGet('/api/v1/system/get')
+        result.systemId = undefined
         dataLoad.system = result
 
         result = await FetchGet('/api/v1/constellation/get/list')
@@ -100,7 +101,9 @@ import { saveAs } from 'file-saver';
             const j_element = element.satellites[jindex];
             j_element.idNode = undefined
             j_element.satelliteId = undefined
+            j_element.modelSat = {}
             //не забудь про modelsat.id
+
             element.satellites[jindex] = j_element
           }
           result[index] = element 
@@ -115,11 +118,20 @@ import { saveAs } from 'file-saver';
         }
         dataLoad.catalog = result
 
+        result = await FetchGet('/api/v1/modelsat/all')
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          element.id = undefined
+          result[index] = element
+        }
+        dataLoad.modelSat = result
+
         console.log(JSON.stringify(dataLoad, null, 2))
         var fileName = 'myData.json';
         var fileToSave = new Blob([JSON.stringify(dataLoad, null, 2)], {
             type: 'application/json'
         });
+
         saveAs(fileToSave, fileName);
       },
       ChangeTime(obgTime){
@@ -150,27 +162,38 @@ import { saveAs } from 'file-saver';
       ChangeSystemStatus(){
         this.$emit('ChangeSystemStatus', this.dataSystem)
       },
-      LoadFile(data){
-        const reader = new FileReader();
+      async LoadFile(data){
+        //const reader = new FileReader();
         if (data.target.files[0]) {
           var file = data.target.files[0];
+          console.log(file)
+          await FetchPostFile("/api/v1/workplace/upload/file", file)
+          
+          /*
           reader.readAsText(file);
+          
           reader.addEventListener('load', () => {
+
             this.ReloadDataBaseFromFile(reader.result);
           });
           reader.addEventListener('error', () => {
             console.error(`Произошла ошибка при чтении файла`);
-          });
+          });*/
         }
       },
       async ReloadDataBaseFromFile(json){
         DisplayLoad(true)
+        console.log(json)
+        //await FetchPost(Э/api/v1/workplace/upload/filejson)
+        alert("НА данный момент эта функция не активна")
+        /*
         try {
           let dataJson = JSON.parse(json)
           try {
             dataJson.system.systemId = this.dataSystem.systemId
+            console.log(this.dataSystem)
             this.dataSystem = dataJson.system
-            this.ChangeSystemStatus()
+            console.log(this.dataSystem)
           } catch (error) {
             console.log(error)
             alert("Ошибка перезаписи")
@@ -235,7 +258,9 @@ import { saveAs } from 'file-saver';
         } catch (error) {
           console.log(error)
           alert("Ошибка чтения")
-        }
+        }*/
+
+
         DisplayLoad(false)
       }
       
