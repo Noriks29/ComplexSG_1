@@ -76,17 +76,15 @@ async function FetchPost(http,datapost,dopparamhttp){
 async function FetchPostFile(http,datapost){
     if(ShowFetchData) console.log(datapost)
     let AcsessKey = localStorage.data
-    let MODE = window.location.search
     let add = adress
-    var data = new FormData()
-    data.append('file',datapost,datapost.name)
-    if(MODE == "?DEV")
-        add = adressDEV
     try {
         const response = await fetch('http://'+add+http+'?accessKey='+AcsessKey,{
           method:  'POST',
+          mode: 'cors',
+          processData : false,
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'multipart/form-data',
+            
           },
           body: datapost
         })
