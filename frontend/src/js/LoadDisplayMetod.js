@@ -78,6 +78,8 @@ async function FetchPostFile(http,datapost){
     let AcsessKey = localStorage.data
     let MODE = window.location.search
     let add = adress
+    var data = new FormData()
+    data.append('file',datapost,datapost.name)
     if(MODE == "?DEV")
         add = adressDEV
     try {
