@@ -77,16 +77,13 @@ async function FetchPostFile(http,datapost){
     if(ShowFetchData) console.log(datapost)
     let AcsessKey = localStorage.data
     let add = adress
+    const formData = new FormData(); // Создаем FormData
+    formData.append('file', datapost); // Добавляем файл
     try {
         const response = await fetch('http://'+add+http+'?accessKey='+AcsessKey,{
           method:  'POST',
           mode: 'cors',
-          processData : false,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            
-          },
-          body: datapost
+          body: formData
         })
         if (!response.ok) {
             let rezult = await response.json()
