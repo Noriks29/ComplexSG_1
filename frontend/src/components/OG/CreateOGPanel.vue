@@ -8,8 +8,9 @@
           <div class="inputdiv"><input type="text" v-model="OG_Param.inputName"></div>
           <div class="SelectDivInFlex">
             <SelectDiv  
-                :dataOption="[{value: true, lable: 'Произвольное построение' },
-                  {value: false, lable: 'Системное построение' },
+                :dataOption="[{value: 1, lable: 'Произвольное построение' },
+                  {value: 0, lable: 'Системное построение' },
+                  {value: 2, lable: 'загрузить ОГ из TLE' },
                 ]" 
                 :valueS="{value: true, lable: 'Произвольное построение' }"
                 @valueSelect="SelectChange"/>
@@ -38,6 +39,14 @@
             <tr><td>•	Фазовый сдвиг КА между плоскостями</td><td><input name="phaseShift" type="number" value="0"></td></tr>
 
         </table>
+      </div>
+      <div class="Panel" v-if="OG_Param.type == undefined">
+        <label class="input-file">
+            <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">	
+            <!--<input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">-->	
+            <span>Загрузить файл</span>
+        </label>
+        Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}
       </div>
     </div>
     </div>  
@@ -77,13 +86,13 @@
             this.OG_Param.parametersCalculation[target.target.name] = Number(target.target.value)
           },
           SelectChange(data){
-            if(data.value){
+            if(data.value == 1){
               this.OG_Param = {
                 inputName: this.OG_Param.inputName,
                 type: true,
               }
             }
-            else{
+            else if(data.value == 0){
               this.OG_Param = {
                 inputName: this.OG_Param.inputName,
                 type: false,
@@ -92,9 +101,17 @@
                 }
               }
             }
+            else if(data.value == 2){
+              console.log("File Load")
+              this.OG_Param = {
+                inputName: this.OG_Param.inputName,
+                type: undefined,
+                file: undefined
+              }
+            }
           },
           async AddOG(){
-            if(this.OG_Param.inputName != undefined && this.OG_Param.type != undefined)
+            if(this.OG_Param.inputName != undefined && (this.OG_Param.type != undefined || this.OG_Param.file != undefined))
             {
               if(this.OG_Param.type === true)
               {
@@ -129,7 +146,7 @@
                 }
 
               }
-              else{
+              else if(this.OG_Param.type == false) {
                 let addedRow = {
                   'constellationName' : this.OG_Param.inputName,
                   'parametersCalculation' : this.OG_Param.parametersCalculation,
@@ -146,12 +163,27 @@
                   console.log(responce)
                 }
               }
+              else if(this.OG_Param.type == undefined){
+
+                const formData = new FormData(); // Создаем FormData
+                const file = this.OG_Param.file
+                formData.append('file', file); // Добавляем файл
+                formData.append('inputName', this.OG_Param.inputName); // Добавляем имя
+                //await FetchPostFile("/api/v1/workplace/upload/file", formData)
+                console.log("Создание", formData)
+              }
               
             }
             else{
               alert("Некоректные входные данные - '"+this.OG_Param.inputName+"' - '"+this.OG_Param.type+"'")
             }
-          }
+          },
+          async LoadFile(data){
+            if (data.target.files[0]) {
+              var file = data.target.files[0];
+              this.OG_Param.file = file
+            }
+          },
           
         },
         async mounted(){
@@ -262,4 +294,42 @@
     padding: 1%;
     font-size: 14px !important;
   }
+
+  .input-file {
+	background: #2b2b2b;
+  color: white;
+  border: 1px solid black;
+  padding: 14px;
+  font-size: var(--font-size);
+  border-radius: 10px;
+  box-shadow: -3px 3px 1px black;
+  margin: 5px;
+  transition: all 0.2s;
+  position: relative;
+  display: inline-block;
+}
+.input-file span {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  display: flex;
+  vertical-align: middle;
+  text-align: center;
+  background: none;
+  height: 100%;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  color: white;
+  align-items: center;
+  flex-direction: row;
+}
+.input-file input[type=file] {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	display: block;
+	width: 0;
+	height: 0;
+}
   </style>

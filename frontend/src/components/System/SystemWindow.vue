@@ -167,7 +167,9 @@ import { saveAs } from 'file-saver';
         if (data.target.files[0]) {
           var file = data.target.files[0];
           console.log(file)
-          await FetchPostFile("/api/v1/workplace/upload/file", file)
+          const formData = new FormData(); // Создаем FormData
+          formData.append('file', file); // Добавляем файл
+          await FetchPostFile("/api/v1/workplace/upload/file", formData)
           
           /*
           reader.readAsText(file);

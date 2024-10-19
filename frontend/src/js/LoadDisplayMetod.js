@@ -73,12 +73,11 @@ async function FetchPost(http,datapost,dopparamhttp){
 }
 
 
-async function FetchPostFile(http,datapost){
-    if(ShowFetchData) console.log(datapost)
+async function FetchPostFile(http,formData){
+    if(ShowFetchData) console.log(formData)
     let AcsessKey = localStorage.data
     let add = adress
-    const formData = new FormData(); // Создаем FormData
-    formData.append('file', datapost); // Добавляем файл
+    
     try {
         const response = await fetch('http://'+add+http+'?accessKey='+AcsessKey,{
           method:  'POST',
