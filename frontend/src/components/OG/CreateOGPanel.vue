@@ -55,7 +55,7 @@
   <script>
   
   import SelectDiv from '../SelectDiv.vue';
-  import { FetchPost, FetchGet } from '@/js/LoadDisplayMetod';
+  import { FetchPost, FetchGet, FetchPostFile } from '@/js/LoadDisplayMetod';
 
   
     export default {
@@ -167,9 +167,10 @@
 
                 const formData = new FormData(); // Создаем FormData
                 const file = this.OG_Param.file
+                console.log(file)
                 formData.append('file', file); // Добавляем файл
-                formData.append('inputName', this.OG_Param.inputName); // Добавляем имя
-                //await FetchPostFile("/api/v1/workplace/upload/file", formData)
+                formData.append('constellationName', this.OG_Param.inputName); // Добавляем имя
+                await FetchPostFile("/api/v1/constellation/upload/tle", formData)
                 console.log("Создание", formData)
               }
               

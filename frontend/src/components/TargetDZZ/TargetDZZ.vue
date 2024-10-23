@@ -39,7 +39,7 @@
         <div class="Panel" v-if="viewmode == 0">
             <table class="TableDefault">
               <tr>
-                <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
+                <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
               </tr>
               <tr
               v-for="data, index in requestJson"
@@ -52,6 +52,7 @@
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
               <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChangeNP"/></td>
+              <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChangeCriteria"/></td>
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
@@ -133,6 +134,8 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         SelectKa: {},
         KatoDraw: {},
 
+        choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
+
         arr: [],
         arrNP: [],
         map: {},
@@ -161,6 +164,11 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
       SelectChangeNP(e){
         console.log(e,  this.requestJson)
         this.requestJson[e.id].earthPoint = e.value
+        this.SatartSave('request')
+      },
+      SelectChangeCriteria(e){
+        console.log(e,  this.requestJson)
+        this.requestJson[e.id].choiceCriteria = e.value
         this.SatartSave('request')
       },
       CreateSelectArr(){
@@ -194,6 +202,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
                       "term": this.systemStatus.modelingEnd,
                       "time": this.systemStatus.modelingBegin,
                       "earthPoint": this.arrNP[0].value,
+                      "choiceCriteria": 1,
                       "filter": false,
                       "deleted": null, 'role': "newRow"
                 };
