@@ -66,7 +66,12 @@
             <div>
               <div id="DrawKARoad">
                 <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
-                <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button></div>
+                <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
+                <label class="input-file">
+                  <input type="file" name="file" id="file" @change="LoadFileKARoad" enctype="multipart/form-data">		
+                  <span>Отрисовать из файла</span>
+                </label>
+              </div>
               <div id="map"></div>
             </div> 
         </div>
@@ -248,6 +253,42 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         }
         this.SatartSave('request')
       },
+      async LoadFileKARoad(data){
+        const reader = new FileReader();
+        if (data.target.files[0]) {
+          var file = data.target.files[0];
+          console.log(file)
+          reader.readAsText(file);
+          reader.addEventListener('load', () => {
+            let dataFile = reader.result.split("\n")
+            let dataFormat = [[]]
+            let line_index = 0
+            for (let index = 1; index < dataFile.length; index++) {
+              const element = dataFile[index].split(" ");
+              let lat = Number(element[0])
+              let lng = Number(element[1])
+              if (!isNaN(lat) && !isNaN(lng)) {
+                if (dataFormat[line_index].length > 0) {
+                  if(dataFormat[line_index][dataFormat[line_index].length-1].lng * lng < -6){
+                    line_index++
+                    dataFormat.push([])
+                  }
+                }
+                dataFormat[line_index].push({lat: lat*180/Math.PI, lng: lng*180/Math.PI}) 
+              }
+            }
+            console.log(dataFormat)
+            const color = document.getElementById("inputColorKa").value
+            dataFormat.forEach(dataRoad =>{
+              L.polyline(dataRoad, {color: color + "d4", weight: 2}).addTo(this.map);
+            })
+            
+          });
+          reader.addEventListener('error', () => {
+            console.error(`Произошла ошибка при чтении файла`);
+          });
+        }
+      },
       async ReFetch(){
         this.arrNP = []
         let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
@@ -325,12 +366,23 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
             console.log(roads)
             let colorid = 0
             roads.forEach(road => {
-              let arrayPoint = []
+              let arrayPoint = [[]]
+              let line_index = 0
               for (let index = 0; index < road.coordinates.length; index+=1) {
                 const element = road.coordinates[index];
-                arrayPoint.push({lat: element.latitude, lng: element.longitude})
+                if (arrayPoint[line_index].length > 0) {
+                  if(arrayPoint[line_index][arrayPoint[line_index].length-1].lng * element.longitude < -1000){
+                    line_index++
+                    arrayPoint.push([])
+                  }
+                }
+                arrayPoint[line_index].push({lat: element.latitude, lng: element.longitude})
               }
-              L.polyline(arrayPoint, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
+              console.log(arrayPoint)
+              arrayPoint.forEach(dataRoad => {
+                L.polyline(dataRoad, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
+              })
+              //L.polyline(arrayPoint, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
               colorid++
             });
 
