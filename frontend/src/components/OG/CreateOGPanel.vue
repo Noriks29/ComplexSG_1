@@ -141,8 +141,8 @@
                   this.CloseTable()
                 }
                 else{
-                  alert("Ошибка добавления")
-                  //console.log(responce)
+                  alert("Ошибка добавления" + JSON.stringify(responce))
+                  console.log(responce)
                 }
 
               }
@@ -152,14 +152,14 @@
                   'parametersCalculation' : this.OG_Param.parametersCalculation,
                   'arbitraryFormation' : this.OG_Param.type,
                 };
-                console.log(addedRow)
+                //console.log(addedRow)
                 let responce = await FetchPost('/api/v1/constellation/calc/planar',addedRow) || {}
                 
                 if(responce.type == "SUCCESS"){
                   this.CloseTable()
                 }
                 else{
-                  alert("Ошибка добавления")
+                  alert("Ошибка добавления" + JSON.stringify(responce))
                   console.log(responce)
                 }
               }
@@ -167,11 +167,18 @@
 
                 const formData = new FormData(); // Создаем FormData
                 const file = this.OG_Param.file
-                console.log(file)
+                //console.log(file)
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.inputName); // Добавляем имя
-                await FetchPostFile("/api/v1/constellation/upload/tle", formData)
-                console.log("Создание", formData)
+                let responce = await FetchPostFile("/api/v1/constellation/upload/tle", formData)
+                console.log(responce)
+                if(responce.type == "SUCCESS"){
+                  this.CloseTable()
+                }
+                else{
+                  alert("Ошибка добавления" + JSON.stringify(responce))
+                  console.log(responce)
+                }
               }
               
             }

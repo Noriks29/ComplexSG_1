@@ -74,6 +74,7 @@ async function FetchPost(http,datapost,dopparamhttp){
 
 
 async function FetchPostFile(http,formData){
+    DisplayLoad(true)
     if(ShowFetchData) console.log(formData)
     let AcsessKey = localStorage.data
     let add = adress
@@ -92,13 +93,16 @@ async function FetchPostFile(http,formData){
         else{
             let rezult = await response.json()
             if(ShowFetchData) console.log(http, rezult)
+            DisplayLoad(false)
             return rezult;
         }
         } catch (error) {
             console.log('Error save:', error);
             alert("ОШИБКА ОТПРАВКИ  " + error)
+            DisplayLoad(false)
             return undefined;
         }
+
 }
 
 

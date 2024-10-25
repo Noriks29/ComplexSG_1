@@ -382,7 +382,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
               arrayPoint.forEach(dataRoad => {
                 L.polyline(dataRoad, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
               })
-              //L.polyline(arrayPoint, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
               colorid++
             });
 
