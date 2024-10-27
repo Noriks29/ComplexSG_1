@@ -10,15 +10,14 @@
           <tr>
             <th style="width: 50px;">ID</th>
             <th>Модель КА</th>
-            <th v-if="dataJsonOG.arbitraryFormation === false">Плосколсть</th>
-            <th v-if="dataJsonOG.arbitraryFormation === false">Позиция</th>
+            <th v-if="dataJsonOG.inputType === 2">Плосколсть</th>
+            <th v-if="dataJsonOG.inputType === 2">Позиция</th>
             <th>Большая полуось</th>
             <th>Эксцентриситет</th>
             <th>Наклон</th>
             <th>Долгота восходящего узла</th>
-            <th>Аргумент ширины перигея</th>
-            <th v-if="dataJsonOG.arbitraryFormation === false">Фазовый сдвиг</th>
-            <th v-else>Истинная аномалия</th>
+            <th>Аргумент широты перигея</th>
+            <th>Истинная аномалия</th>
             <th v-if="!approved" style="width: 50px;" ><span>&#8203;</span></th>
           </tr>
         </thead>
@@ -36,8 +35,8 @@
 
             <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
             <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
-            <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.plane }}</td>
-            <td v-if="dataJsonOG.arbitraryFormation === false">{{ data.position }}</td>
+            <td v-if="dataJsonOG.inputType === 2">{{ data.plane }}</td>
+            <td v-if="dataJsonOG.inputType === 2">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"
               :value="data.altitude"></td>
             <td><input :id="index" name="eccentricity" type="number" :class="approved ? 'disable' : ''"

@@ -130,7 +130,7 @@
                     }
                   }
                   ],
-                  'arbitraryFormation' : this.OG_Param.type,
+                  'inputType' : 1,
 
                   
                 };
@@ -150,7 +150,7 @@
                 let addedRow = {
                   'constellationName' : this.OG_Param.inputName,
                   'parametersCalculation' : this.OG_Param.parametersCalculation,
-                  'arbitraryFormation' : this.OG_Param.type,
+                  'inputType' : 2,
                 };
                 //console.log(addedRow)
                 let responce = await FetchPost('/api/v1/constellation/calc/planar',addedRow) || {}
@@ -170,6 +170,7 @@
                 //console.log(file)
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.inputName); // Добавляем имя
+                formData.append('inputType', 3);
                 let responce = await FetchPostFile("/api/v1/constellation/upload/tle", formData)
                 console.log(responce)
                 if(responce.type == "SUCCESS"){

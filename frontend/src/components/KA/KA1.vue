@@ -3,6 +3,7 @@
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
       <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
       <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
+      <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
       <div>
         <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
           <img src="../../assets/exit.svg">
@@ -63,7 +64,7 @@
               <tr>
                 <td>Заявки</td>
                 <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
-                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><button @click="EventBookmark" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План закладок</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
@@ -112,6 +113,7 @@ import E77E78 from './E77E78.vue';
         PreWrapDefaultTable: false,
         ShowE78Table: false,
         ShowE77E78Table: false,
+        ShowBookmarkTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: {
           engineLogResponse: []
@@ -277,6 +279,9 @@ import E77E78 from './E77E78.vue';
       },
       EventE77E78(){
         this.ShowE77E78Table = true
+      },
+      EventBookmark(){
+        this.ShowBookmarkTable = true
       },
       SelectChange(target){
           //this.modellingRezultSelect.selectKA = target.value
