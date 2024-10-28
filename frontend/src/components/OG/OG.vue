@@ -19,7 +19,7 @@
          
         >
           <td  @click="selectOG = data">{{ data.constellationName }}</td>
-          <td  @click="selectOG = data">{{ data.arbitraryFormation == true ? "Произвольное построение" : "Системное построение" }}</td>
+          <td  @click="selectOG = data">{{ data.inputType == 1 ? "Произвольное построение" : "Системное построение" }}</td>
           <td class="iconDelete" v-if="!approved" @click="DeleteRowOG(data)"><img  src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved" class="PanelDefault">
