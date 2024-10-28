@@ -64,7 +64,7 @@
               <tr>
                 <td>Заявки</td>
                 <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
-                <td><button @click="EventBookmark" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План закладок</button></td>
+                <td><button @click="EventBookmark" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
@@ -102,6 +102,7 @@ import DefaultTable from '@/components/DefaultTable.vue'
 import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
+import BookmarkTable from './BookmarkComponent.vue';
   export default {
     name: 'FlightPlaner',
     data(){
@@ -144,7 +145,8 @@ import E77E78 from './E77E78.vue';
       DefaultTable,
       E78Table,
       E77E78,
-      SelectDiv
+      SelectDiv,
+      BookmarkTable
     },
     props:{
         systemStatus:{

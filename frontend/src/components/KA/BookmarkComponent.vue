@@ -30,7 +30,7 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
   //import { FetchGet } from '../../js/LoadDisplayMetod'
   
     export default {
-      name: 'Bookmark',
+      name: 'BookmarkTable',
       props: {
         dataTable1:{
           type: Array
@@ -62,11 +62,15 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           console.log(this.rebuild_data)
           for (let index = 0; index < this.rebuild_data.length; index++) {
             const element = this.rebuild_data[index];
-            htmlcode += "<tr><td rowspan="+element.data78.length+">" + (index+1) + "</td><td rowspan="+element.data78.length+">" + element.data77.targetName + "</td><td rowspan="+element.data78.length+">" + this.priory[element.data77.orderId] + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data78[0].timeAppearanceOrder) + "</td>"
-            htmlcode += "<td rowspan="+element.data78.length+">" + element.data78[0].scId + "</td><td rowspan="+element.data78.length+">" + this.CreateDateTime(element.data77.te) + "</td>"
-            htmlcode += "<td>"+ this.CreateDateTime(element.data78[0].timeEndConnect) +"</td><td>" + element.data78[0].earthPointName + "</td></tr>"
-            for (let i = 1; i < element.data78.length; i++) {
-              htmlcode += "<tr><td>"+ this.CreateDateTime(element.data78[i].timeEndConnect) +"</td><td>" + element.data78[i].earthPointName + "</td></tr>"
+            if(element.data.length == 0){ //для пустых полей
+              htmlcode += "<tr><td style='border-top: 1px solid white;'>" + element.satelliteId + "</td><td style='border-top: 1px solid white;'>" + this.CreateDateTime(element.begin) + "</td><td style='border-top: 1px solid white;'>" + element.earthName + "</td><td style='border-top: 1px solid white;'></td><td style='border-top: 1px solid white;'></td></tr>"
+            }
+            else{
+              htmlcode += "<tr><td rowspan="+element.data.length+" style='border-top: 1px solid white;'>" + element.satelliteId + "</td><td rowspan="+element.data.length+" style='border-top: 1px solid white;'>" + this.CreateDateTime(element.begin) + "</td><td rowspan="+element.data.length+" style='border-top: 1px solid white;'>" +  element.earthName + "</td>"
+              htmlcode += "<td style='border-top: 1px solid white;'>" + element.data[0].targetName + "</td><td style='border-top: 1px solid white;'>" + this.CreateDateTime(element.data[0].time) + "</td></tr>"
+              for (let i = 1; i < element.data.length; i++) {
+              htmlcode += "<td>" + element.data[i].targetName + "</td><td>" + this.CreateDateTime(element.data[i].time) + "</td></tr>"
+            }
             }
           }
           return htmlcode
@@ -75,11 +79,14 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
       },
       async mounted() {
         console.log(this.dataTable1, this.dataTable2)
-        let target = await FetchGet('/api/v1/satrequest/request/get/all') || []
-        target.forEach(el => {
-          this.priory[el.requestId] = el.priory
+
+        let target = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+        this.rebuild_data = target
+        this.rebuild_data.forEach(datareb => {
+          datareb.data = []
         })
-        this.rebuild_data = []
+
+        let rebuild_dataE77E78 = []
         for (let i = 0; i < this.dataTable2.length; i++) {
           const dataE78 = this.dataTable2[i].dataDownPlan.partsPlan
           this.dataTable1.forEach(E77 => {
@@ -91,12 +98,26 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
                         data2.push(element2)
                     }
                 });
-                this.rebuild_data.push({data77: element, data78: data2})
+                rebuild_dataE77E78.push({data77: element, data78: data2, use: false})
             });
             }
           }) 
         }
-        console.log(this.rebuild_data)
+
+        for (let index = 0; index < rebuild_dataE77E78.length; index++) {
+          const element = rebuild_dataE77E78[index];
+          for (let jindex = 0; jindex < this.rebuild_data.length; jindex++) {
+            const jelement = this.rebuild_data[jindex];
+            if(jelement.satelliteId == element.data78[0].scId && jelement.begin <= element.data77.te && !element.use)
+            {
+              jelement.data.push({time: element.data77.te, targetName: element.data77.targetName})
+              element.use = true
+            }
+          }
+          
+        }
+
+        console.log(this.rebuild_data, rebuild_dataE77E78)
       }
     }
   </script>
@@ -155,4 +176,6 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
   tr{
     background-color: rgba(0, 0, 0, 0.755);
   }
+
+
   </style>
