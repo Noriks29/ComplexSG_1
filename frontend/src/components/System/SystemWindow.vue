@@ -80,7 +80,11 @@ import { saveAs } from 'file-saver';
       },
       async SaveWorkplace(){
         let dataLoad = {}
-        let result = await FetchGet('/api/v1/earth/get/list')
+
+        let result = await FetchGet('/api/v1/modelsat/all')
+        dataLoad.modelSat = result
+
+        result = await FetchGet('/api/v1/earth/get/list')
         for (let index = 0; index < result.length; index++) {
           let new_data = result[index];
           new_data.id = undefined
@@ -101,7 +105,6 @@ import { saveAs } from 'file-saver';
             const j_element = element.satellites[jindex];
             j_element.idNode = undefined
             j_element.satelliteId = undefined
-            j_element.modelSat = {}
             //не забудь про modelsat.id
 
             element.satellites[jindex] = j_element
@@ -117,14 +120,6 @@ import { saveAs } from 'file-saver';
           result[index] = element
         }
         dataLoad.catalog = result
-
-        result = await FetchGet('/api/v1/modelsat/all')
-        for (let index = 0; index < result.length; index++) {
-          const element = result[index];
-          element.id = undefined
-          result[index] = element
-        }
-        dataLoad.modelSat = result
 
         console.log(JSON.stringify(dataLoad, null, 2))
         var fileName = 'myData.json';
