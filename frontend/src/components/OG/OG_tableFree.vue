@@ -126,8 +126,7 @@
           },
           async SatartSave() {
             let responce = await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
-            console.log(responce)
-            
+            console.log(responce) 
           }
           
       },

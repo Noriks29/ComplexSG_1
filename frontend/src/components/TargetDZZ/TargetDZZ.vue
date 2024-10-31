@@ -387,13 +387,18 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
 
           }
           else{
-            //console.log(this.KatoDraw, color.value)
             let road = await FetchPost("/api/v1/modelling/gps/sat/coordinates", {}, "satelliteId="+this.KatoDraw.satelliteId) || []
-            //console.log(road, this.map, new L.LatLng(59.932936, 30.311349))
-            let arrayPoint = []
+            let arrayPoint = [[]]
+            let line_index = 0
             for (let index = 0; index < road.length; index+=1) {
               const element = road[index];
-              arrayPoint.push({lat: element.latitude, lng: element.longitude})
+              if (arrayPoint[line_index].length > 0) {
+                  if(arrayPoint[line_index][arrayPoint[line_index].length-1].lng * element.longitude < -1000){
+                    line_index++
+                    arrayPoint.push([])
+                  }
+                }
+              arrayPoint[line_index].push({lat: element.latitude, lng: element.longitude})
             }
             L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
           }
