@@ -44,6 +44,7 @@ import EarthConstellation from './components/EarthConstellation/EarthConstellati
 import LoadProcess from './components/LoadProcess.vue'
 import EstimationConstellation from './components/EarthConstellation/EstimationConstellation.vue'
 import TargetRoad from './components/TargetRoad/TargetRoad.vue';
+import ConstellationConstellation from './components/EarthConstellation/ConstellationConstellation.vue';
 import {CanvasBackground}  from './js/sky.js';
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
 import SelectDiv from './components/SelectDiv.vue';
@@ -142,7 +143,8 @@ export default {
             EarthConstellation: true,
             EstimationConstellation: true,
             TargetRoad: true,
-            KA1: true
+            KA1: true,
+            ConstellationConstellation: true
           }
         }
         else{
@@ -155,7 +157,8 @@ export default {
             TargetDZZ: false,
             EarthConstellation: false,
             EstimationConstellation: false,
-            KA1: false
+            KA1: false,
+            ConstellationConstellation: false
           }
         }
       },
@@ -202,7 +205,8 @@ export default {
     LoadProcess,
     EstimationConstellation,
     TargetRoad,
-    SelectDiv
+    SelectDiv,
+    ConstellationConstellation
   }
 }
 </script>

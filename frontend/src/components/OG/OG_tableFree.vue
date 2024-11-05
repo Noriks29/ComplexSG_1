@@ -133,6 +133,12 @@
       async mounted() {
         this.dataJsonOG = this.dataOGLocal
         this.dataJson = this.dataJsonOG.satellites
+        console.log(this.dataJson)
+        this.dataJson.sort((a,b) => {
+          if(a.idNode > b.idNode) return 1
+          if(a.idNode < b.idNode) return -1
+          return 0
+        })
         let result = await FetchGet('/api/v1/modelsat/all')
         this.KaModels = []
         for (let index = 0; index < result.length; index++) {

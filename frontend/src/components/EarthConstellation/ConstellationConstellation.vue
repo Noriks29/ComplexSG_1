@@ -9,7 +9,7 @@
           
           
     <div class="ContentDiv">
-      <div class="TitleText">План контактов НП – ОГ</div>
+      <div class="TitleText">План контактов КА – КА</div>
       <div class="Panel">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
@@ -32,8 +32,8 @@
           <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
           <div><button @click="CommandWork(3)" class="ButtonCommand disable"  v-if="false">Проверка ограничений</button></div>
-          <div><button @click="CommandWork(4)" class="ButtonCommand disable"  v-if="false">Визуальный анализ окон видимости / плана контактов</button></div>
-          <div><button @click="CommandWork(5)" class="ButtonCommand">Расчёт плана контактов</button></div>
+          <div><button @click="CommandWork(4)" class="ButtonCommand disable"  v-if="false">Визуальный анализ окон видимости</button></div>
+          <div><button @click="CommandWork(5)" class="ButtonCommand" v-if="false">Расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
         </div>
       </div>
@@ -59,7 +59,7 @@ import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
 
   export default {
-    name: 'TargetDZZ',
+    name: 'ConstellationConstellation',
     css:{
       MainStyle
     },

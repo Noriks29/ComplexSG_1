@@ -36,7 +36,7 @@
             </div>
         </div>
         <p v-if="viewmode == 0">Заявки</p>
-        <div class="Panel" v-if="viewmode == 0">
+        <div class="Panel vwPanel" v-if="viewmode == 0">
             <table class="TableDefault">
               <tr>
                 <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
@@ -529,5 +529,9 @@ th{
 
   
   
+}
+
+.vwPanel{
+  min-width: 90vw;
 }
 </style>

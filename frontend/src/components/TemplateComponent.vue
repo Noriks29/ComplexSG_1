@@ -9,7 +9,7 @@
       </div>
       <div class="ButtonSection second" v-if="button_mode != 'pavlov'">
         <button :class="ActiveComponent.EarthConstellation ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>План контактов НП – ОГ</button>
-        <button><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+        <button :class="ActiveComponent.EarthConstellation ? 'active' : ''" @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
         <button>КА - КА решетка</button>
         <button :class="ActiveComponent.EstimationConstellation ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Оценка ОГ</button>
         <button :class="ActiveComponent.TargetRoad ? 'active' : ''" @click="SelectComponent('TargetRoad')">Маршрут обхода целей</button>
