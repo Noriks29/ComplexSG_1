@@ -98,13 +98,13 @@ import Plotly from 'plotly.js-dist'
 
               this.ShowDefaultTable = true
               this.dataLableName = [
-                {lable: "НП", nameParam: "earthName"},
-                {lable: "КА", nameParam: "satelliteId"},
+                {lable: "КА", nameParam: "satellite1Id"},
+                {lable: "Видимый КА", nameParam: "satellite2Id"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
               //дальше мы типо запрашиваем данные
-              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
               this.dataTable = await response
               this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
               
@@ -121,13 +121,13 @@ import Plotly from 'plotly.js-dist'
             }
             if(commandId == 1){
               DisplayLoad(true)
-              await FetchGet('/api/v1/modelling/view/earth')
+              await FetchGet('/api/v1/modelling/view/sat')
               DisplayLoad(false)
             }
             if(commandId == 6){
               console.log("Уааа график")
               this.ShowPlotlyContain = true
-              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
               console.log(response)
               let dataGrapf = {
                 type: 'bar',
@@ -145,8 +145,8 @@ import Plotly from 'plotly.js-dist'
               }
               response.forEach(element => {
                 console.log(this.CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.y.push(element.earthName)
-                dataGrapf.text.push(element.satelliteId)
+                dataGrapf.y.push(element.satellite1Id)
+                dataGrapf.text.push(element.satellite2Id)
                 dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
               });
