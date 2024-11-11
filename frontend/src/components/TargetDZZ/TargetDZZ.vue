@@ -6,10 +6,10 @@
             </button>
           </div>
           <div>
-            <button class="ChangeViewMode Right" v-if='viewmode < 1' @click="viewmode++">
+            <button class="ChangeViewMode Right" v-if='viewmode < 2' @click="viewmode++">
               <img src="../../assets/arrow2.png">
             </button>
-            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="CreateMap">
+            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="(viewmode == 1) ? CreateMap($event) : viewmode--">
               <img src="../../assets/arrow1.png">
             </button>
           </div>  
@@ -33,6 +33,7 @@
             <div>
               <button @click="CreateMap" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
+              <button @click="viewmode=2" class="ButtonCommand">Данные по заявкам</button>
             </div>
         </div>
         <p v-if="viewmode == 0">Заявки</p>
@@ -100,6 +101,31 @@
             </tr> 
           </table>
         </div>
+
+        <p v-if="viewmode == 2">Данные по заявкам</p>
+        <div class="Panel" v-if="viewmode == 2">
+          <table class="TableDefault">
+            <tr>
+              <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
+            </tr>
+            <tr v-for="data, index in catalogJson"
+              :key="index"
+              @change="ChangeParam"
+              v-show="!(data.deleted==true)"
+            >
+              <td>{{ index }}</td>
+              <td>{{ index }}</td>
+              <td>{{ index }}</td>
+              <td>{{ index }}</td>
+              <td>{{ index }}</td>
+              <td :id="index" ><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            </tr>
+            <tr class="addRowButton">
+              <td colspan="7"><button><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+            </tr> 
+          </table>
+        </div>
+
     </div>
 
     </div>

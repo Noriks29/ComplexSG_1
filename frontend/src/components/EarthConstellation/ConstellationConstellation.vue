@@ -44,7 +44,7 @@
         <img src="../../assets/close.svg"><span>&#8203;</span>
       </button></div>
 
-      <div id="plotlymapContain1"></div>
+      <div id="plotlymapContain1" style="height: 79vh;"></div>
       </div>
     </div>
     </div>
@@ -127,32 +127,72 @@ import Plotly from 'plotly.js-dist'
             if(commandId == 6){
               console.log("Уааа график")
               this.ShowPlotlyContain = true
-              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
-              console.log(response)
+
+              let responseNP = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
               let dataGrapf = {
                 type: 'bar',
+                name: "NP",
                 y: [],
                 x: [],
                 orientation: 'h',
                 base: [],
                 text: [],
                 marker: {
-                  opacity: 0.7,
+                  opacity: 0.5,
+                  color: "red",
                   line: {
-                    width: 2
+                    width: 1
                   }
                 }
               }
-              response.forEach(element => {
-                console.log(this.CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.y.push(element.satellite1Id)
-                dataGrapf.text.push(element.satellite2Id)
+              responseNP.forEach(element => {
+                dataGrapf.y.push(element.satelliteId)
+                dataGrapf.text.push(element.earthName)
                 dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
               });
 
 
-              Plotly.newPlot("plotlymapContain1", [dataGrapf],
+              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
+              console.log(response)
+              
+              let dataPlotly = [dataGrapf]
+              response.forEach(element => {
+                let flagadd = false
+                dataPlotly.forEach(plot => {
+                  if(plot.name == element.satellite2Id){
+                    plot.y.push(element.satellite1Id)
+                    plot.text.push(element.satellite1Id+"->"+element.satellite2Id)
+                    plot.x.push(this.CreateDateTime(element.end - element.begin, 2))
+                    plot.base.push(this.CreateDateTime(element.begin, 1))
+                    flagadd = true
+                  }
+                })
+                if(!flagadd){
+                  dataPlotly.push({
+                    type: 'bar',
+                    name: element.satellite2Id,
+                    y: [element.satellite1Id],
+                    x: [this.CreateDateTime(element.end - element.begin, 2)],
+                    orientation: 'h',
+                    base: [this.CreateDateTime(element.begin, 1)],
+                    text: [element.satellite1Id+"->"+element.satellite2Id],
+                    textfont: {
+                      size: 16,
+                      color: '#000000'
+                    },
+                    marker: {
+                      opacity: 0.5,
+                      color: "#0065ff",
+                      line: {width: 1}
+                    }
+                  })
+                }
+              });
+              console.log(dataPlotly)
+
+
+              Plotly.newPlot("plotlymapContain1", dataPlotly,
                 {
                   title: 'Окна видимости',
                 }

@@ -38,6 +38,7 @@ import NP from './components/NP/NP.vue'
 import OG from './components/OG/OG.vue'
 import TypeKA from './components/TypeKA/TypeKA.vue';
 import KA1 from './components/KA/KA1.vue';
+import KA2 from './components/KA2/KA2.vue';
 import SystemWindow from './components/System/SystemWindow.vue';
 import TargetDZZ from './components/TargetDZZ/TargetDZZ.vue'
 import EarthConstellation from './components/EarthConstellation/EarthConstellation.vue'
@@ -72,7 +73,8 @@ export default {
           TargetDZZ: false,
           EarthConstellation: false,
           EstimationConstellation: false,
-          KA1: false
+          KA1: false,
+          KA2: false
         },
         login: undefined,
         workplaceList: [],
@@ -144,6 +146,7 @@ export default {
             EstimationConstellation: true,
             TargetRoad: true,
             KA1: true,
+            KA2: true,
             ConstellationConstellation: true
           }
         }
@@ -158,6 +161,7 @@ export default {
             EarthConstellation: false,
             EstimationConstellation: false,
             KA1: false,
+            KA2: false,
             ConstellationConstellation: false
           }
         }
@@ -199,6 +203,7 @@ export default {
     OG,
     TypeKA,
     KA1,
+    KA2,
     SystemWindow,
     TargetDZZ,
     EarthConstellation,

@@ -17,6 +17,7 @@
       </div>
       <div class="ButtonSection third"  v-if="button_mode != 'pavlov'">
         <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SelectComponent('KA1')">Моделирование</button>
+        <button :class="ActiveComponent.KA2 ? 'active' : ''" @click="SelectComponent('KA2')">Моделирование доставки данных</button>
       </div>
       <div class="ButtonSection third" v-else>
         <button :class="ActiveComponent.KA1 ? 'active' : ''" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>

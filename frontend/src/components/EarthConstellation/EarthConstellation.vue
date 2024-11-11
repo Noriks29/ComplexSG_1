@@ -44,7 +44,7 @@
         <img src="../../assets/close.svg"><span>&#8203;</span>
       </button></div>
 
-      <div id="plotlymapContain1"></div>
+      <div id="plotlymapContain1" style="height: 79vh;"></div>
       </div>
     </div>
     </div>
