@@ -10,6 +10,7 @@
           <tr>
             <th style="width: 50px;">ID</th>
             <th>Модель КА</th>
+            <th>Имя КА</th>
             <th v-if="dataJsonOG.inputType === 2">Плосколсть</th>
             <th v-if="dataJsonOG.inputType === 2">Позиция</th>
             <th>Большая полуось</th>
@@ -35,6 +36,8 @@
 
             <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
             <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
+            <td><input :id="index" name="name" type="text"  :class="approved ? 'disable' : ''"
+              :value="data.name"></td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.plane }}</td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"

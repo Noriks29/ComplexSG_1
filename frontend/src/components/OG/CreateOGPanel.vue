@@ -125,6 +125,7 @@
                     "longitudeAscendingNode": 0,
                     "perigeeWidthArgument": 0,
                     "trueAnomaly": 0,
+                    "name": "null",
                     "modelSat": {
                     "id": this.KaModels[0].value
                     }
