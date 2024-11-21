@@ -108,20 +108,21 @@
             <tr>
               <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
             </tr>
-            <tr v-for="data, index in catalogJson"
+            <tr v-for="data, index in datarequest"
               :key="index"
-              @change="ChangeParam"
+              @change="ChangeParamdatarequest"
               v-show="!(data.deleted==true)"
             >
-              <td>{{ index }}</td>
-              <td>{{ index }}</td>
-              <td>{{ index }}</td>
-              <td>{{ index }}</td>
-              <td>{{ index }}</td>
-              <td :id="index" ><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              <td>{{ index+1 }}</td>
+              <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.nodeId, value: data.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
+              <td><input :id="index" name="capacity" type="number" :value="data.capacity"></td>
+              <td><input :id="index" name="priority" type="number" :value="data.priority"></td><!-- Доделать и сделать правильные обработчики событий изменения
+              -->
+              <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
+              <td :id="index" @click="DeleteRowdatarequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
             </tr>
             <tr class="addRowButton">
-              <td colspan="7"><button><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+              <td colspan="7"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
           </table>
         </div>
@@ -159,6 +160,10 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         catalogJson: [],
         selectCatalog: null,
 
+        datarequest: [],
+        datarequestКАList: [],
+
+
         requestJson: [],
 
         KAArray: [],
@@ -187,20 +192,25 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.SatartSave('request')
       },
+      ChangeTimedatarequest(obgtime){  // изменение времени в данных по заявкам
+        this.datarequest[obgtime.id].time = obgtime.time
+        this.SatartSave('datarequest')
+      },
       SelectChange(e){
-        console.log(e,  this.requestJson)
         this.requestJson[e.id].catalog = e.value
         this.SatartSave('request')
       },
       SelectChangeNP(e){
-        console.log(e,  this.requestJson)
         this.requestJson[e.id].earthPoint = e.value
         this.SatartSave('request')
       },
       SelectChangeCriteria(e){
-        console.log(e,  this.requestJson)
         this.requestJson[e.id].choiceCriteria = e.value
         this.SatartSave('request')
+      },
+      ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
+        this.datarequest[e.id].nodeId = e.value
+        this.SatartSave('datarequest')
       },
       CreateSelectArr(){
         this.arr = []
@@ -220,6 +230,18 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
             this.catalogJson.push(addedRow);   
             this.SatartSave('catalog')
           },
+      CreateNewdatarequest(){ // Данные по заявкам добавление
+        var addedRow = {
+                    "capacity": 100,
+                    "priority": 3,
+                    "time" : this.systemStatus.modelingBegin,
+                    "nodeId":  this.datarequestКАList[0].value,
+                    "deleted": false
+                };
+        this.datarequest.push(addedRow)
+        this.SatartSave('datarequest')
+        console.log(addedRow)
+      },
       AddRowRequest(catalog){
         if(this.catalogJson.length < 1){
           alert("Нет целей в каталоге, пожалуйста создайте")
@@ -248,6 +270,10 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
               this.requestJson[index].deleted = true
               this.SatartSave('request')
           },
+      DeleteRowdatarequest(index){ //удаление из данные по заявкам
+        this.datarequest[index].deleted = true
+        this.SatartSave('datarequest')
+      },
       async SatartSave(target){
         if(target == 'catalog')
         {
@@ -259,11 +285,23 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           await FetchPost("/api/v1/satrequest/request/update", this.requestJson)
           await this.ReFetch()
         }
+        if(target == 'datarequest')
+        {
+          await FetchPost("/api/v1/satrequest/data/update", this.datarequest)
+          await this.ReFetch()
+        }
       },
       ChangeParam(target){
         this.catalogJson[target.target.id][target.target.name] = target.target.value
         this.CreateSelectArr()
         this.SatartSave('catalog')
+      },
+      ChangeParamdatarequest(target){ // this.datarequest изменении параметров данных по заявкам
+        console.log(target)
+        if(target.target.name != "date" && target.target.name != "time"){
+          this.datarequest[target.target.id][target.target.name] = target.target.value
+          this.SatartSave('datarequest')
+        }
       },
       ChangeParamRequest(target){
         
@@ -283,7 +321,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         const reader = new FileReader();
         if (data.target.files[0]) {
           var file = data.target.files[0];
-          console.log(file)
           reader.readAsText(file);
           reader.addEventListener('load', () => {
             let dataFile = reader.result.split("\n")
@@ -303,7 +340,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
                 dataFormat[line_index].push({lat: lat*180/Math.PI, lng: lng*180/Math.PI}) 
               }
             }
-            console.log(dataFormat)
             const color = document.getElementById("inputColorKa").value
             dataFormat.forEach(dataRoad =>{
               L.polyline(dataRoad, {color: color + "d4", weight: 2}).addTo(this.map);
@@ -322,6 +358,9 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         for (let index = 0; index < this.catalogJson.length; index++) {
           this.catalogJson[index].countRequest = 0;
         }
+
+        this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
+
         result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.requestJson = result || {}
         for (let index = 0; index < this.requestJson.length; index++) {
@@ -338,7 +377,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
             const element = result[i];
             this.arrNP.push({value: element, lable: element.nameEarthPoint })
           }
-          console.log(this.requestJson, this.catalogJson)
         this.CreateSelectArr()
         },
         async CreateMap(){
@@ -362,7 +400,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           this.mapPoint = []
           for (let i = 0; i < this.requestJson.length; i++) {
               const element = this.requestJson[i].catalog;
-              console.log(element)
               this.mapPoint.push(L.circle([element.lat, element.lon], 21000, {
                 color: 'blue',
                 fillColor: '#f03',
@@ -371,8 +408,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           }
           
           this.arrNP.forEach(element => {
-            console.log(element.value)
-            console.log(element)
               this.mapPoint.push(L.circle([element.value.latitude, element.value.longitude], 17000, {
                 color: 'green',
                 fillColor: '#121100',
@@ -389,7 +424,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           let colors = ['#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#990000','#009900','#999900','#000099','#ffcc00','#00ffcc','#cc0000','#00cc00','#cccc00','#0000cc','#ee0000','#00ee00','#eeee00','#00eeee','#aaaa00']
           if (this.KatoDraw == undefined) {
             let roads = await FetchGet("/api/v1/modelling/gps/coordinates") || []
-            console.log(roads)
             let colorid = 0
             roads.forEach(road => {
               let arrayPoint = [[]]
@@ -404,7 +438,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
                 }
                 arrayPoint[line_index].push({lat: element.latitude, lng: element.longitude})
               }
-              console.log(arrayPoint)
               arrayPoint.forEach(dataRoad => {
                 L.polyline(dataRoad, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
               })
@@ -439,9 +472,11 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
 
       let Ka = await FetchGet('/api/v1/constellation/get/list') || []
       this.KAArray.push({value: undefined, lable: "Все КА" })
+      this.datarequestКАList = []
       Ka.forEach(OG => {
         OG.satellites.forEach(element =>{
           this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.idNode })
+          this.datarequestКАList.push({value: element.idNode, lable: element.idNode })
         })
       });
       this.SelectKa = this.KAArray[0]
@@ -469,6 +504,9 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
           const element = result[i];
           this.arrNP.push({value: element, lable: element.nameEarthPoint })
         }
+
+      this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
+      
         //console.log(this.requestJson, this.catalogJson)
       this.CreateSelectArr()
       DisplayLoad(false)
