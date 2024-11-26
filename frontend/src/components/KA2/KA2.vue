@@ -39,7 +39,7 @@
 
         <div class="Panel MaxWidth">
           <div>
-            <button class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать</button>
+            <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать</button>
           </div>
         </div>
 
@@ -74,7 +74,7 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import { DisplayLoad } from '@/js/LoadDisplayMetod';
+import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
   export default {
     name: 'KA2',
     data(){
@@ -102,16 +102,18 @@ import { DisplayLoad } from '@/js/LoadDisplayMetod';
         },
       async StartModelling(){
         DisplayLoad(true)
-
+        let datamodelling = {
+          "experimentType": 1,
+          "modellingMode": 1
+        }
+        let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling)
+        console.log(rezult)
 
         DisplayLoad(false)
       },
     },
     async mounted(){
       alert("НЕЧЕГО НЕ ТРОГАТЬ ВКЛАДКА В РАЗРАБОТКЕ")
-      DisplayLoad(true)
-
-      DisplayLoad(false)
     }
 
 
