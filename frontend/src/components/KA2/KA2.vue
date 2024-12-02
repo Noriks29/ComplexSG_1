@@ -1,175 +1,174 @@
 <template>
-    <div class="main_contain">
-      <div>
-        <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-          <img src="../../assets/exit.svg">
-        </button>
+  <div class="main_contain">
+    <div>
+      <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+        <img src="../../assets/exit.svg">
+      </button>
+    </div>
+
+    <div class="ContentDiv">
+      <h1 class="TitleText">Моделирование</h1>
+
+      <div class="Panel">
+        <table>
+          <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
+          <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+        </table>
+      </div>
+      <div class="Panel MaxWidth">
+        <div>
+          <fieldset @change="ChangeInputRadio">
+            <legend>Тип эксперимента:</legend>
+            <div>
+              <input type="radio" name="experimentType" value="1" checked />
+              <label>Планирование заявок</label>
+            </div>
+            <div>
+              <input type="radio" name="experimentType" value="2" />
+              <label>Планирование заявок и планирование полёта</label>
+            </div>
+            <div>
+              <input type="radio" name="experimentType" value="3" />
+              <label>Планирование заявок и моделирование полёта</label>
+            </div>
+          </fieldset>
+        </div>
       </div>
 
-      <div class="ContentDiv">
-        <h1 class="TitleText">Моделирование</h1>
+      <div class="Panel MaxWidth">
+        <div>
+          <button class="ButtonCommand rightPadding" @click="StartModelling">
+            <img src="../../assets/start.png" alt="" class="iconButton">Начать
+          </button>
+        </div>
+      </div>
 
-        <div class="Panel">
-          <table>
-              <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
-              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+      <div class="Panel MaxWidth" v-if="true">
+        <div class="PanelWork">
+          <table class="colum">
+            <tr>
+              <td>Заявки</td>
+              <td><button class="ButtonCommand">Невыполнимые</button></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td colspan="3"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
+              <td colspan="1"><button @click="ShowLogSMAO" class="ButtonCommand icon">
+                  <img src="../../assets/instructions.png" alt="smaoResponse">
+                </button>
+              </td>
+            </tr>
           </table>
         </div>
-        <div class="Panel MaxWidth">
-          <div>
-            <fieldset  @change="ChangeInputRadio">
-              <legend>Тип эксперимента:</legend>
-              <div>
-                <input type="radio" name="experimentType" value="1" checked />
-                <label>Планирование заявок</label>
-              </div>
-              <div>
-                <input type="radio" name="experimentType" value="2" />
-                <label>Планирование заявок и планирование полёта</label>
-              </div>
-              <div>
-                <input type="radio" name="experimentType" value="3" />
-                <label>Планирование заявок и моделирование полёта</label>
-              </div>
-            </fieldset>
-          </div>
-        </div>
-        
-
-
-        <div class="Panel MaxWidth">
-          <div>
-            <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать</button>
-          </div>
-        </div>
-
-        <div class="Panel MaxWidth" v-if="true">
-          <div class="PanelWork">
-
-            <table class="colum">
-              <tr>
-                <td>Заявки</td>
-                <td><button class="ButtonCommand">Невыполнимые</button></td>
-                <!--<td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>-->
-              </tr>
-              <tr>
-                <td></td>
-                <td colspan="3"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
-                <td colspan="1"><button @click="ShowLogSMAO" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
-              </tr>
-            </table>
-
-
-          </div>
-        </div>
-
-
       </div>
-
-      
-
     </div>
+  </div>
 </template>
-  
-<script>
 
+<script>
 import { UnixToDtime } from '@/js/WorkWithDTime';
 import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
-  export default {
-    name: 'KA2',
-    data(){
-      return{
-        
-      }
-    },
-    components:{
-    },
-    props:{
-        systemStatus:{
-            type: Object
-        },
-    },
-    methods: {
-      SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {nameComponent: nameComponent})
-      },
-      CreateDateTime(time, text = true){
-          let Dtime = UnixToDtime(time)
-          if(!text){
-            return Dtime.date + " " + Dtime.time
-          }
-          return Dtime.date + " " + Dtime.time + " МСК"
-        },
-      async StartModelling(){
-        DisplayLoad(true)
-        let datamodelling = {
-          "experimentType": 1,
-          "modellingMode": 1
-        }
-        let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling)
-        console.log(rezult)
 
-        DisplayLoad(false)
-      },
-      ShowLogEvent(){
-        this.dataTable = []
-        this.dataLableName = [{label: "data", nameParam: "data"}]
-        for (let index = 0; index < this.modellingRezult.log.length; index++) {
-          const element = this.modellingRezult.log[index];
-          this.dataTable.push({data: element}) 
-        }
-        this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
-      },
-      ShowLogSMAO(){
-        this.dataTable = []
-        this.dataLableName = [{label: "data", nameParam: "data"}]
+export default {
+  name: 'KA2',
+  data() {
+    return {
+      modellingRezult: null, // Добавим переменную для хранения данных моделирования
+      dataTable: [],
+      dataLableName: [],
+      PreWrapDefaultTable: false,
+      ShowDefaultTable: false
+    };
+  },
+  props: {
+    systemStatus: {
+      type: Object
+    }
+  },
+  methods: {
+    SelectComponent(nameComponent) {
+      this.$emit('updateParentComponent', { nameComponent: nameComponent });
+    },
+    CreateDateTime(time, text = true) {
+      let Dtime = UnixToDtime(time);
+      if (!text) {
+        return Dtime.date + " " + Dtime.time;
+      }
+      return Dtime.date + " " + Dtime.time + " МСК";
+    },
+    async StartModelling() {
+      DisplayLoad(true);
+      let datamodelling = {
+        "experimentType": 1,
+        "modellingMode": 1
+      };
+      let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling);
+      console.log(rezult);
+
+      if (rezult && rezult.modellingRezult) {
+        this.modellingRezult = rezult.modellingRezult; // Проверка, что данные моделирования получены
+      }
+
+      DisplayLoad(false);
+    },
+    ShowLogEvent() {
+      this.dataTable = [];
+      this.dataLableName = [{ label: "data", nameParam: "data" }];
+      for (let index = 0; index < this.modellingRezult.log.length; index++) {
+        const element = this.modellingRezult.log[index];
+        this.dataTable.push({ data: element });
+      }
+      this.PreWrapDefaultTable = false;
+      this.ShowDefaultTable = true;
+    },
+    ShowLogSMAO() {
+      // Добавляем проверку на наличие данных
+      if (this.modellingRezult && this.modellingRezult.Smao) {
+        this.dataTable = [];
+        this.dataLableName = [{ label: "data", nameParam: "data" }];
         for (let index = 0; index < this.modellingRezult.Smao.length; index++) {
           const element = this.modellingRezult.Smao[index];
-          this.dataTable.push({data: element}) 
+          this.dataTable.push({ data: element });
         }
-        this.PreWrapDefaultTable = true
-        this.ShowDefaultTable = true
+        this.PreWrapDefaultTable = true;
+        this.ShowDefaultTable = true;
+      } else {
+        console.error('Smao is undefined or modellingRezult is missing.');
       }
     }
   }
-
-  
-
-  </script>
-
+};
+</script>
 
 <style lang="scss" scoped>
-
-
-fieldset{
+fieldset {
   text-align: left;
 }
-.PanelWork{
+.PanelWork {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
 
-  .colum{
-    flex: 1;
-    button{
-      width: 99%;
-    }
-
-  }
-
-  .FlexColum{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-
-    button{
-      margin: 5px;
-    }
+.colum {
+  flex: 1;
+  button {
+    width: 99%;
   }
 }
-.SelectMode{
+
+.FlexColum {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+
+  button {
+    margin: 5px;
+  }
+}
+
+.SelectMode {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
@@ -177,22 +176,20 @@ fieldset{
   padding: 5px;
   height: 45px;
   font-size: 18px;
-  div{
-    img{
+  div {
+    img {
       width: 40px;
-      &:active{
+      &:active {
         width: 30px;
       }
-      &.disable{
+      &.disable {
         pointer-events: none;
       }
     }
   }
-  
 }
-.ContentDiv{
+
+.ContentDiv {
   height: fit-content;
-
 }
-
 </style>
