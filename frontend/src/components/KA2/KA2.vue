@@ -54,8 +54,8 @@
               </tr>
               <tr>
                 <td></td>
-                <td colspan="3"><button class="ButtonCommand">Лог движка</button></td>
-                <td colspan="1"><button class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
+                <td colspan="3"><button @click="ShowLogEvent" class="ButtonCommand">Лог движка</button></td>
+                <td colspan="1"><button @click="ShowLogSMAO" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
               </tr>
             </table>
 
@@ -111,13 +111,31 @@ import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 
         DisplayLoad(false)
       },
-    },
-    async mounted(){
-      alert("НЕЧЕГО НЕ ТРОГАТЬ ВКЛАДКА В РАЗРАБОТКЕ")
+      ShowLogEvent(){
+        this.dataTable = []
+        this.dataLableName = [{label: "data", nameParam: "data"}]
+        for (let index = 0; index < this.modellingRezult.log.length; index++) {
+          const element = this.modellingRezult.log[index];
+          this.dataTable.push({data: element}) 
+        }
+        this.PreWrapDefaultTable = false
+        this.ShowDefaultTable = true
+      },
+      ShowLogSMAO(){
+        this.dataTable = []
+        this.dataLableName = [{label: "data", nameParam: "data"}]
+        for (let index = 0; index < this.modellingRezult.Smao.length; index++) {
+          const element = this.modellingRezult.Smao[index];
+          this.dataTable.push({data: element}) 
+        }
+        this.PreWrapDefaultTable = true
+        this.ShowDefaultTable = true
+      }
     }
-
-
   }
+
+  
+
   </script>
 
 
