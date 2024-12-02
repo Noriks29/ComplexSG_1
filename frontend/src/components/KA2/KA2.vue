@@ -7,7 +7,7 @@
       </div>
 
       <div class="ContentDiv">
-        <h1 class="TitleText">Моделирование НЕЧЕГО НЕ ТРОГАТЬ ПОЖАЛУЙСТА</h1>
+        <h1 class="TitleText">Моделирование</h1>
 
         <div class="Panel">
           <table>

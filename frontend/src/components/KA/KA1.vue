@@ -2,6 +2,7 @@
     <div class="main_contain">
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
       <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
+      <E79Table v-if="ShowE79Table" :dataTable="modellingRezult.E79" @closetable="ShowE78Table = false"/>
       <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
       <div>
@@ -72,7 +73,7 @@
                 <td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td>
                 <td><button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
                 <td><button @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
-                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
+                <td><button @click="EventE79" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
@@ -101,8 +102,9 @@ import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
-import E77E78 from './E77E78.vue';
+import E79Table	 from './E79Table.vue';
 import BookmarkTable from './BookmarkComponent.vue';
+import E77E78 from './E77E78.vue';
   export default {
     name: 'FlightPlaner',
     data(){
@@ -113,6 +115,7 @@ import BookmarkTable from './BookmarkComponent.vue';
         ShowDefaultTable: false,
         PreWrapDefaultTable: false,
         ShowE78Table: false,
+        ShowE79Table: false,
         ShowE77E78Table: false,
         ShowBookmarkTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
@@ -129,6 +132,7 @@ import BookmarkTable from './BookmarkComponent.vue';
           log: [],
           E77: [],
           E78: [],
+          E79: [],
           hide: []
         },
         modellingRezultSelect:{
@@ -144,6 +148,7 @@ import BookmarkTable from './BookmarkComponent.vue';
     components:{
       DefaultTable,
       E78Table,
+      E79Table,
       E77E78,
       SelectDiv,
       BookmarkTable
@@ -192,6 +197,7 @@ import BookmarkTable from './BookmarkComponent.vue';
           log: [],
           E77: [],
           E78: [],
+          E79: [],
           hide: []
         }
         this.modellingRezultSelect = {
@@ -221,6 +227,9 @@ import BookmarkTable from './BookmarkComponent.vue';
               if (element.dataDownPlan.partsPlan.length > 0) {
                 this.modellingRezult.E78.push(element)
               }
+            }
+            else if (element.type == "E79"){
+              this.modellingRezult.E79.push(element)
             }
           } catch (error) {
             console.log(error, element)
@@ -278,6 +287,9 @@ import BookmarkTable from './BookmarkComponent.vue';
       },
       EventE78(){
         this.ShowE78Table = true
+      },
+      EventE79(){
+        this.ShowE79Table = true
       },
       EventE77E78(){
         this.ShowE77E78Table = true
