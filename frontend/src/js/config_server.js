@@ -1,5 +1,5 @@
 
-let adress = "localhost:8081" 
+let adress = "82.179.36.248:8081" 
 let adressDEV = "localhost:8081" 
 export {
     adress,
