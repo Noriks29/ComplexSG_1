@@ -2,7 +2,6 @@
     <div class="main_contain">
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
       <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
-      <E79Table v-if="ShowE79Table" :dataTable="modellingRezult.E79" @closetable="ShowE78Table = false"/>
       <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
       <div>
@@ -102,7 +101,6 @@ import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
-import E79Table	 from './E79Table.vue';
 import BookmarkTable from './BookmarkComponent.vue';
 import E77E78 from './E77E78.vue';
   export default {
@@ -115,7 +113,6 @@ import E77E78 from './E77E78.vue';
         ShowDefaultTable: false,
         PreWrapDefaultTable: false,
         ShowE78Table: false,
-        ShowE79Table: false,
         ShowE77E78Table: false,
         ShowBookmarkTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
@@ -148,7 +145,6 @@ import E77E78 from './E77E78.vue';
     components:{
       DefaultTable,
       E78Table,
-      E79Table,
       E77E78,
       SelectDiv,
       BookmarkTable
@@ -203,6 +199,7 @@ import E77E78 from './E77E78.vue';
         this.modellingRezultSelect = {
           E77: [],
           E78: [],
+          E79: [],
           selectKA: this.modellingRezultSelect.selectKA
         }
         try {
@@ -289,7 +286,15 @@ import E77E78 from './E77E78.vue';
         this.ShowE78Table = true
       },
       EventE79(){
-        this.ShowE79Table = true
+        this.dataLableName = [{lable: "Виток №", nameParam: "numberRev"},{lable: "Начало", nameParam: "timeBegin"},{lable: "Конец", nameParam: "timeEnd"},{lable: "Режим", nameParam: "mode"},{lable: "sunMode", nameParam: "sunMode"}]
+        for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
+          const element = this.modellingRezultSelect.E79[index];
+          if(element.timeBegin != 0) element.timeBegin = UnixToDtime(element.timeBegin).time
+          if(element.timeEnd != 0) element.timeEnd = UnixToDtime(element.timeEnd).time
+          this.dataTable.push(element) 
+        }
+        this.PreWrapDefaultTable = false
+        this.ShowDefaultTable = true
       },
       EventE77E78(){
         this.ShowE77E78Table = true
@@ -306,6 +311,7 @@ import E77E78 from './E77E78.vue';
         this.modellingRezultSelect = {
           E77: [],
           E78: [],
+          E79: [],
           selectKA: id
         }
         this.modellingRezult.E77.forEach(E77 =>{
@@ -316,6 +322,11 @@ import E77E78 from './E77E78.vue';
         this.modellingRezult.E78.forEach(E78 =>{
           if (E78.idSender == id) {
             this.modellingRezultSelect.E78 = E78.dataDownPlan.partsPlan
+          }
+        })
+        this.modellingRezult.E79.forEach(E79 =>{
+          if (E79.idSender == id) {
+            this.modellingRezultSelect.E79 = E79.setSkeleton.flightPlan
           }
         })
         console.log(this.modellingRezultSelect)
