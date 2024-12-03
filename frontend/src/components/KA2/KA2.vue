@@ -1,5 +1,6 @@
 <template>
   <div class="main_contain">
+    <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
     <div>
       <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
         <img src="../../assets/exit.svg">
@@ -7,7 +8,7 @@
     </div>
 
     <div class="ContentDiv">
-      <h1 class="TitleText">Моделирование</h1>
+      <h1 class="TitleText">Моделирование доставки данных</h1>
 
       <div class="Panel">
         <table>
@@ -68,12 +69,12 @@
 <script>
 import { UnixToDtime } from '@/js/WorkWithDTime';
 import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
-
+import DefaultTable from '@/components/DefaultTable.vue'
 export default {
   name: 'KA2',
   data() {
     return {
-      modellingRezult: null, // Добавим переменную для хранения данных моделирования
+      modellingResult: null,
       dataTable: [],
       dataLableName: [],
       PreWrapDefaultTable: false,
@@ -85,6 +86,9 @@ export default {
       type: Object
     }
   },
+  components:{
+      DefaultTable
+    },
   methods: {
     SelectComponent(nameComponent) {
       this.$emit('updateParentComponent', { nameComponent: nameComponent });
@@ -105,31 +109,39 @@ export default {
       let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling);
       console.log(rezult);
 
-      if (rezult && rezult.modellingRezult) {
-        this.modellingRezult = rezult.modellingRezult; // Проверка, что данные моделирования получены
-      }
+      this.modellingResult = rezult; // Проверка, что данные моделирования получены
 
       DisplayLoad(false);
     },
     ShowLogEvent() {
-      this.dataTable = [];
-      this.dataLableName = [{ label: "data", nameParam: "data" }];
-      for (let index = 0; index < this.modellingRezult.log.length; index++) {
-        const element = this.modellingRezult.log[index];
-        this.dataTable.push({ data: element });
+    // Проверяем наличие данных
+      if (!this.modellingResult.engineLogResponse) {
+        console.error('Логи движка отсутствуют или данные моделирования не загружены.');
+        return;
       }
+
+      // Очищаем предыдущие данные
+      this.dataTable = [];
+      this.dataLableName = [
+        { label: "Данные", nameParam: "data" }
+      ];
+
+      // Формируем данные для отображения
+      this.modellingResult.engineLogResponse.forEach(log => {
+        this.dataTable.push({
+          data: log
+        });
+      });
+
       this.PreWrapDefaultTable = false;
       this.ShowDefaultTable = true;
     },
     ShowLogSMAO() {
       // Добавляем проверку на наличие данных
-      if (this.modellingRezult && this.modellingRezult.Smao) {
+      if (this.modellingResult.dtnRoutingResponse) {
         this.dataTable = [];
         this.dataLableName = [{ label: "data", nameParam: "data" }];
-        for (let index = 0; index < this.modellingRezult.Smao.length; index++) {
-          const element = this.modellingRezult.Smao[index];
-          this.dataTable.push({ data: element });
-        }
+          this.dataTable.push({ data: this.modellingResult.dtnRoutingResponse });
         this.PreWrapDefaultTable = true;
         this.ShowDefaultTable = true;
       } else {
