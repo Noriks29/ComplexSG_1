@@ -9,7 +9,6 @@
           
     <div class="ContentDiv">
       <div class="TitleText">Список наземных пунктов</div>
-    
     <div class="Panel MaxWidth">
       <table>
         <tr v-if="dataJson.length > 0">
@@ -17,12 +16,12 @@
           <th>Название</th>
           <th>Широта</th>
           <th>Долгота</th>
-          <th v-if="!approved"></th>
+          <th v-if="!approved && !modellingStatus"></th>
         </tr>
         <tr
           v-for="(data, index) in dataJson"
           :key="index"
-          :class="!approved ? 'active' :''"
+          :class="!approved && !modellingStatus ? 'active' :''"
           @change="ChangeParam"
         >
           <td>{{ data.idNode }}</td>
@@ -32,9 +31,9 @@
             :value="data.latitude"></td>
           <td><input :id="index" type="number" name="longitude" class="small" :class="approved ? 'disable' : ''" 
               :value="data.longitude"></td>
-          <td v-if="!approved" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+          <td v-if="!approved && !modellingStatus" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
-        <tr v-if="!approved" class="addRowButton">
+        <tr v-if="!approved && !modellingStatus" class="addRowButton">
           <td colspan="5"><button @click="AddRow">
             <img src="../../assets/add.png" alt="" class="addButtonIcon">
             Добавить наземный пункт
@@ -42,7 +41,7 @@
         </tr> 
       </table>
     </div>
-    <div class="Panel TableInfo MaxWidth">
+    <div class="Panel TableInfo MaxWidth" v-if="!modellingStatus">
         <div :class="approved ? 'Yes' :'No'">
         {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
@@ -73,6 +72,9 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
     systemStatus:{
           type: Object
         },
+        modellingStatus:{
+          type: Boolean
+        }
     },
     methods: {
       SelectComponent(nameComponent) {

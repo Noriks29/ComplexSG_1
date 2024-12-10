@@ -1,10 +1,5 @@
 <template>
     <div class="main_contain">
-      <div>
-        <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-          <img src="../../assets/exit.svg">
-        </button>
-      </div>
 
       <div class="ContentDiv">
         <h1 class="TitleText">Моделирование НЕЧЕГО НЕ ТРОГАТЬ ПОЖАЛУЙСТА</h1>
@@ -113,7 +108,7 @@ import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
       },
     },
     async mounted(){
-      alert("НЕЧЕГО НЕ ТРОГАТЬ ВКЛАДКА В РАЗРАБОТКЕ")
+
     }
 
 

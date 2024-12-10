@@ -33,7 +33,7 @@
           <tr>
             <th colspan="2" class="Title">Аспекты системы управления</th><th></th>
           </tr>
-          <tr class="active"><td>Inter sat</td><td>Межспутниковая связь</td><td><input id="interSatelliteCommunication" type="checkbox" @change="ChangeParam" :checked="systemStatus.interSatelliteCommunication"><label for="interSat">{{systemStatus.interSatelliteCommunication}}</label></td></tr>
+          <!--<tr class="active"><td>Inter sat</td><td>Межспутниковая связь</td><td><input id="interSatelliteCommunication" type="checkbox" @change="ChangeParam" :checked="systemStatus.interSatelliteCommunication"><label for="interSat">{{systemStatus.interSatelliteCommunication}}</label></td></tr>-->
           <tr class="active"><td>Control</td><td>Управление орбитальной группировкой</td><td><input id="controlSystem" @change="ChangeParam" type="checkbox" :checked="systemStatus.controlSystem == 'Automated'"><label for="controlSystem">{{systemStatus.controlSystem}}</label></td></tr>
 
           <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="systemStatus.step"><label for="step"></label></td></tr>
@@ -105,8 +105,6 @@ import { saveAs } from 'file-saver';
             const j_element = element.satellites[jindex];
             j_element.idNode = undefined
             j_element.satelliteId = undefined
-            //не забудь про modelsat.id
-
             element.satellites[jindex] = j_element
           }
           result[index] = element 
@@ -120,13 +118,10 @@ import { saveAs } from 'file-saver';
           result[index] = element
         }
         dataLoad.catalog = result
-
-        console.log(JSON.stringify(dataLoad, null, 2))
         var fileName = 'myData.json';
         var fileToSave = new Blob([JSON.stringify(dataLoad, null, 2)], {
             type: 'application/json'
         });
-
         saveAs(fileToSave, fileName);
       },
       ChangeTime(obgTime){
@@ -165,17 +160,6 @@ import { saveAs } from 'file-saver';
           const formData = new FormData(); // Создаем FormData
           formData.append('file', file); // Добавляем файл
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
-          
-          /*
-          reader.readAsText(file);
-          
-          reader.addEventListener('load', () => {
-
-            this.ReloadDataBaseFromFile(reader.result);
-          });
-          reader.addEventListener('error', () => {
-            console.error(`Произошла ошибка при чтении файла`);
-          });*/
         }
       },
       async ReloadDataBaseFromFile(json){
@@ -183,81 +167,6 @@ import { saveAs } from 'file-saver';
         console.log(json)
         //await FetchPost(Э/api/v1/workplace/upload/filejson)
         alert("НА данный момент эта функция не активна")
-        /*
-        try {
-          let dataJson = JSON.parse(json)
-          try {
-            dataJson.system.systemId = this.dataSystem.systemId
-            console.log(this.dataSystem)
-            this.dataSystem = dataJson.system
-            console.log(this.dataSystem)
-          } catch (error) {
-            console.log(error)
-            alert("Ошибка перезаписи")
-          }
-          try {
-            if(dataJson.earth != undefined){
-              let result = await FetchGet('/api/v1/earth/get/list')
-              let new_Np = dataJson.earth
-              for (let index = 0; index < result.length; index++) {
-                const element = result[index]
-                element.deleted = true
-                new_Np.push(element)
-              }
-              let response = await FetchPost("/api/v1/earth/update/byList", new_Np)
-              console.log(response)
-            }
-          } catch (error) {
-            console.log(error)
-            alert("Ошибка перезаписи")
-          }
-          try {
-            if(dataJson.constellation != undefined){
-              let result = await FetchGet('/api/v1/constellation/get/list')
-              for (let index = 0; index < result.length; index++) {
-                const element = result[index];
-                let response = await FetchPost('/api/v1/constellation/delete/byId',{},'id='+element.id)
-                console.log(response)
-              }
-              let modelsat = await FetchGet('/api/v1/modelsat/all')
-              for (let index = 0; index < dataJson.constellation.length; index++) {
-                const element = dataJson.constellation[index];
-                for (let satellites_index = 0; satellites_index < element.satellites.length; satellites_index++) {
-                  const satellites = element.satellites[satellites_index];
-                  satellites.modelSat = {
-                    id: modelsat[0].id
-                  }
-                  element.satellites[satellites_index] = satellites
-                }
-                let responce = await FetchPost('/api/v1/constellation/update',element)
-                console.log(responce)
-              }
-            }
-          } catch (error) {
-            console.log(error)
-            alert("Ошибка перезаписи")
-          }
-          try {
-            if(dataJson.catalog != undefined){
-              let result = await FetchGet('/api/v1/satrequest/catalog/get/all')
-              for (let index = 0; index < result.length; index++) {
-                const element = result[index];
-                element.deleted = true
-                dataJson.catalog.push(element)
-              }
-              let responce = await FetchPost("/api/v1/satrequest/catalog/update", dataJson.catalog)
-              console.log(responce)
-            }    
-          } catch (error) {
-            console.log(error)
-            alert("Ошибка перезаписи")
-          }
-        } catch (error) {
-          console.log(error)
-          alert("Ошибка чтения")
-        }*/
-
-
         DisplayLoad(false)
       }
       

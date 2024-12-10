@@ -20,16 +20,16 @@
         >
           <td  @click="selectOG = data">{{ data.constellationName }}</td>
           <td  @click="selectOG = data">{{ data.inputType == 1 ? "Произвольное построение" : "Системное построение" }}</td>
-          <td class="iconDelete" v-if="!approved" @click="DeleteRowOG(data)"><img  src="../../assets/delete.svg" alt="Удалить"></td>
+          <td class="iconDelete" v-if="!approved && !modellingStatus" @click="DeleteRowOG(data)"><img  src="../../assets/delete.svg" alt="Удалить"></td>
         </tr>
-        <tr v-if="!approved" class="PanelDefault">
+        <tr v-if="!approved && !modellingStatus" class="PanelDefault">
           <td @click="addRowTable = true" colspan="3" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</td>
         </tr>
       </table>
     </div>
           
      
-    <div class="Panel TableInfo MaxWidth">
+    <div class="Panel TableInfo MaxWidth" v-if="!modellingStatus">
           <div :class="approved ? 'Yes' :'No'">
             {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
@@ -67,6 +67,9 @@ import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
     systemStatus:{
           type: Object
         },
+        modellingStatus:{
+          type: Boolean
+        }
     },
     components:
     {

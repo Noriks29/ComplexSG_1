@@ -11,7 +11,7 @@ function DisplayLoad(status){
         element.style.display = "none"
     }
 }
-async function FetchGet(http){
+async function FetchGet(http, AlertError = true){
     let AcsessKey = localStorage.data
     let MODE = window.location.search
     let add = adress
@@ -31,13 +31,13 @@ async function FetchGet(http){
         }
     } catch (error) {
         console.log('Error during fetch:', error);
-        alert("Ошибка запроса, дальнейшая работа может быть некорректной!" + error)
+        if(AlertError) alert("Ошибка запроса, дальнейшая работа может быть некорректной!" + error)
         return undefined
     }
 
 }
 
-async function FetchPost(http,datapost,dopparamhttp){
+async function FetchPost(http,datapost,dopparamhttp, AlertError = true){
     if(ShowFetchData) console.log(JSON.stringify(datapost))
     let AcsessKey = localStorage.data
     let MODE = window.location.search
@@ -67,7 +67,7 @@ async function FetchPost(http,datapost,dopparamhttp){
         }
         } catch (error) {
             console.log('Error save:', error);
-            alert("ОШИБКА ОТПРАВКИ  " + error)
+            if(AlertError) alert("ОШИБКА ОТПРАВКИ  " + error)
             return undefined;
         }
 }

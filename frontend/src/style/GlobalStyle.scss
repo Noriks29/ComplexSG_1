@@ -1,16 +1,69 @@
 :root {
-  --color-background-color: rgba(151, 151, 151, 0.15);
-  --color-box-shadow: rgba(63, 60, 60, 0.35);
+  --panel-color-background-color: rgba(151, 151, 151, 0.15);
+  --panel-color-box-shadow: rgba(63, 60, 60, 0.35);
   --font-size: 16px;
+}
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  height: 100%;
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+} 
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 10px rgb(255, 255, 255); 
+} 
+::-webkit-scrollbar-thumb {
+  box-shadow: inset 0 0 10px rgb(0,0,0); 
+}
+body{
+  background: black;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  margin: 0px;
+  height: 100vh;
+  position: relative;
+}
+
+.FlexRow{
+  display: flex;
+    align-items: center;
+    width: 95vw;
+    max-width: 95vw;
+    overflow-x: auto;
+    justify-content: space-evenly;
+    padding: 10px;
+
+    div{
+      flex: 1 0 auto;
+      margin: 0px 5px;
+
+      &.ButtonModelling{
+        display: flex;
+        flex-direction: column;
+      }
+
+      &.TableSystem{
+        height: 20vh;
+        overflow-y: auto;
+        background-color: #00000054;
+        border: 1px solid #262626;
+      }
+    }
+    
+    
 }
 
 .main_contain {
-    position: relative;
-    font-size: var(--font-size);
-    height: 95%;
-    max-height: 92vh;
-    padding-top: 40px;
-    color: white;
+  position: relative;
+  font-size: var(--font-size);
+  padding-top: 25px;
+  color: white;
 
     .ToMenuButtonDiv {
         position: fixed;
@@ -39,8 +92,8 @@
         }
 
         .Panel{
-            background-color: var(--color-background-color);
-            box-shadow: -4px 3px 1px var(--color-box-shadow);
+            background-color: var(--panel-color-background-color);
+            box-shadow: -4px 3px 1px var(--panel-color-box-shadow);
             border: 2px solid rgba(0, 0, 0, 0.25);
             margin: 3px 0px;
 
@@ -182,26 +235,9 @@ input{
 }
 
 
-body{
-    background: black;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    margin: 0px;
-    height: 98vh;
-    position: relative;
-    padding: 5px;
-    //overflow: hidden;
-}
 
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    height: 100%;
-    color: white;
-    padding: 5px;
-}
+
+
 
 
 
@@ -228,15 +264,7 @@ body{
     padding: 10px 15px;
     font-size: var(--font-size);
   }
-  ::-webkit-scrollbar {
-    width: 10px;
-  } 
-  ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 10px rgb(255, 255, 255); 
-  } 
-  ::-webkit-scrollbar-thumb {
-    box-shadow: inset 0 0 10px rgb(0,0,0); 
-  }
+  
 }
 
 .ButtonCommand{
@@ -355,12 +383,3 @@ body{
 
 
 
-::-webkit-scrollbar {
-  width: 10px;
-} 
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 10px rgb(255, 255, 255); 
-} 
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 10px rgb(0,0,0); 
-}
