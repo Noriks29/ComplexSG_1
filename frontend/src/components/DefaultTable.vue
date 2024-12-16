@@ -2,7 +2,12 @@
   <div class="DataTable">
       <div class="closebutton"><button @click="CloseTable">
         <img src="../assets/close.svg"><span>&#8203;</span>
-      </button></div>
+      </button>
+      <button @click="LoadXLSX" class="LoadExel">
+        <img src="../assets/excel.png"><span>&#8203;</span>
+      </button>
+      </div>
+
       <div class="scroll-table">
         <table class="TableDefault">
       <thead>
@@ -36,14 +41,15 @@
       </table>
     </div>
     </div>
+    
   </div>
 </template>
 
 <script>
 
 //import jsons from '../../res/testOGFree.json'
-
-
+//import * as XLSX from 'xlsx/xlsx.mjs';
+import XLSX from 'xlsx-js-style';
   export default {
     name: 'TableData',
     props: {
@@ -68,6 +74,50 @@
         CloseTable(){
           this.$emit('closetable', true)
         },
+        LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [[]]
+          this.dataLableName.forEach(lable => {
+            data[0].push(lable.lable)
+          })
+          this.dataTable.forEach(element => {
+            let row = []
+            this.dataLableName.forEach(lable => {
+              row.push(element[lable.nameParam])
+            })
+            console.log(element)
+            data.push(row)
+          });
+
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            console.log(worksheet[key].v, keylist, data[0])
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          console.log(worksheet)
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'dataTable.xlsx');
+        }
         
     },
     mounted() {
@@ -89,7 +139,12 @@
     img{
       width: 25px;
     }
+
+    &.LoadExel{
+      margin-right: 45px;
+    }
   }
+  
 }
 .DataTable{
   -webkit-backdrop-filter: blur(10px);

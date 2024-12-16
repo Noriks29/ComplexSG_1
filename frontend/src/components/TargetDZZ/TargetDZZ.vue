@@ -5,11 +5,11 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-          <div>
-            <button class="ChangeViewMode Right" v-if='viewmode < 2' @click="viewmode++">
+          <div v-if="systemStatus.WorkMode !== 2">
+            <button class="ChangeViewMode Right" v-if='viewmode < 1' @click="viewmode++">
               <img src="../../assets/arrow2.png">
             </button>
-            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="(viewmode == 1) ? CreateMap($event) : viewmode--">
+            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="viewmode--">
               <img src="../../assets/arrow1.png">
             </button>
           </div>  
@@ -30,10 +30,9 @@
                     </tr>
                   </table>
             </div>
-            <div>
-              <button @click="CreateMap" class="ButtonCommand">Заявки ДЗЗ</button>
+            <div  v-if="systemStatus.WorkMode !== 2">
+              <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
-              <button @click="viewmode=2" class="ButtonCommand">Данные по заявкам</button>
             </div>
         </div>
         <p v-if="viewmode == 0">Заявки</p>
@@ -64,17 +63,7 @@
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
               </tr>   
             </table>
-            <div>
-              <div id="DrawKARoad">
-                <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
-                <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
-                <label class="input-file">
-                  <input type="file" name="file" id="file" @change="LoadFileKARoad" enctype="multipart/form-data">		
-                  <span>Отрисовать из файла</span>
-                </label>
-              </div>
-              <div id="map"></div>
-            </div> 
+            
         </div>
 
         <p v-if="viewmode == 1">Каталог</p>
@@ -102,8 +91,8 @@
           </table>
         </div>
 
-        <p v-if="viewmode == 2">Данные по заявкам</p>
-        <div class="Panel" v-if="viewmode == 2">
+        <p v-if="systemStatus.WorkMode == 2">Данные по заявкам</p>
+        <div class="Panel" v-if="systemStatus.WorkMode == 2">
           <table class="TableDefault">
             <tr>
               <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
@@ -126,7 +115,18 @@
             </tr> 
           </table>
         </div>
-
+        <div  class="Panel">
+          <div id="DrawKARoad">
+            <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
+            <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
+            <label class="input-file">
+              <input type="file" name="file" id="file" @change="LoadFileKARoad" enctype="multipart/form-data">		
+              <span>Отрисовать из файла</span>
+            </label>
+            <button class="ButtonCommand">Обновить карту</button>
+          </div>
+          <div id="map"></div>
+        </div>
     </div>
 
     </div>
@@ -380,7 +380,6 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
         this.CreateSelectArr()
         },
         async CreateMap(){
-          this.viewmode = 0
           this.map = {}
           console.log(await document.getElementById("map"))
 
@@ -469,6 +468,9 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
     async mounted() {
       //console.log(this.systemStatus)
       DisplayLoad(true)
+      if(this.systemStatus.WorkMode == 2){
+        this.viewmode = -1
+      }
 
       let Ka = await FetchGet('/api/v1/constellation/get/list') || []
       this.KAArray.push({value: undefined, lable: "Все КА" })
@@ -525,11 +527,10 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
   .ContentDiv{
     height: 100%;
     overflow-y: unset; 
-    overflow-x: unset;
   }
 }
 td{
-  text-align: left;
+  //text-align: left;
   input[type=number]{
     width: 100%;
   }
@@ -567,9 +568,8 @@ th{
   position: relative;
     outline-style: none;
     height: 80vh;
-    width: 94%;
-    left: 3%;
-    right: 3%;
+    width: 80vw;
+  margin: 10px;
   .leaflet-map-pane{
             pointer-events: none;
         }
@@ -594,8 +594,8 @@ th{
   
   
 }
-
-.vwPanel{
-  min-width: 90vw;
+.TableDefault{
+  min-width: 80vw !important;
 }
+
 </style>

@@ -40,21 +40,12 @@
           <tr class="active"><td>duration</td><td>Продолжительность съёмки</td><td><input id="duration" type="number" min="0" @change="ChangeParam" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>
         </table>
         </div>
-        <div class="Panel MaxWidth">
-          <button @click="SaveWorkplace" class="ButtonCommand">Сохранить копию данных</button>
-          <label class="input-file">
-            <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
-            <span>Открыть файл</span>
-          </label>
-        </div>
       </div>
     </div>
   </template>
   
   <script>
 import DateTime from '../DateTime.vue';
-import {FetchGet, FetchPostFile, DisplayLoad} from '../../js/LoadDisplayMetod'
-import { saveAs } from 'file-saver';
 
   export default {
     name: 'SystemWindow',
@@ -77,52 +68,6 @@ import { saveAs } from 'file-saver';
         this.$emit('updateParentComponent', {
             nameComponent: nameComponent
         })
-      },
-      async SaveWorkplace(){
-        let dataLoad = {}
-
-        let result = await FetchGet('/api/v1/modelsat/all')
-        dataLoad.modelSat = result
-
-        result = await FetchGet('/api/v1/earth/get/list')
-        for (let index = 0; index < result.length; index++) {
-          let new_data = result[index];
-          new_data.id = undefined
-          new_data.idNode = undefined
-          result[index] = new_data
-        }
-        dataLoad.earth = result
-
-        result = await FetchGet('/api/v1/system/get')
-        result.systemId = undefined
-        dataLoad.system = result
-
-        result = await FetchGet('/api/v1/constellation/get/list')
-        for (let index = 0; index < result.length; index++) {
-          const element = result[index];
-          element.id = undefined
-          for (let jindex = 0; jindex < element.satellites.length; jindex++) {
-            const j_element = element.satellites[jindex];
-            j_element.idNode = undefined
-            j_element.satelliteId = undefined
-            element.satellites[jindex] = j_element
-          }
-          result[index] = element 
-        }
-        dataLoad.constellation = result
-
-        result = await FetchGet('/api/v1/satrequest/catalog/get/all')
-        for (let index = 0; index < result.length; index++) {
-          const element = result[index];
-          element.goalId = undefined
-          result[index] = element
-        }
-        dataLoad.catalog = result
-        var fileName = 'myData.json';
-        var fileToSave = new Blob([JSON.stringify(dataLoad, null, 2)], {
-            type: 'application/json'
-        });
-        saveAs(fileToSave, fileName);
       },
       ChangeTime(obgTime){
         this.dataSystem[obgTime.id] = obgTime.time
@@ -151,25 +96,7 @@ import { saveAs } from 'file-saver';
       },
       ChangeSystemStatus(){
         this.$emit('ChangeSystemStatus', this.dataSystem)
-      },
-      async LoadFile(data){
-        //const reader = new FileReader();
-        if (data.target.files[0]) {
-          var file = data.target.files[0];
-          console.log(file)
-          const formData = new FormData(); // Создаем FormData
-          formData.append('file', file); // Добавляем файл
-          await FetchPostFile("/api/v1/workplace/upload/file", formData)
-        }
-      },
-      async ReloadDataBaseFromFile(json){
-        DisplayLoad(true)
-        console.log(json)
-        //await FetchPost(Э/api/v1/workplace/upload/filejson)
-        alert("НА данный момент эта функция не активна")
-        DisplayLoad(false)
-      }
-      
+      }, 
     },
     created(){
       this.dataSystem = this.systemStatus

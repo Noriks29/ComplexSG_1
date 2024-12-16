@@ -35,7 +35,7 @@
             <button :class="systemStatus.WorkMode in {1:null,2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
-        <div class="ButtonSection third"  v-if="button_mode != 'pavlov'">
+        <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
             <button :class="systemStatus.WorkMode in {0:null,1:null,2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
@@ -196,7 +196,6 @@ export default {
       async LoadFile(data){
         if (data.target.files[0]) {
           var file = data.target.files[0];
-          console.log(file)
           const formData = new FormData();
           formData.append('file', file);
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
@@ -204,10 +203,10 @@ export default {
       }
     },
   mounted(){
-
+    /*
     if (localStorage.nameUser == "pavlov") {
       this.button_mode = "pavlov"
-    }
+    }*/
   }
 }
 
@@ -452,6 +451,7 @@ export default {
     height: 100vh;
     background-color: black;
     z-index: 5;
+    overflow-x: hidden;
 
   }
 

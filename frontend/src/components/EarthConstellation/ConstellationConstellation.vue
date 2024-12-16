@@ -161,10 +161,10 @@ import Plotly from 'plotly.js-dist'
                 let flagadd = false
                 dataPlotly.forEach(plot => {
                   if(plot.name == element.satellite2Id){
-                    plot.y.push(element.satellite1Id)
-                    plot.text.push(element.satellite1Id+"->"+element.satellite2Id)
-                    plot.x.push(this.CreateDateTime(element.end - element.begin, 2))
-                    plot.base.push(this.CreateDateTime(element.begin, 1))
+                    plot.y.push(element.satellite1Id, element.satellite2Id)
+                    plot.text.push(element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id)
+                    plot.x.push(this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2))
+                    plot.base.push(this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1))
                     flagadd = true
                   }
                 })
@@ -172,11 +172,11 @@ import Plotly from 'plotly.js-dist'
                   dataPlotly.push({
                     type: 'bar',
                     name: element.satellite2Id,
-                    y: [element.satellite1Id],
-                    x: [this.CreateDateTime(element.end - element.begin, 2)],
+                    y: [element.satellite1Id, element.satellite2Id],
+                    x: [this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2)],
                     orientation: 'h',
-                    base: [this.CreateDateTime(element.begin, 1)],
-                    text: [element.satellite1Id+"->"+element.satellite2Id],
+                    base: [this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1)],
+                    text: [element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id],
                     textfont: {
                       size: 16,
                       color: '#000000'
