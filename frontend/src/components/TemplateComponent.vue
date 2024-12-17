@@ -153,7 +153,7 @@ export default {
         let dataLoad = {}
         let result = await FetchGet('/api/v1/modelsat/all')
         dataLoad.modelSat = result
-        result = await FetchGet('/api/v1/earth/get/list')
+        result = await FetchGet('/api/v1/earth/get/list') || []
         for (let index = 0; index < result.length; index++) {
           let new_data = result[index];
           new_data.id = undefined
@@ -165,7 +165,7 @@ export default {
         result.systemId = undefined
         dataLoad.system = result
 
-        result = await FetchGet('/api/v1/constellation/get/list')
+        result = await FetchGet('/api/v1/constellation/get/list') || []
         for (let index = 0; index < result.length; index++) {
           const element = result[index];
           element.id = undefined
@@ -179,13 +179,27 @@ export default {
         }
         dataLoad.constellation = result
 
-        result = await FetchGet('/api/v1/satrequest/catalog/get/all')
+        result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
         for (let index = 0; index < result.length; index++) {
           const element = result[index];
           element.goalId = undefined
           result[index] = element
         }
         dataLoad.catalog = result
+
+        result = await FetchGet('/api/v1/satrequest/data/get/all') || []
+        dataLoad.satRequestData = result
+
+        result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          element.orderId = undefined
+          element.requestId = undefined
+          element.deleted = undefined
+          result[index] = element
+        }
+        dataLoad.request = result
+
         var fileName = 'myData.json';
         var fileToSave = new Blob([JSON.stringify(dataLoad, null, 2)], {
             type: 'application/json'

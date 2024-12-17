@@ -31,9 +31,6 @@
       <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
-          <div><button @click="CommandWork(3)" class="ButtonCommand disable"  v-if="false">Проверка ограничений</button></div>
-          <div><button @click="CommandWork(4)" class="ButtonCommand disable"  v-if="false">Визуальный анализ окон видимости</button></div>
-          <div><button @click="CommandWork(5)" class="ButtonCommand" v-if="false">Расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
         </div>
       </div>
@@ -95,40 +92,48 @@ import Plotly from 'plotly.js-dist'
        async CommandWork(commandId){
             console.log(commandId)
             if(commandId == 2){
-
-              this.ShowDefaultTable = true
               this.dataLableName = [
                 {lable: "КА", nameParam: "satellite1Id"},
                 {lable: "Видимый КА", nameParam: "satellite2Id"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
-              //дальше мы типо запрашиваем данные
-              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
+              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
+              if(response.length < 1){
+                alert("Нет контактов")
+                return
+              }
               this.dataTable = await response
               this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
-              
               for (let index = 0; index < this.dataTable.length; index++) {
                 this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
                 this.dataTable[index].end = this.CreateDateTime(this.dataTable[index].end)
-                
               }
-            }
-            if(commandId == 5){
-              DisplayLoad(true)
-              await FetchGet("/api/v1/modelling/contact-plan/sat-earth")
-              DisplayLoad(false)
+              this.ShowDefaultTable = true
             }
             if(commandId == 1){
               DisplayLoad(true)
-              await FetchGet('/api/v1/modelling/view/sat')
+              let constellation = await FetchGet('/api/v1/constellation/get/list') || []
+              let countSatelites = 0
+              constellation.forEach(OG => {
+                countSatelites+=OG.satellites.length
+              })
+              if(countSatelites < 2){
+                alert("При одном КА расчет не выполняется")
+                DisplayLoad(false)
+                return
+              }
+              let rezult = await FetchGet('/api/v1/modelling/view/sat',false) || {type: "Error"}
+              if(rezult.type !== "SUCCESS"){
+                alert("Контакты КА-КА не найдены. Возможные причины: \n1) Орбитальное построение,\n2) Горизонт времени планирования")
+              }
               DisplayLoad(false)
             }
             if(commandId == 6){
               console.log("Уааа график")
               this.ShowPlotlyContain = true
 
-              let responseNP = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+              let responseNP = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
               let dataGrapf = {
                 type: 'bar',
                 name: "NP",
@@ -154,6 +159,7 @@ import Plotly from 'plotly.js-dist'
 
 
               let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
+              if(response.length <1) return
               console.log(response)
               
               let dataPlotly = [dataGrapf]
@@ -217,19 +223,6 @@ import Plotly from 'plotly.js-dist'
     
     async mounted() {
         DisplayLoad(true)
-        let result = await FetchGet('/api/v1/earth/get/list') || []
-        this.earthSize = result.length || 0
-
-        result = await FetchGet('/api/v1/constellation/get/list') || []
-        this.ConstellationJson = await result
-
-        for (let i = 0; i < this.ConstellationJson.length; i++) {
-          const element = this.ConstellationJson[i];
-          this.arr.push({value: element, lable: element.constellationName })
-        }
-        this.arr.push({value: {}, lable: "Все ОГ ДЗЗ" })
-        this.valueSS = {value: {}, lable: "Все ОГ ДЗЗ" }
-
         this.experimentObject.startTime = this.systemStatus.startTime
         this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
         this.experimentObject.modellingBegin = this.systemStatus.modelingBegin

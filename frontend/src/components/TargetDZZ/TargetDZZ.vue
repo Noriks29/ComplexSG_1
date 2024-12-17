@@ -61,6 +61,7 @@
               </tr>
                 <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
+                <td><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
             </table>
             
@@ -87,6 +88,7 @@
             </tr>
             <tr class="addRowButton">
               <td colspan="7"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+              
             </tr> 
           </table>
         </div>
@@ -142,6 +144,7 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
+import XLSX from 'xlsx-js-style';
 
   export default {
     name: 'TargetDZZ',
@@ -461,6 +464,47 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
             L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
           }
           DisplayLoad(false)
+        },
+        LoadXLSX(){
+          console.log(this.requestJson)
+          const workbook = XLSX.utils.book_new();
+          let data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
+          this.requestJson.forEach(element => {
+            let crit = "Время"
+            if(element.choiceCriteria == 2) crit = "Разворот"
+            if(element.choiceCriteria == 3) crit = "Качество"
+            let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
+              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
+            ]
+            data.push(row)
+          });
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            console.log(worksheet[key].v, keylist, data[0])
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          console.log(worksheet)
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'dataRequest.xlsx');
         }
       
     },
@@ -596,6 +640,15 @@ th{
 }
 .TableDefault{
   min-width: 80vw !important;
+}
+
+.LoadExel{
+  padding: 0px !important;
+  width: fit-content !important;
+  height: fit-content !important;
+  img{
+    width: 30px;
+  }
 }
 
 </style>
