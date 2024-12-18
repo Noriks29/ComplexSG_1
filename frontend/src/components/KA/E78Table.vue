@@ -2,7 +2,11 @@
   <div class="DataTable">
       <div class="closebutton"><button @click="CloseTable">
         <img src="../../assets/close.svg"><span>&#8203;</span>
-      </button></div>
+      </button>
+      <button @click="LoadXLSX" class="LoadExel">
+        <img src="../../assets/excel.png"><span>&#8203;</span>
+      </button>
+    </div>
       <div class="scroll-table">
         <table class="TableDefault">
       <thead><tr>
@@ -34,7 +38,7 @@
 <script>
 
 import { UnixToDtime } from '../../js/WorkWithDTime'
-
+import XLSX from 'xlsx-js-style';
   export default {
     name: 'E78Data',
     props: {
@@ -71,7 +75,50 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           let Dtime = UnixToDtime(time)
           return Dtime.time + " МСК"
         },
-        
+        LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [["НП","КА","Начало сеанса связи","Окончание сеанса связи","Пропускная способность","Заявка","Объём данных (МБ)","Объём передаваемых данных (МБ)"]]
+          console.log(data,workbook)
+          this.rebuild_data.forEach(element => {
+            let row = [element.orderList[0].earthPointName, element.scId, this.CreateDateTime(element.timeStartConnect),  this.CreateDateTime(element.timeEndConnect),
+              element.orderList[0].capacity,element.orderList[0].orderName,element.orderList[0].dataVolume,element.orderList[0].dataVolumeContact]
+            data.push(row)
+            for (let i = 1; i < element.orderList.length; i++) {
+              const el = element.orderList[i];
+              row = ["","","","", el.capacity,el.orderName,el.dataVolume,el.dataVolumeContact]
+              data.push(row)
+            }
+          });
+          console.log(data,workbook)
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            console.log(worksheet[key].v, keylist, data[0])
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          console.log(worksheet)
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'dataPlanDelivery.xlsx');
+        }
     },
     async mounted() {
       console.log("E78 mount", this.dataTable)
@@ -124,7 +171,12 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
     img{
       width: 25px;
     }
+
+    &.LoadExel{
+      margin-right: 45px;
+    }
   }
+  
 }
 .DataTable{
   -webkit-backdrop-filter: blur(10px);
