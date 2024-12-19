@@ -6,6 +6,7 @@
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 2 ? 'active' : ''" @click="ChangeWorkMode(2)">Моделирование доставки данных, связь КА-НП и межспутниковая</button></div>
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 3 ? 'active' : ''" @click="ChangeWorkMode(3)">Планирование и управление</button></div>
     </div>
+    
     <div class="idSesion" :class="login !== undefined ? 'show' : ''">
         <div class="flexdiv">login: {{ login }}
           <button class="Menubutton"  :class="systemStatus.WorkMode !== -1 ? 'show' : ''" @click="ChangeWorkMode(-1)"><img src="./assets/menu.svg" alt=""></button>
@@ -45,7 +46,6 @@ import TemplateComponent from './components/TemplateComponent.vue'
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
 import LoadProcess from './components/LoadProcess.vue'
 import GlobalStyle from './style/GlobalStyle.scss'
-
 
 
 

@@ -1,7 +1,7 @@
 <template>
     <div class="ModalBack" id="loadProcess">
         <div class="ModalWindow shape">
-            <img src="../res/load.gif" alt="Идёт загрузка">
+          <img id="imgplanet" src="@/assets/ka.gif">
         </div>
     </div>
 </template>
@@ -40,9 +40,11 @@
   z-index: 10;
 
   .ModalWindow{
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.044);
     padding: 30px;
     box-shadow: 0px 0px 100px rgba(0, 0, 0, 0.589);
+
+    
   }
 
   :root {
@@ -72,9 +74,11 @@
   transition: all 1s ease-in-out;
   padding: 50px;
   z-index: 5;
+
+  #imgplanet{
+      width: 250px;
+    }
 }
-
-
 }
 
 
