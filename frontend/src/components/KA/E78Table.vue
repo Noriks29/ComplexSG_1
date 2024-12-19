@@ -71,16 +71,17 @@ import XLSX from 'xlsx-js-style';
           }
           return htmlcode
         },
-        CreateDateTime(time){
+        CreateDateTime(time, msk_mode = true){
           let Dtime = UnixToDtime(time)
-          return Dtime.time + " МСК"
+          if(msk_mode)return Dtime.time + " МСК"
+          return Dtime.time
         },
         LoadXLSX(){
           const workbook = XLSX.utils.book_new();
           let data = [["НП","КА","Начало сеанса связи","Окончание сеанса связи","Пропускная способность","Заявка","Объём данных (МБ)","Объём передаваемых данных (МБ)"]]
           console.log(data,workbook)
           this.rebuild_data.forEach(element => {
-            let row = [element.orderList[0].earthPointName, element.scId, this.CreateDateTime(element.timeStartConnect),  this.CreateDateTime(element.timeEndConnect),
+            let row = [element.orderList[0].earthPointName, element.scId, this.CreateDateTime(element.timeStartConnect,false),  this.CreateDateTime(element.timeEndConnect,false),
               element.orderList[0].capacity,element.orderList[0].orderName,element.orderList[0].dataVolume,element.orderList[0].dataVolumeContact]
             data.push(row)
             for (let i = 1; i < element.orderList.length; i++) {
@@ -138,7 +139,7 @@ import XLSX from 'xlsx-js-style';
         const element = this.dataTable[index];
         let flag_push = false
         for (let i = 0; i < this.rebuild_data.length; i++) {
-          if (this.rebuild_data[i].gsId == element.gsId && this.rebuild_data[i].scId == element.scId) {
+          if (this.rebuild_data[i].gsId == element.gsId && this.rebuild_data[i].scId == element.scId &&  this.rebuild_data[i].timeEndConnect == element.timeEndConnect &&  this.rebuild_data[i].timeStartConnect == element.timeStartConnect) {
             this.rebuild_data[i].orderList.push({idOrder: element.idOrder, orderName: element.orderName, earthPointName: element.earthPointName, capacity: element.capacity, dataVolume: element.dataVolume, dataVolumeContact: element.dataVolumeContact})
             flag_push = true
             break

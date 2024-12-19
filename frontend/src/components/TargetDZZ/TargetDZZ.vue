@@ -187,9 +187,10 @@ import XLSX from 'xlsx-js-style';
             nameComponent: nameComponent
         })
       },
-      CreateDateTime(time){
+      CreateDateTime(time, msk_mode = true){
           let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time + " МСК"
+          if(msk_mode) return Dtime.date + " " + Dtime.time + " МСК"
+          return Dtime.time
         },
       ChangeTime(obgtime){
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
@@ -474,7 +475,7 @@ import XLSX from 'xlsx-js-style';
             if(element.choiceCriteria == 2) crit = "Разворот"
             if(element.choiceCriteria == 3) crit = "Качество"
             let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
-              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
+              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time,false), this.CreateDateTime(element.term,false)
             ]
             data.push(row)
           });
