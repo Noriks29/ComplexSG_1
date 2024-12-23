@@ -531,12 +531,12 @@ import XLSX from 'xlsx-js-style';
       //console.log(this.KAArray)
 
       let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
-      this.catalogJson = result || {}
+      this.catalogJson = result
       for (let index = 0; index < this.catalogJson.length; index++) {
         this.catalogJson[index].countRequest = 0;
       }
       result = await FetchGet('/api/v1/satrequest/request/get/all') || []
-      this.requestJson = result || {}
+      this.requestJson = result
       for (let index = 0; index < this.requestJson.length; index++) {
         const element = this.requestJson[index].catalog.goalId
         for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
