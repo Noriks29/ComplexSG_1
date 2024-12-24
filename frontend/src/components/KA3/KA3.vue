@@ -200,17 +200,21 @@ export default {
         let events = await FetchGet('/api/v1/event/codes/all') || []
         let dataevents = {}
         events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
-        for (let index = 0; index < this.RezultModelling.eventsLogResponse.length; index++) {
-          const element = this.RezultModelling.eventsLogResponse[index]
+        let rezult = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        let datarequest = {}
+        rezult.forEach(element => datarequest[element.requestId]=element.catalog.goalName)
+        console.log(datarequest)
+        for (let index = 0; index < this.modellingRezult.events.length; index++) {
+          const element = this.modellingRezult.events[index]
           this.dataTable.push({
             time: UnixToDtime(element.time).time,
-            code: element.code,
-            event: dataevents[element.code] || "нет записи",
-            orderId: element.orderId,
-            nodeId: element.nodeId,
-            nodeId2: element.nodeId2 || "нет данных",
+            code: element.type,
+            event: dataevents[element.type] || "нет записи",
+            orderId: datarequest[element.orderId] || "нет заявки",
+            nodeId: element.node1Id,
+            nodeId2: element.node2Id,
             text: element.text,
-            value: element.code || "нет данных"
+            value: element.value
           })
         }
         this.PreWrapDefaultTable = false
