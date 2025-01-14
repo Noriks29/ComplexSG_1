@@ -2,7 +2,11 @@
     <div class="DataTable">
         <div class="closebutton"><button @click="CloseTable">
           <img src="../../assets/close.svg"><span>&#8203;</span>
-        </button></div>
+        </button>
+        <button @click="LoadXLSX" class="LoadExel">
+          <img src="../../assets/excel.png"><span>&#8203;</span>
+        </button>
+      </div>
         <div class="scroll-table">
           <table class="TableDefault">
         <thead><tr>
@@ -30,7 +34,7 @@
   
 import { FetchGet } from '@/js/LoadDisplayMetod';
 import { UnixToDtime } from '../../js/WorkWithDTime'
-  //import { FetchGet } from '../../js/LoadDisplayMetod'
+import XLSX from 'xlsx-js-style';
   
     export default {
       name: 'E78Data',
@@ -56,8 +60,9 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           CloseTable(){
             this.$emit('closetable', true)
           },
-          CreateDateTime(time){
+          CreateDateTime(time, mode = false){
             let Dtime = UnixToDtime(time)
+            if(mode) return Dtime.time
             return Dtime.time + " МСК"
           },
           CreateTableBody(){
@@ -74,6 +79,61 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           }
           return htmlcode
         },
+        LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [[
+            "№","Цель","Приоритет","Появление","КА","Съёмка","Доставка","НП"
+          ]]
+          let indexrow = 1
+          this.rebuild_data.forEach(element => {
+            let row = [
+              indexrow, 
+              element.data77.targetName, 
+              this.priory[element.data77.orderId], 
+              this.CreateDateTime(element.data78[0].timeAppearanceOrder, true),
+              element.data78[0].scId,
+              this.CreateDateTime(element.data77.te, true),
+              this.CreateDateTime(element.data78[0].timeEndConnect, true),
+              element.data78[0].earthPointName
+            ]
+            data.push(row)
+            for (let i = 1; i < element.data78.length; i++) {
+              row = ["","","","","","",
+                this.CreateDateTime(element.data78[i].timeEndConnect, true),
+                element.data78[i].earthPointName
+              ]
+              data.push(row)
+            }
+            indexrow++
+          });
+
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'План выполнения.xlsx');
+        }
           
       },
       async mounted() {
@@ -107,17 +167,21 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
   
   <style lang="scss" scoped>
   .closebutton{
-    display: flex;
-    margin: 20px;
-    flex-direction: row-reverse;
-    button{
-      background: none;
-      border: none;
-      img{
-        width: 25px;
-      }
+  display: flex;
+  margin: 20px;
+  flex-direction: row-reverse;
+  button{
+    background: none;
+    border: none;
+    img{
+      width: 25px;
+    }
+    &.LoadExel{
+      margin-right: 45px;
     }
   }
+  
+}
   .DataTable{
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);

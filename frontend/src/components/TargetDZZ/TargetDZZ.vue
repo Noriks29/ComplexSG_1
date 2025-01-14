@@ -125,7 +125,7 @@
               <input type="file" name="file" id="file" @change="LoadFileKARoad" enctype="multipart/form-data">		
               <span>Отрисовать из файла</span>
             </label>
-            <button class="ButtonCommand">Обновить карту</button>
+            <button class="ButtonCommand" @click="ReloadMapContainer">Обновить карту</button>
           </div>
           <div id="map"></div>
         </div>
@@ -506,6 +506,11 @@ import XLSX from 'xlsx-js-style';
           console.log(worksheet)
           workbook.Sheets['Data'] = worksheet;
           XLSX.writeFile(workbook, 'dataRequest.xlsx');
+        },
+        ReloadMapContainer(){
+          this.map.off();
+          this.map.remove();
+          this.CreateMap()
         }
       
     },

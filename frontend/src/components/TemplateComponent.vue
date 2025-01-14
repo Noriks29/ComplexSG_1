@@ -165,6 +165,7 @@ export default {
         result.systemId = undefined
         dataLoad.system = result
 
+      
         result = await FetchGet('/api/v1/constellation/get/list') || []
         for (let index = 0; index < result.length; index++) {
           const element = result[index];

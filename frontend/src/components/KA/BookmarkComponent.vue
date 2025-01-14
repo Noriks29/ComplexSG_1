@@ -2,7 +2,11 @@
     <div class="DataTable">
         <div class="closebutton"><button @click="CloseTable">
           <img src="../../assets/close.svg"><span>&#8203;</span>
-        </button></div>
+        </button>
+        <button @click="LoadXLSX" class="LoadExel">
+          <img src="../../assets/excel.png"><span>&#8203;</span>
+        </button>
+      </div>
         <div class="scroll-table">
           <table class="TableDefault">
         <thead><tr>
@@ -27,6 +31,7 @@
   
 import { FetchGet } from '@/js/LoadDisplayMetod';
 import { UnixToDtime } from '../../js/WorkWithDTime'
+import XLSX from 'xlsx-js-style';
   //import { FetchGet } from '../../js/LoadDisplayMetod'
   
     export default {
@@ -53,8 +58,9 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           CloseTable(){
             this.$emit('closetable', true)
           },
-          CreateDateTime(time){
+          CreateDateTime(time, mode = false){
             let Dtime = UnixToDtime(time)
+            if(mode) return Dtime.time
             return Dtime.time + " МСК"
           },
           CreateTableBody(){
@@ -75,6 +81,57 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
           }
           return htmlcode
         },
+        LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [[
+            "КА","Время связи","НП связи","Название целей","Время съёмки"
+          ]]
+          this.rebuild_data.forEach(element => {
+            let row = [
+                element.satelliteId, 
+                this.CreateDateTime(element.begin, true),
+                element.earthName
+              ]
+            if(element.data.length !== 0){
+              row.push(element.data[0].targetName)
+              row.push(this.CreateDateTime(element.data[0].time, true))
+            }
+            data.push(row)
+            for (let i = 1; i < element.data.length; i++) {
+              row = ["","","",
+                element.data[i].targetName,
+                this.CreateDateTime(element.data[i].time, true)
+              ]
+              data.push(row)
+            }
+          });
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'План закладок.xlsx');
+        }
           
       },
       async mounted() {
@@ -133,6 +190,9 @@ import { UnixToDtime } from '../../js/WorkWithDTime'
       border: none;
       img{
         width: 25px;
+      }
+      &.LoadExel{
+        margin-right: 45px;
       }
     }
   }

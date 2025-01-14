@@ -10,108 +10,31 @@
       <div class="ContentDiv">
        
           <div class="Panel Select" >
-            <h1 class="TitleText">Типы космических аппаратов</h1>
+            <h1 class="TitleText">Информация о КА</h1>
               <p>Выбор КА</p>
               <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
 
               <p>Информация</p>
-              <div @click="viewPanel = 1">• Описание</div>
-              <div @click="viewPanel = 2">• Целевая аппаратура</div>
-              <div @click="viewPanel = 3">• Бортовые устройства</div>
-              <div @click="viewPanel = 4">• Бортовые устройства с постоянным потреблением энергии</div>
-              <div @click="viewPanel = 5">• Бортовые устройства с переменным потреблением</div>
-              <div @click="viewPanel = 6">• Параметры функционирования</div>
+              <div @click="viewPanel = 1" class="ButtonPage" :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
+              <div @click="viewPanel = 2" class="ButtonPage" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
+              <div @click="viewPanel = 3" class="ButtonPage" :class="viewPanel==3 ? 'SelectPage': ''">• Потребление энергии устройствами</div>
+              <div @click="viewPanel = 4" class="ButtonPage" :class="viewPanel==4 ? 'SelectPage': ''">• Параметры устройств и функционирования</div>
           </div>
 
           <div class="Panel" v-if="viewPanel == 1">
-              <p> Описание </p>
-              <div class="KaIMG"><img src="./KA_A.png" alt="Картинка"></div>
+              <p> Режимы функционирования </p>
               <div>
                   <div>{{ SelectKA.value.description }}</div>
               </div>
           </div>
 
           <div class="Panel" v-if="viewPanel == 2">
-              <p> Целевая аппаратура </p>
-              <div>
-                  <table class="TableDefault PanelDefault">
-                      <tr>
-                          <th>Название</th><th>Вт</th><th>Коэф-нт</th>
-                      </tr>
-                      <tr
-                          v-for="data, index in SortData(dataJson[0].Equipment,1)"
-                          :key="index"
-                      >
-                          <td>{{ data.name }}</td>
-                          <td>{{ data.value }}</td>
-                          <td>test</td>
-                      </tr>
-                  </table>
-              </div>
+              <p> Устройства </p>
           </div>
           <div class="Panel" v-if="viewPanel == 3">
-              <p> Бортовые устройства </p>
-              <div>
-                  <table class="TableDefault PanelDefault">
-                      <tr>
-                          <th>Название</th><th>Вт</th><th>Солнце</th><th>Земля</th><th>Цель</th>
-                      </tr>
-                      <tr
-                          v-for="data, index in SortData(dataJson[0].Equipment,0)"
-                          :key="index"
-                      >
-                          <td>{{ data.name }}</td>
-                          <td>{{ data.value }}</td>
-                          <td>{{ data.R1 }}</td>
-                          <td>{{ data.R2 }}</td>
-                          <td>{{ data.R3 }}</td>
-                      </tr>
-                  </table>
-              </div>
+              <p> Устройства </p>
           </div>
           <div class="Panel" v-if="viewPanel == 4">
-              <p> Бортовые устройства с постоянным потреблением энергии </p>
-              <div>
-                  <table class="TableDefault PanelDefault">
-                      <tr>
-                          <th>Название</th><th>Вт</th><th>Солнце</th><th>Земля</th><th>Цель</th>
-                      </tr>
-                      <tr
-                          v-for="data, index in SortData(dataJson[0].Equipment,2)"
-                          :key="index"
-                      >
-                          <td>{{ data.name }}</td>
-                          <td>{{ data.value }}</td>
-                          <td>{{ data.R1 }}</td>
-                          <td>{{ data.R2 }}</td>
-                          <td>{{ data.R3 }}</td>
-                      </tr>
-                  </table>
-              </div>
-          </div>
-
-          <div class="Panel" v-if="viewPanel == 5">
-              <p> Бортовые устройства с переменным потреблением </p>
-              <div>
-                  <table class="TableDefault PanelDefault">
-                      <tr>
-                          <th>Название</th><th>Вт</th><th>Солнце</th><th>Земля</th><th>Цель</th>
-                      </tr>
-                      <tr
-                          v-for="data, index in SortData(dataJson[0].Equipment,2)"
-                          :key="index"
-                      >
-                          <td>{{ data.name }}</td>
-                          <td>{{ data.value }}</td>
-                          <td>{{ data.R1 }}</td>
-                          <td>{{ data.R2 }}</td>
-                          <td>{{ data.R3 }}</td>
-                      </tr>
-                  </table>
-              </div>
-          </div>
-
-          <div class="Panel" v-if="viewPanel == 6">
               <p>Параметры функционирования</p>
               <div>
                   <table class="TableDefault PanelDefault" @change="ChangeParamKa">
@@ -204,6 +127,7 @@ export default {
       }
       console.log(this.KatypeList)
       this.SelectKA = this.KatypeList[0]
+      console.log("Select", this.SelectKA)
       
   }
 }
@@ -213,20 +137,31 @@ export default {
 
 .ContentDiv{
     width: 96%;
-    padding: 5px 2%;
     flex-direction: row !important;
     align-items: flex-start;
     flex-wrap: wrap;
     justify-content: space-around;
+    height: 96vh;
 
   .Panel{
       flex:2;
       margin: 10px;
-      min-width: 600px;
+      min-width: 300px;
       max-height: 90%;
       height: 100%;
       padding: 20px;
       overflow-y: auto;
+
+      .ButtonPage{
+        border: 1px solid white;
+        background-color: #80808000;
+        padding: 15px;
+        border-radius: 10px;
+        margin: 5px 0px;
+        &.SelectPage{
+            background-color: #80808053;
+        }
+      }
 
       &.Select{
         flex: 0;
