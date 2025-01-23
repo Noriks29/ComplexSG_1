@@ -24,12 +24,51 @@
           <div class="Panel" v-if="viewPanel == 1">
               <p> Режимы функционирования </p>
               <div>
-                  <div>{{ SelectKA.value.description }}</div>
+                  <div>
+                    <table class="TableDefault">
+                      <tr>
+                        <th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th>
+                      </tr>
+                      <tbody v-for="data, index in SelectKA.value.modes" :key="index">
+                        <tr>
+                          <td rowspan="0">{{ data.code || "не назван" }}</td> <td rowspan="0">{{ data.nameFlightMode || "не назван" }}</td>
+                        </tr>
+                        <tr v-for="dataModes, indexModes in data.operatingModes" :key="indexModes">
+                          <td>{{dataModes || "не назван"}}</td><td>{{dataModes || "не назван"}}</td><td>0</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>Правила выбора режима полета, если интервалы времени пересекаются</p>
+                  <div style="margin-top: 20px;">
+                    <table class="TableDefault">
+                      <tr>
+                        <th>Пересечение режимов</th><th>Выполняется</th>
+                      </tr>
+                      <tr><th>A и B</th><td>выбор 1</td></tr>
+                      <tr><th>A и C</th><td>выбор 2</td></tr>
+                      <tr><th>B и C</th><td>выбор 3</td></tr>
+                    </table>
+                  </div>
               </div>
           </div>
 
           <div class="Panel" v-if="viewPanel == 2">
-              <p> Устройства </p>
+              <p> Каталог устройств </p>
+              <table class="TableDefault">
+                <tr><th>Прибор</th></tr>
+                <tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
+                  <td>{{ data.nameDevice || "null" }}</td>
+                </tr>
+              </table>
+
+              <p>Устройства</p>
+              <table class="TableDefault">
+                <tr><th>Прибор</th><th>Свойство</th></tr>
+                <tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
+                  <td>{{ data.devCatalog || "null"}}</td><td>{{ data.property || "null"}}</td>
+                </tr>
+              </table>
           </div>
           <div class="Panel" v-if="viewPanel == 3">
               <p> Устройства </p>
@@ -55,11 +94,38 @@
                             <td><input type="number" id="lurch" :value="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
                           <tr><td>Тангаж</td>
                             <td><input type="number" id="pitch" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
+                      <tr><th colspan="3">Солнечные панели</th></tr>
+                          <tr><td>Генерируемая мощность при ориентации на Солнце</td>
+                            <td><input type="number" id="" :value="0"></td><td> Вт/м<sup>2</sup></td></tr>
+                          <tr><td>Средняя генерируемая мощность</td>
+                            <td><input type="number" id="" :value="0"></td><td>Вт/м<sup>2</sup></td></tr>
+                          <tr><td>Площадь солнечных панелей</td>
+                            <td><input type="number" id="" :value="0"></td><td>м<sup>2</sup></td></tr>
+                          <tr><td>КПД солнечных панелей</td>
+                            <td><input type="number" id="" :value="0"></td><td>%</td></tr>
+                      
                       <tr><th colspan="3">Аккумуляторная батарея</th></tr>
                           <tr><td>Емкость</td>
-                            <td><input type="number" id="accCapacity" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>Вт-ч</td></tr>
-                          <tr><td>Минимальный уровень заряда</td>
-                            <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="accCapacity" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>А-ч</td></tr>
+                          <tr><td>Напряжение</td>
+                            <td><input type="number" id="" :value="0"></td><td>В</td></tr>
+                          <tr><td>Порог минимального разряда</td>
+                            <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>%</td></tr>
+
+                      <tr><th colspan="3">Электромагниты</th></tr>
+                          <tr><td>Максимальная потребляемая мощность</td>
+                            <td><input type="number" id="" :value="0"></td><td>Вт-ч</td></tr>
+                          <tr><td>Максимальный создаваемый магнитный момент</td>
+                            <td><input type="number" id="" :value="0"></td><td>А·м<sup>2</sup></td></tr>
+
+                      <tr><th colspan="3">Маховики</th></tr>
+                          <tr><td>Максимальный управляющий момент маховика</td>
+                            <td><input type="number" id="" :value="0"></td><td>Н·м</td></tr>
+                          <tr><td>Максимальный момент инерции маховика</td>
+                            <td><input type="number" id="" :value="0"></td><td>Н·м·с</td></tr>
+                          <tr><td>Момент инерции ротора маховика</td>
+                            <td><input type="number" id="" :value="0"></td><td>кг·м<sup>2</sup></td></tr>
+                            
                       <tr><th colspan="3">Память</th></tr>
                           <tr><td>Объем памяти КА</td>
                             <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
@@ -100,11 +166,17 @@ export default {
       SortData(data, type){
           return data.filter(data => data.Type == type)
       },
-      ChangeKA(data){
+      async ChangeKA(data){
         console.log(this.SelectKA, data)
-
-          console.log(data)
-          this.SelectKA = {lable: data.value.modelName, value: data.value}
+          if(data.value == "add"){
+            await FetchGet("/api/v1/modelsat/add")
+            this.InItSelectKa()
+          }
+          else{
+            console.log(data)
+            this.SelectKA = {lable: data.value.modelName, value: data.value}
+          }
+          
       },
       SelectComponent(nameComponent) {
         this.$emit('updateParentComponent', {
@@ -116,19 +188,22 @@ export default {
         this.SelectKA.value.operatingParameter[target.target.id] = Number(target.target.value)
         FetchPost("/api/v1/modelsat/update", this.SelectKA.value)
         console.log(this.SelectKA)
+      },
+      async InItSelectKa(){
+        let result = await FetchGet('/api/v1/modelsat/all')
+        this.KatypeList = []
+        for (let index = 0; index < result.length; index++) {
+            const element = result[index];
+            this.KatypeList.push({lable: element.modelName, value: element})
+        }
+        this.KatypeList.push({lable:"Добавить модель", value: "add"})
+        console.log(this.KatypeList)
+        this.SelectKA = this.KatypeList[0]
+        console.log("Select", this.SelectKA)
       }
   },
-  async mounted(){
-      let result = await FetchGet('/api/v1/modelsat/all')
-      console.log("process",result)
-      for (let index = 0; index < result.length; index++) {
-          const element = result[index];
-          this.KatypeList.push({lable: element.modelName, value: element})
-      }
-      console.log(this.KatypeList)
-      this.SelectKA = this.KatypeList[0]
-      console.log("Select", this.SelectKA)
-      
+  mounted(){
+      this.InItSelectKa()
   }
 }
 </script>
@@ -169,6 +244,23 @@ export default {
       }
   }
 }
+.TableDefault{
+    filter: drop-shadow(2px 4px 6px black);
+    background-color: #72727226;
+    border-collapse: collapse;
+    border-spacing: 4px !important;
+    padding: 0px !important;
+
+    tr{
+      background-color: rgba(8, 8, 8, 0.755);
+
+      th{
+        border: 1px solid white;
+        border-top: none;
+      }
+    }
+
+  }
 
 
 

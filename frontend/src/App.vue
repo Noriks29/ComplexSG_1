@@ -1,11 +1,15 @@
 
 <template>
     <div class="headerSelectMode" :class="login !== undefined && systemStatus.WorkMode == -1 ? 'show' : ''">
+      <div v-for="data, index in workplaceList" :key="index"
+        class="SelectMode"
+      ><button class="ButtonSelectMode" :class="systemStatus.WorkMode == data.type ? 'active' : ''" @click="ChangeWorkMode(data.type)">{{ data.name }}</button></div>
+      <!--
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 0 ? 'active' : ''" @click="ChangeWorkMode(0)">Планирование и моделирование, связь КА-НП</button></div>
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 1 ? 'active' : ''" @click="ChangeWorkMode(1)">Планирование и моделирование, связь КА-НП и межспутниковая</button></div>
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 2 ? 'active' : ''" @click="ChangeWorkMode(2)">Моделирование доставки данных, связь КА-НП и межспутниковая</button></div>
       <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 3 ? 'active' : ''" @click="ChangeWorkMode(3)">Планирование и управление</button></div>
-    </div>
+    --></div>
     
     <div class="idSesion" :class="login !== undefined ? 'show' : ''">
         <div class="flexdiv">login: {{ login }}
@@ -62,12 +66,10 @@ export default {
       errorLogin: false,
       experimentStatus: false,
       systemreload: true,
+      workplaceList: []
     };
   },
   methods: {
-      ChangeComponents(nameObject) {
-        this.activeComponent = nameObject.nameComponent
-      },
       ChangeExperimentStatus(status){
         this.experimentStatus = status
       },
@@ -83,18 +85,19 @@ export default {
       },
       async VerifyWorkSapce(data){
         DisplayLoad(true)
+        this.workplaceList = []
         let result = await FetchPost("/api/v1/authentication/user/login",data)
         if(result == undefined){
           this.errorLogin = true
         }
         else if(result.length > 0){
+          result.sort((a,b) => {return a.type - b.type})
+          this.workplaceList = result
           this.errorLogin = false
           localStorage.setItem('nameUser', data.nameUser);
           localStorage.setItem('email',  data.email);
           localStorage.setItem('password',  data.password);
-          localStorage.setItem('data', result[0].accessKey)
           this.login = data.nameUser
-          this.StartSystem() 
         }
         DisplayLoad(false)
       },
@@ -105,7 +108,7 @@ export default {
         localStorage.removeItem('password')
         this.workplaceList = []
         this.login = undefined
-        this.systemStatus.WorkMode = -1
+        this.systemStatus = {WorkMode: -1}
       },
       async ChangeSystemStatus(data){
         this.systemStatus = data
@@ -114,11 +117,19 @@ export default {
         this.systemStatus.WorkMode = workmode
         this.ActiveComponentValidate()
       },
-      async StartSystem(){
+      async StartSystem(data){
         DisplayLoad(true)
+        localStorage.setItem('data', data.accessKey)
         let rezult = await FetchGet('/api/v1/system/get', true)
         this.systemStatus = rezult;
-        this.systemStatus.WorkMode = -1
+        let mode = data.type-1
+        this.systemStatus.WorkMode = mode
+          if(mode in {1: null, 2:null}){
+            this.systemStatus.interSatelliteCommunication = true
+          }
+          else if(mode in {0: null}){
+            this.systemStatus.interSatelliteCommunication = false
+          }
         this.ActiveComponentValidate()
         DisplayLoad(false)
       },
@@ -131,19 +142,22 @@ export default {
       ChangeWorkMode(mode){
         this.systemreload = false
         if(this.experimentStatus == false){
-          this.systemStatus.WorkMode = mode
-          if(mode in {1: null, 2:null}){
-            this.systemStatus.interSatelliteCommunication = true
+          let flag = false
+          this.workplaceList.forEach(workplace => {
+            if(workplace.type == mode){
+              flag = true
+              this.StartSystem(workplace)
+            }
+          })
+          if(!flag){
+            this.systemStatus = {WorkMode: -1}
+            this.ComponentStatus = 0
           }
-          else if(mode in {0: null}){
-            this.systemStatus.interSatelliteCommunication = false
-          }
-          let data = this.systemStatus
-          this.ChangeSystemStatus(data)
         }
       }
     },
   async mounted() {
+    this.workplaceList = []
     if(localStorage.nameUser != undefined && localStorage.email != undefined && localStorage.password != undefined){
       let data = {
             "nameUser": localStorage.nameUser,

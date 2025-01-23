@@ -3,7 +3,6 @@
       <div class="ComponentSelect">
         <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
       </div>
-      
     </transition> 
     <div class="SectionMenu" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
       <div v-if="systemStatus.WorkMode == -1" class="ModellingDiv"></div>
