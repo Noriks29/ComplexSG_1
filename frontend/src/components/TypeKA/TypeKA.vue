@@ -27,15 +27,22 @@
                   <div>
                     <table class="TableDefault">
                       <tr>
-                        <th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th>
+                        <th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th><th></th>
                       </tr>
                       <tbody v-for="data, index in SelectKA.value.modes" :key="index">
                         <tr>
-                          <td rowspan="0">{{ data.code || "не назван" }}</td> <td rowspan="0">{{ data.nameFlightMode || "не назван" }}</td>
+                          <td rowspan="0">{{ data.code || "не назван" }}</td> <td rowspan="0">{{ data.flightMode || "не назван" }}</td>
                         </tr>
                         <tr v-for="dataModes, indexModes in data.operatingModes" :key="indexModes">
-                          <td>{{dataModes || "не назван"}}</td><td>{{dataModes || "не назван"}}</td><td>0</td>
+                          <td><input :id="indexModes" name="mode" @change="ChangeValue($event, 'modes', index)"
+                            :value="dataModes.mode || 0"></td>
+                          <td><input :id="indexModes" name="method" @change="ChangeValue($event, 'modes', index)"
+                            :value="dataModes.method || 0"></td>
+                          <td><input :id="indexModes" type="number" name="coefficient" @change="ChangeValue($event, 'modes', index)"
+                            :value="dataModes.coefficient || 0"></td>
+                          <td :id="index" @click="DeleteRow(indexModes, 'modes')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
                         </tr>
+                        <tr><td colspan="4" @click="AddRow('modes',index)">........</td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -56,17 +63,29 @@
           <div class="Panel" v-if="viewPanel == 2">
               <p> Каталог устройств </p>
               <table class="TableDefault">
-                <tr><th>Прибор</th></tr>
+                <tr><th></th><th>Прибор</th><th></th></tr>
                 <tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
-                  <td>{{ data.nameDevice || "null" }}</td>
+                  <td><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
+                  <td><input :id="index" name="nameDevice" @change="ChangeValue($event, 'devCatalogs')"
+                    :value="data.nameDevice || 'null'"></td>
+                  <td :id="index" @click="DeleteRow(index, 'devCatalogs')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
                 </tr>
+                <tr class="addRowButton">
+                  <td colspan="3"><button @click="AddRow('devCatalogs')">
+                    <img src="../../assets/add.png" alt="" class="addButtonIcon">
+                    Добавить
+                  </button></td>
+                </tr> 
               </table>
 
               <p>Устройства</p>
               <table class="TableDefault">
-                <tr><th>Прибор</th><th>Свойство</th></tr>
+                <tr><th>Прибор</th><th>Свойство</th><th></th></tr>
                 <tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
-                  <td>{{ data.devCatalog || "null"}}</td><td>{{ data.property || "null"}}</td>
+                  <td>{{ data.devCatalog.nameDevice || "null"}}</td>
+                  <td><input type="checkbox" :id="index" name="property" :checked="data.property" @change="ChangeValue($event, 'property')"/>
+                      <label>{{ data.property ? "~" : "=" }}</label></td>
+                  <td :id="index" @click="DeleteRow(index, 'devices')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
                 </tr>
               </table>
           </div>
@@ -175,6 +194,13 @@ export default {
           else{
             console.log(data)
             this.SelectKA = {lable: data.value.modelName, value: data.value}
+            this.SelectKA.value.devCatalogs.forEach(device => {
+              device.use = 0;
+              this.SelectKA.value.devices.forEach(deviceUse => {
+                if(deviceUse.devCatalog.id == device.id)
+                  device.use = 1
+              })
+            })
           }
           
       },
@@ -183,11 +209,104 @@ export default {
             nameComponent: nameComponent
         })
       },
+      async ChangeValue(event, category, parentIndex=0){
+        console.log(event)
+        switch (category) {
+          case 'property':
+              this.SelectKA.value.devices[event.target.id].property = + event.target.checked
+              await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
+              await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'devCatalogs':
+              this.SelectKA.value.devCatalogs[event.target.id].nameDevice = event.target.value
+              await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
+              await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'modes':
+              this.SelectKA.value.modes[parentIndex].operatingModes[event.target.id][event.target.name] = event.target.value
+              await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
+              await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+        
+          default:
+            break;
+        }
+      },
+      async AddRow(category, data=null){
+        switch (category) {
+          case "devCatalogs":
+            this.SelectKA.value.devCatalogs.push({"nameDevice": "null","modelId": this.SelectKA.value.id})
+            await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case "devices":
+            this.SelectKA.value.devices.push({
+              "devCatalog": data,
+              "modelId": this.SelectKA.value.id,
+              "property": 0
+            })
+            await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'modes':
+            this.SelectKA.value.modes[data].operatingModes.push({
+              "coefficient": 1,
+              "method": 1,
+              "mode": "null"
+            })
+            await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          default:
+            break;
+        }
+      },
+      async DeleteRow(index, category, parentIndex = 0){
+        switch (category) {
+          case "devCatalogs":
+            this.SelectKA.value.devCatalogs[index].deleted = true
+            await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'devices':
+            this.SelectKA.value.devices[index].deleted = true
+            await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'modes':
+            this.SelectKA.value.modes[parentIndex].operatingModes[index].deleted = true
+            await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
+            await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+
+          default:
+            break;
+        }
+      },
       ChangeParamKa(target){
         console.log(target.target.value, target.target.id, this.SelectKA.value.id)
         this.SelectKA.value.operatingParameter[target.target.id] = Number(target.target.value)
         FetchPost("/api/v1/modelsat/update", this.SelectKA.value)
         console.log(this.SelectKA)
+      },
+      async ReFerchKA(index){
+        let result = await FetchGet('/api/v1/modelsat/all')
+        this.KatypeList = []
+        for (let index = 0; index < result.length; index++) {
+            const element = result[index];
+            this.KatypeList.push({lable: element.modelName, value: element})
+        }
+        this.KatypeList.push({lable:"Добавить модель", value: "add"})
+        this.KatypeList.forEach(KA => {
+          if(KA.value.id == index) this.SelectKA = KA
+        })
+        this.SelectKA.value.devCatalogs.forEach(device => {
+              device.use = 0;
+              this.SelectKA.value.devices.forEach(deviceUse => {
+                if(deviceUse.devCatalog.id == device.id)
+                  device.use = 1
+              })
+            })
       },
       async InItSelectKa(){
         let result = await FetchGet('/api/v1/modelsat/all')
@@ -200,6 +319,13 @@ export default {
         console.log(this.KatypeList)
         this.SelectKA = this.KatypeList[0]
         console.log("Select", this.SelectKA)
+        this.SelectKA.value.devCatalogs.forEach(device => {
+              device.use = 0;
+              this.SelectKA.value.devices.forEach(deviceUse => {
+                if(deviceUse.devCatalog.id == device.id)
+                  device.use = 1
+              })
+            })
       }
   },
   mounted(){
@@ -257,6 +383,16 @@ export default {
       th{
         border: 1px solid white;
         border-top: none;
+      }
+      .addButtonIcon{
+        left: 0px;
+        top: 0px;
+        width: 20px;
+        margin: 0px 2px;
+      }
+
+      input{
+        width: calc(100% - 20px);
       }
     }
 
