@@ -118,25 +118,13 @@
                 //console.log(this.KaModels)
                 let addedRow = {
                   'constellationName' : this.OG_Param.inputName,
-                  'satellites' : [
-                    {"altitude": 0,
-                    "eccentricity": 0,
-                    "incline": 0,
-                    "longitudeAscendingNode": 0,
-                    "perigeeWidthArgument": 0,
-                    "trueAnomaly": 0,
-                    "name": "null",
-                    "modelSat": {
-                    "id": this.KaModels[0].value
-                    }
-                  }
-                  ],
+                  'satellites' : [],
                   'inputType' : 1,
-
-                  
+                  "arbitraryFormation": true,
+                  "communicationsFormation": null
                 };
                 //console.log(addedRow)
-                let responce = await FetchPost('/api/v1/constellation/update',addedRow) || {}
+                let responce = await FetchPost('/api/v1/constellation/add',addedRow) || {}
                 
                 if(responce.type == "SUCCESS"){
                   this.CloseTable()
