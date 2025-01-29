@@ -90,7 +90,25 @@
               </table>
           </div>
           <div class="Panel" v-if="viewPanel == 3">
-              <p> Устройства </p>
+              <p>Потребление энергии устройствами </p>
+              <div>
+                <table class="TableDefault PanelDefault">
+                  <tr>
+                    <th rowspan="2">Прибор</th>
+                    <th v-for="data, index in SelectKA.modesList" :key="index">{{ data.mode }}</th>
+                  </tr>
+                  <tr>
+                    <th v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length">{{ data.flightMode }}</th>
+                  </tr>
+                  <tr v-for="data, index in SelectKA.value.devices" :key="index">
+                    <td>{{ data.devCatalog.nameDevice }}</td>
+                    <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode" :id="dataMode.id">
+                      0
+                    </td>
+                  </tr>
+                </table>
+
+              </div>
           </div>
           <div class="Panel" v-if="viewPanel == 4">
               <p>Параметры функционирования</p>
@@ -308,6 +326,15 @@ export default {
               })
             })
       },
+      BuildCharges(){
+        console.log(this.SelectKA.value.charges)
+        this.SelectKA.modesList = [];
+        this.SelectKA.value.modes.forEach(mode => {
+          this.SelectKA.modesList = this.SelectKA.modesList.concat(mode.operatingModes)
+        })
+        console.log("this.SelectKA", this.SelectKA)
+
+      },  
       async InItSelectKa(){
         let result = await FetchGet('/api/v1/modelsat/all')
         this.KatypeList = []
@@ -326,10 +353,12 @@ export default {
                   device.use = 1
               })
             })
+        this.BuildCharges()
       }
   },
   mounted(){
       this.InItSelectKa()
+      
   }
 }
 </script>
