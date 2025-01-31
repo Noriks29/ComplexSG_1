@@ -27,24 +27,22 @@
 .ModalBack{
 
   top: 0px;
-  position: absolute;
-  left: 0px;
-  width: 100%;
-  height: 100vh;
-  max-width: 100%;
-  max-height: 100vh;
-  background-color: rgba(0, 0, 0, 0.459);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
+    position: absolute;
+    left: 0px;
+    width: 100%;
+    height: 100vh;
+    max-width: 100%;
+    max-height: 100vh;
+    background-color: #0505054f;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    box-shadow: inset 0px 0px 1000px 9px black;
 
   .ModalWindow{
     background-color: rgba(255, 255, 255, 0.044);
-    padding: 30px;
-    box-shadow: 0px 0px 100px rgba(0, 0, 0, 0.589);
-
-    
+    box-shadow: 0px 0px 1000px 100px rgb(0, 0, 0);
   }
 
   :root {

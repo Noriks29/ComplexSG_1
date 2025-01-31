@@ -8,18 +8,22 @@
   --background-Button2: #202020;
   --background-Button3: #171717;
   --background-Panel2: linear-gradient(180deg, #88888812, #8c8c8c12, #86868612, #57575705);
+  --backgroung-animatePanel: linear-gradient(120deg,transparent,rgba(35, 39, 242, 0.192),transparent);
 
   --color-Main: white;
 
   --box-shadow-defoult: black;
   --box-shadow-Panel: rgba(63, 60, 60, 0.35);
   --box-shadow-Pabel2: white;
+  --box-shadow-button: rgba(0, 0, 0, 0.6);
+
 
   --border-Table1: #262626;
   --border-Panel: rgba(0, 0, 0, 0.25);
   --border-button: black;
   --border-button2: #31313173;
   --border-Panel2: #ffffff7d;
+  --border-bottom-input: white;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -34,12 +38,23 @@
   &.whiteMode{
     --backgroud-Main: white;
     --color-Main: black;
-
-    --box-shadow-defoult: rgb(255, 255, 255);
-    --border-Panel: rgba(0, 0, 0, 0.25);
     --background-Table1: #00000054;
+    --background-Panel: rgba(151, 151, 151, 0.15);
+    --background-Button1: #afafaf;
+    --background-Button2: #9a9a9a;
+    --background-Button3: #636363;
+    --background-Panel2: linear-gradient(180deg, #14141438, #e7e7e712, #2b2b2b2e, #3636364f);
+    --box-shadow-defoult: #d5d5d5;
+    --box-shadow-Panel: rgb(82 82 82 / 35%);
+    --box-shadow-Pabel2: #000000;
     --border-Table1: #262626;
-    --border-button: white;
+    --border-Panel: rgba(0, 0, 0, 0.25);
+    --border-button: #979797;
+    --border-button2: #31313173;
+    --border-Panel2: #000000a6;
+    --border-bottom-input: #000000;
+
+
     
   }
 }
@@ -317,7 +332,7 @@ input{
   }
 
   &:hover{
-    box-shadow: -1px 1px 2px var(--box-shadow-defoult);
+    box-shadow: -1px 1px 2px var(--box-shadow-button);
     background: var(--background-Button2);
   }
   &:active{

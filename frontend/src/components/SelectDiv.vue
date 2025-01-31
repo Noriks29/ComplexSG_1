@@ -108,24 +108,24 @@
 
   .SelectedValue{
     display: flex;
-    border: 1px solid white;
+    border: 2px solid var(--border-button2);
     border-radius: 15px;
     width: 100%;
     transition: all 0.5s ease-out;
 
     div{
       flex: 1;
-      color: white;
+      color: var(--color-Main);
       margin: 10px;
     }
     button{
       margin: 10px 10px 10px 0px;
     }
     &.active{
-      border: 1px solid white;
+      border: 1px solid var(--border-button2);
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0);
+      border-bottom: 0.5px solid var(--border-button2);
     }
   }
 
@@ -134,7 +134,7 @@
     position: absolute;
     width: 100%;
     top: 100%;
-    border: 1px solid rgba(255, 255, 255, 0);
+    border: 1px solid #6f6f6f00;
     transition: all 0.5s ease-out;
     overflow: hidden;
     pointer-events: none;
@@ -142,21 +142,21 @@
     
 
     div{
-      color: rgba(255, 255, 255, 0);
+      color: #6f6f6f00;
       margin: 5px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0);
+      border-bottom: 1px solid #6f6f6f00;
       transition: all 0.5s ease-out;
     }
 
     &.active{
-      border: 1px solid rgba(255, 255, 255, 1);
+      border: 1px solid var(--border-button2);
       border-top: 0px;
       pointer-events: auto;
-      background-color: #1c1c1c;
+      background-color: var(--background-Main);
 
       div{
-        color: rgba(255, 255, 255, 1);
-        border-bottom: 1px solid rgba(255, 255, 255, 1);
+        color: var(--color-Main);
+        border-bottom: 1px solid var(--border-button2);
       }
     }
   }

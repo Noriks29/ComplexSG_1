@@ -4,12 +4,7 @@
       <div v-for="data, index in workplaceList" :key="index"
         class="SelectMode"
       ><button class="ButtonSelectMode" :class="systemStatus.WorkMode == data.type ? 'active' : ''" @click="ChangeWorkMode(data.type)">{{ data.name }}</button></div>
-      <!--
-      <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 0 ? 'active' : ''" @click="ChangeWorkMode(0)">Планирование и моделирование, связь КА-НП</button></div>
-      <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 1 ? 'active' : ''" @click="ChangeWorkMode(1)">Планирование и моделирование, связь КА-НП и межспутниковая</button></div>
-      <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 2 ? 'active' : ''" @click="ChangeWorkMode(2)">Моделирование доставки данных, связь КА-НП и межспутниковая</button></div>
-      <div class="SelectMode"><button class="ButtonSelectMode" :class="systemStatus.WorkMode == 3 ? 'active' : ''" @click="ChangeWorkMode(3)">Планирование и управление</button></div>
-    --></div>
+    </div>
     
     <div class="idSesion" :class="login !== undefined ? 'show' : ''">
         <div class="flexdiv">login: {{ login }}
@@ -234,7 +229,7 @@ body{
             padding: 15px;
             text-align: left;
             border: none;
-            border-bottom: 2px solid white;
+            border-bottom: 2px solid var(--border-bottom-input);
             width: 90%;
             outline: none;
             background-color: #8a8a8a12;
@@ -331,19 +326,19 @@ body{
       border: none;
       background: none;
       color: var(--color-Main);
-      border-right: 1px solid black;
       pointer-events: all;
-      background-color: rgba(61, 61, 61, 0.3);
+      background-color: var(--background-Button1);
         &:hover{
-          background-color: rgba(90, 90, 90, 0.4);
-          border: 2px solid rgba(0, 0, 0, 0.5);
+          background-color: var(--background-Button2);
+          border: 2px solid var(--border-button);
           transform: translate(4px, -4px);
-          box-shadow: -4px 4px 2px rgba(0, 0, 0, 0.6);
+          box-shadow: -4px 4px 2px var(--box-shadow-button);
         }
         &:active{
-            background-color: rgba(29, 29, 29, 0.4);
-            border: 2px solid rgba(78, 78, 78, 0.5);
-            transform: translate(-1px, 1px);
+            background-color: var(--background-Button3);
+            border: 2px solid var(--border-button2);
+            transform: translate(0px, 1px);
+            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
        }
         &:before {
           content: "";
@@ -352,22 +347,12 @@ body{
           left: -100%;
           width: 100%;
           height: 100%;
-          background: linear-gradient(
-            120deg,
-            transparent,
-            rgba(114, 115, 194, 0.1),
-            transparent
-          );
+          background: var(--backgroung-animatePanel);
           transition: all 350ms;
         }
         &:hover:before {
           left: 100%;
         }
-      &.active{
-        background-color: rgba(19, 19, 19, 0.536);
-        border: 2px solid rgba(78, 78, 78, 0.5);
-        transform: translate(-1px, 1px);
-      }
   }
   }
   

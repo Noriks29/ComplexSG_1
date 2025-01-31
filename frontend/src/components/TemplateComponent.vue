@@ -307,9 +307,9 @@ export default {
     }
 
     .ButtonSection{
-      background-color: rgba(151, 151, 151, 0.15);
-      box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
-      border: 2px solid rgba(0, 0, 0, 0.25);
+      background-color: var(--background-Panel);
+      box-shadow: -4px 3px 1px var(--box-shadow-Panel);
+      border: 2px solid var(--border-Panel);
       height: 93%;
       display: flex;
       flex-direction: column;
@@ -341,23 +341,11 @@ export default {
           margin: 5px;
         }
       }
-      .Info{
-        width: 93%;
-        flex: 3;
-        overflow-y: auto;
-        border: 2px solid #ffffff1f;
-        background-color: #000000a6;
-
-        table{
-          width: 100%;
-          text-align: left;
-        }
-      }
 
       button{
         
         border: none;
-        color: white;
+        color: var(--color-Main);
         flex: 1;
         
         font-size: 25px;
@@ -365,8 +353,8 @@ export default {
         text-decoration: none;
         position: relative;
 
-        border-top: 1px solid black;
-        border-right: 1px solid black;
+        border-top: 1px solid var(--border-button);
+        border-right: 1px solid var(--border-button);
         background-color: rgba(29, 29, 29, 0.4);
         transform: translate(-1px, 1px);
         pointer-events: none;
@@ -375,17 +363,18 @@ export default {
         &.active{
           pointer-events: all;
           transform: translate(0px, 0px);
-          background-color: rgba(61, 61, 61, 0.3);
+          background-color: var(--background-Button1);
           &:hover{
-            background-color: rgba(90, 90, 90, 0.4);
-            border: 2px solid rgba(0, 0, 0, 0.5);
+            background-color: var(--background-Button2);
+            border: 2px solid var(--border-button);
             transform: translate(4px, -4px);
-            box-shadow: -4px 4px 2px rgba(0, 0, 0, 0.6);
+            box-shadow: -4px 4px 2px var(--box-shadow-button);
           }
           &:active{
-              background-color: rgba(29, 29, 29, 0.4);
-              border: 2px solid rgba(78, 78, 78, 0.5);
-              transform: translate(-1px, 1px);
+            background-color: var(--background-Button3);
+            border: 2px solid var(--border-button2);
+            transform: translate(0px, 1px);
+            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
 
           }
           &:before {
@@ -395,12 +384,7 @@ export default {
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-              120deg,
-              transparent,
-              rgba(114, 115, 194, 0.1),
-              transparent
-            );
+            background: var(--backgroung-animatePanel);
             transition: all 350ms;
           }
           &:hover:before {
@@ -463,7 +447,7 @@ export default {
     top: 0px;
     width: 100vw;
     height: 100vh;
-    background-color: black;
+    background-color: var(--backgroud-Main);
     z-index: 5;
     overflow-x: hidden;
 
