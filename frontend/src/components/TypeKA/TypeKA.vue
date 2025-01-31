@@ -100,10 +100,10 @@
                   <tr>
                     <th v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length">{{ data.flightMode }}</th>
                   </tr>
-                  <tr v-for="data, index in SelectKA.value.devices" :key="index">
+                  <tr v-for="data, index in SelectKA.value.devices" :key="index" :id="data.id">
                     <td>{{ data.devCatalog.nameDevice }}</td>
-                    <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode" :id="dataMode.id">
-                      0
+                    <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode">
+                      <input type="number" :id="dataMode.id" :name="data.id" value="0.0" step="0.1"/>
                     </td>
                   </tr>
                 </table>

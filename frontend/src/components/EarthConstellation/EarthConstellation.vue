@@ -54,15 +54,11 @@
 
 import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
-import MainStyle from '../../style/component.scss'
 import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'TargetDZZ',
-    css:{
-      MainStyle
-    },
     props:{
         systemStatus:{
             type: Object

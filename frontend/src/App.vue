@@ -40,6 +40,7 @@
     <TemplateComponent v-if="!systemreload" :ActiveComponent="ComponentStatus" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
     
     <LoadProcess />
+    <div class="ChangeViewMode" @click="ChangeColor"><svg fill="none" height="24" stroke-width="1.5" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 12L23 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2V1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 23V22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 20L19 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4L19 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20L5 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4L5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12L2 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
    
     
 
@@ -154,6 +155,15 @@ export default {
             this.ComponentStatus = 0
           }
         }
+      },
+      ChangeColor(){
+        localStorage.viewMode = Number(!Number(localStorage.viewMode || 0) || 0)
+        if (localStorage.viewMode == true) {
+          document.getElementById("app").className = "whiteMode";
+        }
+        else{
+          document.getElementById("app").classList.remove("whiteMode");
+        }
       }
     },
   async mounted() {
@@ -162,9 +172,17 @@ export default {
       let data = {
             "nameUser": localStorage.nameUser,
             "email": localStorage.email,
-            "password": localStorage.password
+            "password": localStorage.password,
       }
       this.VerifyWorkSapce(data)
+    }
+    localStorage.viewMode = localStorage.viewMode || 0
+    try {
+      if (localStorage.viewMode == true) {
+        document.getElementById("app").className = "whiteMode";
+      }
+    } catch (error) {
+      console.log(error)
     }
   },
   components: {
@@ -182,9 +200,9 @@ body{
     height: 100vh;
     min-width: 500px;
     max-width: 30vw;
-    background: linear-gradient(180deg, #88888812, #8c8c8c12, #86868612, #57575705);
-    border-right: 2px solid #ffffff7d;
-    box-shadow: -8px 0px 15px 1px white;
+    background: var(--background-Panel2);
+    border-right: 2px solid var(--border-Panel2);
+    box-shadow: -8px 0px 15px 1px var(--box-shadow-Pabel2);
     transform: translate(-100%, 0px);
     transition: all 0.5s ease-in-out;
 
@@ -255,7 +273,6 @@ body{
               font-weight: bold;
               color: #ff8e8e;
               transition: all 1s;
-
               &.none{
                 color: #ff8e8e00;
               }
@@ -283,7 +300,6 @@ body{
   display: flex;
     align-items: center;
     justify-content: space-evenly;
-    background-color: #ffffff1f;
     position: fixed;
     width: 35%;
     z-index: 1;
@@ -293,9 +309,9 @@ body{
     padding: 5vh 0px;
 
 
-  background: linear-gradient(180deg, #88888812, #8c8c8c12, #86868612, #57575705);
-  border-left: 2px solid #ffffff7d;
-  box-shadow: 8px 0px 15px 1px white;
+  background: var(--background-Panel2);
+  border-left: 2px solid var(--border-Panel2);
+  box-shadow: 8px 0px 15px 1px var(--box-shadow-Pabel2);
   transform: translate(100%, 0px);
   transition: all 0.5s ease-in-out;
 
@@ -314,7 +330,7 @@ body{
       height: 100%;
       border: none;
       background: none;
-      color: white;
+      color: var(--color-Main);
       border-right: 1px solid black;
       pointer-events: all;
       background-color: rgba(61, 61, 61, 0.3);
@@ -358,12 +374,12 @@ body{
 }
 
 .idSesion{
-  color: white;
+  color: var(--color-Main);
     position: fixed;
     right: 10px;
     top: 6px;
     border-bottom: 2px solid;
-    box-shadow: 0px 3px 4px -4px white;
+    box-shadow: 0px 3px 4px -4px var(--box-shadow-Pabel2);
     transform: translate(0px, -150%);
     transition: all 0.5s ease-in-out;
     z-index: 2;
@@ -380,7 +396,7 @@ body{
     .logoutbutton{
       position: relative;
       background: none;
-      color: white;
+      color: var(--color-Main);
       border: none;
       margin: 5px 25px 10px 0px;
       height: 100%;

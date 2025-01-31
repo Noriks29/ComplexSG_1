@@ -98,7 +98,6 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
-import MainStyle from '../../style/component.scss'
 import L from 'leaflet';
 import SelectDiv from "../SelectDiv.vue"
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -108,9 +107,6 @@ import "leaflet/dist/leaflet.css";
 
   export default {
     name: 'TargetRoad',
-    css:{
-      MainStyle
-    },
     props:{
         systemStatus:{
             type: Object

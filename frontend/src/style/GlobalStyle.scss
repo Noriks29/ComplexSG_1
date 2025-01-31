@@ -1,7 +1,25 @@
 :root {
-  --panel-color-background-color: rgba(151, 151, 151, 0.15);
-  --panel-color-box-shadow: rgba(63, 60, 60, 0.35);
   --font-size: 16px;
+
+  --background-Table1: #00000054;
+  --backgroud-Main: black;
+  --background-Panel: rgba(151, 151, 151, 0.15);
+  --background-Button1: #2b2b2b;
+  --background-Button2: #202020;
+  --background-Button3: #171717;
+  --background-Panel2: linear-gradient(180deg, #88888812, #8c8c8c12, #86868612, #57575705);
+
+  --color-Main: white;
+
+  --box-shadow-defoult: black;
+  --box-shadow-Panel: rgba(63, 60, 60, 0.35);
+  --box-shadow-Pabel2: white;
+
+  --border-Table1: #262626;
+  --border-Panel: rgba(0, 0, 0, 0.25);
+  --border-button: black;
+  --border-button2: #31313173;
+  --border-Panel2: #ffffff7d;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -9,7 +27,33 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   height: 100%;
-  color: white;
+  color: var(--color-Main);
+  background: var(--backgroud-Main);
+
+
+  &.whiteMode{
+    --backgroud-Main: white;
+    --color-Main: black;
+
+    --box-shadow-defoult: rgb(255, 255, 255);
+    --border-Panel: rgba(0, 0, 0, 0.25);
+    --background-Table1: #00000054;
+    --border-Table1: #262626;
+    --border-button: white;
+    
+  }
+}
+
+.ChangeViewMode{
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  z-index: 10;
+  svg{
+    fill: var(--color-Main);
+    width: 30px;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -21,8 +65,8 @@
 ::-webkit-scrollbar-thumb {
   box-shadow: inset 0 0 10px rgb(0,0,0); 
 }
+
 body{
-  background: black;
   background-attachment: fixed;
   background-repeat: no-repeat;
   margin: 0px;
@@ -51,8 +95,8 @@ body{
       &.TableSystem{
         height: 20vh;
         overflow-y: auto;
-        background-color: #00000054;
-        border: 1px solid #262626;
+        background-color: var(--background-Table1);
+        border: 1px solid var(--border-Table1);
       }
     }
     
@@ -63,7 +107,6 @@ body{
   position: relative;
   font-size: var(--font-size);
   padding-top: 25px;
-  color: white;
 
     .ToMenuButtonDiv {
         position: fixed;
@@ -72,7 +115,6 @@ body{
         padding: 0px;
         border: none;
         background: none;
-
         img{
             width: 30px;
         }
@@ -82,7 +124,6 @@ body{
         display: inline-flex;
         flex-direction: column;
         align-items: center;
-        //min-height: 99%;
         overflow-y: auto;
         overflow-x: hidden;
         min-width: 60%;
@@ -92,9 +133,9 @@ body{
         }
 
         .Panel{
-            background-color: var(--panel-color-background-color);
-            box-shadow: -4px 3px 1px var(--panel-color-box-shadow);
-            border: 2px solid rgba(0, 0, 0, 0.25);
+            background-color: var(--background-Panel);
+            box-shadow: -4px 3px 1px var(--box-shadow-Panel);
+            border: 2px solid var(--border-Panel);
             margin: 3px 0px;
 
             table{
@@ -116,7 +157,7 @@ body{
                     height: 100%;
                     padding: 10px 0px;
                     font-size: var(--font-size);
-                    color: white;
+                    color: var(--color-Main);
                   }
                 tr{
                     td{
@@ -161,7 +202,7 @@ body{
                     button{
                       padding: 7px;
                       width: 100%;
-                      color: #FFFFFF;
+                      color: var(--color-Main);
                       display: flex;
                       flex-direction: row;
                       img{
@@ -224,7 +265,7 @@ input{
     border: none;
     background: none;
     font-size: var(--font-size);
-    color: white;
+    color: var(--color-Main);
 
     &.disable{
         pointer-events: none;
@@ -233,14 +274,6 @@ input{
         width: 100px;
     }
 }
-
-
-
-
-
-
-
-
 
 .scroll-table-body {
 	height: 100%;
@@ -268,13 +301,13 @@ input{
 }
 
 .ButtonCommand{
-  background: #2b2b2b;
-  color: white;
-  border: 1px solid black;
+  background:  var(--background-Button1);
+  color: var(--color-Main);
+  border: 1px solid var(--border-button);
   padding: 14px;
   font-size: var(--font-size);
   border-radius: 10px;
-  box-shadow: -3px 3px 1px black;
+  box-shadow: -3px 3px 1px var(--box-shadow-defoult);
   margin: 5px;
   transition: all 0.2s;
   position: relative;
@@ -284,13 +317,13 @@ input{
   }
 
   &:hover{
-    box-shadow: -1px 1px 2px black;
-    background: #202020;
+    box-shadow: -1px 1px 2px var(--box-shadow-defoult);
+    background: var(--background-Button2);
   }
   &:active{
     border-radius: 5px;
-    background: #171717;
-    box-shadow: -3px 3px 10px black;
+    background: var(--background-Button3);
+    box-shadow: -3px 3px 10px var(--box-shadow-defoult);
   }
   &.small{
     padding: 5px;
@@ -299,9 +332,9 @@ input{
   }
   &.disable{
     pointer-events: none;
-    background: #202020;
-    box-shadow: inset -1px 1px 2px black;
-    border: 1px solid #31313173;
+    background: var(--background-Button3);
+    box-shadow: inset -1px 1px 2px var(--box-shadow-defoult);
+    border: 1px solid var(--border-button2);
   }
   &.icon{
     padding: 5px 15px;
@@ -331,7 +364,7 @@ input{
 .logoutbutton{
   position: relative;
     background: none;
-    color: white;
+    color: var(--color-Main);
     border: none;
     margin: 5px 25px 10px;
   img{
@@ -344,13 +377,13 @@ input{
 
 
 .input-file {
-	background: #2b2b2b;
-  color: white;
-  border: 1px solid black;
+	background: var(--background-Button1);
+  color: var(--color-Main);
+  border: 1px solid var(---border-button);
   padding: 14px;
   font-size: var(--font-size);
   border-radius: 10px;
-  box-shadow: -3px 3px 1px black;
+  box-shadow: -3px 3px 1px var(--box-shadow-defoult);
   margin: 5px;
   transition: all 0.2s;
   position: relative;
@@ -368,7 +401,7 @@ input{
   height: 100%;
   font-size: 15px;
   transition: all 0.3s ease;
-  color: white;
+  color: var(--color-Main);
   align-items: center;
   flex-direction: row;
 }
