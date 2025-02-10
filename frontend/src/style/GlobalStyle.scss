@@ -2,7 +2,7 @@
   --font-size: 16px;
 
   --background-Table1: #00000054;
-  --backgroud-Main: black;
+  --background-Main: black;
   --background-Panel: rgba(151, 151, 151, 0.15);
   --background-Button1: #2b2b2b;
   --background-Button2: #202020;
@@ -32,11 +32,11 @@
   text-align: center;
   height: 100%;
   color: var(--color-Main);
-  background: var(--backgroud-Main);
+  background: var(--background-Main);
 
 
   &.whiteMode{
-    --backgroud-Main: white;
+    --background-Main: white;
     --color-Main: black;
     --background-Table1: #00000054;
     --background-Panel: rgba(151, 151, 151, 0.15);

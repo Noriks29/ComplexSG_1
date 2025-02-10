@@ -92,7 +92,7 @@
           <div class="Panel" v-if="viewPanel == 3">
               <p>Потребление энергии устройствами </p>
               <div>
-                <table class="TableDefault PanelDefault">
+                <table class="TableDefault PanelDefault" id="TableChargeKA">
                   <tr>
                     <th rowspan="2">Прибор</th>
                     <th v-for="data, index in SelectKA.modesList" :key="index">{{ data.mode }}</th>
@@ -103,7 +103,7 @@
                   <tr v-for="data, index in SelectKA.value.devices" :key="index" :id="data.id">
                     <td>{{ data.devCatalog.nameDevice }}</td>
                     <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode">
-                      <input type="number" :id="dataMode.id" :name="data.id" value="0.0" step="0.1"/>
+                      <input type="number" @change="ChangeValue($event, 'charge', data.id)" :id="dataMode.id" :name="data.id" :value="SelectKA.ChargeTable[data.id][dataMode.id]" step="0.1" :class="SelectKA.ChargeTable[data.id][dataMode.id] == undefined ? 'null':''"/>
                     </td>
                   </tr>
                 </table>
@@ -191,7 +191,7 @@ export default {
           SelectKA: {
             value:{
                 description: ""
-            }
+            },
           },
           viewPanel: 1
       }
@@ -219,8 +219,8 @@ export default {
                   device.use = 1
               })
             })
+            //this.BuildCharges() вызывает ошибку надо поправить
           }
-          
       },
       SelectComponent(nameComponent) {
         this.$emit('updateParentComponent', {
@@ -244,6 +244,18 @@ export default {
               this.SelectKA.value.modes[parentIndex].operatingModes[event.target.id][event.target.name] = event.target.value
               await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
               await this.ReFerchKA(this.SelectKA.value.id)
+            break;
+          case 'charge':
+              for (let i = 0; i < this.SelectKA.value.charges.length; i++) {
+                const chargeKa = this.SelectKA.value.charges[i];
+                if(chargeKa.flightModeId == event.target.id && chargeKa.deviceId == parentIndex){
+                  chargeKa.charge = event.target.value
+                  await FetchPost("/api/v1/modelsat/update/charges", [chargeKa])
+                  break
+                }
+              }
+              await this.ReFerchKA(this.SelectKA.value.id)
+
             break;
         
           default:
@@ -325,6 +337,7 @@ export default {
                   device.use = 1
               })
             })
+        this.BuildCharges()
       },
       BuildCharges(){
         console.log(this.SelectKA.value.charges)
@@ -332,8 +345,13 @@ export default {
         this.SelectKA.value.modes.forEach(mode => {
           this.SelectKA.modesList = this.SelectKA.modesList.concat(mode.operatingModes)
         })
+        
+        this.SelectKA.ChargeTable = {}
+        this.SelectKA.value.charges.forEach(charge => {
+          if(!(charge.deviceId in this.SelectKA.ChargeTable)) this.SelectKA.ChargeTable[charge.deviceId] = {}
+          this.SelectKA.ChargeTable[charge.deviceId][charge.flightModeId] = charge.charge
+        })
         console.log("this.SelectKA", this.SelectKA)
-
       },  
       async InItSelectKa(){
         let result = await FetchGet('/api/v1/modelsat/all')
@@ -442,6 +460,12 @@ export default {
       img{
           width: 200px;
       }
+  }
+}
+
+#TableChargeKA{
+  .null{
+    background-color: #ff000063;
   }
 }
 

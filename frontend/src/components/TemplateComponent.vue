@@ -447,7 +447,7 @@ export default {
     top: 0px;
     width: 100vw;
     height: 100vh;
-    background-color: var(--backgroud-Main);
+    background-color: var(--background-Main);
     z-index: 5;
     overflow-x: hidden;
 

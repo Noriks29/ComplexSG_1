@@ -138,7 +138,7 @@
     transition: all 0.5s ease-out;
     overflow: hidden;
     pointer-events: none;
-    
+    border-radius: 0px 0px 10px 10px;
     
 
     div{
