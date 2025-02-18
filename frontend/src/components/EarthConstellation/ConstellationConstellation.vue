@@ -119,10 +119,7 @@ import Plotly from 'plotly.js-dist'
                 DisplayLoad(false)
                 return
               }
-              let rezult = await FetchGet('/api/v1/modelling/view/sat',false) || {type: "Error"}
-              if(rezult.type !== "SUCCESS"){
-                alert("Контакты КА-КА не найдены. Возможные причины: \n1) Орбитальное построение,\n2) Горизонт времени планирования")
-              }
+              await FetchGet('/api/v1/pro42/view/sat')
               DisplayLoad(false)
             }
             if(commandId == 6){

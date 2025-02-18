@@ -83,8 +83,8 @@
                 <tr><th>Прибор</th><th>Свойство</th><th></th></tr>
                 <tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
                   <td>{{ data.devCatalog.nameDevice || "null"}}</td>
-                  <td><input type="checkbox" :id="index" name="property" :checked="data.property" @change="ChangeValue($event, 'property')"/>
-                      <label>{{ data.property ? "~" : "=" }}</label></td>
+                  <td><input type="checkbox" :id="index" name="property" :checked="data.constant" @change="ChangeValue($event, 'property')"/>
+                      <label>{{ data.constant ? "=" : "~" }}</label></td>
                   <td :id="index" @click="DeleteRow(index, 'devices')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
                 </tr>
               </table>
@@ -231,7 +231,7 @@ export default {
         console.log(event)
         switch (category) {
           case 'property':
-              this.SelectKA.value.devices[event.target.id].property = + event.target.checked
+              this.SelectKA.value.devices[event.target.id].constant = event.target.checked
               await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
               await this.ReFerchKA(this.SelectKA.value.id)
             break;

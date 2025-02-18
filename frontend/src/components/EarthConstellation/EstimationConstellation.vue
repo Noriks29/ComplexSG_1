@@ -171,7 +171,7 @@ import Plotly from 'plotly.js-dist'
           DisplayLoad(true)
           this.CommandWork()
           //console.log(this.experimentObject, JSON.stringify(this.experimentObject))
-          let response = await FetchPost("/api/v1/modelling/view/request", this.experimentObject) || []
+          let response = await FetchPost("/api/v1/pro42/view/request", this.experimentObject) || []
           
           try {
             for (let index = 0; index < response.length; index++) {

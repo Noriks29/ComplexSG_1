@@ -426,7 +426,7 @@ import XLSX from 'xlsx-js-style';
           let color = document.getElementById("inputColorKa")
           let colors = ['#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#990000','#009900','#999900','#000099','#ffcc00','#00ffcc','#cc0000','#00cc00','#cccc00','#0000cc','#ee0000','#00ee00','#eeee00','#00eeee','#aaaa00']
           if (this.KatoDraw == undefined) {
-            let roads = await FetchGet("/api/v1/modelling/gps/coordinates") || []
+            let roads = await FetchGet("/api/v1/pro42/gps/all") || []
             let colorid = 0
             roads.forEach(road => {
               let arrayPoint = [[]]
@@ -449,7 +449,7 @@ import XLSX from 'xlsx-js-style';
 
           }
           else{
-            let road = await FetchPost("/api/v1/modelling/gps/sat/coordinates", {}, "satelliteId="+this.KatoDraw.satelliteId) || []
+            let road = await FetchPost("/api/v1/pro42/gps/sat", {}, "satelliteId="+this.KatoDraw.satelliteId) || []
             let arrayPoint = [[]]
             let line_index = 0
             for (let index = 0; index < road.length; index+=1) {

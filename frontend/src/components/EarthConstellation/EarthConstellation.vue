@@ -117,7 +117,7 @@ import Plotly from 'plotly.js-dist'
             }
             if(commandId == 1){
               DisplayLoad(true)
-              await FetchGet('/api/v1/modelling/view/earth')
+              await FetchGet('/api/v1/pro42/view/earth')
               DisplayLoad(false)
             }
             if(commandId == 6){
