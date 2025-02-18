@@ -11,7 +11,7 @@
           </table>
         </div>
         <div class="Panel MaxWidth">
-          <div>
+          <div class="Divfieldset">
             <fieldset  @change="ChangeInputRadio">
               <legend>Тип эксперимента:</legend>
               <div>
@@ -117,59 +117,5 @@ import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 
 
 <style lang="scss" scoped>
-
-
-fieldset{
-  text-align: left;
-}
-.PanelWork{
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  .colum{
-    flex: 1;
-    button{
-      width: 99%;
-    }
-
-  }
-
-  .FlexColum{
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px;
-
-    button{
-      margin: 5px;
-    }
-  }
-}
-.SelectMode{
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px;
-  height: 45px;
-  font-size: 18px;
-  div{
-    img{
-      width: 40px;
-      &:active{
-        width: 30px;
-      }
-      &.disable{
-        pointer-events: none;
-      }
-    }
-  }
-  
-}
-.ContentDiv{
-  height: fit-content;
-
-}
 
 </style>

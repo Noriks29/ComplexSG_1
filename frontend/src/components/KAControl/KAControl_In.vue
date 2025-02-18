@@ -1,12 +1,9 @@
 <template>
     <div class="main_contain">
       <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
-      <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
-      <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
-      <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
 
       <div class="ContentDiv">
-        <h1 class="TitleText">Планирование съемок</h1>
+        <h1 class="TitleText">АГУ Внутри кластера</h1>
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
             <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
@@ -35,15 +32,11 @@
               <legend>Тип эксперимента:</legend>
               <div>
                 <input type="radio" name="experimentType" value="1" checked />
-                <label>Планирование заявок</label>
+                <label>Распределение заявок</label>
               </div>
               <div>
                 <input type="radio" name="experimentType" value="2" />
-                <label>Планирование заявок и планирование полёта</label>
-              </div>
-              <div>
-                <input type="radio" name="experimentType" value="3" />
-                <label>Планирование заявок и моделирование полёта</label>
+                <label>Выполнение заявок</label>
               </div>
             </fieldset>
           </div>
@@ -54,16 +47,12 @@
               <tr>
                 <td>Заявки</td>
                 <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
-                <td><button @click="EventBookmark" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button></td>
                 <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
-                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
               <tr>
                 <td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td>
                 <td><button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
-                <td><button @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
                 <td><button @click="EventE79" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
-                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
                 <td></td>
@@ -74,7 +63,6 @@
             </table>
           </div>
         </div>
-        <h1 v-if="modellingNull">Результат моделирования пуст</h1>
       </div>
     </div>
 </template>
@@ -85,11 +73,8 @@ import { UnixToDtime } from '@/js/WorkWithDTime';
 import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 import SelectDiv from "../SelectDiv.vue"
-import E78Table from './E78Table.vue';
-import E77E78 from './E77E78.vue';
-import BookmarkTable from './BookmarkComponent.vue';
   export default {
-    name: 'FlightPlaner',
+    name: 'KAControl_In',
     data(){
       return{
         earthSize: 0,
@@ -133,10 +118,7 @@ import BookmarkTable from './BookmarkComponent.vue';
     },
     components:{
       DefaultTable,
-      E78Table,
-      E77E78,
       SelectDiv,
-      BookmarkTable
     },
     props:{
         systemStatus:{
@@ -450,6 +432,8 @@ import BookmarkTable from './BookmarkComponent.vue';
     async mounted(){
       this.ReLoadComponent()
     }
+
+
   }
   </script>
 

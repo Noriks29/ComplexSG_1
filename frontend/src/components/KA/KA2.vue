@@ -28,7 +28,7 @@
           </table>
         </div>
 
-        <div>
+        <div class="Divfieldset">
           <fieldset  @change="ChangeInputRadio">
             <legend>Тип эксперимента:</legend>
             <div>
@@ -430,65 +430,5 @@ export default {
 
 
 <style lang="scss" scoped>
-
-
-fieldset{
-text-align: left;
-}
-.PanelWork{
-display: flex;
-justify-content: center;
-flex-wrap: wrap;
-
-.colum{
-  flex: 1;
-  overflow: hidden;
-  button{
-    width: 99%;
-
-    &.hide{
-      position: relative;
-      top: 1000px;
-    }
-  }
-
-}
-
-.FlexColum{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 10px;
-
-  button{
-    margin: 5px;
-  }
-}
-}
-.SelectMode{
-display: flex;
-flex-wrap: nowrap;
-justify-content: space-between;
-align-items: center;
-padding: 5px;
-height: 45px;
-font-size: 18px;
-div{
-  img{
-    width: 40px;
-    &:active{
-      width: 30px;
-    }
-    &.disable{
-      pointer-events: none;
-    }
-  }
-}
-
-}
-.ContentDiv{
-height: fit-content;
-
-}
 
 </style>

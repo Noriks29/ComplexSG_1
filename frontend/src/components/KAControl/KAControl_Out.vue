@@ -2,7 +2,7 @@
   <div class="main_contain">
     <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
     <div class="ContentDiv">
-      <h1 class="TitleText">Моделирование доставки данных, связь КА-НП и межспутниковая</h1>
+      <h1 class="TitleText">АГУ Между кластерами</h1>
       <div class="FlexRow Panel">
         <div class="ButtonModelling">
           <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
@@ -44,7 +44,6 @@
           </table>
         </div>
       </div>
-      <h1 v-if="modellingNull">Результат моделирования пуст</h1>
     </div>
   </div>
 </template>
@@ -55,7 +54,7 @@ import { UnixToDtime } from '@/js/WorkWithDTime';
 import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 export default {
-  name: 'FlightPlaner',
+  name: 'KAControl_Out',
   data(){
     return{
       earthSize: 0,

@@ -6,18 +6,30 @@
     </transition> 
     <div class="SectionMenu" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
       <div v-if="systemStatus.WorkMode == -1" class="ModellingDiv"></div>
-      <div v-if="systemStatus.WorkMode == 0" class="ModellingDiv">
-        <KA1 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+      <div v-if="systemStatus.WorkMode == 6" class="ModellingDiv">
+        <div class="ContentDiv">
+          <button class="ButtonCommand" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>
+        </div>
       </div>
       <div v-if="systemStatus.WorkMode == 1" class="ModellingDiv">
-        <KA2 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+        <KA1 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
       </div>
       <div v-if="systemStatus.WorkMode == 2" class="ModellingDiv">
-        <KA3 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+        <KA2 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
       </div>
       <div v-if="systemStatus.WorkMode == 3" class="ModellingDiv">
+        <KAControl_In :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+      </div>
+      <div v-if="systemStatus.WorkMode == 4" class="ModellingDiv">
+        <KAControl_Out :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+      </div>
+      <div v-if="systemStatus.WorkMode == 5" class="ModellingDiv">
         <KA4 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
       </div>
+      <div v-if="systemStatus.WorkMode == 10" class="ModellingDiv">
+        <KA3 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+      </div>
+      
       <div class="FlexMenuSection">
         <div class="ButtonSection first">
           <h1>КС</h1>
@@ -27,29 +39,26 @@
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
           </div>   
         </div>
-        <div class="ButtonSection second" v-if="button_mode != 'pavlov'">
+        <div class="ButtonSection second"  :class="systemStatus.WorkMode in {6:null} ? 'hide': ''">
           <h1>Связь</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
-            <button :class="systemStatus.WorkMode in {1:null,2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button :class="systemStatus.WorkMode in {2:null,3:null,4:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
-            <button :class="systemStatus.WorkMode in {0:null,1:null,2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
+            <button :class="systemStatus.WorkMode in {1:null,2:null,3:null,4:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
-        <div class="ButtonSection fourth" :class="systemStatus.WorkMode == 2 ? 'hide': ''"  v-if="button_mode != 'pavlov'">
+        <div class="ButtonSection fourth" :class="systemStatus.WorkMode in {2:null,4:null,6:null} ? 'hide': ''">
           <h1>Инструменты</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Видимость целей (Оценка ОГ)</button>
           </div>
-        </div>
-        <div class="ButtonSection" v-else>
-          <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>
         </div>
       </div>
       <div class="ContainerSystem">
@@ -62,8 +71,6 @@
             </label>
         </div>
       </div>
-      
-
     </div>
 </template>
 
@@ -80,6 +87,9 @@ import KA1 from './KA/KA1.vue';
 import KA2 from './KA/KA2.vue';
 import KA3 from './KA3/KA3.vue';
 import KA4 from './KA4/KA2.vue';
+
+import KAControl_In from './KAControl/KAControl_In.vue'
+import KAControl_Out from './KAControl/KAControl_Out.vue'
 
 import SystemWindow from './System/SystemWindow.vue';
 import TargetDZZ from './TargetDZZ/TargetDZZ.vue'
@@ -113,7 +123,10 @@ export default {
     EstimationConstellation,
     TargetRoad,
     ConstellationConstellation,
-    LogEventList
+    LogEventList,
+
+    KAControl_In,
+    KAControl_Out
   },
   data(){
       return{
@@ -245,8 +258,6 @@ export default {
   }
 }
 
-
-
 .SectionMenu{
     width: 98%;
     height: 97%;
@@ -267,7 +278,7 @@ export default {
     &.hide{
       .ButtonSection{
         transform: translateY(150%);
-        animation: 1s ease-out reverse 0s 1 slideInFromBottom;
+        animation: 0.5s ease-out reverse 0s 1 slideInFromBottom;
       }
       .PanelSystemData{
         transform: translateY(120%);
@@ -279,7 +290,7 @@ export default {
         animation: 1s ease-out 0s 1 slideInFromTop;
       }
       .ButtonSection{
-        animation: 1s ease-out 0s 1 slideInFromBottom;
+        animation: 0.5s ease-out 0s 1 slideInFromBottom;
         &.hide{
           position: relative;
           top: 150%;
@@ -390,7 +401,6 @@ export default {
           &:hover:before {
             left: 100%;
           }
-
         }
         &.hideElement{
           border: none;
@@ -399,7 +409,6 @@ export default {
           transform: translate(0px, 1000px);
         }
 
-        
         div{
           position: absolute;
           width: 10px;
@@ -408,7 +417,6 @@ export default {
           top: 20%;
           left: 10px;
           border-radius: 20px;
-          
 
           &.approved{
             background-color: rgb(0, 139, 0);
@@ -418,7 +426,6 @@ export default {
             background-color: red;
             box-shadow: 0px 0px 5px #fe1a1a;
           }
-
         }
       }
 
@@ -437,8 +444,6 @@ export default {
         }
         border: 2px solid rgba(71, 71, 71, 0.25);
       }
-      
-
     }
   }
 
@@ -452,7 +457,4 @@ export default {
     overflow-x: hidden;
 
   }
-
-
-  
 </style>

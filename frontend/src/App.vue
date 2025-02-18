@@ -118,14 +118,7 @@ export default {
         localStorage.setItem('data', data.accessKey)
         let rezult = await FetchGet('/api/v1/system/get', true)
         this.systemStatus = rezult;
-        let mode = data.type-1
-        this.systemStatus.WorkMode = mode
-          if(mode in {1: null, 2:null}){
-            this.systemStatus.interSatelliteCommunication = true
-          }
-          else if(mode in {0: null}){
-            this.systemStatus.interSatelliteCommunication = false
-          }
+        this.systemStatus.WorkMode = data.type
         this.ActiveComponentValidate()
         DisplayLoad(false)
       },
@@ -138,17 +131,14 @@ export default {
       ChangeWorkMode(mode){
         this.systemreload = false
         if(this.experimentStatus == false){
-          let flag = false
           this.workplaceList.forEach(workplace => {
             if(workplace.type == mode){
-              flag = true
               this.StartSystem(workplace)
+              return
             }
           })
-          if(!flag){
-            this.systemStatus = {WorkMode: -1}
-            this.ComponentStatus = 0
-          }
+          this.systemStatus = {WorkMode: -1}
+          this.ComponentStatus = 0
         }
       },
       ChangeColor(){
