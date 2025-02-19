@@ -11,24 +11,13 @@
           <button class="ButtonCommand" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>
         </div>
       </div>
-      <div v-if="systemStatus.WorkMode == 1" class="ModellingDiv">
-        <KA1 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
-      <div v-if="systemStatus.WorkMode == 2" class="ModellingDiv">
-        <KA2 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
-      <div v-if="systemStatus.WorkMode == 3" class="ModellingDiv">
-        <KAControl_In :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
-      <div v-if="systemStatus.WorkMode == 4" class="ModellingDiv">
-        <KAControl_Out :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
-      <div v-if="systemStatus.WorkMode == 5" class="ModellingDiv">
-        <KA4 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
-      <div v-if="systemStatus.WorkMode == 10" class="ModellingDiv">
-        <KA3 :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
-      </div>
+      
+
+      <transition name="ComponentModelling" mode="out-in" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
+        <div class="ModellingDiv">
+          <component :is="ComponentModellingList[systemStatus.WorkMode]" v-if="systemStatus.WorkMode > 0" :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
+        </div>
+      </transition> 
       
       <div class="FlexMenuSection">
         <div class="ButtonSection first">
@@ -82,14 +71,14 @@ import NP from "./NP/NP.vue";
 import OG from './OG/OG.vue'
 import TypeKA from './TypeKA/TypeKA.vue';
 import LogEventList from "./LogEventList/LogEventList.vue";
+
 import KA1 from './KA/KA1.vue';
-
 import KA2 from './KA/KA2.vue';
-import KA3 from './KA3/KA3.vue';
-import KA4 from './KA4/KA2.vue';
-
-import KAControl_In from './KAControl/KAControl_In.vue'
-import KAControl_Out from './KAControl/KAControl_Out.vue'
+import KARealTime from "./KA/KARealTime.vue";
+import KAControl_In from './KA/KAControl_In.vue'
+import KAControl_Out from './KA/KAControl_Out.vue'
+import KAPavlov from "./KA/KAPavlov.vue";
+import KAGordeev from "./KA/KAGordeev.vue";
 
 import SystemWindow from './System/SystemWindow.vue';
 import TargetDZZ from './TargetDZZ/TargetDZZ.vue'
@@ -113,10 +102,7 @@ export default {
     NP,
     OG,
     TypeKA,
-    KA1,
-    KA2,
-    KA3,
-    KA4,
+    
     SystemWindow,
     TargetDZZ,
     EarthConstellation,
@@ -125,15 +111,22 @@ export default {
     ConstellationConstellation,
     LogEventList,
 
+    KA1,
+    KA2,
+    KARealTime,
     KAControl_In,
-    KAControl_Out
+    KAControl_Out,
+    KAPavlov,
+    KAGordeev
+
   },
   data(){
       return{
         button_mode: "standart",
         activeComponent: "",
         reload: 0,
-        ExperimentStatus: false
+        ExperimentStatus: false,
+        ComponentModellingList: [null,"KA1","KA2","KARealTime","KAControl_In","KAControl_Out","KAPavlov","KAGordeev",null]
     }
   },
   methods: {

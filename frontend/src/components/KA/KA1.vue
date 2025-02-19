@@ -67,9 +67,9 @@
               </tr>
               <tr>
                 <td></td>
-                <td colspan="2"><button @click="ShowLogEvent" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td>
+                <td colspan="2"><button @click="ShowLog(modellingRezult.log)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td>
                 <td colspan="1"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button></td>
-                <td colspan="1"><button @click="ShowLogSMAO" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
+                <td colspan="1"><button @click="ShowLog(modellingRezult.Smao)" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
               </tr>
             </table>
           </div>
@@ -88,8 +88,13 @@ import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
+
+import { KaSettings } from './KaSettings';
+
+
   export default {
     name: 'FlightPlaner',
+    mixins: [KaSettings],
     data(){
       return{
         earthSize: 0,
@@ -138,24 +143,6 @@ import BookmarkTable from './BookmarkComponent.vue';
       SelectDiv,
       BookmarkTable
     },
-    props:{
-        systemStatus:{
-            type: Object
-        },
-        reload:{
-          type: Number
-        },
-        ExperimentStatus:{
-          type: Boolean
-        }
-    },
-    watch: {
-    // всякий раз когда question меняется, эта функция будет запускаться
-    reload(newreload, oldreload) {
-      console.log(newreload, oldreload)
-      this.ReLoadComponent()
-    }
-  },
     methods: {
       Experiment(status){
         if(status){
@@ -204,13 +191,7 @@ import BookmarkTable from './BookmarkComponent.vue';
         this.modellingNull = false
         this.$emit('ChangeExperimentStatus', {status})
       },
-      CreateDateTime(time, text = true){
-          let Dtime = UnixToDtime(time)
-          if(!text){
-            return Dtime.date + " " + Dtime.time
-          }
-          return Dtime.date + " " + Dtime.time + " МСК"
-        },
+      
       ChangeInputRadio(target){
         this.modellingSettings[target.target.name] = Number(target.target.value)
       },
@@ -231,8 +212,6 @@ import BookmarkTable from './BookmarkComponent.vue';
           console.log("нет результата")
           this.modellingNull = true
         }
-        
-
         DisplayLoad(false)
       },
       ParceModellingRezult(){
@@ -285,26 +264,6 @@ import BookmarkTable from './BookmarkComponent.vue';
         });
         this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
         console.log(this.modellingRezult)
-      },
-      ShowLogEvent(){
-        this.dataTable = []
-        this.dataLableName = [{label: "data", nameParam: "data"}]
-        for (let index = 0; index < this.modellingRezult.log.length; index++) {
-          const element = this.modellingRezult.log[index];
-          this.dataTable.push({data: element}) 
-        }
-        this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
-      },
-      ShowLogSMAO(){
-        this.dataTable = []
-        this.dataLableName = [{label: "data", nameParam: "data"}]
-        for (let index = 0; index < this.modellingRezult.Smao.length; index++) {
-          const element = this.modellingRezult.Smao[index];
-          this.dataTable.push({data: element}) 
-        }
-        this.PreWrapDefaultTable = true
-        this.ShowDefaultTable = true
       },
       ShowShootingPlan(){
         this.dataTable = []
