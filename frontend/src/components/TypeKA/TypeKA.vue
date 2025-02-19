@@ -40,7 +40,7 @@
                             :value="dataModes.method || 0"></td>
                           <td><input :id="indexModes" type="number" name="coefficient" @change="ChangeValue($event, 'modes', index)"
                             :value="dataModes.coefficient || 0"></td>
-                          <td :id="index" @click="DeleteRow(indexModes, 'modes')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+                          <td :id="index" @click="DeleteRow(indexModes, 'modes', index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
                         </tr>
                         <tr><td colspan="4" @click="AddRow('modes',index)">........</td></tr>
                       </tbody>
@@ -100,10 +100,10 @@
                   <tr>
                     <th v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length">{{ data.flightMode }}</th>
                   </tr>
-                  <tr v-for="data, index in SelectKA.value.devices" :key="index" :id="data.id">
+                  <tr v-for="data, index in SelectKA.value.devices" :key="index" :id="data.devCatalog.id">
                     <td>{{ data.devCatalog.nameDevice }}</td>
                     <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode">
-                      <input type="number" @change="ChangeValue($event, 'charge', data.id)" :id="dataMode.id" :name="data.id" :value="SelectKA.ChargeTable[data.id][dataMode.id]" step="0.1" :class="SelectKA.ChargeTable[data.id][dataMode.id] == undefined ? 'null':''"/>
+                      <input type="number" @change="ChangeValue($event, 'charge', data.devCatalog.id)" :id="dataMode.id" :name="data.devCatalog.id" :value="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id]" step="0.1" :class="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id] == undefined ? 'null':''"/>
                     </td>
                   </tr>
                 </table>
