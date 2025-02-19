@@ -24,6 +24,7 @@
                       <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
                     </tr>
                   <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
+                  <tr><td>КА для моделлирования:</td><td><input type="checkbox" :checked="KAModellingRoleMode" @change="KAModellingRoleMode = $event.target.checked">{{ KAModellingRoleMode ? 'Только Лидеры' : 'Все КА' }}</td></tr>
                 </table>
             </div>
         </div>
@@ -85,6 +86,7 @@ import Plotly from 'plotly.js-dist'
         TableViewWindow:[],
         AllResponse:[],
         valueSS: {},
+        KAModellingRoleMode: false
       }
     },
     methods: {
@@ -173,6 +175,8 @@ import Plotly from 'plotly.js-dist'
     
     async mounted() {
         DisplayLoad(true)
+
+
         let result = await FetchGet('/api/v1/earth/get/list') || []
         this.earthSize = result.length || 0
 
@@ -190,6 +194,11 @@ import Plotly from 'plotly.js-dist'
         this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
         this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
         this.experimentObject.modellingStep = this.systemStatus.step
+
+        console.log(this.systemStatus)
+        if(this.systemStatus.WorkMode in {3:null,4:null}){
+          this.KAModellingRoleMode = true
+        }
         DisplayLoad(false)
 
     }

@@ -8,9 +8,9 @@
         <thead>
 
           <tr>
-            <th style="width: 50px;">ID</th>
             <th>Модель КА</th>
             <th>Имя КА</th>
+            <th>Роль</th>
             <th v-if="dataJsonOG.inputType === 2">Плосколсть</th>
             <th v-if="dataJsonOG.inputType === 2">Позиция</th>
             <th>Большая полуось</th>
@@ -34,10 +34,10 @@
             v-show="!(data.deleted==true)"
           >
 
-            <td style="width: 50px; text-align: center;">{{ data.idNode }}</td>
             <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
             <td><input :id="index" name="name" type="text"  :class="approved ? 'disable' : ''"
               :value="data.name"></td>
+            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[0]" :id="String(index)" @valueSelect="SelectRole" /></td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.plane }}</td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"
@@ -91,7 +91,8 @@
           TableDisplay: false,
           datasave: true,
           KaModels: [],
-          KaLableId: {}
+          KaLableId: {},
+          KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}]
         }
       },
       methods:
