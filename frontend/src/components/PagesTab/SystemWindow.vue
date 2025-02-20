@@ -46,14 +46,11 @@
   
   <script>
 import DateTime from '../DateTime.vue';
+import { PagesSettings } from './PagesSettings';
 
   export default {
     name: 'SystemWindow',
-    props:{
-    systemStatus:{
-          type: Object
-        },
-    },
+    mixins: [PagesSettings],
     components:{
       DateTime
     },
@@ -64,14 +61,9 @@ import DateTime from '../DateTime.vue';
       }
     },
     methods: {
-      SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
-      },
       ChangeTime(obgTime){
         this.dataSystem[obgTime.id] = obgTime.time
-        this.ChangeSystemStatus()
+        this.ChangeSystemStatusInSystem()
       },
       ChangeParam(target){
         console.log(target, target.target.id, target.target.checked)
@@ -92,9 +84,9 @@ import DateTime from '../DateTime.vue';
           this.dataSystem.duration = Math.floor(target.target.value)
         }
         else return 0;
-        this.ChangeSystemStatus()
+        this.ChangeSystemStatusInSystem()
       },
-      ChangeSystemStatus(){
+      ChangeSystemStatusInSystem(){
         this.$emit('ChangeSystemStatus', this.dataSystem)
       }, 
     },

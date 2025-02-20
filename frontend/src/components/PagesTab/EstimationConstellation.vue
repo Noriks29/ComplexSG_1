@@ -67,6 +67,7 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
+import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
@@ -76,11 +77,7 @@ import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'EstimationConstellation',
-    props:{
-        systemStatus:{
-            type: Object
-        },
-    },
+    mixins: [PagesSettings],
     components:{
       DefaultTable,
       SelectDiv,
@@ -218,18 +215,8 @@ import Plotly from 'plotly.js-dist'
           DisplayLoad(false)
 
         },
-        CreateDateTime(time){
-          let Dtime = UnixToDtime(time)
-          console.log(Dtime.date + " " + Dtime.time)
-          return Dtime.date + " " + Dtime.time
-        },
         SelectChange(target){
           this.experimentObject.constellation = target.value
-        },
-        SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {
-              nameComponent: nameComponent
-          })
         },
     },
     

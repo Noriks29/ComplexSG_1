@@ -98,6 +98,7 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
+import { PagesSettings } from './PagesSettings';
 import L from 'leaflet';
 import SelectDiv from "../SelectDiv.vue"
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -107,11 +108,7 @@ import "leaflet/dist/leaflet.css";
 
   export default {
     name: 'TargetRoad',
-    props:{
-        systemStatus:{
-            type: Object
-        },
-    },
+    mixins: [PagesSettings],
     components:{
       SelectDiv
     },
@@ -189,11 +186,6 @@ import "leaflet/dist/leaflet.css";
         CreateDateTime(time){
           let Dtime = UnixToDtime(time)
           return Dtime.date + " " + Dtime.time + " МСК"
-        },
-        SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {
-              nameComponent: nameComponent
-          })
         },
         SelectChange(target){
           this.selectKA = target.value

@@ -12,7 +12,6 @@
             <h1 class="TitleText">Информация о КА</h1>
               <p>Выбор КА</p>
               <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
-
               <p>Информация</p>
               <div @click="viewPanel = 1" class="ButtonPage" :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
               <div @click="viewPanel = 2" class="ButtonPage" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
@@ -180,9 +179,11 @@
 
 import { FetchGet, FetchPost } from "@/js/LoadDisplayMetod";
 import SelectDiv from '../SelectDiv.vue';
+import { PagesSettings } from './PagesSettings.js';
 
 export default {
   name: 'KAInfo',
+  mixins: [PagesSettings],
   data(){
       return{
           dataJson: [],
@@ -220,11 +221,6 @@ export default {
             })
             //this.BuildCharges() вызывает ошибку надо поправить
           }
-      },
-      SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
       },
       async ChangeValue(event, category, parentIndex=0){
         console.log(event)
@@ -375,7 +371,6 @@ export default {
   },
   mounted(){
       this.InItSelectKa()
-      
   }
 }
 </script>

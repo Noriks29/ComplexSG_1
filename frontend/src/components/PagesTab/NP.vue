@@ -57,38 +57,22 @@
   </div>
 </template>
   
-  <script>
+<script>
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+import { PagesSettings } from './PagesSettings.js';
+
   export default {
     name: 'NP',
+    mixins: [PagesSettings],
     data(){
       return{
         dataJson: [],
         approved: true,
       }
     },
-    props:{
-    systemStatus:{
-          type: Object
-        },
-        modellingStatus:{
-          type: Boolean
-        }
-    },
     methods: {
-      SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
-      },
       async setPost() {
           await FetchPost("/api/v1/earth/update/byList", this.dataJson)
-        },
-        ChangeSystemStatus( stat ){
-            this.approved = stat
-            let dataSystem = this.systemStatus
-            dataSystem.earthStatus = this.approved
-            this.$emit('ChangeSystemStatus', dataSystem)
         },
         async AddRow(){
           this.dataJson.push({'idNode' : 0, 'nameEarthPoint' : "", 'longitude' : 0, 'latitude' : 0, 'deleted': false});   

@@ -138,6 +138,7 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { UnixToDtime } from '@/js/WorkWithDTime.js';
+import { PagesSettings } from './PagesSettings';
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
 import L from 'leaflet';
@@ -148,14 +149,10 @@ import XLSX from 'xlsx-js-style';
 
   export default {
     name: 'TargetDZZ',
+    mixins: [PagesSettings],
     components:{
       SelectDiv,
       DateTime
-    },
-    props:{
-    systemStatus:{
-          type: Object
-        },
     },
     data(){
       return{
@@ -165,16 +162,11 @@ import XLSX from 'xlsx-js-style';
 
         datarequest: [],
         datarequestКАList: [],
-
-
         requestJson: [],
-
         KAArray: [],
         SelectKa: {},
         KatoDraw: {},
-
         choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
-
         arr: [],
         arrNP: [],
         map: {},
@@ -182,11 +174,6 @@ import XLSX from 'xlsx-js-style';
       }
     },
     methods: {
-      SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
-      },
       CreateDateTime(time, msk_mode = true){
           let Dtime = UnixToDtime(time)
           if(msk_mode) return Dtime.date + " " + Dtime.time + " МСК"

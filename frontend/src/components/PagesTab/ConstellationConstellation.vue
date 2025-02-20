@@ -50,17 +50,13 @@
   <script>
 
 import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
-import {UnixToDtime} from "../../js/WorkWithDTime.js";
+import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'ConstellationConstellation',
-    props:{
-        systemStatus:{
-            type: Object
-        },
-    },
+    mixins: [PagesSettings],
     components:{
       DefaultTable
     },
@@ -198,20 +194,7 @@ import Plotly from 'plotly.js-dist'
               )
             }
         },
-        CreateDateTime(time, mode = 0){
-          if(mode == 2){
-            let Dtime = UnixToDtime(time-10800)
-            return Dtime.date + " " + Dtime.time
-          }
-          let Dtime = UnixToDtime(time) 
-          if(mode == 1) return Dtime.date + " " + Dtime.time
-          return Dtime.date + " " + Dtime.time + " МСК"
-        },
-        SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {
-              nameComponent: nameComponent
-          })
-        },
+        
     },
     
     async mounted() {

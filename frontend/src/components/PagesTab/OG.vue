@@ -49,10 +49,12 @@
 import TableData from './OG/OG_tableFree.vue'
 import {DisplayLoad, FetchGet, FetchPost} from '@/js/LoadDisplayMetod'
 import CreateOGPanel from './OG/CreateOGPanel.vue'
+import { PagesSettings } from './PagesSettings.js';
 
 
   export default {
     name: 'OG',
+    mixins: [PagesSettings],
     data() {
       return {
         OGTableExists: false,
@@ -62,25 +64,12 @@ import CreateOGPanel from './OG/CreateOGPanel.vue'
         addRowTable: false,
       }
     },
-    props:{
-    systemStatus:{
-          type: Object
-        },
-        modellingStatus:{
-          type: Boolean
-        }
-    },
     components:
     {
       TableData,
       CreateOGPanel
     },
     methods: {
-    SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
-      },
       async closeTable(table) {
         await this.reFetch()
         if(table == "dataOG"){
@@ -89,12 +78,6 @@ import CreateOGPanel from './OG/CreateOGPanel.vue'
         if(table == "CreateOG"){
           this.addRowTable = false
         }
-      },
-      ChangeSystemStatus ( stat ){
-        this.approved = stat
-        let dataSystem = this.systemStatus
-        dataSystem.constellationStatus = this.approved
-        this.$emit('ChangeSystemStatus', dataSystem)
       },
       async reFetch(){
         this.dataJson = []
