@@ -8,7 +8,6 @@
 
       
       <div class="ContentDiv">
-       
           <div class="Panel Select" >
             <h1 class="TitleText">Информация о КА</h1>
               <p>Выбор КА</p>
@@ -63,9 +62,9 @@
           <div class="Panel" v-if="viewPanel == 2">
               <p> Каталог устройств </p>
               <table class="TableDefault">
-                <tr><th></th><th>Прибор</th><th></th></tr>
+                <tr><th style="padding: 0px 5px;">Использовать</th><th>Прибор</th><th></th></tr>
                 <tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
-                  <td><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
+                  <td style="width: 40px;"><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
                   <td><input :id="index" name="nameDevice" @change="ChangeValue($event, 'devCatalogs')"
                     :value="data.nameDevice || 'null'"></td>
                   <td :id="index" @click="DeleteRow(index, 'devCatalogs')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>

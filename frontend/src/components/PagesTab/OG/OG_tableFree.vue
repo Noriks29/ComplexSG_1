@@ -1,7 +1,7 @@
 <template>
     <div class="DataTable">
         <div class="closebutton"><button @click="CloseTable">
-          <img src="../../assets/close.svg"><span>&#8203;</span>
+          <img src="@/assets/close.svg"><span>&#8203;</span>
         </button></div>
         <div class="scroll-table">
         <table class="TableDefault">
@@ -52,10 +52,10 @@
                 :value="data.perigeeWidthArgument"></td>
             <td><input :id="index" name="trueAnomaly" type="number" :class="approved ? 'disable' : ''"
                 :value="data.trueAnomaly"></td>
-            <td v-if="!approved" :id="index" @click="DeleteRow(index)" style="width: 50px; text-align: center;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+            <td v-if="!approved" :id="index" @click="DeleteRow(index)" style="width: 50px; text-align: center;"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
           </tr>
           <tr v-if="!approved" class="addRowButton">
-            <td colspan="8"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
+            <td colspan="8"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
           </tr> 
         </tbody>
       </table>
@@ -66,8 +66,8 @@
   
   <script>
   
-  import {FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
-  import SelectDiv from '../SelectDiv.vue';
+  import {FetchGet, FetchPost} from '@/js/LoadDisplayMetod'
+  import SelectDiv from '@/components/SelectDiv.vue';
   
     export default {
       name: 'TableData',

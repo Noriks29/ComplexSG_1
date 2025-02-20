@@ -67,9 +67,9 @@
 import { adress  } from "../js/config_server";
 import { saveAs } from 'file-saver';
 import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
-import NP from "./NP/NP.vue";
-import OG from './OG/OG.vue'
-import TypeKA from './TypeKA/TypeKA.vue';
+import NP from "./PagesTab/NP.vue";
+import OG from './PagesTab/OG.vue'
+import TypeKA from './PagesTab/TypeKA.vue';
 import LogEventList from "./LogEventList/LogEventList.vue";
 
 import KA1 from './KA/KA1.vue';
@@ -80,12 +80,12 @@ import KAControl_Out from './KA/KAControl_Out.vue'
 import KAPavlov from "./KA/KAPavlov.vue";
 import KAGordeev from "./KA/KAGordeev.vue";
 
-import SystemWindow from './System/SystemWindow.vue';
-import TargetDZZ from './TargetDZZ/TargetDZZ.vue'
-import EarthConstellation from './EarthConstellation/EarthConstellation.vue'
-import EstimationConstellation from './EarthConstellation/EstimationConstellation.vue'
-import TargetRoad from './TargetRoad/TargetRoad.vue';
-import ConstellationConstellation from './EarthConstellation/ConstellationConstellation.vue';
+import SystemWindow from './PagesTab/SystemWindow.vue';
+import TargetDZZ from './PagesTab/TargetDZZ.vue'
+import EarthConstellation from './PagesTab/EarthConstellation.vue'
+import EstimationConstellation from './PagesTab/EstimationConstellation.vue'
+import TargetRoad from './PagesTab/TargetRoad.vue';
+import ConstellationConstellation from './PagesTab/ConstellationConstellation.vue';
 
 export default {
   name: 'TemplateComponent',

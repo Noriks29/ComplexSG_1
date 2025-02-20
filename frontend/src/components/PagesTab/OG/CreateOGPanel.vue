@@ -1,7 +1,7 @@
 <template>
     <div class="main_contain">
         <div class="closebutton"><button @click="CloseTable">
-          <img src="../../assets/close.svg"><span>&#8203;</span>
+          <img src="@/assets/close.svg"><span>&#8203;</span>
         </button></div>
       <div class="ContentDiv">
         <div class="flexrow">
@@ -54,7 +54,7 @@
   
   <script>
   
-  import SelectDiv from '../SelectDiv.vue';
+  import SelectDiv from '@/components/SelectDiv.vue';
   import { FetchPost, FetchGet, FetchPostFile } from '@/js/LoadDisplayMetod';
 
   

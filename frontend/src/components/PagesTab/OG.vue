@@ -4,7 +4,7 @@
       <CreateOGPanel v-if="addRowTable" @closetable="closeTable('CreateOG')"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg"><span>&#8203;</span>
+              <img src="@/assets/exit.svg"><span>&#8203;</span>
             </button>
           </div>
     <div class="ContentDiv">
@@ -16,14 +16,13 @@
           :key="index"
           v-show="!(data.deleted==true)"
           class="PanelDefault"
-         
         >
           <td  @click="selectOG = data">{{ data.constellationName }}</td>
           <td  @click="selectOG = data">{{ data.inputType == 1 ? "Произвольное построение" : "Системное построение" }}</td>
-          <td class="iconDelete" v-if="!approved && !modellingStatus" @click="DeleteRowOG(data)"><img  src="../../assets/delete.svg" alt="Удалить"></td>
+          <td class="iconDelete" v-if="!approved && !modellingStatus" @click="DeleteRowOG(data)"><img  src="@/assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved && !modellingStatus" class="PanelDefault">
-          <td @click="addRowTable = true" colspan="3" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</td>
+          <td @click="addRowTable = true" colspan="3" style="text-align: center;"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</td>
         </tr>
       </table>
     </div>
@@ -47,9 +46,9 @@
 </template>
   
   <script>
-import TableData from './OG_tableFree.vue'
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
-import CreateOGPanel from '@/components/OG/CreateOGPanel.vue'
+import TableData from './OG/OG_tableFree.vue'
+import {DisplayLoad, FetchGet, FetchPost} from '@/js/LoadDisplayMetod'
+import CreateOGPanel from './OG/CreateOGPanel.vue'
 
 
   export default {

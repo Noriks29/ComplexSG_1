@@ -6,9 +6,8 @@
             </button>
           </div>
           
-          
+    <div class="TitleText">Список наземных пунктов</div>   
     <div class="ContentDiv">
-      <div class="TitleText">Список наземных пунктов</div>
     <div class="Panel MaxWidth">
       <table>
         <tr v-if="dataJson.length > 0">
@@ -55,8 +54,8 @@
         </div>
     </div>
   </div>
-      </div>
-  </template>
+  </div>
+</template>
   
   <script>
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
@@ -92,8 +91,7 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             this.$emit('ChangeSystemStatus', dataSystem)
         },
         async AddRow(){
-          var addedRow = {'idNode' : 0, 'nameEarthPoint' : "", 'longitude' : 0, 'latitude' : 0, 'deleted': false};
-          this.dataJson.push(addedRow);   
+          this.dataJson.push({'idNode' : 0, 'nameEarthPoint' : "", 'longitude' : 0, 'latitude' : 0, 'deleted': false});   
           await this.setPost()
           await this.ReFetch()
         },
@@ -128,16 +126,13 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             await this.ReFetch()
         },
         async ReFetch(){
-          let result = await FetchGet('/api/v1/earth/get/list')
-          this.dataJson = result || []
+          this.dataJson = await FetchGet('/api/v1/earth/get/list') || []
         }
-      
     },
     async mounted() {
       DisplayLoad(true)
       this.approved = this.systemStatus.earthStatus
-      let result = await FetchGet('/api/v1/earth/get/list')
-      this.dataJson = result || []
+      await this.ReFetch()
       DisplayLoad(false)
     }
   }
