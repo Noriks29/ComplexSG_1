@@ -45,11 +45,11 @@
         {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
         <div class="ButtonApproved">
-          <button v-if="approved" @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+          <button v-if="approved" @click="ChangeSystemStatus(false, 'earthStatus')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
           <button v-if="approved" class="ButtonDefaultShadow"></button>  
         </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="ChangeSystemStatus(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved" @click="ChangeSystemStatus(true, 'earthStatus')" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
           <button v-if="!approved" class="ButtonDefaultShadow"></button>
         </div>
     </div>

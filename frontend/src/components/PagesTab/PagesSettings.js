@@ -14,10 +14,10 @@ let PagesSettings = {
               nameComponent: nameComponent
           })
         },
-        ChangeSystemStatus( stat ){
+        ChangeSystemStatus( stat, param ){
             this.approved = stat
             let dataSystem = this.systemStatus
-            dataSystem.earthStatus = this.approved
+            dataSystem[param] = this.approved
             this.$emit('ChangeSystemStatus', dataSystem)
         },
         CreateDateTime(time, mode = 0){

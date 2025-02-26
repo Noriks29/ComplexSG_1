@@ -5,14 +5,6 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-          <div v-if="systemStatus.WorkMode !== 2">
-            <button class="ChangeViewMode Right" v-if='viewmode < 1' @click="viewmode++">
-              <img src="../../assets/arrow2.png">
-            </button>
-            <button class="ChangeViewMode Left" v-if='viewmode > 0' @click="viewmode--">
-              <img src="../../assets/arrow1.png">
-            </button>
-          </div>  
     <div class="ContentDiv">
         <h1 class="TitleText">Эксперимент</h1>
         <div class="Panel">

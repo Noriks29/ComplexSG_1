@@ -1,7 +1,7 @@
 <template>
     <transition name="translate" mode="out-in" v-if="activeComponent != ''">
       <div class="ComponentSelect">
-        <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus"></component> 
+        <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus" ></component> 
       </div>
     </transition> 
     <div class="SectionMenu" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
@@ -138,12 +138,6 @@ export default {
         this.$emit('ChangeExperimentStatus', this.ExperimentStatus)
         this.reload++
       },
-      async SavePavlov(){
-        let AcsessKey = localStorage.data
-        const el = document.getElementById("downloadButtonPavlov")
-        el.href = 'http://'+adress+"/api/v1/modelling/ballistic?accessKey="+AcsessKey
-        el.click()
-      },
       ChangeComponents() {
         this.activeComponent = ''
         if(!this.ExperimentStatus){
@@ -156,9 +150,8 @@ export default {
       async SaveWorkplace(){
         DisplayLoad(true)
         let dataLoad = {}
-        let result = await FetchGet('/api/v1/modelsat/all')
-        dataLoad.modelSat = result
-        result = await FetchGet('/api/v1/earth/get/list') || []
+        dataLoad.modelSat = await FetchGet('/api/v1/modelsat/all')
+        let result = await FetchGet('/api/v1/earth/get/list') || []
         for (let index = 0; index < result.length; index++) {
           let new_data = result[index];
           new_data.id = undefined
@@ -193,8 +186,7 @@ export default {
         }
         dataLoad.catalog = result
 
-        result = await FetchGet('/api/v1/satrequest/data/get/all') || []
-        dataLoad.satRequestData = result
+        dataLoad.satRequestData = await FetchGet('/api/v1/satrequest/data/get/all') || []
 
         result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         for (let index = 0; index < result.length; index++) {
@@ -221,13 +213,7 @@ export default {
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
         }
       }
-    },
-  mounted(){
-    /*
-    if (localStorage.nameUser == "pavlov") {
-      this.button_mode = "pavlov"
-    }*/
-  }
+    }
 }
 
 </script>
@@ -293,7 +279,6 @@ export default {
         animation: 1.3s ease-out  0s 1 slideInFromBottom;
       }
     }
-
       .ModellingDiv{
       width: 100%;
       height: 60%;
@@ -347,7 +332,6 @@ export default {
       }
 
       button{
-        
         border: none;
         color: var(--color-Main);
         flex: 1;
@@ -379,7 +363,6 @@ export default {
             border: 2px solid var(--border-button2);
             transform: translate(0px, 1px);
             box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
-
           }
           &:before {
             content: "";
@@ -401,16 +384,13 @@ export default {
           background: none;
           transform: translate(0px, 1000px);
         }
-
         div{
           position: absolute;
           width: 10px;
-          
           height: 10px;
           top: 20%;
           left: 10px;
           border-radius: 20px;
-
           &.approved{
             background-color: rgb(0, 139, 0);
             box-shadow: 0px 0px 5px rgb(11, 167, 11);
@@ -448,6 +428,5 @@ export default {
     background-color: var(--background-Main);
     z-index: 5;
     overflow-x: hidden;
-
   }
 </style>

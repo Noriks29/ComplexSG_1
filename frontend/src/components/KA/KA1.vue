@@ -202,7 +202,7 @@ import { KaSettings } from './KaSettings';
             "experimentType": this.modellingSettings.experimentType,
             "modellingMode": this.modellingSettings.modellingMode,
         }
-        let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || {engineLogResponse: []}
+        let rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
         console.log("Результат", await rezult)
         if(rezult.engineLogResponse.length > 0){
           this.dataModelling = rezult
@@ -379,7 +379,6 @@ import { KaSettings } from './KaSettings';
         console.log(this.modellingRezultSelect)
       },
       async ReLoadComponent(){
-        DisplayLoad(true)
         this.modellingNull = false
         let result = await FetchGet('/api/v1/earth/get/list') || []
         this.earthSize = result.length
@@ -403,7 +402,6 @@ import { KaSettings } from './KaSettings';
         } catch (error) {
           console.log(error)
         }
-        DisplayLoad(false)
       }
     },
     async mounted(){

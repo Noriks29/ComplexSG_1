@@ -33,11 +33,11 @@
             {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
           <div v-if="approved" class="ButtonApproved">
-            <button @click="ChangeSystemStatus(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+            <button @click="ChangeSystemStatus(false, 'constellationStatus')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>  
           </div>
           <div v-else class="ButtonApproved"> 
-            <button @click="ChangeSystemStatus(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+            <button @click="ChangeSystemStatus(true, 'constellationStatus')" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
     </div>

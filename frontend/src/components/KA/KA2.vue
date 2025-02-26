@@ -210,7 +210,7 @@ export default {
           "experimentType": this.modellingSettings.experimentType,
           "modellingMode": this.modellingSettings.modellingMode,
       }
-      let rezult = await FetchPost('/api/v1/modelling/smao', dataPost) || {engineLogResponse: []}
+      let rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
       console.log("Результат", await rezult)
       if(rezult.engineLogResponse.length > 0){
         this.dataModelling = rezult
