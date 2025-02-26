@@ -64,7 +64,6 @@
 </template>
 
 <script>
-import { adress  } from "../js/config_server";
 import { saveAs } from 'file-saver';
 import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
 import NP from "./PagesTab/NP.vue";
