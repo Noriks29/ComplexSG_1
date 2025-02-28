@@ -32,7 +32,8 @@
           <h1>Связь</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
-            <button :class="systemStatus.WorkMode in {2:null,3:null,4:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button v-if="systemStatus.WorkMode in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
+            <button v-else :class="systemStatus.WorkMode in {2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
@@ -85,6 +86,7 @@ import EarthConstellation from './PagesTab/EarthConstellation.vue'
 import EstimationConstellation from './PagesTab/EstimationConstellation.vue'
 import TargetRoad from './PagesTab/TargetRoad.vue';
 import ConstellationConstellation from './PagesTab/ConstellationConstellation.vue';
+import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
 export default {
   name: 'TemplateComponent',
@@ -108,6 +110,7 @@ export default {
     EstimationConstellation,
     TargetRoad,
     ConstellationConstellation,
+    LeaderConstellationConstellation,
     LogEventList,
 
     KA1,

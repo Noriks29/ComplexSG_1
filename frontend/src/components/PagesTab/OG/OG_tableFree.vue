@@ -37,7 +37,7 @@
             <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
             <td><input :id="index" name="name" type="text"  :class="approved ? 'disable' : ''"
               :value="data.name"></td>
-            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[0]" :id="String(index)" @valueSelect="SelectRole" /></td>
+            <td :class="approved ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.plane }}</td>
             <td v-if="dataJsonOG.inputType === 2">{{ data.position }}</td>
             <td><input :id="index" name="altitude" type="number"  :class="approved ? 'disable' : ''"
@@ -78,7 +78,6 @@
         approved:{
           type: Boolean
         },
-
       },
       components:{
         SelectDiv
@@ -111,13 +110,14 @@
                     "modelSat": {"id": this.KaModels[0].value}
                 };
             this.dataJson.push(addedRow);   
-
           },
           ChangeParam(event){
             this.dataJson[event.target.id][event.target.name] = event.target.value
           },
+          SelectRole(data){
+            this.dataJson[data.id].role = data.value
+          },
           SelectChangeKA(data){
-            console.log(this.dataJson[data.id].modelSat, data.value)
             this.dataJson[data.id].modelSat.id = data.value
           },
           DeleteRow(index){
@@ -129,15 +129,13 @@
               }
           },
           async SatartSave() {
-            let responce = await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
-            console.log(responce) 
+            await FetchPost('/api/v1/constellation/update',this.dataJsonOG)
           }
           
       },
       async mounted() {
         this.dataJsonOG = this.dataOGLocal
         this.dataJson = this.dataJsonOG.satellites
-        console.log(this.dataJson)
         this.dataJson.sort((a,b) => {
           if(a.idNode > b.idNode) return 1
           if(a.idNode < b.idNode) return -1
@@ -150,9 +148,6 @@
           this.KaLableId[result[index].id] = result[index].modelName
 
         }
-        console.log("KaModels:",this.KaModels)
-        console.log("dataJson:", this.dataJson)
-
       }
     }
   </script>

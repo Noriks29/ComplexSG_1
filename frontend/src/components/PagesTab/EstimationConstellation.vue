@@ -71,7 +71,6 @@ import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
-import tt from '../../res/tt.json'
 
 import Plotly from 'plotly.js-dist'
 
@@ -103,7 +102,7 @@ import Plotly from 'plotly.js-dist'
           },
         },
         TableViewWindow:[],
-        AllResponse: tt,
+        AllResponse: [],
         viewmode: 2,
       }
     },

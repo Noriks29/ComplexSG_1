@@ -83,9 +83,13 @@ body{
   left: 10px;
   display: flex;
   z-index: 10;
-  svg{
-    fill: var(--color-Main);
-    width: 30px;
+  width: 30px;
+}
+
+svg{
+  fill: var(--color-Main);
+  *{
+    stroke: var(--color-Main);
   }
 }
 
@@ -129,7 +133,7 @@ body{
         padding: 0px;
         border: none;
         background: none;
-        img{
+        svg{
             width: 30px;
         }
     }
@@ -145,9 +149,7 @@ body{
         overflow-y: auto;
         overflow-x: hidden;
         min-width: 60%;
-
         
-
         .Panel{
             background-color: var(--background-Panel);
             box-shadow: -4px 3px 1px var(--box-shadow-Panel);
@@ -371,8 +373,8 @@ body{
     background: none;
     color: var(--color-Main);
     border: none;
-    margin: 5px 25px 10px;
-  img{
+    margin: 5px 25px 10px 5px;
+  svg{
     width: 25px;
     position: absolute;
     right: -25px;

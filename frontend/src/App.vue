@@ -8,8 +8,10 @@
     
     <div class="idSesion" :class="login !== undefined ? 'show' : ''">
         <div class="flexdiv">login: {{ login }}
-          <button class="Menubutton"  :class="systemStatus.WorkMode !== -1 ? 'show' : ''" @click="ChangeWorkMode(-1)"><img src="./assets/menu.svg" alt=""></button>
-          <button v-if="this.experimentStatus == false" class="logoutbutton"  @click="Log_out"><img src="./assets/logout.png" alt="">Выйти</button>
+          <button class="Menubutton"  :class="systemStatus.WorkMode !== -1 ? 'show' : ''" @click="ChangeWorkMode(-1)"><svg enable-background="new 0 0 32 32" id="Editable-line" version="1.1" viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><circle cx="5" cy="6" fill="none" id="XMLID_303_" r="1" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/><circle cx="5" cy="16" fill="none" id="XMLID_305_" r="1" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/><circle cx="5" cy="26" fill="none" id="XMLID_304_" r="1" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2"/><line fill="none" id="XMLID_29_" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" x1="10" x2="28" y1="6" y2="6"/><line fill="none" id="XMLID_30_" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" x1="10" x2="28" y1="16" y2="16"/><line fill="none" id="XMLID_31_" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2" x1="10" x2="28" y1="26" y2="26"/></svg></button>
+          <button v-if="this.experimentStatus == false" class="logoutbutton"  @click="Log_out">
+            <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><g id="logout"><line class="cls-1" x1="15.92" x2="28.92" y1="16" y2="16"/><path d="M23.93,25v3h-16V4h16V7h2V3a1,1,0,0,0-1-1h-18a1,1,0,0,0-1,1V29a1,1,0,0,0,1,1h18a1,1,0,0,0,1-1V25Z"/><line class="cls-1" x1="28.92" x2="24.92" y1="16" y2="20"/><line class="cls-1" x1="28.92" x2="24.92" y1="16" y2="12"/><line class="cls-1" x1="24.92" x2="24.92" y1="8.09" y2="6.09"/><line class="cls-1" x1="24.92" x2="24.92" y1="26" y2="24"/></g></svg>
+            Выйти</button>
         </div>
       </div>
     
@@ -360,19 +362,9 @@ body{
     &.show{
       transform: translate(0px, 0%);
     }
-
     .flexdiv{
       display: flex;
       align-items: center;
-    }
-
-    .logoutbutton{
-      position: relative;
-      background: none;
-      color: var(--color-Main);
-      border: none;
-      margin: 5px 25px 10px 0px;
-      height: 100%;
     }
 
     .Menubutton{
@@ -380,7 +372,7 @@ body{
       border: none;
       position: relative;
       margin: 0px 10px;
-      img{
+      svg{
         width: 30px;
       }
       transform: translate(0%, -150%);
