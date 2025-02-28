@@ -128,7 +128,7 @@ export default {
         activeComponent: "",
         reload: 0,
         ExperimentStatus: false,
-        ComponentModellingList: [null,"KA1","KA2","KARealTime","KAControl_In","KAControl_Out","KAPavlov","KAGordeev",null]
+        ComponentModellingList: [null,"KA1","KA2","KAControl_In","KAControl_Out","KARealTime","KAPavlov","KAGordeev",null]
     }
   },
   methods: {
