@@ -23,12 +23,12 @@
         <div class="ButtonSection first">
           <h1>КС</h1>
           <div class="ButtonList">
-            <button class="active" @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
+            <button class="active" @click="SelectComponent('NP')" v-if="!(systemStatus.WorkMode in {7:null})"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
             <button class="active" @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>КА и ОГ</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
           </div>   
         </div>
-        <div class="ButtonSection second"  :class="systemStatus.WorkMode in {6:null} ? 'hide': ''">
+        <div class="ButtonSection second"  v-if:="!systemStatus.WorkMode in {6:null, 7:null}">
           <h1>Связь</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
@@ -39,11 +39,11 @@
         <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
-            <button :class="systemStatus.WorkMode in {1:null,2:null,3:null,4:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
+            <button :class="systemStatus.WorkMode in {1:null,2:null,3:null,4:null,7:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
-        <div class="ButtonSection fourth" :class="systemStatus.WorkMode in {2:null,4:null,6:null} ? 'hide': ''">
+        <div class="ButtonSection fourth" v-if:="!systemStatus.WorkMode in {2:null,4:null,6:null,7:null}">
           <h1>Инструменты</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>

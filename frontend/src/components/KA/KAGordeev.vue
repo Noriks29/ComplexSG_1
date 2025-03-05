@@ -1,6 +1,6 @@
 <template>
     <div class="main_contain">
-
+      <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
       <div class="ContentDiv">
         <h1 class="TitleText">Моделирование НЕЧЕГО НЕ ТРОГАТЬ ПОЖАЛУЙСТА</h1>
 
@@ -10,27 +10,6 @@
               <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
           </table>
         </div>
-        <div class="Panel MaxWidth">
-          <div class="Divfieldset">
-            <fieldset  @change="ChangeInputRadio">
-              <legend>Тип эксперимента:</legend>
-              <div>
-                <input type="radio" name="experimentType" value="1" checked />
-                <label>Планирование заявок</label>
-              </div>
-              <div>
-                <input type="radio" name="experimentType" value="2" />
-                <label>Планирование заявок и планирование полёта</label>
-              </div>
-              <div>
-                <input type="radio" name="experimentType" value="3" />
-                <label>Планирование заявок и моделирование полёта</label>
-              </div>
-            </fieldset>
-          </div>
-        </div>
-        
-
 
         <div class="Panel MaxWidth">
           <div>
@@ -40,44 +19,35 @@
 
         <div class="Panel MaxWidth" v-if="true">
           <div class="PanelWork">
-
             <table class="colum">
               <tr>
-                <td>Заявки</td>
-                <td><button class="ButtonCommand">Невыполнимые</button></td>
-                <!--<td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>-->
-              </tr>
-              <tr>
-                <td></td>
-                <td colspan="3"><button class="ButtonCommand">Лог движка</button></td>
-                <td colspan="1"><button class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
+                <td><button class="ButtonCommand" @click="ShowRezult" :class="(modellingRezult.data.length < 1) ? 'disable' : ''">Результат</button></td>
               </tr>
             </table>
-
-
           </div>
         </div>
-
-
       </div>
-
-      
-
     </div>
 </template>
   
 <script>
 
-import { UnixToDtime } from '@/js/WorkWithDTime';
-import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
+import { DisplayLoad, FetchGet } from '@/js/LoadDisplayMetod';
+
+import { KaSettings } from './KaSettings';
   export default {
     name: 'KA2',
+    mixins: [KaSettings],
     data(){
       return{
-        
+        modellingRezult: {
+          data: []
+        },
+        dataTable: [],
+        dataLableName: [],
+        PreWrapDefaultTable: false,
+        ShowDefaultTable: false
       }
-    },
-    components:{
     },
     props:{
         systemStatus:{
@@ -85,26 +55,22 @@ import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
         },
     },
     methods: {
-      SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {nameComponent: nameComponent})
-      },
-      CreateDateTime(time, text = true){
-          let Dtime = UnixToDtime(time)
-          if(!text){
-            return Dtime.date + " " + Dtime.time
-          }
-          return Dtime.date + " " + Dtime.time + " МСК"
-        },
       async StartModelling(){
         DisplayLoad(true)
-        let datamodelling = {
-          "experimentType": 1,
-          "modellingMode": 1
-        }
-        let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling)
+        let rezult = await FetchGet("/api/v1/route") || []
         console.log(rezult)
-
+        this.modellingRezult.data = rezult
         DisplayLoad(false)
+      },
+      ShowRezult(){
+        this.dataTable = []
+        this.dataLableName = [{label: "data", nameParam: "data"}]
+        for (let index = 0; index < this.modellingRezult.data.length; index++) {
+          const element = this.modellingRezult.data[index];
+          this.dataTable.push({data: element}) 
+        }
+        this.PreWrapDefaultTable = false
+        this.ShowDefaultTable = true
       },
     },
     async mounted(){
