@@ -31,7 +31,7 @@
         <div class="Panel vwPanel" v-if="viewmode == 0">
             <table class="TableDefault">
               <tr>
-                <th>№</th><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th></th>
+                <th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.WorkMode in {3:null,4:null}">Признак</th><th></th>
               </tr>
               <tr
               v-for="data, index in requestJson"
@@ -39,7 +39,6 @@
                 @change="ChangeParamRequest"
                 v-show="!(data.deleted==true)"
               >
-              <td>{{ index }}</td>
               <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange"/></td>
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
@@ -48,12 +47,12 @@
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
-              
+              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChangeType" v-if="systemStatus.WorkMode in {3:null,4:null}"/></td>
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
                 <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
-                <td><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
+                <td v-if="requestJson.length > 0"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
             </table>
             
@@ -159,6 +158,7 @@ import XLSX from 'xlsx-js-style';
         SelectKa: {},
         KatoDraw: {},
         choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
+        TypeRequest: [{value: 0, lable: 'в НП'},{value: 1, lable: 'Лидером'}],
         arr: [],
         arrNP: [],
         map: {},
@@ -242,6 +242,9 @@ import XLSX from 'xlsx-js-style';
                       "filter": false,
                       "deleted": null, 'role': "newRow"
                 };
+        if(this.systemStatus.WorkMode in {3:null,4:null}){
+          addedRow.type = 0
+        }
             this.requestJson.push(addedRow);   
             this.SatartSave('request')
       },
@@ -449,6 +452,10 @@ import XLSX from 'xlsx-js-style';
           console.log(this.requestJson)
           const workbook = XLSX.utils.book_new();
           let data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
+          if(this.systemStatus.WorkMode in {3:null,4:null}){
+            data.push("Признак")
+          }
+
           this.requestJson.forEach(element => {
             let crit = "Время"
             if(element.choiceCriteria == 2) crit = "Разворот"
@@ -456,6 +463,9 @@ import XLSX from 'xlsx-js-style';
             let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
               element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time,false), this.CreateDateTime(element.term,false)
             ]
+            if(this.systemStatus.WorkMode in {3:null,4:null}){
+              row.push(this.TypeRequest[element.type].lable)
+            }
             data.push(row)
           });
           let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
