@@ -393,7 +393,7 @@ import { KaSettings } from './KaSettings';
         for (let i = 0; i < result.length; i++) {
           for (let index = 0; index < result[i].satellites.length; index++) {
             const element = result[i].satellites[index];
-            this.arr.push({value: element.idNode, lable: element.idNode + " - " + result[i].constellationName})
+            this.arr.push({value: element.satelliteId, lable: element.satelliteId + " - " + result[i].constellationName})
           }
         }
         try {
