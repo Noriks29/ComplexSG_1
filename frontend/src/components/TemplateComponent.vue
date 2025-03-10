@@ -28,7 +28,7 @@
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
           </div>   
         </div>
-        <div class="ButtonSection second"  v-if:="!systemStatus.WorkMode in {6:null, 7:null}">
+        <div class="ButtonSection second"  v-if:="!(systemStatus.WorkMode in {6:null, 7:null})">
           <h1>Связь</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
@@ -43,7 +43,7 @@
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
-        <div class="ButtonSection fourth" v-if:="!systemStatus.WorkMode in {2:null,4:null,6:null,7:null}">
+        <div class="ButtonSection fourth" v-if:="!(systemStatus.WorkMode in {2:null,4:null,6:null,7:null})">
           <h1>Инструменты</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>

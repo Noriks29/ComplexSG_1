@@ -133,34 +133,30 @@
                           <tr><td>Генерируемая мощность при ориентации на Солнце</td>
                             <td><input type="number" id="" :value="0"></td><td> Вт/м<sup>2</sup></td></tr>
                           <tr><td>Средняя генерируемая мощность</td>
-                            <td><input type="number" id="" :value="0"></td><td>Вт/м<sup>2</sup></td></tr>
+                            <td><input type="number" id="averagePowerGenerates" :value="SelectKA.value.operatingParameter.averagePowerGenerates"></td><td>Вт/м<sup>2</sup></td></tr>
                           <tr><td>Площадь солнечных панелей</td>
-                            <td><input type="number" id="" :value="0"></td><td>м<sup>2</sup></td></tr>
+                            <td><input type="number" id="squareSolarPanels" :value="SelectKA.value.operatingParameter.squareSolarPanels"></td><td>м<sup>2</sup></td></tr>
                           <tr><td>КПД солнечных панелей</td>
-                            <td><input type="number" id="" :value="0"></td><td>%</td></tr>
-                      
+                            <td><input type="number" id="efficiencySolarPanels" :value="SelectKA.value.operatingParameter.efficiencySolarPanels"></td><td>%</td></tr>                     
                       <tr><th colspan="3">Аккумуляторная батарея</th></tr>
                           <tr><td>Емкость</td>
                             <td><input type="number" id="accCapacity" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>А-ч</td></tr>
                           <tr><td>Напряжение</td>
-                            <td><input type="number" id="" :value="0"></td><td>В</td></tr>
+                            <td><input type="number" id="voltage" :value="SelectKA.value.operatingParameter.voltage"></td><td>В</td></tr>
                           <tr><td>Порог минимального разряда</td>
                             <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>%</td></tr>
-
                       <tr><th colspan="3">Электромагниты</th></tr>
                           <tr><td>Максимальная потребляемая мощность</td>
-                            <td><input type="number" id="" :value="0"></td><td>Вт-ч</td></tr>
+                            <td><input type="number" id="maxPowerOfElectromagnet" :value="SelectKA.value.operatingParameter.maxPowerOfElectromagnet"></td><td>Вт-ч</td></tr>
                           <tr><td>Максимальный создаваемый магнитный момент</td>
-                            <td><input type="number" id="" :value="0"></td><td>А·м<sup>2</sup></td></tr>
-
+                            <td><input type="number" id="maxMagneticMoment" :value="SelectKA.value.operatingParameter.maxMagneticMoment"></td><td>А·м<sup>2</sup></td></tr>
                       <tr><th colspan="3">Маховики</th></tr>
                           <tr><td>Максимальный управляющий момент маховика</td>
-                            <td><input type="number" id="" :value="0"></td><td>Н·м</td></tr>
+                            <td><input type="number" id="maxControlMomentOfWheels" :value="SelectKA.value.operatingParameter.maxControlMomentOfWheels"></td><td>Н·м</td></tr>
                           <tr><td>Максимальный момент инерции маховика</td>
-                            <td><input type="number" id="" :value="0"></td><td>Н·м·с</td></tr>
+                            <td><input type="number" id="maxInertiaMomentOfWheels" :value="SelectKA.value.operatingParameter.maxInertiaMomentOfWheels"></td><td>Н·м·с</td></tr>
                           <tr><td>Момент инерции ротора маховика</td>
-                            <td><input type="number" id="" :value="0"></td><td>кг·м<sup>2</sup></td></tr>
-                            
+                            <td><input type="number" id="" :value="0"></td><td>кг·м<sup>2</sup></td></tr>     
                       <tr><th colspan="3">Память</th></tr>
                           <tr><td>Объем памяти КА</td>
                             <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
@@ -169,8 +165,6 @@
                   </table>
               </div>
           </div>
-          
-
       </div>
   </div>
 </template>
@@ -308,10 +302,10 @@ export default {
             break;
         }
       },
-      ChangeParamKa(target){
+      async ChangeParamKa(target){
         console.log(target.target.value, target.target.id, this.SelectKA.value.id)
         this.SelectKA.value.operatingParameter[target.target.id] = Number(target.target.value)
-        FetchPost("/api/v1/modelsat/update", this.SelectKA.value)
+        await FetchPost("/api/v1/modelsat/update/parameters", this.SelectKA.value.operatingParameter)
         console.log(this.SelectKA)
       },
       async ReFerchKA(index){
