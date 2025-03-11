@@ -26,7 +26,7 @@
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
             <button v-if="systemStatus.WorkMode in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
-            <button v-else :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button v-else-if="!(systemStatus.WorkMode in {1:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
