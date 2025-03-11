@@ -110,7 +110,7 @@ import Plotly from 'plotly.js-dist'
             }
             if(commandId == 5){
               DisplayLoad(true)
-              await FetchGet("/api/v1/modelling/contact-plan/sat-earth")
+              await FetchGet("/api/v1/contact-plan/earth")
               DisplayLoad(false)
             }
             if(commandId == 1){

@@ -31,6 +31,7 @@
       <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
+          <div><button @click="CommandWork(3)" class="ButtonCommand">Расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
         </div>
       </div>
@@ -116,6 +117,11 @@ import Plotly from 'plotly.js-dist'
                 return
               }
               await FetchGet('/api/v1/pro42/view/sat')
+              DisplayLoad(false)
+            }
+            if(commandId == 3){
+              DisplayLoad(true)
+              await FetchGet('/api/v1/contact-plan/sat')
               DisplayLoad(false)
             }
             if(commandId == 6){

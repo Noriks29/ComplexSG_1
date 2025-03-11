@@ -6,13 +6,6 @@
     </transition> 
     <div class="SectionMenu" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
       <div v-if="systemStatus.WorkMode == -1" class="ModellingDiv"></div>
-      <div v-if="systemStatus.WorkMode == 6" class="ModellingDiv">
-        <div class="ContentDiv">
-          <button class="ButtonCommand" @click="SavePavlov">Получить балистику</button><a id="downloadButtonPavlov" href=""></a>
-        </div>
-      </div>
-      
-
       <transition name="ComponentModelling" mode="out-in" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
         <div class="ModellingDiv">
           <component :is="ComponentModellingList[systemStatus.WorkMode]" v-if="systemStatus.WorkMode > 0" :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
@@ -23,27 +16,27 @@
         <div class="ButtonSection first">
           <h1>КС</h1>
           <div class="ButtonList">
-            <button class="active" @click="SelectComponent('NP')" v-if="!(systemStatus.WorkMode in {7:null})"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
+            <button class="active" @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
             <button class="active" @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>КА и ОГ</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
           </div>   
         </div>
-        <div class="ButtonSection second"  v-if:="!(systemStatus.WorkMode in {6:null, 7:null})">
+        <div class="ButtonSection second">
           <h1>Связь</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
             <button v-if="systemStatus.WorkMode in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
-            <button v-else :class="systemStatus.WorkMode in {2:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button v-else :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('ConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
-            <button :class="systemStatus.WorkMode in {1:null,2:null,3:null,4:null,7:null}? (ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''):'hideElement'" @click="SelectComponent('TargetDZZ')">Заявки</button>
+            <button v-if="!(systemStatus.WorkMode in {5:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
-        <div class="ButtonSection fourth" v-if:="!(systemStatus.WorkMode in {2:null,4:null,6:null,7:null})">
+        <div class="ButtonSection fourth" v-if:="!(systemStatus.WorkMode in {2:null,4:null})">
           <h1>Инструменты</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
@@ -77,7 +70,6 @@ import KA2 from './KA/KA2.vue';
 import KARealTime from "./KA/KARealTime.vue";
 import KAControl_In from './KA/KAControl_In.vue'
 import KAControl_Out from './KA/KAControl_Out.vue'
-import KAPavlov from "./KA/KAPavlov.vue";
 import KAGordeev from "./KA/KAGordeev.vue";
 
 import SystemWindow from './PagesTab/SystemWindow.vue';
@@ -118,7 +110,6 @@ export default {
     KARealTime,
     KAControl_In,
     KAControl_Out,
-    KAPavlov,
     KAGordeev
 
   },
@@ -128,7 +119,7 @@ export default {
         activeComponent: "",
         reload: 0,
         ExperimentStatus: false,
-        ComponentModellingList: [null,"KA1","KA2","KAControl_In","KAControl_Out","KARealTime","KAPavlov","KAGordeev",null]
+        ComponentModellingList: [null,"KA1","KA2","KAControl_In","KAControl_Out","KARealTime","KAGordeev",null]
     }
   },
   methods: {
