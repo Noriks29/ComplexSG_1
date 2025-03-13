@@ -37,7 +37,7 @@
           <tr class="active"><td>Control</td><td>Управление орбитальной группировкой</td><td><input id="controlSystem" @change="ChangeParam" type="checkbox" :checked="systemStatus.controlSystem == 'Automated'"><label for="controlSystem">{{systemStatus.controlSystem}}</label></td></tr>
 
           <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="systemStatus.step"><label for="step"></label></td></tr>
-          <tr class="active"><td>duration</td><td>Продолжительность съёмки</td><td><input id="duration" type="number" min="0" @change="ChangeParam" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>
+          <!--<tr class="active"><td>duration</td><td>Продолжительность съёмки</td><td><input id="duration" type="number" min="0" @change="alert('Не доступно из системы')" :value="systemStatus.duration"><label for="duration">сек.</label></td></tr>-->
         </table>
         </div>
       </div>

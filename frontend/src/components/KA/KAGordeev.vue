@@ -28,7 +28,7 @@
   
 <script>
 
-import { DisplayLoad, FetchGet } from '@/js/LoadDisplayMetod';
+import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 
 import { KaSettings } from './KaSettings';
   export default {
@@ -53,7 +53,7 @@ import { KaSettings } from './KaSettings';
     methods: {
       async StartModelling(){
         DisplayLoad(true)
-        let rezult = await FetchGet("/api/v1/route") || []
+        let rezult = await FetchPost("/api/v1/route", {}) || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)

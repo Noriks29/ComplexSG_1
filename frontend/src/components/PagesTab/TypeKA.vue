@@ -131,7 +131,7 @@
                             <td><input type="number" id="pitch" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
                       <tr><th colspan="3">Солнечные панели</th></tr>
                           <tr><td>Генерируемая мощность при ориентации на Солнце</td>
-                            <td><input type="number" id="" :value="0"></td><td> Вт/м<sup>2</sup></td></tr>
+                            <td><input type="number" id="maxPowerGenerated" :value="SelectKA.value.operatingParameter.maxPowerGenerated"></td><td>Вт/м<sup>2</sup></td></tr>
                           <tr><td>Средняя генерируемая мощность</td>
                             <td><input type="number" id="averagePowerGenerates" :value="SelectKA.value.operatingParameter.averagePowerGenerates"></td><td>Вт/м<sup>2</sup></td></tr>
                           <tr><td>Площадь солнечных панелей</td>
@@ -162,6 +162,12 @@
                             <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
                         <tr><td>Объем заявки</td>
                             <td><input type="number" id="shootingDataVolume" :value="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>ГБ</td></tr>
+                      <tr><th colspan="3">Сенсоры</th></tr>
+                          <tr><td>typeSensor</td>
+                            <td><input type="number" id="typeSensor" :value="SelectKA.value.operatingParameter.typeSensor"></td><td>??</td></tr>
+                        <tr><td>Продолжительность сьёмки</td>
+                            <td><input type="number" id="durationShooting" :value="SelectKA.value.operatingParameter.durationShooting"></td><td>сек.</td></tr>
+                  
                   </table>
               </div>
           </div>

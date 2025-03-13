@@ -22,7 +22,7 @@
                     </tr>
                   </table>
             </div>
-            <div  v-if="systemStatus.WorkMode !== 2">
+            <div  v-if="systemStatus.WorkMode !== 5">
               <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
             </div>
@@ -84,8 +84,7 @@
           </table>
         </div>
 
-        <p v-if="systemStatus.WorkMode == 2">Данные по заявкам</p>
-        <div class="Panel" v-if="systemStatus.WorkMode == 2">
+        <div class="Panel" v-if="systemStatus.WorkMode == 5">
           <table class="TableDefault">
             <tr>
               <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
@@ -219,7 +218,7 @@ import XLSX from 'xlsx-js-style';
                     "priority": 3,
                     "time" : this.systemStatus.modelingBegin,
                     "nodeId":  this.datarequestКАList[0].value,
-                    "deleted": false
+                    "deleted": null
                 };
         this.datarequest.push(addedRow)
         this.SatartSave('datarequest')
@@ -507,7 +506,7 @@ import XLSX from 'xlsx-js-style';
     async mounted() {
       //console.log(this.systemStatus)
       DisplayLoad(true)
-      if(this.systemStatus.WorkMode == 2){
+      if(this.systemStatus.WorkMode == 5){
         this.viewmode = -1
       }
 
