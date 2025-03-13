@@ -6,7 +6,7 @@
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
 
       <div class="ContentDiv">
-        <h1 class="TitleText">Планирование съемок</h1>
+        <h1 class="TitleText">Планирование съемок  {{ systemStatus.WorkMode == 2? "и доставка" : ""}}</h1>
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
             <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
