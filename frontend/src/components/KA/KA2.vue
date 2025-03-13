@@ -52,20 +52,18 @@
             <tr>
               <td>Заявки</td>
               <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
-              <td><button class="ButtonCommand hide">План закладок</button></td>
               <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
               <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
             </tr>
             <tr>
               <td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td>
               <td><button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
-              <td><button class="ButtonCommand hide">План доставки</button></td>
               <td><button @click="EventE79" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
               <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
             </tr>
             <tr>
               <td></td>
-              <td colspan="2"><button @click="ShowLogEvent" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td>
+              <td colspan="1"><button @click="ShowLogEvent" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td>
               <td colspan="1"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button></td>
               <td colspan="1"><button @click="ShowLogSMAO" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
             </tr>
@@ -408,7 +406,7 @@ export default {
       for (let i = 0; i < result.length; i++) {
         for (let index = 0; index < result[i].satellites.length; index++) {
           const element = result[i].satellites[index];
-          this.arr.push({value: element.idNode, lable: element.idNode + " - " + result[i].constellationName})
+          this.arr.push({value: element.satelliteId, lable: element.name + " - " + result[i].constellationName})
         }
       }
       try {
