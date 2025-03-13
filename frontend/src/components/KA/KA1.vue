@@ -74,7 +74,6 @@
             </table>
           </div>
         </div>
-        <h1 v-if="modellingNull">Результат моделирования пуст</h1>
       </div>
     </div>
 </template>
@@ -130,7 +129,6 @@ import { KaSettings } from './KaSettings';
           E79: [],
           selectKA: undefined
         },
-        modellingNull: false,
 
         arr: [],
         valueSS: {},
@@ -188,7 +186,6 @@ import { KaSettings } from './KaSettings';
           }
 
         }
-        this.modellingNull = false
         this.$emit('ChangeExperimentStatus', {status})
       },
       
@@ -197,7 +194,6 @@ import { KaSettings } from './KaSettings';
       },
       async StartModelling(){
         DisplayLoad(true)
-        this.modellingNull = false
         let dataPost = {
             "experimentType": this.modellingSettings.experimentType,
             "modellingMode": this.modellingSettings.modellingMode,
@@ -210,7 +206,6 @@ import { KaSettings } from './KaSettings';
         }
         else{
           console.log("нет результата")
-          this.modellingNull = true
         }
         DisplayLoad(false)
       },
@@ -379,7 +374,6 @@ import { KaSettings } from './KaSettings';
         console.log(this.modellingRezultSelect)
       },
       async ReLoadComponent(){
-        this.modellingNull = false
         let result = await FetchGet('/api/v1/earth/get/list') || []
         this.earthSize = result.length
         this.earthList = result
@@ -393,7 +387,7 @@ import { KaSettings } from './KaSettings';
         for (let i = 0; i < result.length; i++) {
           for (let index = 0; index < result[i].satellites.length; index++) {
             const element = result[i].satellites[index];
-            this.arr.push({value: element.satelliteId, lable: element.satelliteId + " - " + result[i].constellationName})
+            this.arr.push({value: element.satelliteId, lable: element.name + " ("+element.satelliteId+") - " + result[i].constellationName})
           }
         }
         try {

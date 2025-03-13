@@ -4,7 +4,7 @@
     <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="[]" @closetable="ShowE77E78Table = false"/>
 
     <div class="ContentDiv">
-      <h1 class="TitleText">Планирование и моделирование, связь КА-НП и межспутниковая</h1>
+      <h1 class="TitleText">Планирование съемок и доставки</h1>
       <div class="FlexRow Panel">
         <div class="ButtonModelling">
           <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
