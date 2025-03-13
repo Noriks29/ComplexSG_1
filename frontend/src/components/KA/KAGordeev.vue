@@ -28,7 +28,8 @@
   
 <script>
 
-import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
+import { DisplayLoad, FetchGet } from '@/js/LoadDisplayMetod';
+import DefaultTable from '../DefaultTable.vue';
 
 import { KaSettings } from './KaSettings';
   export default {
@@ -45,15 +46,13 @@ import { KaSettings } from './KaSettings';
         ShowDefaultTable: false
       }
     },
-    props:{
-        systemStatus:{
-            type: Object
-        },
+    components:{
+      DefaultTable
     },
     methods: {
       async StartModelling(){
         DisplayLoad(true)
-        let rezult = await FetchPost("/api/v1/route", {}) || []
+        let rezult = await FetchGet("/api/v1/route") || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)
