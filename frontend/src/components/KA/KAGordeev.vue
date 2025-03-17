@@ -11,6 +11,7 @@
         <div class="Panel MaxWidth">
           <div>
             <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать</button>
+            <button class="ButtonCommand rightPadding" @click="StartModellingPavlov"><img src="../../assets/start.png" alt="" class="iconButton" >Начать Павлов</button>
           </div>
         </div>
         <div class="Panel MaxWidth" v-if="true">
@@ -53,6 +54,13 @@ import { KaSettings } from './KaSettings';
       async StartModelling(){
         DisplayLoad(true)
         let rezult = await FetchGet("/api/v1/route") || []
+        console.log(rezult)
+        this.modellingRezult.data = rezult
+        DisplayLoad(false)
+      },
+      async StartModellingPavlov(){
+        DisplayLoad(true)
+        let rezult = await FetchGet("/api/v1/planner") || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)
