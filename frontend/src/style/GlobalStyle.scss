@@ -85,13 +85,16 @@ body{
   z-index: 10;
   width: 30px;
 }
-
-svg{
-  fill: var(--color-Main);
-  *{
-    stroke: var(--color-Main);
+.idSesion{
+  svg{
+    fill: var(--color-Main);
+    *{
+      stroke: var(--color-Main);
+    }
   }
+
 }
+
 
 .FlexRow{
   display: flex;

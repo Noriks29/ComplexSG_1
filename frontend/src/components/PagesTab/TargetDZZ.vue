@@ -387,7 +387,7 @@ import XLSX from 'xlsx-js-style';
               this.mapPoint.push(L.circle([element.lat, element.lon], 21000, {
                 color: 'blue',
                 fillColor: '#f03',
-                fillOpacity: 0.1
+                fillOpacity: 0.4
               }).addTo(this.map))
           }
           
