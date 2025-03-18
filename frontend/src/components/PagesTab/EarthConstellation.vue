@@ -53,7 +53,7 @@
   
   <script>
 
-import {DisplayLoad, FetchGet} from '../../js/LoadDisplayMetod.js'
+import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
@@ -66,7 +66,6 @@ import Plotly from 'plotly.js-dist'
     },
     data(){
       return{
-        ConstellationJson: [],
         earthSize: 0,
         ShowDefaultTable: false,
         ShowPlotlyContain: false,
@@ -78,10 +77,6 @@ import Plotly from 'plotly.js-dist'
           modellingEnd: 0,
           modellingStep: 0,
         },
-        arr: [],
-        TableViewWindow:[],
-        AllResponse:[],
-        valueSS: {},
         KAModellingRoleMode: false
       }
     },
@@ -93,7 +88,7 @@ import Plotly from 'plotly.js-dist'
               this.ShowDefaultTable = true
               this.dataLableName = [
                 {lable: "НП", nameParam: "earthName"},
-                {lable: "КА", nameParam: "satelliteId"},
+                {lable: "КА", nameParam: "satelliteName"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]
@@ -115,7 +110,7 @@ import Plotly from 'plotly.js-dist'
             }
             if(commandId == 1){
               DisplayLoad(true)
-              await FetchGet('/api/v1/pro42/view/earth')
+              await FetchPost('/api/v1/pro42/view/earth', {leaderProcessing: this.KAModellingRoleMode})
               DisplayLoad(false)
             }
             if(commandId == 6){
@@ -140,7 +135,7 @@ import Plotly from 'plotly.js-dist'
               response.forEach(element => {
                 console.log(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.y.push(element.earthName)
-                dataGrapf.text.push(element.satelliteId)
+                dataGrapf.text.push(element.satelliteName)
                 dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
               });
@@ -162,15 +157,6 @@ import Plotly from 'plotly.js-dist'
         let result = await FetchGet('/api/v1/earth/get/list') || []
         this.earthSize = result.length || 0
 
-        result = await FetchGet('/api/v1/constellation/get/list') || []
-        this.ConstellationJson = await result
-
-        for (let i = 0; i < this.ConstellationJson.length; i++) {
-          const element = this.ConstellationJson[i];
-          this.arr.push({value: element, lable: element.constellationName })
-        }
-        this.arr.push({value: {}, lable: "Все ОГ ДЗЗ" })
-        this.valueSS = {value: {}, lable: "Все ОГ ДЗЗ" }
 
         this.experimentObject.startTime = this.systemStatus.startTime
         this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
