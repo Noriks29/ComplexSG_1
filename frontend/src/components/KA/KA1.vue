@@ -326,11 +326,17 @@ import { KaSettings } from './KaSettings';
       },
       EventE79(){
         this.dataTable = []
-        this.dataLableName = [{lable: "Виток №", nameParam: "numberRev"},{lable: "Начало", nameParam: "timeBegin"},{lable: "Конец", nameParam: "timeEnd"},{lable: "Режим", nameParam: "mode"},{lable: "sunMode", nameParam: "sunMode"}]
+        this.dataLableName = [{lable: "Виток №", nameParam: "nRev"},{lable: "Начало", nameParam: "timeBegin"},{lable: "Конец", nameParam: "timeEnd"},{lable: "light", nameParam: "light"},
+        {lable: "shooting", nameParam: "shooting"},
+        {lable: "charge", nameParam: "charge"},
+        {lable: "Режим", nameParam: "mode"},{lable: "sunMode", nameParam: "sunMode"}]
         for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
           const element = this.modellingRezultSelect.E79[index];
           this.dataTable.push({
-            numberRev: element.numberRev,
+            shooting: element.shooting,
+            charge: element.charge,
+            nRev: element.nRev,
+            light: element.light,
             mode: element.mode,
             sunMode: element.sunMode,
             timeBegin: UnixToDtime(element.timeBegin).time,
