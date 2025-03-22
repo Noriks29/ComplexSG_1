@@ -248,8 +248,8 @@ import { KaSettings } from './KaSettings';
               }
             }
             else if (element.type == "E79"){
-              if (element.setSkeleton.flightPlan.length > 0) {
-                this.modellingRezult.E79.push({idSender: element.idSender, data: element.setSkeleton.flightPlan})
+              if (element.mainFlightPlan[0].flightPlan.length > 0) {
+                this.modellingRezult.E79.push({idSender: element.idSender, data: element.mainFlightPlan[0].flightPlan})
 console.log(this.modellingRezult)
               }
             }
