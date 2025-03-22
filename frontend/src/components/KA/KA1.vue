@@ -250,6 +250,7 @@ import { KaSettings } from './KaSettings';
             else if (element.type == "E79"){
               if (element.setSkeleton.flightPlan.length > 0) {
                 this.modellingRezult.E79.push({idSender: element.idSender, data: element.setSkeleton.flightPlan})
+console.log(this.modellingRezult)
               }
             }
           } catch (error) {
