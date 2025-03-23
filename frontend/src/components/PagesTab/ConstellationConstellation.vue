@@ -86,8 +86,8 @@ import Plotly from 'plotly.js-dist'
             console.log(commandId)
             if(commandId == 2){
               this.dataLableName = [
-                {lable: "КА", nameParam: "satellite1Id"},
-                {lable: "Видимый КА", nameParam: "satellite2Id"},
+                {lable: "КА", nameParam: "satellite1"},
+                {lable: "Видимый КА", nameParam: "satellite2"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
               ]

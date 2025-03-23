@@ -199,13 +199,9 @@ import { KaSettings } from './KaSettings';
             "modellingMode": this.modellingSettings.modellingMode,
         }
         let rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
-        console.log("Результат", await rezult)
         if(rezult.engineLogResponse.length > 0){
           this.dataModelling = rezult
           this.ParceModellingRezult()
-        }
-        else{
-          console.log("нет результата")
         }
         DisplayLoad(false)
       },
@@ -240,7 +236,6 @@ import { KaSettings } from './KaSettings';
                 oneE77.data.push(e)
               }
               this.modellingRezult.E77.push(oneE77)
-              
             }
             else if (element.type == "E78"){
               if (element.dataDownPlan.partsPlan.length > 0) {
@@ -248,9 +243,8 @@ import { KaSettings } from './KaSettings';
               }
             }
             else if (element.type == "E79"){
-              if (element.mainFlightPlan[0].flightPlan.length > 0) {
+              if (element.mainFlightPlan !== null) {
                 this.modellingRezult.E79.push({idSender: element.idSender, data: element.mainFlightPlan[0].flightPlan})
-console.log(this.modellingRezult)
               }
             }
           } catch (error) {
