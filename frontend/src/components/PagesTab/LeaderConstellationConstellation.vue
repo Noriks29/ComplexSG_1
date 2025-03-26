@@ -79,7 +79,7 @@ import Plotly from 'plotly.js-dist'
         clusterTopology: [], // топология сети
         lessConstellation: [], // облегчённый список ог для селектора
         PageSettings:{
-          mode: true, //лидер / все
+          mode: false, //лидер / все
           status: 0, //код открытого окна
           SatNp: [], //список контактов сат-нп
           SatSat: [], //список контактов сат-сат
@@ -110,7 +110,7 @@ import Plotly from 'plotly.js-dist'
               "endTime": null,
               "deleted": null
             })
-            await FetchPost('/api/v1/cluster/update', this.clusterTopology, null)
+            await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
             this.ReFetch()
             break;
         
@@ -120,16 +120,16 @@ import Plotly from 'plotly.js-dist'
       },
       async DeleteRow(index){
         this.clusterTopology[index].deleted= true
-        await FetchPost('/api/v1/cluster/update', this.clusterTopology, null)
+        await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
         this.ReFetch()
       },
       async ChangeCluster(event, param){
         this.clusterTopology[event.id][param] = event.value
-        await FetchPost('/api/v1/cluster/update', this.clusterTopology, null)
+        await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
         this.ReFetch()
       },
        async CommandWork(commandId){
-            console.log(commandId)
+            DisplayLoad(true)
             let dataPlotly = null
             let dataGrapf = null
             switch (commandId) {
@@ -137,8 +137,8 @@ import Plotly from 'plotly.js-dist'
                 this.PageSettings.status = 0
                 break;
               case 1:
-                await FetchGet('/api/v1/pro42/view/sat')
-                this.ReFetch()
+                await FetchGet('/api/v1/pro42/view/sat', null)
+                await this.ReFetch()
                 break;
               case 2:
                 await FetchGet('/api/v1/contact-plan/sat')
@@ -216,9 +216,10 @@ import Plotly from 'plotly.js-dist'
               default:
                 break;
             }
+            DisplayLoad(false)
         },
         async ReFetch(){
-          if(this.PageSettings.mode) this.clusterTopology = await FetchGet("/api/v1/cluster/all") || []
+          if(this.PageSettings.mode) this.clusterTopology = await FetchGet("/api/v1/topology/all") || []
           this.PageSettings.SatSat = []
           let response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
             if(response.length < 1){
@@ -237,6 +238,10 @@ import Plotly from 'plotly.js-dist'
       this.ReFetch()
       let rezult = await FetchGet("/api/v1/constellation/cl/all") || []
       this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
+      console.log(this.systemStatus)
+      if(this.systemStatus) {
+        this.PageSettings.mode = true
+      }
       this.lessConstellation = []
       rezult.forEach(element => {
         this.lessConstellation.push({lable: element.constellationName, value: element})
@@ -273,7 +278,6 @@ import Plotly from 'plotly.js-dist'
 }
 td{
   text-align: left;
-
 }
 th{
   border-bottom: 2px solid white;

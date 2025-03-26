@@ -18,7 +18,7 @@
           class="PanelDefault"
         >
           <td  @click="selectOG = data">{{ data.constellationName }}</td>
-          <td  @click="selectOG = data">{{ data.inputType == 1 ? "Произвольное построение" : "Системное построение" }}</td>
+          <td  @click="selectOG = data">{{ OGType[data.inputType] }}</td>
           <td class="iconDelete" v-if="!approved && !modellingStatus" @click="DeleteRowOG(data)"><img  src="@/assets/delete.svg" alt="Удалить"></td>
         </tr>
         <tr v-if="!approved && !modellingStatus" class="PanelDefault">
@@ -58,6 +58,7 @@ import { PagesSettings } from './PagesSettings.js';
     data() {
       return {
         OGTableExists: false,
+        OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"},
         dataJson: [],
         selectOG: undefined,
         approved: true,
