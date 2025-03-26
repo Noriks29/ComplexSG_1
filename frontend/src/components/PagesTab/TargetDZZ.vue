@@ -186,6 +186,10 @@ import XLSX from 'xlsx-js-style';
         this.requestJson[e.id].earthPoint = e.value
         this.SatartSave('request')
       },
+      SelectChangeType(e){
+        this.requestJson[e.id].type = e.value
+        this.SatartSave('request')
+      },
       SelectChangeCriteria(e){
         this.requestJson[e.id].choiceCriteria = e.value
         this.SatartSave('request')

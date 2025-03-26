@@ -1,6 +1,6 @@
 <template>
     <div class="main_contain RowSection">
-          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
+          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="PageSettings.SatSat" @closetable="ShowDefaultTable = false"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
@@ -19,18 +19,19 @@
                   <tr><th>Окончание горизонта моделирования:</th></tr>
                       <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
                   <tr><th>Шаг моделирования: {{ systemStatus.step }}</th></tr>
-                  <tr><th><div>Минимальный угол <input type="number" :value="experimentObject.angle" @change="experimentObject.angle=Number($event.target.value)"></div></th></tr>
+                  <tr v-if="PageSettings.mode"><th><div>Минимальный угол <input type="number" :value="experimentObject.angle" @change="experimentObject.angle=Number($event.target.value)"></div></th></tr>
                 </table>
             </div>
             <div class="FlexColumn">
-              <div><button @click="CommandWork(3)" class="ButtonCommand">Топология сети</button></div>
+              <div><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
               <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
-              <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
-              <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
+              <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>
+              <div><button @click="CommandWork(3)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
+              <div><button @click="CommandWork(4)" class="ButtonCommand">Графическое представление плана контактов</button></div>
             </div>
         </div>
         <div class="Panel RightPanel">
-          <div>
+          <div v-if="PageSettings.status == 0">
             <table>
               <tr><th>Кластер</th><th>Кластер</th><th></th></tr>
               <tr v-for="data, index in clusterTopology" :key="index">
@@ -75,15 +76,23 @@ import Plotly from 'plotly.js-dist'
     },
     data(){
       return{
-        ConstellationJson: [],
         clusterTopology: [], // топология сети
         lessConstellation: [], // облегчённый список ог для селектора
-        earthSize: 0,
+        PageSettings:{
+          mode: true, //лидер / все
+          status: 0, //код открытого окна
+          SatNp: [], //список контактов сат-нп
+          SatSat: [], //список контактов сат-сат
+        },
+        experimentObject: {angle: 0}, //обьект отправки пост
         ShowDefaultTable: false,
         ShowPlotlyContain: false,
-        dataLableName: {},
-        dataTable: [],
-        experimentObject: {angle: 0},
+        dataLableName: [{lable: "КА", nameParam: "satellite1"},
+                {lable: "Видимый КА", nameParam: "satellite2"},
+                {lable: "Начало", nameParam: "begin"},
+                {lable: "Конец", nameParam: "end"}], //названия полей для таблицы
+        dataTable: [], //данный расчётов
+        
         arr: [],
         TableViewWindow:[],
         AllResponse:[],
@@ -121,128 +130,118 @@ import Plotly from 'plotly.js-dist'
       },
        async CommandWork(commandId){
             console.log(commandId)
-            if(commandId == 2){
-              this.dataLableName = [
-                {lable: "КА", nameParam: "satellite1Id"},
-                {lable: "Видимый КА", nameParam: "satellite2Id"},
-                {lable: "Начало", nameParam: "begin"},
-                {lable: "Конец", nameParam: "end"},
-              ]
-              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
-              if(response.length < 1){
-                alert("Нет контактов")
-                return
-              }
-              this.dataTable = await response
-              this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
-              for (let index = 0; index < this.dataTable.length; index++) {
-                this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
-                this.dataTable[index].end = this.CreateDateTime(this.dataTable[index].end)
-              }
-              this.ShowDefaultTable = true
-            }
-            if(commandId == 1){
-              DisplayLoad(true)
-              let constellation = await FetchPost('/api/v1/cluster/pro42', this.experimentObject) || []
-              let countSatelites = 0
-              constellation.forEach(OG => {
-                countSatelites+=OG.satellites.length
-              })
-              if(countSatelites < 2){
-                alert("При одном КА расчет не выполняется")
-                DisplayLoad(false)
-                return
-              }
-              await FetchGet('/api/v1/pro42/view/sat')
-              DisplayLoad(false)
-            }
-            if(commandId == 6){
-              console.log("Уааа график")
-              this.ShowPlotlyContain = true
+            let dataPlotly = null
+            let dataGrapf = null
+            switch (commandId) {
+              case 0:
+                this.PageSettings.status = 0
+                break;
+              case 1:
+                await FetchGet('/api/v1/pro42/view/sat')
+                this.ReFetch()
+                break;
+              case 2:
+                await FetchGet('/api/v1/contact-plan/sat')
+                this.ReFetch()
+                break;
 
-              let responseNP = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
-              let dataGrapf = {
-                type: 'bar',
-                name: "NP",
-                y: [],
-                x: [],
-                orientation: 'h',
-                base: [],
-                text: [],
-                marker: {
-                  opacity: 0.5,
-                  color: "red",
-                  line: {
-                    width: 1
+              case 3:
+                //Таблица сат-сат
+                this.ShowDefaultTable = true
+                break;
+              
+              case 4:
+                if(this.PageSettings.SatSat.length < 1 ) return
+
+                this.ShowPlotlyContain = true
+                dataGrapf = {
+                  type: 'bar',
+                  name: "NP",
+                  y: [],
+                  x: [],
+                  orientation: 'h',
+                  base: [],
+                  text: [],
+                  marker: {
+                    opacity: 0.5,
+                    color: "red",
+                    line: {
+                      width: 1
+                    }
                   }
                 }
-              }
-              responseNP.forEach(element => {
-                dataGrapf.y.push(element.satelliteId)
-                dataGrapf.text.push(element.earthName)
-                dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
-              });
+                this.PageSettings.SatNp.forEach(element => {
+                  dataGrapf.y.push(element.satelliteId)
+                  dataGrapf.text.push(element.earthName)
+                  dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
+                  dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
+                });
 
-              let response = await FetchGet('/api/v1/modelling/data/sat-sat/all') || []
-              if(response.length <1) return
-              console.log(response)
-              
-              let dataPlotly = [dataGrapf]
-              response.forEach(element => {
-                let flagadd = false
-                dataPlotly.forEach(plot => {
-                  if(plot.name == element.satellite2Id){
-                    plot.y.push(element.satellite1Id, element.satellite2Id)
-                    plot.text.push(element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id)
-                    plot.x.push(this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2))
-                    plot.base.push(this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1))
-                    flagadd = true
-                  }
-                })
-                if(!flagadd){
-                  dataPlotly.push({
-                    type: 'bar',
-                    name: element.satellite2Id,
-                    y: [element.satellite1Id, element.satellite2Id],
-                    x: [this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2)],
-                    orientation: 'h',
-                    base: [this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1)],
-                    text: [element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id],
-                    textfont: {
-                      size: 16,
-                      color: '#000000'
-                    },
-                    marker: {
-                      opacity: 0.5,
-                      color: "#0065ff",
-                      line: {width: 1}
+                dataPlotly = [dataGrapf]
+                this.PageSettings.SatSat.forEach(element => {
+                  let flagadd = false
+                  dataPlotly.forEach(plot => {
+                    if(plot.name == element.satellite2Id){
+                      plot.y.push(element.satellite1Id, element.satellite2Id)
+                      plot.text.push(element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id)
+                      plot.x.push(this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2))
+                      plot.base.push(this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1))
+                      flagadd = true
                     }
                   })
-                }
-              });
-              console.log(dataPlotly)
-              Plotly.newPlot("plotlymapContain1", dataPlotly,
-                {
-                  title: 'Окна видимости',
-                }
-              )
+                  if(!flagadd){
+                    dataPlotly.push({
+                      type: 'bar',
+                      name: element.satellite2Id,
+                      y: [element.satellite1Id, element.satellite2Id],
+                      x: [this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2)],
+                      orientation: 'h',
+                      base: [this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1)],
+                      text: [element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id],
+                      textfont: {
+                        size: 16,
+                        color: '#000000'
+                      },
+                      marker: {
+                        opacity: 0.5,
+                        color: "#0065ff",
+                        line: {width: 1}
+                      }
+                    })
+                  }
+                });
+                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости',})
+                break
+            
+              default:
+                break;
             }
         },
         async ReFetch(){
-          this.clusterTopology = await FetchGet("/api/v1/cluster/all") || []
+          if(this.PageSettings.mode) this.clusterTopology = await FetchGet("/api/v1/cluster/all") || []
+          this.PageSettings.SatSat = []
+          let response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
+            if(response.length < 1){
+              return
+            }
+            response = response.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
+            for (let index = 0; index < response.length; index++) {
+              response[index].begin = this.CreateDateTime(response[index].begin)
+              response[index].end = this.CreateDateTime(response[index].end)
+            }
+          this.PageSettings.SatSat = response
         }
     },
     async mounted() {
-      this.clusterTopology = await FetchGet("/api/v1/cluster/all")
+      DisplayLoad(true)
+      this.ReFetch()
       let rezult = await FetchGet("/api/v1/constellation/cl/all") || []
+      this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
       this.lessConstellation = []
       rezult.forEach(element => {
         this.lessConstellation.push({lable: element.constellationName, value: element})
       })
-
-      
-      console.log(this.lessConstellation)
+      DisplayLoad(false)
     }
   }
   </script>
