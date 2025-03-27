@@ -244,7 +244,7 @@ import { KaSettings } from './KaSettings';
             }
             else if (element.type == "E79"){
               if (element.mainFlightPlan !== null) {
-                this.modellingRezult.E79.push({idSender: element.idSender, data: element.mainFlightPlan[0].flightPlan})
+                this.modellingRezult.E79.push({idSender: element.idSender, data: element.mainFlightPlan.flightPlan})
               }
             }
           } catch (error) {
@@ -321,21 +321,18 @@ import { KaSettings } from './KaSettings';
       },
       EventE79(){
         this.dataTable = []
-        this.dataLableName = [{lable: "Виток №", nameParam: "nRev"},{lable: "Начало", nameParam: "timeBegin"},{lable: "Конец", nameParam: "timeEnd"},{lable: "light", nameParam: "light"},
-        {lable: "shooting", nameParam: "shooting"},
-        {lable: "charge", nameParam: "charge"},
-        {lable: "Режим", nameParam: "mode"},{lable: "sunMode", nameParam: "sunMode"}]
+        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "orderName", nameParam: "Съёмка"},
+        {lable: "gsName", nameParam: "Связь с НП"},
+        {lable: "Режим", nameParam: "mode"},{lable: "Заряд АКБ", nameParam: "charge"}]
         for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
           const element = this.modellingRezultSelect.E79[index];
           this.dataTable.push({
-            shooting: element.shooting,
+            orderName: element.orderName,
             charge: element.charge,
             nRev: element.nRev,
-            light: element.light,
+            gsName: element.gsName,
             mode: element.mode,
-            sunMode: element.sunMode,
-            timeBegin: UnixToDtime(element.timeBegin).time,
-            timeEnd: UnixToDtime(element.timeEnd).time
+            time: UnixToDtime(element.timeBegin).time +' - '+ UnixToDtime(element.timeEnd).time
           }) 
         }
         this.PreWrapDefaultTable = false
