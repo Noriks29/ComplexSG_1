@@ -99,6 +99,7 @@
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import { PagesSettings } from './PagesSettings';
+import { NPList, OGList } from '@/js/GlobalData.js';
 import L from 'leaflet';
 import SelectDiv from "../SelectDiv.vue"
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -130,10 +131,9 @@ import "leaflet/dist/leaflet.css";
     methods: {
         async StartModelling(){
           DisplayLoad(true)
-          let Np = await FetchGet('/api/v1/earth/get/list') || []
           let data = {
             "satellite": this.selectKA,
-            "earthPoint": Np[0],
+            "earthPoint": NPList[0],
             "iterationMax": document.getElementById("iterationMax").value
         }
           this.roadList = []
@@ -182,10 +182,6 @@ import "leaflet/dist/leaflet.css";
             {this.selectroadID = 0}
           DisplayLoad(false)
           console.log(this.roadList)
-        },
-        CreateDateTime(time){
-          let Dtime = UnixToDtime(time)
-          return Dtime.date + " " + Dtime.time + " МСК"
         },
         SelectChange(target){
           this.selectKA = target.value
@@ -274,7 +270,7 @@ import "leaflet/dist/leaflet.css";
         this.purposesJson = result
         console.log(result)
 
-        result = await FetchGet('/api/v1/constellation/get/list') || []
+        result = OGList
         for (let i = 0; i < result.length; i++) {
           
           for (let index = 0; index < result[i].satellites.length; index++) {

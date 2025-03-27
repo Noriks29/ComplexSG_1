@@ -50,6 +50,7 @@ import TableData from './OG/OG_tableFree.vue'
 import {DisplayLoad, FetchGet, FetchPost} from '@/js/LoadDisplayMetod'
 import CreateOGPanel from './OG/CreateOGPanel.vue'
 import { PagesSettings } from './PagesSettings.js';
+import { OGList, ChangeOG } from '@/js/GlobalData';
 
 
   export default {
@@ -82,8 +83,8 @@ import { PagesSettings } from './PagesSettings.js';
       },
       async reFetch(){
         this.dataJson = []
-        let result = await FetchGet('/api/v1/constellation/get/list')
-        this.dataJson = await result
+        this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
+        ChangeOG(this.dataJson)
       },
       async DeleteRowOG(data){
         await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
@@ -94,9 +95,7 @@ import { PagesSettings } from './PagesSettings.js';
     async mounted(){
       DisplayLoad(true)
       this.approved = this.systemStatus.constellationStatus
-      let result = await FetchGet('/api/v1/constellation/get/list')
-      this.dataJson = result || []
-      console.log(this.dataJson)
+      this.dataJson = OGList
       DisplayLoad(false)
     },
     

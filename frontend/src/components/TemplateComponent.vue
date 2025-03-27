@@ -60,13 +60,14 @@
 <script>
 import { saveAs } from 'file-saver';
 import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
+import { NPList, OGList } from '@/js/GlobalData';
+
 import NP from "./PagesTab/NP.vue";
 import OG from './PagesTab/OG.vue'
 import TypeKA from './PagesTab/TypeKA.vue';
 import LogEventList from "./LogEventList/LogEventList.vue";
 
 import KA1 from './KA/KA1.vue';
-import KA2 from './KA/KA2.vue';
 import KARealTime from "./KA/KARealTime.vue";
 import KAControl_In from './KA/KAControl_In.vue'
 import KAControl_Out from './KA/KAControl_Out.vue'
@@ -106,7 +107,6 @@ export default {
     LogEventList,
 
     KA1,
-    KA2,
     KARealTime,
     KAControl_In,
     KAControl_Out,
@@ -115,7 +115,6 @@ export default {
   },
   data(){
       return{
-        button_mode: "standart",
         activeComponent: "",
         reload: 0,
         ExperimentStatus: false,
@@ -144,7 +143,7 @@ export default {
         DisplayLoad(true)
         let dataLoad = {}
         dataLoad.modelSat = await FetchGet('/api/v1/modelsat/all')
-        let result = await FetchGet('/api/v1/earth/get/list') || []
+        let result = NPList
         for (let index = 0; index < result.length; index++) {
           let new_data = result[index];
           new_data.id = undefined
@@ -157,7 +156,7 @@ export default {
         dataLoad.system = result
 
       
-        result = await FetchGet('/api/v1/constellation/get/list') || []
+        result = OGList
         for (let index = 0; index < result.length; index++) {
           const element = result[index];
           element.id = undefined

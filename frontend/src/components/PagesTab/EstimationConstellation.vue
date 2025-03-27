@@ -71,6 +71,7 @@ import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
+import { OGList } from '@/js/GlobalData.js';
 
 import Plotly from 'plotly.js-dist'
 
@@ -84,9 +85,7 @@ import Plotly from 'plotly.js-dist'
     },
     data(){
       return{
-        ConstellationJson: [],
         purposesJson: 0,
-        numberVisibilityWindows: 0,
         ShowDefaultTable: false,
         dataLableName: {},
         dataTable: [],
@@ -109,7 +108,7 @@ import Plotly from 'plotly.js-dist'
     methods: {
         CommandWork(){
               this.dataLableName = [
-                {lable: "Отправитель", nameParam: "goalLabel"},
+                {lable: "Цель", nameParam: "goalLabel"},
                 {lable: "КА", nameParam: "scLabel"},
                 {lable: "Начало", nameParam: "begin"},
                 {lable: "Конец", nameParam: "end"},
@@ -166,7 +165,6 @@ import Plotly from 'plotly.js-dist'
         async StartModelling(){
           DisplayLoad(true)
           this.CommandWork()
-          //console.log(this.experimentObject, JSON.stringify(this.experimentObject))
           let response = await FetchPost("/api/v1/pro42/view/request", this.experimentObject) || []
           
           try {
@@ -201,10 +199,6 @@ import Plotly from 'plotly.js-dist'
             orientation: 'h',
             base: base,
             text: text
-            /*
-            marker:{
-                color: GrafColor
-            },*/
           },],
           {
             title: 'Окна видимости',
@@ -223,11 +217,9 @@ import Plotly from 'plotly.js-dist'
         DisplayLoad(true)
         let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
-        result = await FetchGet('/api/v1/constellation/get/list') || []
-        this.ConstellationJson = await result
-        console.log(this.ConstellationJson)
-        for (let i = 0; i < this.ConstellationJson.length; i++) {
-          const element = this.ConstellationJson[i];
+
+        for (let i = 0; i < OGList.length; i++) {
+          const element = OGList[i];
           this.arr.push({value: element, lable: element.constellationName })
         }
         this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}

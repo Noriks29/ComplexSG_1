@@ -39,18 +39,18 @@
                 @change="ChangeParamRequest"
                 v-show="!(data.deleted==true)"
               >
-              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange"/></td>
+              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange($event, 'catalog')"/></td>
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
-              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChangeNP"/></td>
-              <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChangeCriteria"/></td>
+              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChange($event, 'earthPoint')"/></td>
+              <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChange($event, 'choiceCriteria')"/></td>
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
-              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChangeType" v-if="systemStatus.WorkMode in {3:null,4:null}"/></td>
+              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')" v-if="systemStatus.WorkMode in {3:null,4:null}"/></td>
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
-                <tr class="addRowButton">
+              <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
                 <td v-if="requestJson.length > 0"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
@@ -129,6 +129,7 @@
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { UnixToDtime } from '@/js/WorkWithDTime.js';
 import { PagesSettings } from './PagesSettings';
+import { OGList, NPList } from '@/js/GlobalData.js';
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
 import L from 'leaflet';
@@ -174,25 +175,13 @@ import XLSX from 'xlsx-js-style';
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.SatartSave('request')
       },
-      ChangeTimedatarequest(obgtime){  // изменение времени в данных по заявкам
-        this.datarequest[obgtime.id].time = obgtime.time
+      SelectChange(e, param){
+        this.requestJson[e.id][param] = e.value
+        this.SatartSave('request')
+      },
+      ChangeTimedatarequest(e){  // изменение времени в данных по заявкам
+        this.datarequest[e.id].time = e.time
         this.SatartSave('datarequest')
-      },
-      SelectChange(e){
-        this.requestJson[e.id].catalog = e.value
-        this.SatartSave('request')
-      },
-      SelectChangeNP(e){
-        this.requestJson[e.id].earthPoint = e.value
-        this.SatartSave('request')
-      },
-      SelectChangeType(e){
-        this.requestJson[e.id].type = e.value
-        this.SatartSave('request')
-      },
-      SelectChangeCriteria(e){
-        this.requestJson[e.id].choiceCriteria = e.value
-        this.SatartSave('request')
       },
       ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
         this.datarequest[e.id].nodeId = e.value
@@ -204,7 +193,6 @@ import XLSX from 'xlsx-js-style';
           const element = this.catalogJson[i];
           this.arr.push({value: element, lable: element.goalName })
         }
-
       },
       AddRow(){
             var addedRow = {
@@ -264,21 +252,10 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('datarequest')
       },
       async SatartSave(target){
-        if(target == 'catalog')
-        {
-          await FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)
-          await this.ReFetch()
-        }
-        if(target == 'request')
-        {
-          await FetchPost("/api/v1/satrequest/request/update", this.requestJson)
-          await this.ReFetch()
-        }
-        if(target == 'datarequest')
-        {
-          await FetchPost("/api/v1/satrequest/data/update", this.datarequest)
-          await this.ReFetch()
-        }
+        if(target == 'catalog'){await FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
+        if(target == 'request'){await FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
+        if(target == 'datarequest'){await FetchPost("/api/v1/satrequest/data/update", this.datarequest)}
+        await this.ReFetch()
       },
       ChangeParam(target){
         this.catalogJson[target.target.id][target.target.name] = target.target.value
@@ -341,17 +318,12 @@ import XLSX from 'xlsx-js-style';
         }
       },
       async ReFetch(){
-        this.arrNP = []
-        let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
-        this.catalogJson = result || {}
+        this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
+        this.catalogJson = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
         for (let index = 0; index < this.catalogJson.length; index++) {
           this.catalogJson[index].countRequest = 0;
         }
-
-        this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
-
-        result = await FetchGet('/api/v1/satrequest/request/get/all') || []
-        this.requestJson = result || {}
+        this.requestJson = await FetchGet('/api/v1/satrequest/request/get/all') || []
         for (let index = 0; index < this.requestJson.length; index++) {
           const element = this.requestJson[index].catalog.goalId
           for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
@@ -361,11 +333,6 @@ import XLSX from 'xlsx-js-style';
             }
           }
         }
-        result = await FetchGet('/api/v1/earth/get/list') || []
-        for (let i = 0; i < result.length; i++) {
-            const element = result[i];
-            this.arrNP.push({value: element, lable: element.nameEarthPoint })
-          }
         this.CreateSelectArr()
         },
         async CreateMap(){
@@ -513,11 +480,15 @@ import XLSX from 'xlsx-js-style';
       if(this.systemStatus.WorkMode == 5){
         this.viewmode = -1
       }
-
-      let Ka = await FetchGet('/api/v1/constellation/get/list') || []
+      NPList.forEach(element => {
+        this.arrNP.push({value: element, lable: element.nameEarthPoint })
+      })
+      await this.ReFetch()
+      this.CreateSelectArr()
+      //далее всё для карты
       this.KAArray.push({value: undefined, lable: "Все КА" })
       this.datarequestКАList = []
-      Ka.forEach(OG => {
+      OGList.forEach(OG => {
         OG.satellites.forEach(element =>{
           this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.idNode })
           this.datarequestКАList.push({value: element.idNode, lable: element.idNode })
@@ -525,36 +496,9 @@ import XLSX from 'xlsx-js-style';
       });
       this.SelectKa = this.KAArray[0]
       this.KatoDraw = this.SelectKa.value
-      //console.log(this.KAArray)
-
-      let result = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
-      this.catalogJson = result
-      for (let index = 0; index < this.catalogJson.length; index++) {
-        this.catalogJson[index].countRequest = 0;
-      }
-      result = await FetchGet('/api/v1/satrequest/request/get/all') || []
-      this.requestJson = result
-      for (let index = 0; index < this.requestJson.length; index++) {
-        const element = this.requestJson[index].catalog.goalId
-        for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
-          if(element == this.catalogJson[indexii].goalId){
-            this.catalogJson[indexii].countRequest++;
-            break
-          }
-        }
-      }
-      result = await FetchGet('/api/v1/earth/get/list') || []
-      for (let i = 0; i < result.length; i++) {
-          const element = result[i];
-          this.arrNP.push({value: element, lable: element.nameEarthPoint })
-        }
-
-      this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
-      
-        //console.log(this.requestJson, this.catalogJson)
-      this.CreateSelectArr()
-      DisplayLoad(false)
       this.CreateMap()
+
+      DisplayLoad(false)
     },
   }
   </script>

@@ -19,10 +19,10 @@
               <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
               <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
               <tr><td>Количество заявок:</td><td>{{ purposesJson }}</td></tr>
-              <tr><td>Количество НП:</td><td>{{ earthSize }}</td></tr>
+              <tr><td>Количество НП:</td><td>{{ earthList.length }}</td></tr>
               <tr><td>Количество КА:</td><td></td></tr>
               <tr 
-                v-for="(data, index) in ConstellationJson"
+                v-for="(data, index) in OGList"
                 :key="index"
               >
               <td>- {{ data.constellationName }}:</td><td>{{ data.satellites.length }} КА</td>
@@ -90,13 +90,14 @@ import BookmarkTable from './BookmarkComponent.vue';
 
 import { KaSettings } from './KaSettings';
 
+import { NPList, OGList } from '@/js/GlobalData';
+
 
   export default {
     name: 'FlightPlaner',
     mixins: [KaSettings],
     data(){
       return{
-        earthSize: 0,
         purposesJson: 0,
         ConstellationJson: [],
         ShowDefaultTable: false,
@@ -152,11 +153,11 @@ import { KaSettings } from './KaSettings';
             alert("КА и ОГ не утверждены")
             return
           }
-          if(this.ConstellationJson.length < 1){
+          if(OGList.length < 1){
             alert("Нет КА")
             return
           }
-          if(this.earthSize < 1){
+          if(NPList.length < 1){
             alert("Нет НП")
             return
           }
@@ -296,19 +297,15 @@ import { KaSettings } from './KaSettings';
         let events = await FetchGet('/api/v1/event/codes/all') || []
         let dataevents = {}
         events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
-        let rezult = await FetchGet('/api/v1/satrequest/request/get/all') || []
-        let datarequest = {}
-        rezult.forEach(element => datarequest[element.requestId]=element.catalog.goalName)
-        console.log(datarequest)
         for (let index = 0; index < this.modellingRezult.events.length; index++) {
           const element = this.modellingRezult.events[index]
           this.dataTable.push({
             time: UnixToDtime(element.time).time,
             code: element.type,
-            event: dataevents[element.type] || "нет записи",
-            orderId: datarequest[element.orderId] || "нет заявки",
-            nodeId: element.node1Id,
-            nodeId2: element.node2Id,
+            event: dataevents[element.type],
+            orderId: element.orderName,
+            nodeId: element.node1Name,
+            nodeId2: element.node2Name,
             text: element.text,
             value: element.value
           })
@@ -373,20 +370,15 @@ import { KaSettings } from './KaSettings';
         console.log(this.modellingRezultSelect)
       },
       async ReLoadComponent(){
-        let result = await FetchGet('/api/v1/earth/get/list') || []
-        this.earthSize = result.length
-        this.earthList = result
+        this.earthList = NPList
 
-        result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
-
-        result = await FetchGet('/api/v1/constellation/get/list') || []
-        this.ConstellationJson = result
         this.arr = []
-        for (let i = 0; i < result.length; i++) {
-          for (let index = 0; index < result[i].satellites.length; index++) {
-            const element = result[i].satellites[index];
-            this.arr.push({value: element.satelliteId, lable: element.name + " ("+element.satelliteId+") - " + result[i].constellationName})
+        for (let i = 0; i < OGList.length; i++) {
+          for (let index = 0; index < OGList[i].satellites.length; index++) {
+            const element = OGList[i].satellites[index];
+            this.arr.push({value: element.satelliteId, lable: element.name})
           }
         }
         try {

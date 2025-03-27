@@ -42,8 +42,7 @@
       </div>
       <div class="Panel" v-if="OG_Param.type == undefined">
         <label class="input-file">
-            <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">	
-            <!--<input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">-->	
+            <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">		
             <span>Загрузить файл</span>
         </label>
         Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}

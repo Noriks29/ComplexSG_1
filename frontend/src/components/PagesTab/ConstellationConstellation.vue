@@ -23,7 +23,7 @@
                     <tr><td>Окончание горизонта моделирования:</td>
                       <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
                     </tr>
-                  <tr><td>Шаг моделирования:</td><td>{{ experimentObject.modellingStep }}</td></tr>
+                  <tr><td>Шаг моделирования:</td><td>{{ systemStatus.step }}</td></tr>
                 </table>
             </div>
         </div>
@@ -63,22 +63,10 @@ import Plotly from 'plotly.js-dist'
     },
     data(){
       return{
-        ConstellationJson: [],
-        earthSize: 0,
         ShowDefaultTable: false,
         ShowPlotlyContain: false,
         dataLableName: {},
         dataTable: [],
-        experimentObject: {
-          startTime: 0,
-          modellingBegin: 0,
-          modellingEnd: 0,
-          modellingStep: 0,
-        },
-        arr: [],
-        TableViewWindow:[],
-        AllResponse:[],
-        valueSS: {},
       }
     },
     methods: {
@@ -106,16 +94,6 @@ import Plotly from 'plotly.js-dist'
             }
             if(commandId == 1){
               DisplayLoad(true)
-              let constellation = await FetchGet('/api/v1/constellation/get/list') || []
-              let countSatelites = 0
-              constellation.forEach(OG => {
-                countSatelites+=OG.satellites.length
-              })
-              if(countSatelites < 2){
-                alert("При одном КА расчет не выполняется")
-                DisplayLoad(false)
-                return
-              }
               await FetchGet('/api/v1/pro42/view/sat')
               DisplayLoad(false)
             }
@@ -204,13 +182,6 @@ import Plotly from 'plotly.js-dist'
     },
     
     async mounted() {
-        DisplayLoad(true)
-        this.experimentObject.startTime = this.systemStatus.startTime
-        this.experimentObject.modellingEnd = this.systemStatus.modelingEnd
-        this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
-        this.experimentObject.modellingStep = this.systemStatus.step
-        DisplayLoad(false)
-
     }
   }
   </script>

@@ -48,7 +48,7 @@ import TemplateComponent from './components/TemplateComponent.vue'
 import {DisplayLoad, FetchGet, FetchPost} from './js/LoadDisplayMetod.js'
 import LoadProcess from './components/LoadProcess.vue'
 import GlobalStyle from './style/GlobalStyle.scss'
-
+import { ClearGlobalData, InitGlobalData } from './js/GlobalData'
 
 
 export default {
@@ -106,6 +106,7 @@ export default {
         this.workplaceList = []
         this.login = undefined
         this.systemStatus = {WorkMode: -1}
+        ClearGlobalData()
       },
       async ChangeSystemStatus(data){
         this.systemStatus = data
@@ -115,12 +116,15 @@ export default {
         this.ActiveComponentValidate()
       },
       async StartSystem(data){
+        ClearGlobalData()
         DisplayLoad(true)
-        localStorage.setItem('data', data.accessKey)
+        await localStorage.setItem('data', data.accessKey)
+        await InitGlobalData()
         let rezult = await FetchGet('/api/v1/system/get', true)
         this.systemStatus = rezult;
         this.systemStatus.WorkMode = data.type
         this.ActiveComponentValidate()
+        
         DisplayLoad(false)
       },
       ActiveComponentValidate(){
@@ -139,6 +143,7 @@ export default {
           })
           this.systemStatus = {WorkMode: -1}
           this.ComponentStatus = 0
+          ClearGlobalData()
         }
       },
       ChangeColor(){

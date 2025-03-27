@@ -59,6 +59,7 @@
   
 <script>
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
+import { NPList, ChangeNP} from '@/js/GlobalData.js'; 
 import { PagesSettings } from './PagesSettings.js';
 
   export default {
@@ -66,7 +67,7 @@ import { PagesSettings } from './PagesSettings.js';
     mixins: [PagesSettings],
     data(){
       return{
-        dataJson: [],
+        dataJson: [], // локальное хранилище нп
         approved: true,
       }
     },
@@ -111,12 +112,13 @@ import { PagesSettings } from './PagesSettings.js';
         },
         async ReFetch(){
           this.dataJson = await FetchGet('/api/v1/earth/get/list') || []
+          ChangeNP(this.dataJson)
         }
     },
     async mounted() {
       DisplayLoad(true)
+      this.dataJson = await NPList
       this.approved = this.systemStatus.earthStatus
-      await this.ReFetch()
       DisplayLoad(false)
     }
   }

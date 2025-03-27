@@ -8,11 +8,9 @@ let KaSettings = {
     },
     methods:{
       CreateDateTime(time, text = true){
+            if(text) console.log("ТУТ НУЖНО УБРАТЬ")
             let Dtime = UnixToDtime(time)
-            if(!text){
-              return Dtime.date + " " + Dtime.time
-            }
-            return Dtime.date + " " + Dtime.time + " МСК"
+            return Dtime.date + " " + Dtime.time
       },
       ShowLog(Rezult){
           this.dataTable = []

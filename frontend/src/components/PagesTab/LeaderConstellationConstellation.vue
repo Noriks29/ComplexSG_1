@@ -1,6 +1,5 @@
 <template>
     <div class="main_contain RowSection">
-          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="PageSettings.SatSat" @closetable="ShowDefaultTable = false"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
@@ -23,7 +22,7 @@
                 </table>
             </div>
             <div class="FlexColumn">
-              <div><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
+              <div v-if="PageSettings.mode"><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
               <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
               <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>
               <div><button @click="CommandWork(3)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
@@ -40,6 +39,14 @@
                 <td @click="DeleteRow(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr><td colspan="3" @click="AddRow('clusterTopology')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
+            </table>
+          </div>
+          <div v-if="PageSettings.status == 1">
+            <table class="TableDefault">
+              <tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr>
+              <tr v-for="data, index in PageSettings.SatSat" :key="index">
+                <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
+              </tr>
             </table>
           </div>
         </div>
@@ -64,14 +71,12 @@
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings.js';
 import SelectDiv from '../SelectDiv.vue';
-import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'LeaderConstellationConstellation',
     mixins: [PagesSettings],
     components:{
-      DefaultTable,
       SelectDiv
     },
     data(){
@@ -80,23 +85,12 @@ import Plotly from 'plotly.js-dist'
         lessConstellation: [], // облегчённый список ог для селектора
         PageSettings:{
           mode: false, //лидер / все
-          status: 0, //код открытого окна
+          status: 1, //код открытого окна
           SatNp: [], //список контактов сат-нп
           SatSat: [], //список контактов сат-сат
         },
         experimentObject: {angle: 0}, //обьект отправки пост
-        ShowDefaultTable: false,
         ShowPlotlyContain: false,
-        dataLableName: [{lable: "КА", nameParam: "satellite1"},
-                {lable: "Видимый КА", nameParam: "satellite2"},
-                {lable: "Начало", nameParam: "begin"},
-                {lable: "Конец", nameParam: "end"}], //названия полей для таблицы
-        dataTable: [], //данный расчётов
-        
-        arr: [],
-        TableViewWindow:[],
-        AllResponse:[],
-        valueSS: {},
       }
     },
     methods: {
@@ -137,7 +131,9 @@ import Plotly from 'plotly.js-dist'
                 this.PageSettings.status = 0
                 break;
               case 1:
-                await FetchGet('/api/v1/pro42/view/sat', null)
+                
+                if(this.PageSettings.mode) await FetchPost('/api/v1/cluster/pro42',this.experimentObject, null)
+                else await FetchGet('/api/v1/pro42/view/sat', null)
                 await this.ReFetch()
                 break;
               case 2:
@@ -147,7 +143,7 @@ import Plotly from 'plotly.js-dist'
 
               case 3:
                 //Таблица сат-сат
-                this.ShowDefaultTable = true
+                this.PageSettings.status = 1
                 break;
               
               case 4:
@@ -235,13 +231,14 @@ import Plotly from 'plotly.js-dist'
     },
     async mounted() {
       DisplayLoad(true)
+      if(this.systemStatus.WorkMode in {3:null, 4:null}) {
+        this.PageSettings.mode = true
+        this.PageSettings.status = 0
+      }
       this.ReFetch()
       let rezult = await FetchGet("/api/v1/constellation/cl/all") || []
       this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
-      console.log(this.systemStatus)
-      if(this.systemStatus) {
-        this.PageSettings.mode = true
-      }
+      
       this.lessConstellation = []
       rezult.forEach(element => {
         this.lessConstellation.push({lable: element.constellationName, value: element})

@@ -87,8 +87,6 @@
         return {
           dataJson: [],
           dataJsonOG: {},
-          TableDisplay: false,
-          datasave: true,
           KaModels: [],
           KaLableId: {},
           KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}]

@@ -506,3 +506,31 @@ input{
 }
 
 
+
+.TableDefault{
+  filter: drop-shadow(2px 4px 6px black);
+  background-color: #72727226;
+  border-collapse: collapse;
+  border-spacing: 4px !important;
+  padding: 0px !important;
+
+  tr{
+    background-color: rgba(8, 8, 8, 0.755);
+
+    th{
+      border: 1px solid white;
+      border-top: none;
+    }
+    .addButtonIcon{
+      left: 0px;
+      top: 0px;
+      width: 20px;
+      margin: 0px 2px;
+    }
+
+    input{
+      width: calc(100% - 20px);
+    }
+  }
+
+}
