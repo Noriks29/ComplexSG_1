@@ -321,13 +321,14 @@ import { KaSettings } from './KaSettings';
       },
       EventE79(){
         this.dataTable = []
-        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "orderName", nameParam: "Съёмка"},
-        {lable: "gsName", nameParam: "Связь с НП"},
+        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "orderName"},
+        {lable: "Связь с НП", nameParam: "gsName"},
         {lable: "Режим", nameParam: "mode"},{lable: "Заряд АКБ", nameParam: "charge"}]
         for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
           const element = this.modellingRezultSelect.E79[index];
           this.dataTable.push({
             orderName: element.orderName,
+            light: element.light,
             charge: element.charge,
             nRev: element.nRev,
             gsName: element.gsName,
