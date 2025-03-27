@@ -327,11 +327,11 @@ import { KaSettings } from './KaSettings';
         for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
           const element = this.modellingRezultSelect.E79[index];
           this.dataTable.push({
-            orderName: element.orderName,
+            orderName: element.orderName || '-',
             light: element.light,
             charge: element.charge,
             nRev: element.nRev,
-            gsName: element.gsName,
+            gsName: element.gsName || '-',
             mode: element.mode,
             time: UnixToDtime(element.timeBegin).time +' - '+ UnixToDtime(element.timeEnd).time
           }) 
