@@ -12,7 +12,6 @@
         <table class="TableDefault">
       <thead>
         <tr>
-          <th class="smallTh">№</th>
           <th 
             v-for="(data, index) in data"
             :key="index"
@@ -29,7 +28,6 @@
           v-for="(data, index) in dataTable"
           :key="index"
         >
-        <td class="smallTh">{{index}}</td>
 
           <td
             v-for="(dataLable, index) in dataLableName"
