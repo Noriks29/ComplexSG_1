@@ -45,11 +45,11 @@
         {{ approved ? " Утверждено" : "Не Утверждено" }}
         </div>
         <div class="ButtonApproved">
-          <button v-if="approved" @click="ChangeSystemStatus(false, 'earthStatus')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+          <button v-if="approved" @click="ChangeApproved(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
           <button v-if="approved" class="ButtonDefaultShadow"></button>  
         </div>
         <div class="ButtonApproved"> 
-          <button v-if="!approved" @click="ChangeSystemStatus(true, 'earthStatus')" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+          <button v-if="!approved" @click="ChangeApproved(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
           <button v-if="!approved" class="ButtonDefaultShadow"></button>
         </div>
     </div>
@@ -58,8 +58,8 @@
 </template>
   
 <script>
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
-import { NPList, ChangeNP} from '@/js/GlobalData.js'; 
+import {DisplayLoad} from '../../js/LoadDisplayMetod.js'
+import { NPList, ChangeNP, SystemObject, ChangeSystemObject} from '@/js/GlobalData.js'; 
 import { PagesSettings } from './PagesSettings.js';
 
   export default {
@@ -72,13 +72,9 @@ import { PagesSettings } from './PagesSettings.js';
       }
     },
     methods: {
-      async setPost() {
-          await FetchPost("/api/v1/earth/update/byList", this.dataJson)
-        },
         async AddRow(){
           this.dataJson.push({'idNode' : 0, 'nameEarthPoint' : "", 'longitude' : 0, 'latitude' : 0, 'deleted': false});   
-          await this.setPost()
-          await this.ReFetch()
+          this.dataJson = await ChangeNP(this.dataJson)
         },
         ChangeParam(event){
           switch(event.target.name){
@@ -103,22 +99,21 @@ import { PagesSettings } from './PagesSettings.js';
             default:
               alert( "Ошибка!" );
           }
-          this.setPost()
+          ChangeNP(this.dataJson, false)
         },
         async DeleteRow(index){
             this.dataJson[index].deleted = true
-            await this.setPost()
-            await this.ReFetch()
+            this.dataJson = await ChangeNP(this.dataJson)
         },
-        async ReFetch(){
-          this.dataJson = await FetchGet('/api/v1/earth/get/list') || []
-          ChangeNP(this.dataJson)
+        async ChangeApproved(status){
+          await ChangeSystemObject('earthStatus', status)
+          this.approved = SystemObject.earthStatus
         }
     },
     async mounted() {
       DisplayLoad(true)
       this.dataJson = await NPList
-      this.approved = this.systemStatus.earthStatus
+      this.approved = SystemObject.earthStatus
       DisplayLoad(false)
     }
   }

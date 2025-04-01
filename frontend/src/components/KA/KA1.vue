@@ -6,7 +6,7 @@
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
 
       <div class="ContentDiv">
-        <h1 class="TitleText">Планирование съемок  {{ systemStatus.WorkMode == 2? "и доставка" : ""}}</h1>
+        <h1 class="TitleText">Планирование съемок  {{ systemStatus.typeWorkplace == 2? "и доставка" : ""}}</h1>
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
             <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
@@ -318,13 +318,13 @@ import { NPList, OGList } from '@/js/GlobalData';
       },
       EventE79(){
         this.dataTable = []
-        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "orderName"},
+        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "shootingName"},
         {lable: "Связь с НП", nameParam: "gsName"},
         {lable: "Режим", nameParam: "mode"},{lable: "Заряд АКБ", nameParam: "charge"}]
         for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
           const element = this.modellingRezultSelect.E79[index];
           this.dataTable.push({
-            orderName: element.orderName || '-',
+            shootingName: element.shootingName || '-',
             light: element.light,
             charge: element.charge,
             nRev: element.nRev,

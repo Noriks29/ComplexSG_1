@@ -1,42 +1,42 @@
 <template>
     <transition name="translate" mode="out-in" v-if="activeComponent != ''">
       <div class="ComponentSelect">
-        <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="systemStatus" @ChangeSystemStatus="ChangeSystemStatus" ></component> 
+        <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :system="system" @Changesystem="Changesystem" ></component> 
       </div>
     </transition> 
-    <div class="SectionMenu" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
-      <div v-if="systemStatus.WorkMode == -1" class="ModellingDiv"></div>
-      <transition name="ComponentModelling" mode="out-in" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
+    
+    <div class="SectionMenu" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
+      <div v-if="system.typeWorkplace == -1" class="ModellingDiv"></div>
+      <transition name="ComponentModelling" mode="out-in" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
         <div class="ModellingDiv">
-          <component :is="ComponentModellingList[systemStatus.WorkMode]" v-if="systemStatus.WorkMode > 0" :systemStatus="systemStatus" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
+          <component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
         </div>
       </transition> 
-      
       <div class="FlexMenuSection">
         <div class="ButtonSection first">
           <h1>КС</h1>
           <div class="ButtonList">
-            <button class="active" @click="SelectComponent('NP')"><div :class="systemStatus.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
-            <button class="active" @click="SelectComponent('OG')"><div :class="systemStatus.constellationStatus ? 'approved' : 'Notapproved'"></div>КА и ОГ</button>
+            <button class="active" @click="SelectComponent('NP')"><div :class="system.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
+            <button class="active" @click="SelectComponent('OG')"><div :class="system.constellationStatus ? 'approved' : 'Notapproved'"></div>КА и ОГ</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
           </div>   
         </div>
         <div class="ButtonSection second">
           <h1>Связь</h1>
           <div class="ButtonList">
-            <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="systemStatus.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
-            <button v-if="systemStatus.WorkMode in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
-            <button v-else-if="!(systemStatus.WorkMode in {1:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="systemStatus.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="system.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
+            <button v-if="system.typeWorkplace in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
+            <button v-else-if="!(system.typeWorkplace in {1:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
-            <button v-if="!(systemStatus.WorkMode in {5:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
+            <button v-if="!(system.typeWorkplace in {5:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
-        <div class="ButtonSection fourth" v-if:="!(systemStatus.WorkMode in {2:null,4:null})">
+        <div class="ButtonSection fourth" v-if:="!(system.typeWorkplace in {2:null,4:null})">
           <h1>Инструменты</h1>
           <div class="ButtonList">
             <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="ContainerSystem">
-          <div class="PanelSystemData" :class="systemStatus.WorkMode == -1 ? 'hide' : 'show'">
+          <div class="PanelSystemData" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
             <button @click="SelectComponent('LogEventList')" class="ButtonCommand">Логи событий</button>
             <button @click="SaveWorkplace" class="ButtonCommand">Сохранить копию данных</button>
             <label class="input-file">
@@ -60,7 +60,7 @@
 <script>
 import { saveAs } from 'file-saver';
 import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
-import { NPList, OGList } from '@/js/GlobalData';
+import { NPList, OGList, SystemObject } from '@/js/GlobalData';
 
 import NP from "./PagesTab/NP.vue";
 import OG from './PagesTab/OG.vue'
@@ -84,9 +84,6 @@ import LeaderConstellationConstellation from './PagesTab/LeaderConstellationCons
 export default {
   name: 'TemplateComponent',
   props:{
-    systemStatus:{
-          type: Object
-        },
     ActiveComponent:{
           type: Number
         },
@@ -116,6 +113,7 @@ export default {
   data(){
       return{
         activeComponent: "",
+        system: {typeWorkplace: -1},
         reload: 0,
         ExperimentStatus: false,
         ComponentModellingList: [null,"KA1","KA1","KAControl_In","KAControl_Out","KARealTime","KAGordeev",null]
@@ -132,12 +130,14 @@ export default {
       },
       ChangeComponents() {
         this.activeComponent = ''
+        this.system = SystemObject
+        console.log(SystemObject, "dsfdsfsdf")
         if(!this.ExperimentStatus){
           this.reload++
         }
       },
-      ChangeSystemStatus(status){
-        this.$emit('ChangeSystemStatus', status)
+      Changesystem(status){
+        this.$emit('Changesystem', status)
       },
       async SaveWorkplace(){
         DisplayLoad(true)
@@ -205,7 +205,11 @@ export default {
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
         }
       }
-    }
+    },
+    created(){
+      this.system = SystemObject
+      console.log(this.system)
+    },
 }
 
 </script>

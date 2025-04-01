@@ -8,11 +8,8 @@
           <div class="inputdiv"><input type="text" v-model="OG_Param.inputName"></div>
           <div class="SelectDivInFlex">
             <SelectDiv  
-                :dataOption="[{value: 1, lable: 'Произвольное построение' },
-                  {value: 0, lable: 'Системное построение' },
-                  {value: 2, lable: 'загрузить ОГ из TLE' },
-                ]" 
-                :valueS="{value: true, lable: 'Произвольное построение' }"
+                :dataOption="typeAddList" 
+                :valueS="typeAddList[0]"
                 @valueSelect="SelectChange"/>
           </div>
           <div>
@@ -55,6 +52,7 @@
   
   import SelectDiv from '@/components/SelectDiv.vue';
   import { FetchPost, FetchGet, FetchPostFile } from '@/js/LoadDisplayMetod';
+  import { SystemObject } from '@/js/GlobalData';
 
   
     export default {
@@ -69,7 +67,11 @@
                 inputName: undefined,
                 type: true
             },
-            KaModels: []
+            typeAddList:[{value: 1, lable: 'Произвольное построение' },
+                  {value: 0, lable: 'Системное построение' },
+                  {value: 2, lable: 'загрузить ОГ из TLE' },
+                ],
+            KaModels: [],
         }
       },
       methods:
@@ -81,7 +83,6 @@
             this.OG_Param.parametersCalculation.modelSat.id = data.value
           },
           ChangeGenerateParam(target){
-            //console.log(target.target.name, target.target.value)
             this.OG_Param.parametersCalculation[target.target.name] = Number(target.target.value)
           },
           SelectChange(data){
@@ -101,7 +102,6 @@
               }
             }
             else if(data.value == 2){
-              console.log("File Load")
               this.OG_Param = {
                 inputName: this.OG_Param.inputName,
                 type: undefined,
@@ -152,10 +152,8 @@
                 }
               }
               else if(this.OG_Param.type == undefined){
-
                 const formData = new FormData(); // Создаем FormData
                 const file = this.OG_Param.file
-                //console.log(file)
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.inputName); // Добавляем имя
                 formData.append('inputType', 3);
@@ -184,11 +182,19 @@
           
         },
         async mounted(){
-          let result = await FetchGet('/api/v1/modelsat/all') || []
-          this.KaModels = []
-          for (let index = 0; index < result.length; index++) {
-            this.KaModels.push({value: result[index].id, lable:  result[index].modelName});
+          console.log(SystemObject)
+          if(SystemObject.typeWorkplace == 6){
+            this.typeAddList = [{value: 2, lable: 'загрузить ОГ из TLE' }]
+            this.SelectChange({value: 2})
           }
+          else{
+            let result = await FetchGet('/api/v1/modelsat/all') || []
+            this.KaModels = []
+            for (let index = 0; index < result.length; index++) {
+              this.KaModels.push({value: result[index].id, lable:  result[index].modelName});
+            }
+          }
+          
         }
     }
   </script>

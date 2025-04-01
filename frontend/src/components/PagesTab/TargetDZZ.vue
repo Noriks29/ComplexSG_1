@@ -22,7 +22,7 @@
                     </tr>
                   </table>
             </div>
-            <div  v-if="systemStatus.WorkMode !== 5">
+            <div  v-if="systemStatus.typeWorkplace !== 5">
               <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
             </div>
@@ -31,7 +31,7 @@
         <div class="Panel vwPanel" v-if="viewmode == 0">
             <table class="TableDefault">
               <tr>
-                <th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.WorkMode in {3:null,4:null}">Признак</th><th></th>
+                <th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th>
               </tr>
               <tr
               v-for="data, index in requestJson"
@@ -47,7 +47,7 @@
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
-              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')" v-if="systemStatus.WorkMode in {3:null,4:null}"/></td>
+              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')" v-if="systemStatus.typeWorkplace in {3:null,4:null}"/></td>
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr class="addRowButton">
@@ -84,7 +84,7 @@
           </table>
         </div>
 
-        <div class="Panel" v-if="systemStatus.WorkMode == 5">
+        <div class="Panel" v-if="systemStatus.typeWorkplace == 5">
           <table class="TableDefault">
             <tr>
               <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
@@ -233,7 +233,7 @@ import XLSX from 'xlsx-js-style';
                       "filter": false,
                       "deleted": null, 'role': "newRow"
                 };
-        if(this.systemStatus.WorkMode in {3:null,4:null}){
+        if(this.systemStatus.typeWorkplace in {3:null,4:null}){
           addedRow.type = 0
         }
             this.requestJson.push(addedRow);   
@@ -422,7 +422,7 @@ import XLSX from 'xlsx-js-style';
           console.log(this.requestJson)
           const workbook = XLSX.utils.book_new();
           let data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
-          if(this.systemStatus.WorkMode in {3:null,4:null}){
+          if(this.systemStatus.typeWorkplace in {3:null,4:null}){
             data.push("Признак")
           }
 
@@ -433,7 +433,7 @@ import XLSX from 'xlsx-js-style';
             let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
               element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time,false), this.CreateDateTime(element.term,false)
             ]
-            if(this.systemStatus.WorkMode in {3:null,4:null}){
+            if(this.systemStatus.typeWorkplace in {3:null,4:null}){
               row.push(this.TypeRequest[element.type].lable)
             }
             data.push(row)
@@ -477,7 +477,7 @@ import XLSX from 'xlsx-js-style';
     async mounted() {
       //console.log(this.systemStatus)
       DisplayLoad(true)
-      if(this.systemStatus.WorkMode == 5){
+      if(this.systemStatus.typeWorkplace == 5){
         this.viewmode = -1
       }
       NPList.forEach(element => {

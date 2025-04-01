@@ -33,11 +33,11 @@
             {{ approved ? " Утверждено" : "Не Утверждено" }}
           </div>
           <div v-if="approved" class="ButtonApproved">
-            <button @click="ChangeSystemStatus(false, 'constellationStatus')" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
+            <button @click="ChangeApproved(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>  
           </div>
           <div v-else class="ButtonApproved"> 
-            <button @click="ChangeSystemStatus(true, 'constellationStatus')" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
+            <button @click="ChangeApproved(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
             <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
           </div>
     </div>
@@ -50,7 +50,7 @@ import TableData from './OG/OG_tableFree.vue'
 import {DisplayLoad, FetchGet, FetchPost} from '@/js/LoadDisplayMetod'
 import CreateOGPanel from './OG/CreateOGPanel.vue'
 import { PagesSettings } from './PagesSettings.js';
-import { OGList, ChangeOG } from '@/js/GlobalData';
+import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalData';
 
 
   export default {
@@ -58,7 +58,6 @@ import { OGList, ChangeOG } from '@/js/GlobalData';
     mixins: [PagesSettings],
     data() {
       return {
-        OGTableExists: false,
         OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"},
         dataJson: [],
         selectOG: undefined,
@@ -73,7 +72,10 @@ import { OGList, ChangeOG } from '@/js/GlobalData';
     },
     methods: {
       async closeTable(table) {
-        await this.reFetch()
+        if(!this.approved){
+          await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
+        }
+        this.dataJson = OGList
         if(table == "dataOG"){
           this.selectOG = undefined
         }
@@ -81,20 +83,20 @@ import { OGList, ChangeOG } from '@/js/GlobalData';
           this.addRowTable = false
         }
       },
-      async reFetch(){
-        this.dataJson = []
-        this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
-        ChangeOG(this.dataJson)
-      },
       async DeleteRowOG(data){
         await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
         this.selectOG = undefined
-        this.reFetch()
+        this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
+        ChangeOG(this.dataJson)
       },
+      async ChangeApproved(status){
+          await ChangeSystemObject('constellationStatus', status)
+          this.approved = SystemObject.constellationStatus
+        }
     },
     async mounted(){
       DisplayLoad(true)
-      this.approved = this.systemStatus.constellationStatus
+      this.approved = SystemObject.constellationStatus
       this.dataJson = OGList
       DisplayLoad(false)
     },

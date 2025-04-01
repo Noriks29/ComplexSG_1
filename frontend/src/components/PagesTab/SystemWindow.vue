@@ -33,7 +33,7 @@
           <tr>
             <th colspan="2" class="Title">Аспекты системы управления</th><th></th>
           </tr>
-          <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="systemStatus.step"><label for="step"></label></td></tr>
+          <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="dataSystem.step"><label for="step"></label></td></tr>
         </table>
         </div>
       </div>
@@ -43,6 +43,7 @@
   <script>
 import DateTime from '../DateTime.vue';
 import { PagesSettings } from './PagesSettings';
+import { SystemObject, ChangeSystemObject } from '@/js/GlobalData';
 
   export default {
     name: 'SystemWindow',
@@ -57,20 +58,15 @@ import { PagesSettings } from './PagesSettings';
     },
     methods: {
       ChangeTime(obgTime){
-        this.dataSystem[obgTime.id] = obgTime.time
-        this.ChangeSystemStatusInSystem()
+        ChangeSystemObject(obgTime.id, obgTime.time)
       },
       ChangeParam(target){
-        this.dataSystem.step = Math.floor(target.target.value)
-        this.ChangeSystemStatusInSystem()
+        ChangeSystemObject('step',  Math.floor(target.target.value))
       },
-      ChangeSystemStatusInSystem(){
-        this.$emit('ChangeSystemStatus', this.dataSystem)
-      }, 
     },
     created(){
-      this.dataSystem = this.systemStatus
-    }
+      this.dataSystem = SystemObject
+    },
   }
   </script>
 
