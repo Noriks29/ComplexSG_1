@@ -1,46 +1,41 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
       <TableData v-if="selectOG != undefined" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTable('dataOG')"/>
       <CreateOGPanel v-if="addRowTable" @closetable="closeTable('CreateOG')"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="@/assets/exit.svg"><span>&#8203;</span>
             </button>
+            <h1 class="TitleText">Орбитальные группировки и космические аппараты</h1>
           </div>
+
     <div class="ContentDiv">
-        <h1 class="TitleText">Список орбитальных группировок</h1>
-          
-    <div class="SelectDivPanel Panel MaxWidth">
-      <table style="border-spacing: 0 1em;">
-        <tr v-for="data, index in dataJson"
+    <div class="Panel LeftPanel">
+      <div>Список ОГ</div>
+        <div v-for="data, index in dataJson"
           :key="index"
           v-show="!(data.deleted==true)"
-          class="PanelDefault"
+          class="ElementCol"
         >
-          <td  @click="selectOG = data">{{ data.constellationName }}</td>
-          <td  @click="selectOG = data">{{ OGType[data.inputType] }}</td>
-          <td class="iconDelete" v-if="!approved && !modellingStatus" @click="DeleteRowOG(data)"><img  src="@/assets/delete.svg" alt="Удалить"></td>
-        </tr>
-        <tr v-if="!approved && !modellingStatus" class="PanelDefault">
-          <td @click="addRowTable = true" colspan="3" style="text-align: center;"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</td>
-        </tr>
-      </table>
+          <div  @click="selectOG = data" type="name">{{ data.constellationName }}</div>
+          <div  @click="selectOG = data" type="type">{{ OGType[data.inputType] }}</div>
+          <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
+        </div>
+        <div>
+          <button class="ButtonCommand" :class="approved? '' : 'disable'"  @click="addRowTable = true"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
+        </div>
+
+
+        <div class="ButtonApprovedDiv"><button @click="ChangeApproved" class="ButtonCommand" :class="approved? 'green' : 'red'">
+          <span v-if="approved"><img src="../../assets/edit.svg"></span>
+          <span v-else><img src="../../assets/approve.svg"></span>
+          <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
+        </button></div>
     </div>
+
           
      
-    <div class="Panel TableInfo MaxWidth" v-if="!modellingStatus">
-          <div :class="approved ? 'Yes' :'No'">
-            {{ approved ? " Утверждено" : "Не Утверждено" }}
-          </div>
-          <div v-if="approved" class="ButtonApproved">
-            <button @click="ChangeApproved(false)" class="ButtonDefault"> <img src="../../assets/edit.svg">Редактировать</button> 
-            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>  
-          </div>
-          <div v-else class="ButtonApproved"> 
-            <button @click="ChangeApproved(true)" class="ButtonDefault"> <img src="../../assets/approve.svg">Утвердить</button>
-            <button class="ButtonDefaultShadow"><span>&#8203;</span></button>
-          </div>
-    </div>
+    
   </div>
 </div>
 </template>
@@ -89,9 +84,9 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
         this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
         ChangeOG(this.dataJson)
       },
-      async ChangeApproved(status){
-          await ChangeSystemObject('constellationStatus', status)
-          this.approved = SystemObject.constellationStatus
+      async ChangeApproved(){
+          this.approved = !this.approved
+          await ChangeSystemObject('constellationStatus', this.approved)
         }
     },
     async mounted(){
@@ -105,6 +100,47 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
   </script>
 
 <style lang="scss" scoped>
+.ElementCol{
+  display: grid;
+  grid-template-columns: 4fr 3fr 1fr;
+  background: var(--background-Button1);
+  color: var(--color-Main);
+  border: 1px solid var(--border-button);
+  padding: 5px;
+  font-size: var(--font-size);
+  border-radius: 5px;
+  margin: 1px 5px;
+  transition: all 0.2s;
+  
+  div{
+    flex: 0 1 auto; 
+    padding: 5px 10px;
+    &[type="name"]{
+      flex-basis: 40%;
+    }
+    &[type="type"]{
+      flex-basis: 40%;
+    }
+    &[type="icon"]{
+      flex-basis: 20%;
+    }
+  }
+}
+.ButtonApprovedDiv button{
+  display: flex;
+  width: 94%;
+  justify-content: space-between;
+  margin: 3%;
+  align-items: center;
+  transition: box-shadow 1s ;
+
+  &.red{
+    box-shadow: inset -2px -2px 1px 0px red;
+  }
+  &.green{
+    box-shadow: inset 2px 2px 1px 0px green;
+  }
+}
 .SelectDivPanel{
     display: flex;
     flex-direction: column;
@@ -114,25 +150,10 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
 
   }
 }
-
-table{
-  width: 96%;
-  padding: 2%;
-  td{
-    padding: 20px 10px;
-  }
-  border-spacing: 0 1em;
-}
-
-.iconDelete{
+.iconDelete img{
   width: 30px;
 }
 
-.PanelDefault{
-  background-color: rgba(151, 151, 151, 0.15);
-  box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
-  border: 2px solid rgba(0, 0, 0, 0.25);
-}
 
 
 

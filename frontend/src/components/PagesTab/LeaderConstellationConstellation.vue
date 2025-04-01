@@ -4,7 +4,7 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <div>План контактов КА – КА</div>
+            <div class="TitleText">План контактов КА – КА</div>
           </div>
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
@@ -249,75 +249,9 @@ import Plotly from 'plotly.js-dist'
   </script>
 
 <style lang="scss" scoped>
-.main_contain{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  color: white;
 
-  &.RowSection{
-    display: flex;
 
-    .ContentDiv{
-      flex: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: stretch;
 
-      .Panel{
-        &.RightPanel{
-          flex: 1;
-          overflow-y: auto;
-        }
-      }
-    }
-  }
-}
-td{
-  text-align: left;
-}
-th{
-  border-bottom: 2px solid white;
-
-}
-.PanelDefault{
-    
-    .SystemInfo{
-        display: flex;
-        flex-wrap: wrap;
-        align-content: center;
-        align-items: center;
-        color: white;
-        text-align: left;
-        padding: 10px;
-        justify-content: space-around;
-
-        .paddl{
-            padding-left: 15px;
-        }
-    }
-}
-.CommandButtons{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    div{
-        padding: 5px;
-    }
-}
-
-.FlexColumn{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  div{
-    width: 100%;
-    button{
-      width: 96%;
-      text-align: start;
-    }
-  }
-}
 
 
 

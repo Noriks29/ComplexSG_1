@@ -1,7 +1,7 @@
 <template>
     <transition name="translate" mode="out-in" v-if="activeComponent != ''">
       <div class="ComponentSelect">
-        <component :is="activeComponent" :ActiveComponent="ActiveComponents" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :system="system" @Changesystem="Changesystem" ></component> 
+        <component :is="activeComponent" :FillingDataStatus="FillingDataStatuss" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
       </div>
     </transition> 
     
@@ -24,23 +24,23 @@
         <div class="ButtonSection second">
           <h1>Связь</h1>
           <div class="ButtonList">
-            <button :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="system.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
-            <button v-if="system.typeWorkplace in {4:null, 3:null}" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
-            <button v-else-if="!(system.typeWorkplace in {1:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
+            <button :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="system.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
+            <button v-if="system.typeWorkplace in {4:null, 3:null}" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
+            <button v-else-if="!(system.typeWorkplace in {1:null})" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
           </div>
         </div>
         <div class="ButtonSection third" >
           <h1>Исходные данные</h1>
           <div class="ButtonList">
-            <button v-if="!(system.typeWorkplace in {5:null})" :class="ActiveComponent && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
+            <button v-if="!(system.typeWorkplace in {5:null})" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
             <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
           </div>
         </div>
         <div class="ButtonSection fourth" v-if:="!(system.typeWorkplace in {2:null,4:null})">
           <h1>Инструменты</h1>
           <div class="ButtonList">
-            <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
-            <button :class="ActiveComponent > 0 ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Видимость целей (Оценка ОГ)</button>
+            <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
+            <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Видимость целей (Оценка ОГ)</button>
           </div>
         </div>
       </div>
@@ -62,10 +62,7 @@ import { saveAs } from 'file-saver';
 import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
 import { NPList, OGList, SystemObject } from '@/js/GlobalData';
 
-import NP from "./PagesTab/NP.vue";
-import OG from './PagesTab/OG.vue'
-import TypeKA from './PagesTab/TypeKA.vue';
-import LogEventList from "./LogEventList/LogEventList.vue";
+
 
 import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
@@ -73,6 +70,10 @@ import KAControl_In from './KA/KAControl_In.vue'
 import KAControl_Out from './KA/KAControl_Out.vue'
 import KAGordeev from "./KA/KAGordeev.vue";
 
+import NP from "./PagesTab/NP.vue";
+import OG from './PagesTab/OG.vue'
+import TypeKA from './PagesTab/TypeKA.vue';
+import LogEventList from "./LogEventList/LogEventList.vue";
 import SystemWindow from './PagesTab/SystemWindow.vue';
 import TargetDZZ from './PagesTab/TargetDZZ.vue'
 import EarthConstellation from './PagesTab/EarthConstellation.vue'
@@ -83,17 +84,10 @@ import LeaderConstellationConstellation from './PagesTab/LeaderConstellationCons
 
 export default {
   name: 'TemplateComponent',
-  props:{
-    ActiveComponent:{
-          type: Number
-        },
-    
-  },
   components: {
     NP,
     OG,
     TypeKA,
-    
     SystemWindow,
     TargetDZZ,
     EarthConstellation,
@@ -108,11 +102,11 @@ export default {
     KAControl_In,
     KAControl_Out,
     KAGordeev
-
   },
   data(){
       return{
         activeComponent: "",
+        FillingDataStatus: 0,
         system: {typeWorkplace: -1},
         reload: 0,
         ExperimentStatus: false,
@@ -131,13 +125,10 @@ export default {
       ChangeComponents() {
         this.activeComponent = ''
         this.system = SystemObject
-        console.log(SystemObject, "dsfdsfsdf")
+        this.ChengeFillingDataStatus()
         if(!this.ExperimentStatus){
           this.reload++
         }
-      },
-      Changesystem(status){
-        this.$emit('Changesystem', status)
       },
       async SaveWorkplace(){
         DisplayLoad(true)
@@ -155,7 +146,6 @@ export default {
         result.systemId = undefined
         dataLoad.system = result
 
-      
         result = OGList
         for (let index = 0; index < result.length; index++) {
           const element = result[index];
@@ -204,11 +194,20 @@ export default {
           formData.append('file', file);
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
         }
+      },
+      ChengeFillingDataStatus(){
+      if(this.system.constellationStatus && this.system.earthStatus){
+        this.FillingDataStatus = 1
+      }
+      else{
+        this.FillingDataStatus = 0
       }
     },
+    },
+    
     created(){
       this.system = SystemObject
-      console.log(this.system)
+      this.ChengeFillingDataStatus()
     },
 }
 
