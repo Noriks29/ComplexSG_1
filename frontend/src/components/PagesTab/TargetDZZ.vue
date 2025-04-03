@@ -22,7 +22,7 @@
                     </tr>
                   </table>
             </div>
-            <div  v-if="systemStatus.typeWorkplace !== 5">
+            <div  v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
               <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
             </div>
@@ -84,7 +84,7 @@
           </table>
         </div>
 
-        <div class="Panel" v-if="systemStatus.typeWorkplace == 5">
+        <div class="Panel" v-if="systemStatus.typeWorkplace in {4:null, 5:null}">
           <table class="TableDefault">
             <tr>
               <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
@@ -476,7 +476,7 @@ import XLSX from 'xlsx-js-style';
     
     async mounted() {
       DisplayLoad(true)
-      if(this.systemStatus.typeWorkplace == 5){
+      if(this.systemStatus.typeWorkplace in {4:null, 5:null}){
         this.viewmode = -1
       }
       NPList.forEach(element => {
