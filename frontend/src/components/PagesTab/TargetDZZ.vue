@@ -339,11 +339,11 @@ import XLSX from 'xlsx-js-style';
           this.map = {}
           console.log(await document.getElementById("map"))
 
-          this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 4);
+          this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 2);
           L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
           {
             minZoom: 2, 
-            maxZoom: 15,
+            maxZoom: 5,
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(this.map);
           let DefaultIcon = new L.icon({
@@ -475,7 +475,6 @@ import XLSX from 'xlsx-js-style';
     },
     
     async mounted() {
-      //console.log(this.systemStatus)
       DisplayLoad(true)
       if(this.systemStatus.typeWorkplace == 5){
         this.viewmode = -1
@@ -553,8 +552,8 @@ th{
   background-color: #2b2b2b;
   position: relative;
     outline-style: none;
-    height: 80vh;
-    width: 80vw;
+    height: 85vh;
+    width: 90vw;
   margin: 10px;
   .leaflet-map-pane{
             pointer-events: none;

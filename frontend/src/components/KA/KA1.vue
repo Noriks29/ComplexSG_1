@@ -21,8 +21,9 @@
               <tr><td>Количество заявок:</td><td>{{ purposesJson }}</td></tr>
               <tr><td>Количество НП:</td><td>{{ earthList.length }}</td></tr>
               <tr><td>Количество КА:</td><td></td></tr>
+              
               <tr 
-                v-for="(data, index) in OGList"
+                v-for="(data, index) in ConstellationJson"
                 :key="index"
               >
               <td>- {{ data.constellationName }}:</td><td>{{ data.satellites.length }} КА</td>
@@ -99,6 +100,8 @@ import { NPList, OGList } from '@/js/GlobalData';
     data(){
       return{
         purposesJson: 0,
+        OGList: [], // подгружаем импорты
+        NPList: [], // подгружаем импорты
         ConstellationJson: [],
         ShowDefaultTable: false,
         PreWrapDefaultTable: false,
@@ -371,13 +374,13 @@ import { NPList, OGList } from '@/js/GlobalData';
       },
       async ReLoadComponent(){
         this.earthList = NPList
-
+        this.ConstellationJson = OGList
         let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
         this.arr = []
-        for (let i = 0; i < OGList.length; i++) {
-          for (let index = 0; index < OGList[i].satellites.length; index++) {
-            const element = OGList[i].satellites[index];
+        for (let i = 0; i < this.ConstellationJson.length; i++) {
+          for (let index = 0; index < this.ConstellationJson[i].satellites.length; index++) {
+            const element = this.ConstellationJson[i].satellites[index];
             this.arr.push({value: element.satelliteId, lable: element.name})
           }
         }

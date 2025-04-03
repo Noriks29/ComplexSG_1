@@ -6,7 +6,6 @@
     </transition> 
     
     <div class="SectionMenu" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
-      <div v-if="system.typeWorkplace == -1" class="ModellingDiv"></div>
       <transition name="ComponentModelling" mode="out-in" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
         <div class="ModellingDiv">
           <component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
@@ -79,11 +78,11 @@ import TargetDZZ from './PagesTab/TargetDZZ.vue'
 import EarthConstellation from './PagesTab/EarthConstellation.vue'
 import EstimationConstellation from './PagesTab/EstimationConstellation.vue'
 import TargetRoad from './PagesTab/TargetRoad.vue';
-import ConstellationConstellation from './PagesTab/ConstellationConstellation.vue';
 import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
 export default {
   name: 'TemplateComponent',
+  emits: ['changeExperimentStatus'],
   components: {
     NP,
     OG,
@@ -93,7 +92,6 @@ export default {
     EarthConstellation,
     EstimationConstellation,
     TargetRoad,
-    ConstellationConstellation,
     LeaderConstellationConstellation,
     LogEventList,
 
@@ -119,7 +117,7 @@ export default {
       },
       ChangeExperimentStatus(status){
         this.ExperimentStatus = status.status
-        this.$emit('ChangeExperimentStatus', this.ExperimentStatus)
+        this.$emit('changeExperimentStatus', this.ExperimentStatus)
         this.reload++
       },
       ChangeComponents() {

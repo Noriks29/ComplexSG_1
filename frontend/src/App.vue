@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+    <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @changeExperimentStatus="ChangeExperimentStatus"/>
     
     <LoadProcess />
     <div class="ChangeViewMode" @click="ChangeColor"><svg fill="none" height="24" stroke-width="1.5" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 12L23 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2V1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 23V22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 20L19 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4L19 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20L5 19" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 4L5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 12L2 12" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
@@ -44,12 +44,10 @@
 </template> 
 <script>
 import TemplateComponent from './components/TemplateComponent.vue'
-
 import {DisplayLoad, FetchPost} from './js/LoadDisplayMetod.js'
 import LoadProcess from './components/LoadProcess.vue'
 import GlobalStyle from './style/GlobalStyle.scss'
 import { ClearGlobalData, InitGlobalData, SystemObject } from './js/GlobalData'
-
 
 export default {
   name: 'App',
@@ -62,7 +60,8 @@ export default {
       login: undefined,
       errorLogin: false,
       experimentStatus: false,
-      workplaceList: []
+      workplaceList: [],
+      SystemObject: null
     };
   },
   methods: {

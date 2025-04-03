@@ -231,7 +231,7 @@ import Plotly from 'plotly.js-dist'
     },
     async mounted() {
       DisplayLoad(true)
-      if(this.systemStatus.WorkMode in {3:null, 4:null}) {
+      if(this.systemStatus.typeWorkplace in {3:null, 4:null}) {
         this.PageSettings.mode = true
         this.PageSettings.status = 0
       }
