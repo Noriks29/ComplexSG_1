@@ -1,7 +1,7 @@
 <template>
     <div class="main_contain RowSection">
-      <TableData v-if="selectOG != undefined" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTable('dataOG')"/>
-      <CreateOGPanel v-if="addRowTable" @closetable="closeTable('CreateOG')"/>
+      <TableData v-if="PageSettings.status==1" :dataOGLocal="selectOG" :approved="approved" @closetable="closeTable('dataOG')"/>
+      <CreateOGPanel v-if="PageSettings.status == 2" @closetable="closeTable('CreateOG')"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="@/assets/exit.svg"><span>&#8203;</span>
@@ -17,26 +17,32 @@
           v-show="!(data.deleted==true)"
           class="ElementCol"
         >
-          <div  @click="selectOG = data" type="name">{{ data.constellationName }}</div>
-          <div  @click="selectOG = data" type="type">{{ OGType[data.inputType] }}</div>
+          <div  @click="SelectOGFromList(data)" type="name">{{ data.constellationName }}</div>
+          <div  @click="SelectOGFromList(data)" type="type">{{ OGType[data.inputType] }}</div>
           <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
         </div>
         <div>
-          <button class="ButtonCommand" :class="approved? '' : 'disable'"  @click="addRowTable = true"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
+          <button class="ButtonCommand" :class="!approved? '' : 'disable'"  @click="PageSettings.status=2"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
         </div>
-
-
-        <div class="ButtonApprovedDiv"><button @click="ChangeApproved" class="ButtonCommand" :class="approved? 'green' : 'red'">
+        
+        <div class="ButtonApprovedDiv"><button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
           <span v-if="approved"><img src="../../assets/edit.svg"></span>
           <span v-else><img src="../../assets/approve.svg"></span>
           <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
         </button></div>
     </div>
 
-          
-     
-    
-  </div>
+
+    <div class="Panel RightPanel">
+
+          <div v-if="PageSettings.status == 0">
+            <div>в разработке</div>
+            <p>{{  JSON.stringify(dataJson, null, 2) }}</p>
+          </div>
+
+
+    </div>
+</div>
 </div>
 </template>
   
@@ -55,6 +61,9 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
       return {
         OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"},
         dataJson: [],
+        PageSettings:{
+          status: 0
+        },
         selectOG: undefined,
         approved: true,
         addRowTable: false,
@@ -66,27 +75,27 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
       CreateOGPanel
     },
     methods: {
-      async closeTable(table) {
+      async closeTable() {
         if(!this.approved){
-          await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
+          this.dataJson = await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
         }
-        this.dataJson = OGList
-        if(table == "dataOG"){
-          this.selectOG = undefined
-        }
-        if(table == "CreateOG"){
-          this.addRowTable = false
-        }
+        this.PageSettings.status = 0
+      },
+      SelectOGFromList(data){
+        this.PageSettings.status = 1
+        this.selectOG = data
       },
       async DeleteRowOG(data){
-        await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
-        this.selectOG = undefined
-        this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
-        ChangeOG(this.dataJson)
+        if(!this.approved){
+          await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
+          this.selectOG = undefined
+          this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
+          ChangeOG(this.dataJson)
+        }
       },
-      async ChangeApproved(){
-          this.approved = !this.approved
-          await ChangeSystemObject('constellationStatus', this.approved)
+      async ChangeApproved(stat){
+          this.approved = stat
+          await ChangeSystemObject('constellationStatus', stat)
         }
     },
     async mounted(){
@@ -95,7 +104,6 @@ import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalDa
       this.dataJson = OGList
       DisplayLoad(false)
     },
-    
   }
   </script>
 

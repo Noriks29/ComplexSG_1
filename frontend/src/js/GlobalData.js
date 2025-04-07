@@ -11,6 +11,7 @@ export async function ChangeNP(data, update = true){
 export let OGList = null
 export function ChangeOG(data){
     OGList = data
+    return OGList
 }
 
 export let SystemObject = null
