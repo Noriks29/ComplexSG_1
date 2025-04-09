@@ -213,8 +213,6 @@ import SelectDiv from "../SelectDiv.vue"
           console.log("нет результата")
           this.modellingNull = true
         }
-        
-
         DisplayLoad(false)
       },
       ParceModellingRezult(){

@@ -27,6 +27,7 @@
               <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>
               <div><button @click="CommandWork(3)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
               <div><button @click="CommandWork(4)" class="ButtonCommand">Графическое представление плана контактов</button></div>
+              <div v-if="PageSettings.mode"><button @click="CommandWork(5)" class="ButtonCommand">Полносвязная сеть</button></div>
             </div>
         </div>
         <div class="Panel RightPanel">
@@ -47,6 +48,20 @@
               <tr v-for="data, index in PageSettings.SatSat" :key="index">
                 <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
               </tr>
+            </table>
+          </div>
+
+          <div v-if="PageSettings.status == 2">
+            <h1>Структура полносвязной сети</h1>
+            <table>
+              <tr><th></th><th>Время начала</th><th>Время окончания</th><th></th></tr>
+              <tr v-for="data, index in networkClaster" :key="index">
+                <td>{{ data.meshNetworkId }}</td>
+                <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
+                <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
+                <td @click="DeleteRowNetwork(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              </tr>
+              <tr><td colspan="3" @click="AddRow('network')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
             </table>
           </div>
         </div>
@@ -72,16 +87,19 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings.js';
 import SelectDiv from '../SelectDiv.vue';
 import Plotly from 'plotly.js-dist'
+import DateTime from '../DateTime.vue';
 
   export default {
     name: 'LeaderConstellationConstellation',
     mixins: [PagesSettings],
     components:{
-      SelectDiv
+      SelectDiv,
+      DateTime
     },
     data(){
       return{
         clusterTopology: [], // топология сети
+        networkClaster: [], //полносвязная сеть
         lessConstellation: [], // облегчённый список ог для селектора
         PageSettings:{
           mode: false, //лидер / все
@@ -107,6 +125,16 @@ import Plotly from 'plotly.js-dist'
             await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
             this.ReFetch()
             break;
+          case 'network':
+            this.networkClaster.push({
+                "beginTime": 10000000,
+                "endTime": 10002000,
+                "deleted": null
+              })
+            await FetchPost('/api/v1/network/update', this.networkClaster, null)
+            this.ReFetch()
+          
+            break;
         
           default:
             break;
@@ -117,9 +145,21 @@ import Plotly from 'plotly.js-dist'
         await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
         this.ReFetch()
       },
+      async DeleteRowNetwork(index){
+        this.networkClaster[index].deleted= true
+        await FetchPost('/api/v1/network/update', this.networkClaster, null)
+        this.ReFetch()
+      },
+      
       async ChangeCluster(event, param){
         this.clusterTopology[event.id][param] = event.value
         await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
+        this.ReFetch()
+      },
+      async ChangeTime(obgTime, id){
+        console.log(this.networkClaster[id], obgTime.id, obgTime)
+        this.networkClaster[obgTime.id][obgTime.name] = obgTime.time
+        await FetchPost('/api/v1/network/update', this.networkClaster, null)
         this.ReFetch()
       },
        async CommandWork(commandId){
@@ -208,6 +248,10 @@ import Plotly from 'plotly.js-dist'
                 });
                 Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости',})
                 break
+              
+              case 5:
+                this.PageSettings.status = 2
+                break;
             
               default:
                 break;
@@ -216,8 +260,11 @@ import Plotly from 'plotly.js-dist'
         },
         async ReFetch(){
           if(this.PageSettings.mode) this.clusterTopology = await FetchGet("/api/v1/topology/all") || []
+          if(this.PageSettings.mode) this.networkClaster = await FetchGet("/api/v1/network/all") || []
           this.PageSettings.SatSat = []
-          let response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
+          let response = []
+          if(this.PageSettings.mode) response = await FetchGet('/api/v1/cluster/all',false) || []
+          else response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
             if(response.length < 1){
               return
             }

@@ -29,7 +29,7 @@
   
 <script>
 
-import { DisplayLoad, FetchGet } from '@/js/LoadDisplayMetod';
+import { DisplayLoad, FetchGet, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '../DefaultTable.vue';
 
 import { KaSettings } from './KaSettings';
@@ -60,7 +60,7 @@ import { KaSettings } from './KaSettings';
       },
       async StartModellingPavlov(){
         DisplayLoad(true)
-        let rezult = await FetchGet("/api/v1/planner") || []
+        let rezult = await FetchPost("/api/v1/planner", {"iterSatellite": true}) || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)

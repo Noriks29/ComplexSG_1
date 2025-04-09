@@ -4,9 +4,9 @@
       <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
       <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
-      <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
+
       <div class="ContentDiv">
-        <h1 class="TitleText">Планирование съемок</h1>
+        <h1 class="TitleText">Планирование съемок  {{ systemStatus.typeWorkplace == 2? "и доставка" : ""}}</h1>
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
             <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
@@ -37,59 +37,45 @@
             <table class="colum">
               <tr>
                 <td>Заявки</td>
-                <td class="tdflexRow">
-                  <button v-if="systemStatus.typeWorkplace==2" @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
-                  <button v-if="systemStatus.typeWorkplace==2" @click="EventBookmark" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
-                  <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения заявок</button>
-                  <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог загрузки сеансов связи</button>
-                  <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог передачи данных в сеансе связи</button>
-                  <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Сроки доставки данных</button>
-                </td>
+                <td><button @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения</button></td>
+                <td><button @click="EventBookmark" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Невыполнимые</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения</button></td>
               </tr>
               <tr>
                 <td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td>
-                <td class="tdflexRow">
-                  {{ ShowTable  }}
-                  <button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button>
-                  <button v-if="systemStatus.typeWorkplace in {2:null}" @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button>
-                  <button @click="ShowTable='FlightplanForm'" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button>
-                  <button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button>
-                </td>
+                <td><button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button></td>
+                <td><button @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button></td>
+                <td><button @click="EventE79" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button></td>
+                <td><button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button></td>
               </tr>
               <tr>
                 <td></td>
-                <td class="tdflexRow">
-                  <button @click="ShowLog(modellingRezult.log)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
-                  <button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
-                  <button @click="ShowLog(modellingRezult.Smao)" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button>
-                </td>
+                <td colspan="2"><button @click="ShowLog(modellingRezult.log)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td>
+                <td colspan="1"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button></td>
+                <td colspan="1"><button @click="ShowLog(modellingRezult.Smao)" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
               </tr>
             </table>
           </div>
           <div class="PanelSettings" v-else>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null}">
+            <fieldset>
               <legend>Тип эксперимента:</legend>
               <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
               <div><input type="radio" :value="{flightPlanning: 0, planSimulation: 1}" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
               <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 1}" v-model="modellingSettings.experiment"/><label>моделирование полёта</label></div>
             </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null, 2:null}">
+            <fieldset>
               <legend>Прогноз заряда АКБ при планировании:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.chargeForecasting"/><label>не выполняется</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.chargeForecasting"/><label>выполняется, не учитывается</label></div>
-              <div><input type="radio" :value="2" v-model="modellingSettings.chargeForecasting"/><label>выполняется, учитывается</label></div>
+              <div><input type="radio" :value="0" v-model="modellingSettings.charge"/><label>не выполняется</label></div>
+              <div><input type="radio" :value="1" v-model="modellingSettings.charge"/><label>выполняется, не учитывается</label></div>
+              <div><input type="radio" :value="2" v-model="modellingSettings.charge"/><label>выполняется, учитывается</label></div>
             </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null}">
+            <fieldset>
               <legend>Моделирование полёта:</legend>
               <div><input type="radio" :value="{chargeSimulation: 0,flightSimulation: 0}" v-model="modellingSettings.simulation"/><label>без АКБ и без Pro</label></div>
               <div><input type="radio" :value="{chargeSimulation: 1,flightSimulation: 0}" v-model="modellingSettings.simulation"/><label>с АКБ и без Pro</label></div>
               <div><input type="radio" :value="{chargeSimulation: 0,flightSimulation: 1}" v-model="modellingSettings.simulation"/><label>без АКБ и с Pro</label></div>
               <div><input type="radio" :value="{chargeSimulation: 1,flightSimulation: 1}" v-model="modellingSettings.simulation"/><label>с АКБ и с Pro</label></div>
-            </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {3:null, 4:null}">
-              <legend>Межспутниковая связь для доставки данных:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.ISForDataDown"/><label>не используется</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.ISForDataDown"/><label>используется</label></div>
             </fieldset>
           </div>
         </div>
@@ -106,9 +92,9 @@ import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
-import FlightplanForm from './FlightplanForm.vue';
 
 import { KaSettings } from './KaSettings';
+
 import { NPList, OGList } from '@/js/GlobalData';
 
 
@@ -117,11 +103,11 @@ import { NPList, OGList } from '@/js/GlobalData';
     mixins: [KaSettings],
     data(){
       return{
-        purposesJson: 0, //колличество заявок
+        purposesJson: 0,
         OGList: [], // подгружаем импорты
         NPList: [], // подгружаем импорты
-        ConstellationJson: [], //список ог
-        ShowTable: null, //переменная для отображения таблиц
+
+        ConstellationJson: [],
         ShowDefaultTable: false,
         PreWrapDefaultTable: false,
         ShowE78Table: false,
@@ -135,9 +121,8 @@ import { NPList, OGList } from '@/js/GlobalData';
         earthList: [],
         modellingSettings:{
           experiment: {flightPlanning: 1, planSimulation: 0},
-          chargeForecasting: 0,
+          charge: 0,
           simulation: {chargeSimulation: 0,flightSimulation: 0},
-          ISForDataDown: 0,
           experimentEddit: false
         },
         modellingRezult: {
@@ -165,13 +150,11 @@ import { NPList, OGList } from '@/js/GlobalData';
       E78Table,
       E77E78,
       SelectDiv,
-      BookmarkTable,
-      FlightplanForm
+      BookmarkTable
     },
     methods: {
       Experiment(status){
         if(status){
-          /*
           if(!this.systemStatus.earthStatus){
             alert("НП не утверждены")
             return
@@ -191,7 +174,7 @@ import { NPList, OGList } from '@/js/GlobalData';
           if(this.purposesJson < 1){
             alert("Нет заявок")
             return
-          }*/
+          }
         }
         else{
           this.dataModelling = {
@@ -222,12 +205,11 @@ import { NPList, OGList } from '@/js/GlobalData';
       },
       async StartModelling(){
         DisplayLoad(true)
-        let dataPost = Object.assign(this.modellingSettings.experiment, this.modellingSettings.simulation, {chargeForecasting: this.modellingSettings.chargeForecasting, ISForDataDown:this.modellingSettings.ISForDataDown})
-        let rezult = {}
-        if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-          rezult = await FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
+        let dataPost = {
+            "experimentType": this.modellingSettings.experimentType,
+            "modellingMode": this.modellingSettings.modellingMode,
         }
-        else rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
+        let rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
         if(rezult.engineLogResponse.length > 0){
           this.dataModelling = rezult
           this.ParceModellingRezult()
@@ -419,11 +401,6 @@ import { NPList, OGList } from '@/js/GlobalData';
     },
     async mounted(){
       this.ReLoadComponent()
-      if (this.systemStatus.typeWorkplace in {3:null,4:null}) {
-        this.modellingSettings.chargeForecasting = 2
-        this.modellingSettings.experiment.planSimulation = 1
-        this.modellingSettings.simulation.chargeSimulation = 1
-      }
     }
   }
   </script>
@@ -432,9 +409,5 @@ import { NPList, OGList } from '@/js/GlobalData';
 <style lang="scss" scoped>
 .ContentDiv{
   height: 100%;
-
-  .tdflexRow{
-    display: flex;
-  }
 }
 </style>

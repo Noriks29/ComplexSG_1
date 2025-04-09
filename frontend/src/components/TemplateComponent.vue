@@ -108,7 +108,7 @@ export default {
         system: {typeWorkplace: -1},
         reload: 0,
         ExperimentStatus: false,
-        ComponentModellingList: [null,"KA1","KA1","KAControl_In","KAControl_Out","KARealTime","KAGordeev",null]
+        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime","KAGordeev",null]
     }
   },
   methods: {
@@ -232,10 +232,10 @@ export default {
 
 .SectionMenu{
     width: 98%;
-    height: 97%;
+    height: 99%;
     display: flex;
     flex-direction: column;
-    margin: 1% 1%;
+    margin: 0% 1%;
     flex-wrap: nowrap;
     align-items: center;
     overflow: auto;
@@ -243,7 +243,7 @@ export default {
     top: 0px;
 
     .ContainerSystem{
-      height: 6vh;
+      height: 8%;
       overflow: hidden;
     }
 
@@ -274,14 +274,14 @@ export default {
     }
       .ModellingDiv{
       width: 100%;
-      height: 60%;
+      height: 62%;
       overflow: auto;
     }
 
     .FlexMenuSection{
       display: flex;
       width: 99%;
-      height: 33%;
+      height: 30%;
       flex-direction: row;
       align-items: flex-start;
       

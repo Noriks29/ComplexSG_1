@@ -106,13 +106,16 @@ body{
     padding: 10px;
 
     div{
-      flex: 1 0 auto;
+      
       margin: 0px 5px;
       &.ButtonModelling{
+        flex: 0 1 auto;
+        width: fit-content;
         display: flex;
         flex-direction: column;
       }
       &.TableSystem{
+        flex: 6 0 auto;
         height: 20vh;
         overflow-y: auto;
         background-color: var(--background-Table1);
@@ -126,7 +129,7 @@ body{
 .main_contain {
   position: relative;
   font-size: var(--font-size);
-  padding-top: 25px;
+  padding-top: 15px;
   height: calc(100% - 25px);
 
     .ToMenuButtonDiv {
@@ -421,7 +424,7 @@ body{
 .iconButton{
   width: 25px;
   position: absolute;
-  right: 8px;
+  right: 4px;
   top: 10px;
 }
 
@@ -537,6 +540,16 @@ input{
       }
     }
   }
+  .PanelSettings{
+    display: flex;
+    justify-content: space-around;
+    height: 100%;
+    text-align: left;
+    fieldset{
+      flex: 1;
+    }
+  }
+
   .SelectMode{
     display: flex;
     flex-wrap: nowrap;
