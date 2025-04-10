@@ -95,7 +95,7 @@
               v-show="!(data.deleted==true)"
             >
               <td>{{ index+1 }}</td>
-              <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.nodeId, value: data.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
+              <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.satellite.name, value: data.satellite.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
               <td><input :id="index" name="capacity" type="number" :value="data.capacity"></td>
               <td><input :id="index" name="priority" type="number" :value="data.priority"></td><!-- Доделать и сделать правильные обработчики событий изменения
               -->
@@ -184,7 +184,8 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('datarequest')
       },
       ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
-        this.datarequest[e.id].nodeId = e.value
+        console.log(e)
+        this.datarequest[e.id].satellite.id = e.value
         this.SatartSave('datarequest')
       },
       CreateSelectArr(){
@@ -489,8 +490,8 @@ import XLSX from 'xlsx-js-style';
       this.datarequestКАList = []
       OGList.forEach(OG => {
         OG.satellites.forEach(element =>{
-          this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.idNode })
-          this.datarequestКАList.push({value: element.idNode, lable: element.idNode })
+          this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.name })
+          this.datarequestКАList.push({value: element.satelliteId, lable: element.name })
         })
       });
       this.SelectKa = this.KAArray[0]
