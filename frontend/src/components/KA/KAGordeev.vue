@@ -12,11 +12,16 @@
           <div>
             <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать Гордеев</button>
             <button class="ButtonCommand rightPadding" @click="StartModellingPavlov"><img src="../../assets/start.png" alt="" class="iconButton" >Начать Павлов</button>
-            <div></div>
+            <fieldset style="display: inline-block;">
+              <input type="checkbox"  v-model="interSatellite"/><label>interSatellite: {{ interSatellite }}</label>
+            </fieldset>
           </div>
         </div>
         <div class="Panel MaxWidth" v-if="true">
           <div class="PanelWork">
+            <fieldset>
+              <input type="checkbox"  v-model="PreWrapDefaultTable"/><label>Форматирование вывода: {{ PreWrapDefaultTable }}</label>
+            </fieldset>
             <table class="colum">
               <tr>
                 <td><button class="ButtonCommand LIghtPoint" @click="GetRezultGordeev"><div :class="systemStatus.successRouteModelling ? 'approved' : 'Notapproved'"></div>Результат Гордеев</button></td>
@@ -49,6 +54,7 @@ import { KaSettings } from './KaSettings';
           data1: [],
           data2: []
         },
+        interSatellite: true,
         dataTable: [],
         dataLableName: [],
         PreWrapDefaultTable: false,
@@ -70,7 +76,7 @@ import { KaSettings } from './KaSettings';
       async StartModellingPavlov(){
         DisplayLoad(true)
         this.StartAwait("successPlannerModelling")
-        let rezult = await FetchPost("/api/v1/planner", {"interSatellite": false}, undefined, true, "Расчёт Planner окончен") || []
+        let rezult = await FetchPost("/api/v1/planner", {"interSatellite": this.interSatellite}, undefined, true, "Расчёт Planner окончен") || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)
@@ -108,7 +114,6 @@ import { KaSettings } from './KaSettings';
           console.log(element)
           this.dataTable.push({data: element}) 
         }
-        this.PreWrapDefaultTable = true
         this.ShowDefaultTable = true
       },
       async ReLoadComponent(){
