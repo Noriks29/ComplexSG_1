@@ -210,7 +210,7 @@ import XLSX from 'xlsx-js-style';
                     "capacity": 100,
                     "priority": 3,
                     "time" : this.systemStatus.modelingBegin,
-                    "nodeId":  this.datarequestКАList[0].value,
+                    "satellite":  {id: this.datarequestКАList[0].value},
                     "deleted": null
                 };
         this.datarequest.push(addedRow)
