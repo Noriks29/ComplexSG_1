@@ -10,15 +10,21 @@
         </div>
         <div class="Panel MaxWidth">
           <div>
-            <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать</button>
+            <button class="ButtonCommand rightPadding" @click="StartModelling"><img src="../../assets/start.png" alt="" class="iconButton" >Начать Гордеев</button>
             <button class="ButtonCommand rightPadding" @click="StartModellingPavlov"><img src="../../assets/start.png" alt="" class="iconButton" >Начать Павлов</button>
+            <div></div>
           </div>
         </div>
         <div class="Panel MaxWidth" v-if="true">
           <div class="PanelWork">
             <table class="colum">
               <tr>
-                <td><button class="ButtonCommand" @click="ShowRezult" :class="(modellingRezult.data.length < 1) ? 'disable' : ''">Результат</button></td>
+                <td><button class="ButtonCommand LIghtPoint" @click="GetRezultGordeev"><div :class="systemStatus.successRouteModelling ? 'approved' : 'Notapproved'"></div>Результат Гордеев</button></td>
+                <td><button class="ButtonCommand LIghtPoint" @click="GetRezultPavlov"><div :class="systemStatus.successPlannerModelling ? 'approved' : 'Notapproved'"></div>Результат Павлов</button></td>
+              </tr>
+              <tr>
+                <td><button class="ButtonCommand" @click="ShowRezult(1)" :class="(modellingRezult.data1.length < 1) ? 'disable' : ''">Результат1</button></td>
+                <td><button class="ButtonCommand" @click="ShowRezult(2)" :class="(modellingRezult.data2.length < 1) ? 'disable' : ''">Результат2</button></td>
               </tr>
             </table>
           </div>
@@ -31,6 +37,7 @@
 
 import { DisplayLoad, FetchGet, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '../DefaultTable.vue';
+import { GetSystemObject } from '@/js/GlobalData';
 
 import { KaSettings } from './KaSettings';
   export default {
@@ -39,7 +46,8 @@ import { KaSettings } from './KaSettings';
     data(){
       return{
         modellingRezult: {
-          data: []
+          data1: [],
+          data2: []
         },
         dataTable: [],
         dataLableName: [],
@@ -53,39 +61,91 @@ import { KaSettings } from './KaSettings';
     methods: {
       async StartModelling(){
         DisplayLoad(true)
-        let rezult = await FetchGet("/api/v1/route") || []
+        this.StartAwait("successRouteModelling")
+        let rezult = await FetchGet("/api/v1/route", true, "Расчёт Route окончен") || []
         console.log(rezult)
-        this.modellingRezult.data = rezult
+        
         DisplayLoad(false)
       },
       async StartModellingPavlov(){
         DisplayLoad(true)
-        let rezult = await FetchPost("/api/v1/planner", {"iterSatellite": true}) || []
+        this.StartAwait("successPlannerModelling")
+        let rezult = await FetchPost("/api/v1/planner", {"interSatellite": false}, undefined, true, "Расчёт Planner окончен") || []
         console.log(rezult)
         this.modellingRezult.data = rezult
         DisplayLoad(false)
       },
-      ShowRezult(){
+      StartAwait(param){
+        setTimeout(() => {
+          let interval = setInterval(async () => {
+            let system = await GetSystemObject()
+            console.log(system)
+            console.log("идут запросы системы")
+            if(system[param]){
+              clearInterval(interval)
+              console.log("Интревал оборван")
+            }
+          }, 3000);
+        }, 4000);
+      },
+      async GetRezultPavlov(){
+        this.modellingRezult.data2 = await FetchGet("/api/v1/planner/all") || []
+      },
+      async GetRezultGordeev(){
+        this.modellingRezult.data1 = await FetchGet("/api/v1/route/all") || []
+      },
+      ShowRezult(numb){
         this.dataTable = []
         this.dataLableName = [{label: "data", nameParam: "data"}]
-        for (let index = 0; index < this.modellingRezult.data.length; index++) {
-          const element = this.modellingRezult.data[index];
+        let dataT = []
+        if(numb == 1){
+          dataT = this.modellingRezult.data1
+        }else{
+          dataT = this.modellingRezult.data2
+        }
+        for (let index = 0; index < dataT.length; index++) {
+          const element = JSON.stringify(dataT[index], null, 2);
+          console.log(element)
           this.dataTable.push({data: element}) 
         }
-        this.PreWrapDefaultTable = false
+        this.PreWrapDefaultTable = true
         this.ShowDefaultTable = true
       },
       async ReLoadComponent(){
         console.log("Перезагрузка")
+
       }
     },
     async mounted(){
       this.ReLoadComponent()
+      
+      
     }
   }
   </script>
 
 
 <style lang="scss" scoped>
+.LIghtPoint{
 
+  div{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: 20%;
+    left: 10px;
+    border-radius: 20px;
+
+    &.approved{
+      background-color: rgb(0, 139, 0);
+      box-shadow: 0px 0px 5px rgb(11, 167, 11);
+    }
+    &.Notapproved{
+      background-color: red;
+      box-shadow: 0px 0px 5px #fe1a1a;
+    }
+  }
+
+
+}
 </style>

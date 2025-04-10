@@ -11,7 +11,7 @@ function DisplayLoad(status){
         element.style.display = "none"
     }
 }
-async function FetchGet(http, AlertError = true){
+async function FetchGet(http, AlertError = true, massage=null){
     let AcsessKey = localStorage.data
     let MODE = window.location.search
     let add = adress
@@ -27,6 +27,7 @@ async function FetchGet(http, AlertError = true){
         else{
             let rezult = await response.json()
             if(ShowFetchData) console.log(http, rezult)
+            if(massage != null) alert(massage)
             return rezult;
         }
     } catch (error) {
@@ -37,7 +38,7 @@ async function FetchGet(http, AlertError = true){
 
 }
 
-async function FetchPost(http,datapost,dopparamhttp, AlertError = true){
+async function FetchPost(http,datapost,dopparamhttp, AlertError = true, massage=null){
     if(ShowFetchData) console.log(JSON.stringify(datapost))
     let AcsessKey = localStorage.data
     let MODE = window.location.search
@@ -63,6 +64,7 @@ async function FetchPost(http,datapost,dopparamhttp, AlertError = true){
         else{
             let rezult = await response.json()
             if(ShowFetchData) console.log(http, rezult)
+            if(massage != null) alert(massage)
             return rezult;
         }
         } catch (error) {

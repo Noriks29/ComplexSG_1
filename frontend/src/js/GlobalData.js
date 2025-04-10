@@ -23,6 +23,7 @@ export async function ChangeSystemObject(param, value){
 }
 export async function GetSystemObject(){
     SystemObject = await FetchGet('/api/v1/system/get', true) || {}
+    return SystemObject
 }
 
 export function ClearGlobalData(){

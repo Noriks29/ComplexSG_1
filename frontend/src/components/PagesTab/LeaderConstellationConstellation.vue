@@ -278,6 +278,7 @@ import DateTime from '../DateTime.vue';
     },
     async mounted() {
       DisplayLoad(true)
+      console.log("fsfesefesfesfesfesfsefs")
       if(this.systemStatus.typeWorkplace in {3:null, 4:null}) {
         this.PageSettings.mode = true
         this.PageSettings.status = 0
