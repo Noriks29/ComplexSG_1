@@ -31,6 +31,8 @@
               </tr>
             </table>
           </div>
+          <div class="TableSystem" v-html="JSON.stringify(modellingSettings, null, 2)" style="white-space: pre-wrap; text-align: left;">
+          </div>
         </div>
         <div class="Panel MaxWidth" style="flex:1;">
           <div class="PanelWork" v-if="!modellingSettings.experimentEddit">
@@ -66,30 +68,29 @@
               </tr>
             </table>
           </div>
-          <div class="PanelSettings" v-else>
+          <div class="PanelSettings" v-else  @change="ValidateDataPostModellingSettings">
             <fieldset v-if="systemStatus.typeWorkplace in {1:null}">
               <legend>Тип эксперимента:</legend>
-              <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
-              <div><input type="radio" :value="{flightPlanning: 0, planSimulation: 1}" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
+              <div><input type="radio" :value="{flightPlanning: 0, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
+              <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
               <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 1}" v-model="modellingSettings.experiment"/><label>моделирование полёта</label></div>
             </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null, 2:null}">
-              <legend>Прогноз заряда АКБ при планировании:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.chargeForecasting"/><label>не выполняется</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.chargeForecasting"/><label>выполняется, не учитывается</label></div>
-              <div><input type="radio" :value="2" v-model="modellingSettings.chargeForecasting"/><label>выполняется, учитывается</label></div>
-            </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null}">
-              <legend>Моделирование полёта:</legend>
-              <div><input type="radio" :value="{chargeSimulation: 0,flightSimulation: 0}" v-model="modellingSettings.simulation"/><label>без АКБ и без Pro</label></div>
-              <div><input type="radio" :value="{chargeSimulation: 1,flightSimulation: 0}" v-model="modellingSettings.simulation"/><label>с АКБ и без Pro</label></div>
-              <div><input type="radio" :value="{chargeSimulation: 0,flightSimulation: 1}" v-model="modellingSettings.simulation"/><label>без АКБ и с Pro</label></div>
-              <div><input type="radio" :value="{chargeSimulation: 1,flightSimulation: 1}" v-model="modellingSettings.simulation"/><label>с АКБ и с Pro</label></div>
-            </fieldset>
+            
+            <fieldset v-if="systemStatus.typeWorkplace in {1:null,2:null} && modellingSettings.experiment.flightPlanning==1">
+                <legend>Прогноз заряда АКБ при планировании:</legend>
+                <div><input type="radio" :value="0" v-model="modellingSettings.chargeForecasting"/><label>не выполняется</label></div>
+                <div><input type="radio" :value="1" v-model="modellingSettings.chargeForecasting"/><label>выполняется, не учитывается</label></div>
+                <div><input type="radio" :value="2" v-model="modellingSettings.chargeForecasting"/><label>выполняется, учитывается</label></div>
+              </fieldset>
+              <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null,} && modellingSettings.experiment.planSimulation==1">
+                <legend>Моделирование полёта:</legend>
+                <div><input type="checkbox" v-model="modellingSettings.chargeSimulation"/><label>Использование АКБ</label></div>
+                <div><input type="checkbox" v-model="modellingSettings.optionPro42"/><label>Использование Pro</label></div>
+              </fieldset>
             <fieldset v-if="systemStatus.typeWorkplace in {3:null, 4:null}">
               <legend>Межспутниковая связь для доставки данных:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.ISForDataDown"/><label>не используется</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.ISForDataDown"/><label>используется</label></div>
+              <div><input type="radio" :value="0" v-model="modellingSettings.useInteraction" true-value="1" false-value="0"/><label>не используется</label></div>
+              <div><input type="radio" :value="1" v-model="modellingSettings.useInteraction"/><label>используется</label></div>
             </fieldset>
           </div>
         </div>
@@ -136,8 +137,9 @@ import { NPList, OGList } from '@/js/GlobalData';
         modellingSettings:{
           experiment: {flightPlanning: 1, planSimulation: 0},
           chargeForecasting: 0,
-          simulation: {chargeSimulation: 0,flightSimulation: 0},
-          ISForDataDown: 0,
+          useInteraction: 0,
+          chargeSimulation: 0,
+          optionPro42: 0,
           experimentEddit: false
         },
         modellingRezult: {
@@ -216,13 +218,28 @@ import { NPList, OGList } from '@/js/GlobalData';
         }
         this.$emit('ChangeExperimentStatus', {status})
       },
+      ValidateDataPostModellingSettings(){
+        console.log(this.modellingSettings)
+        if(this.modellingSettings.experiment.flightPlanning == 0){
+          this.modellingSettings.chargeForecasting = 0
+          this.modellingSettings.experiment.planSimulation = 0
+        }
+        if(this.modellingSettings.experiment.planSimulation == 0){
+          this.modellingSettings.chargeSimulation = 0
+          this.modellingSettings.optionPro42 = 0
+        }
+      },
       
       ChangeInputRadio(target){
         this.modellingSettings[target.target.name] = Number(target.target.value)
       },
       async StartModelling(){
         DisplayLoad(true)
-        let dataPost = Object.assign(this.modellingSettings.experiment, this.modellingSettings.simulation, {chargeForecasting: this.modellingSettings.chargeForecasting, ISForDataDown:this.modellingSettings.ISForDataDown})
+
+        let dataPost = Object.assign(this.modellingSettings, this.modellingSettings.experiment)
+        dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
+        dataPost.optionPro42 = Number(dataPost.optionPro42)
+        console.log(dataPost)
         let rezult = {}
         if(this.systemStatus.typeWorkplace in {3:null,4:null}){
           rezult = await FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
