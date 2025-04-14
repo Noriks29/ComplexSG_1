@@ -65,8 +65,6 @@ import { NPList, OGList, SystemObject } from '@/js/GlobalData';
 
 import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
-import KAControl_In from './KA/KAControl_In.vue'
-import KAControl_Out from './KA/KAControl_Out.vue'
 import KAGordeev from "./KA/KAGordeev.vue";
 
 import NP from "./PagesTab/NP.vue";
@@ -97,8 +95,6 @@ export default {
 
     KA1,
     KARealTime,
-    KAControl_In,
-    KAControl_Out,
     KAGordeev
   },
   data(){
