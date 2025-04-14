@@ -439,7 +439,7 @@ import { NPList, OGList } from '@/js/GlobalData';
       if (this.systemStatus.typeWorkplace in {3:null,4:null}) {
         this.modellingSettings.chargeForecasting = 2
         this.modellingSettings.experiment.planSimulation = 1
-        this.modellingSettings.simulation.chargeSimulation = 1
+        this.modellingSettings.chargeSimulation = 1
       }
     }
   }
