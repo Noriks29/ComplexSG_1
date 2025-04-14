@@ -116,7 +116,7 @@ body{
       }
       &.TableSystem{
         flex: 6 0 auto;
-        height: 20vh;
+        height: 24vh;
         overflow-y: auto;
         background-color: var(--background-Table1);
         border: 1px solid var(--border-Table1);
@@ -379,6 +379,10 @@ body{
   margin: 5px;
   transition: all 0.2s;
   position: relative;
+
+  &.MaxWidth{
+    width: 100%;
+  }
 
   &.rightPadding{
     padding-right: 30px;

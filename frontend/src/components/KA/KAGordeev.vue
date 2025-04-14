@@ -88,7 +88,6 @@ import { KaSettings } from './KaSettings';
             console.log(system)
             console.log("идут запросы системы")
             if(system[param]){
-              console.log(system, system[param], param)
               clearInterval(interval)
               console.log("Интревал оборван")
             }

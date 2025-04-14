@@ -12,8 +12,6 @@
             <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
             <button v-if="ExperimentStatus" @click="StartModelling" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Старт моделирования</button>
             <button v-if="ExperimentStatus" @click="Experiment(false)" class="ButtonCommand rightPadding">Закончить эксперимент</button>
-            <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=true" class="ButtonCommand" >Настройки</button>
-            <button v-if="!ExperimentStatus && modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=false" class="ButtonCommand">Закрыть настройки</button>
           </div>
           <div class="TableSystem">
             <table>
@@ -31,7 +29,16 @@
               </tr>
             </table>
           </div>
-          <div class="TableSystem" v-html="JSON.stringify(modellingSettings, null, 2)" style="white-space: pre-wrap; text-align: left;">
+
+          <div class="TableSystem" style="flex: 2 0 auto;">
+            <table style="text-align: left;">
+              <tr><td colspan="2">
+                <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=true" class="ButtonCommand MaxWidth" >Настройки</button>
+                <button v-if="!ExperimentStatus && modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=false" class="ButtonCommand MaxWidth">Закрыть настройки</button></td></tr>
+              <tr v-for="data, index in modellingSettingsLabel" :key="index"
+              
+              ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr>
+            </table>
           </div>
         </div>
         <div class="Panel MaxWidth" style="flex:1;">
@@ -69,20 +76,19 @@
             </table>
           </div>
           <div class="PanelSettings" v-else  @change="ValidateDataPostModellingSettings">
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null}">
+            <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null}">
               <legend>Тип эксперимента:</legend>
-              <div><input type="radio" :value="{flightPlanning: 0, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
-              <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 0}" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
-              <div><input type="radio" :value="{flightPlanning: 1, planSimulation: 1}" v-model="modellingSettings.experiment"/><label>моделирование полёта</label></div>
+              <div><input type="radio" :value="0" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
+              <div><input type="radio" :value="1" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
+              <div><input type="radio" :value="2" v-model="modellingSettings.experiment"/><label>моделирование полёта</label></div>
             </fieldset>
-            
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null,2:null} && modellingSettings.experiment.flightPlanning==1">
+            <fieldset v-if="systemStatus.typeWorkplace in {1:null,2:null,3:null} && modellingSettings.flightPlanning == 1">
                 <legend>Прогноз заряда АКБ при планировании:</legend>
                 <div><input type="radio" :value="0" v-model="modellingSettings.chargeForecasting"/><label>не выполняется</label></div>
                 <div><input type="radio" :value="1" v-model="modellingSettings.chargeForecasting"/><label>выполняется, не учитывается</label></div>
                 <div><input type="radio" :value="2" v-model="modellingSettings.chargeForecasting"/><label>выполняется, учитывается</label></div>
               </fieldset>
-              <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null,} && modellingSettings.experiment.planSimulation==1">
+              <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null} && modellingSettings.planSimulation == 1">
                 <legend>Моделирование полёта:</legend>
                 <div><input type="checkbox" v-model="modellingSettings.chargeSimulation"/><label>Использование АКБ</label></div>
                 <div><input type="checkbox" v-model="modellingSettings.optionPro42"/><label>Использование Pro</label></div>
@@ -135,12 +141,23 @@ import { NPList, OGList } from '@/js/GlobalData';
         dataTable: [],
         earthList: [],
         modellingSettings:{
-          experiment: {flightPlanning: 1, planSimulation: 0},
+          experiment: 0,
+          flightPlanning: 0,
+          planSimulation: 0,
           chargeForecasting: 0,
           useInteraction: 0,
           chargeSimulation: 0,
           optionPro42: 0,
           experimentEddit: false
+        },
+        modellingSettingsLabel:{
+          experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
+          flightPlanning: {name: "Планирование полёта", label:["не выполняется", "выполняется"]},
+          planSimulation: {name: "Моделлирование выполнения плана", label:["не выполняется", "выполняется"]},
+          chargeForecasting: {name: "Прогнозирование заряда АКБ", label:["не выполняется", "выполняется, не учитывается", "выполняется, учитывается"]},
+          chargeSimulation: {name: "Расчёт заряда АКБ при моделировании", label:["не используется", "используется"]},
+          optionPro42: {name: "Расчёт Pro42 при моделировании", label:["не используется", "используется"]},
+          useInteraction: {name: "Межспутниковая связь для доставки", label:["не используется", "используется"]},
         },
         modellingRezult: {
           log: [],
@@ -220,14 +237,18 @@ import { NPList, OGList } from '@/js/GlobalData';
       },
       ValidateDataPostModellingSettings(){
         console.log(this.modellingSettings)
-        if(this.modellingSettings.experiment.flightPlanning == 0){
+        if(this.modellingSettings.experiment < 1){
           this.modellingSettings.chargeForecasting = 0
-          this.modellingSettings.experiment.planSimulation = 0
+          this.modellingSettings.flightPlanning = 0
         }
-        if(this.modellingSettings.experiment.planSimulation == 0){
+        if(this.modellingSettings.experiment < 2){
           this.modellingSettings.chargeSimulation = 0
+          this.modellingSettings.planSimulation = 0
           this.modellingSettings.optionPro42 = 0
         }
+        if(this.modellingSettings.experiment >= 1) this.modellingSettings.flightPlanning = 1
+        if(this.modellingSettings.experiment >= 2) this.modellingSettings.planSimulation = 1
+
       },
       
       ChangeInputRadio(target){
@@ -236,7 +257,7 @@ import { NPList, OGList } from '@/js/GlobalData';
       async StartModelling(){
         DisplayLoad(true)
 
-        let dataPost = Object.assign(this.modellingSettings, this.modellingSettings.experiment)
+        let dataPost = Object.assign(this.modellingSettings)
         dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
         dataPost.optionPro42 = Number(dataPost.optionPro42)
         console.log(dataPost)
@@ -436,11 +457,15 @@ import { NPList, OGList } from '@/js/GlobalData';
     },
     async mounted(){
       this.ReLoadComponent()
-      if (this.systemStatus.typeWorkplace in {3:null,4:null}) {
+      if (this.systemStatus.typeWorkplace in {2:null}) {
+        this.modellingSettings.experiment = 1
+      }
+      if (this.systemStatus.typeWorkplace in {4:null}) {
+        this.modellingSettings.experiment = 2
         this.modellingSettings.chargeForecasting = 2
-        this.modellingSettings.experiment.planSimulation = 1
         this.modellingSettings.chargeSimulation = 1
       }
+      this.ValidateDataPostModellingSettings()
     }
   }
   </script>
