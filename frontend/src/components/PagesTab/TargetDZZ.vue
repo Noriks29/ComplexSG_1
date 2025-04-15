@@ -25,6 +25,7 @@
             <div  v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
               <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
               <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
+              <button @click="viewmode=1" class="ButtonCommand">Данные по заявкам</button>
             </div>
         </div>
         <p v-if="viewmode == 0">Заявки</p>
@@ -47,7 +48,7 @@
               <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
-              <td><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')" v-if="systemStatus.typeWorkplace in {3:null,4:null}"/></td>
+              <td v-if="systemStatus.typeWorkplace in {3:null}"><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')"/></td>
               <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr class="addRowButton">
@@ -162,13 +163,17 @@ import XLSX from 'xlsx-js-style';
         arr: [],
         arrNP: [],
         map: {},
-        mapPoint: []
+        PageSettings:{
+          request: true, // заявки
+          catalog: true, // каталог заявок
+          datarequest: false //данные по заявкам
+        }
       }
     },
     methods: {
-      CreateDateTime(time, msk_mode = true){
+      CreateDateTime(time, full_mode = true){
           let Dtime = UnixToDtime(time)
-          if(msk_mode) return Dtime.date + " " + Dtime.time + " МСК"
+          if(full_mode) return Dtime.date + " " + Dtime.time
           return Dtime.time
         },
       ChangeTime(obgtime){
@@ -184,7 +189,6 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('datarequest')
       },
       ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
-        console.log(e)
         this.datarequest[e.id].satellite.id = e.value
         this.SatartSave('datarequest')
       },
@@ -339,7 +343,6 @@ import XLSX from 'xlsx-js-style';
         async CreateMap(){
           this.map = {}
           console.log(await document.getElementById("map"))
-
           this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 2);
           L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
           {
@@ -353,22 +356,21 @@ import XLSX from 'xlsx-js-style';
                 iconRetinaUrl: icon2x
           });
           L.Marker.prototype.options.icon = DefaultIcon;
-          this.mapPoint = []
           for (let i = 0; i < this.requestJson.length; i++) {
               const element = this.requestJson[i].catalog;
-              this.mapPoint.push(L.circle([element.lat, element.lon], 21000, {
+              L.circle([element.lat, element.lon], 21000, {
                 color: 'blue',
                 fillColor: '#f03',
                 fillOpacity: 0.4
-              }).addTo(this.map))
+              }).addTo(this.map)
           }
           
           this.arrNP.forEach(element => {
-              this.mapPoint.push(L.circle([element.value.latitude, element.value.longitude], 17000, {
+              L.circle([element.value.latitude, element.value.longitude], 17000, {
                 color: 'green',
                 fillColor: '#121100',
                 fillOpacity: 0.4
-              }).addTo(this.map))
+              }).addTo(this.map)
           });
         },
         ChangeKaDraw(e){
