@@ -62,7 +62,7 @@
                   <button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button>
                   <button v-if="systemStatus.typeWorkplace in {2:null}" @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button>
                   <button @click="ShowTable='FlightplanForm'" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button>
-                  <button :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button>
+                  <button @click="ShowFcLog" :class="(modellingRezultSelect.fcLog.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button>
                 </td>
               </tr>
               <tr>
@@ -172,6 +172,7 @@ import { NPList, OGList } from '@/js/GlobalData';
           E77: [],
           E78: [],
           E79: [],
+          fcLog:[],
           selectKA: undefined
         },
 
@@ -256,11 +257,9 @@ import { NPList, OGList } from '@/js/GlobalData';
       },
       async StartModelling(){
         DisplayLoad(true)
-
         let dataPost = Object.assign(this.modellingSettings)
         dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
         dataPost.optionPro42 = Number(dataPost.optionPro42)
-        console.log(dataPost)
         let rezult = {}
         if(this.systemStatus.typeWorkplace in {3:null,4:null}){
           rezult = await FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
@@ -280,17 +279,28 @@ import { NPList, OGList } from '@/js/GlobalData';
           E77: [],
           E78: [],
           E79: [],
-          hide: []
-        }
-        this.modellingRezultSelect = {
-          E77: [],
-          E78: [],
-          selectKA: this.modellingRezultSelect.selectKA
+          hide: [],
+          fcLog:[]
         }
         try{this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)} 
-          catch (error) {console.log(error)}
-        try {this.modellingRezult.events = this.dataModelling.eventsLogResponse} 
-          catch (error) {console.log(error)}
+          catch (error) {console.error(error)}
+        try {this.modellingRezult.events = this.dataModelling.logResponse.logDataArray} 
+          catch (error) {console.error(error)}
+        try {
+          this.modellingRezult.fcLog = []
+          this.dataModelling.logResponse.fcLogArray.forEach(element => {
+            element.timeBegin = this.CreateDateTime(element.timeBegin, false)
+            element.timeEnd = this.CreateDateTime(element.timeEnd, false)
+            let flag = true
+            for (let index = 0; index < this.modellingRezult.fcLog.length; index++)
+              if(element.idSender == this.modellingRezult.fcLog[index].idSender){
+                this.modellingRezult.fcLog[index].data.push(element)
+                flag = false
+                break
+              }
+            if(flag) this.modellingRezult.fcLog.push({idSender: element.idSender, data:[element]})
+          })
+        }catch (error) {console.error(error)}
         
         this.dataModelling.engineLogResponse.forEach(element => {
           try {
@@ -315,12 +325,12 @@ import { NPList, OGList } from '@/js/GlobalData';
               }
             }
           } catch (error) {
-            console.log(error, element)
+            console.error(error, element)
             this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + element)
           }
         });
         this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
-        console.log(this.modellingRezult)
+        console.log("Результат моделлирования и обработки", this.modellingRezult, this.modellingRezultSelect)
       },
       ShowShootingPlan(){
         this.dataTable = []
@@ -402,6 +412,15 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.PreWrapDefaultTable = false
         this.ShowDefaultTable = true
       },
+      ShowFcLog(){
+        this.dataTable = this.modellingRezultSelect.fcLog
+        this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'light'},
+          {lable:"Режим",nameParam:'light'},{lable:"Цель",nameParam:'orderName'},{lable:"Нацеливание",nameParam:'timeTarget'},
+          {lable:"Связь с НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
+        ]
+        this.PreWrapDefaultTable = false
+        this.ShowDefaultTable = true
+      },
       EventE77E78(){
         this.ShowE77E78Table = true
       },
@@ -416,6 +435,8 @@ import { NPList, OGList } from '@/js/GlobalData';
           E77: [],
           E78: [],
           E79: [],
+          fcLog: [],
+
           selectKA: id
         }
         this.modellingRezult.E77.forEach(E77 =>{
@@ -431,6 +452,11 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.modellingRezult.E79.forEach(E79 =>{
           if (E79.idSender == id) {
             this.modellingRezultSelect.E79 = E79.data
+          }
+        })
+        this.modellingRezult.fcLog.forEach(fcLog =>{
+          if (fcLog.idSender == id) {
+            this.modellingRezultSelect.fcLog = fcLog.data
           }
         })
         console.log(this.modellingRezultSelect)

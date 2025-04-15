@@ -88,14 +88,14 @@
         <div class="Panel" v-if="systemStatus.typeWorkplace in {4:null, 5:null}">
           <table class="TableDefault">
             <tr>
-              <th>№</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
+              <th>Имя</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
             </tr>
             <tr v-for="data, index in datarequest"
               :key="index"
               @change="ChangeParamdatarequest"
               v-show="!(data.deleted==true)"
             >
-              <td>{{ index+1 }}</td>
+              <td><input type="text" name="name" :value="data.name" :id="index"></td>
               <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.satellite.name, value: data.satellite.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
               <td><input :id="index" name="capacity" type="number" :value="data.capacity"></td>
               <td><input :id="index" name="priority" type="number" :value="data.priority"></td><!-- Доделать и сделать правильные обработчики событий изменения
