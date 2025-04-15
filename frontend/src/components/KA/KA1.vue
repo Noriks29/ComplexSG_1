@@ -286,7 +286,7 @@ import { NPList, OGList } from '@/js/GlobalData';
           catch (error) {console.error(error)}
         try {this.modellingRezult.events = this.dataModelling.logResponse.logDataArray} 
           catch (error) {console.error(error)}
-        try {
+        try { //обработка лога полёта
           this.modellingRezult.fcLog = []
           this.dataModelling.logResponse.fcLogArray.forEach(element => {
             element.timeBegin = this.CreateDateTime(element.timeBegin, false)
