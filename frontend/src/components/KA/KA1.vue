@@ -166,7 +166,8 @@ import { NPList, OGList } from '@/js/GlobalData';
           hide: [],
           E79: [],
           Smao: [],
-          events: []
+          events: [],
+          fcLog:[]
         },
         modellingRezultSelect:{
           E77: [],
@@ -224,13 +225,15 @@ import { NPList, OGList } from '@/js/GlobalData';
             hide: [],
             E79: [],
             Smao: [],
-            events: []
+            events: [],
+            fcLog: []
           }
           this.modellingRezultSelect = {
             E77: [],
             E78: [],
             E79: [],
-              selectKA: undefined
+            fcLog: [],
+            selectKA: undefined
           }
 
         }
