@@ -6,7 +6,6 @@
             </button>
             <h1 class="TitleText">Орбитальные группировки и космические аппараты</h1>
           </div>
-
     <div class="ContentDiv">
     <div class="Panel LeftPanel">
       <div>Список ОГ</div>
@@ -23,7 +22,8 @@
           <button class="ButtonCommand" :class="!approved? '' : 'disable'"  @click="PageSettings.status=1"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
         </div>
         
-        <div class="ButtonApprovedDiv"><button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
+        <div class="ButtonApprovedDiv" v-if="!modellingStatus">
+          <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
           <span v-if="approved"><img src="../../assets/edit.svg"></span>
           <span v-else><img src="../../assets/approve.svg"></span>
           <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
@@ -305,9 +305,6 @@ import SelectDiv from '../SelectDiv.vue';
   </script>
 
 <style lang="scss" scoped>
-.RightPanel{
-  padding: 5px;
-}
 
 .ElementCol{
   display: grid;
@@ -335,33 +332,7 @@ import SelectDiv from '../SelectDiv.vue';
     }
   }
 }
-.ButtonApprovedDiv button{
-  display: flex;
-  width: 94%;
-  justify-content: space-between;
-  margin: 3%;
-  align-items: center;
-  transition: box-shadow 1s ;
 
-  &.red{
-    box-shadow: inset -2px -2px 1px 0px red;
-  }
-  &.green{
-    box-shadow: inset 2px 2px 1px 0px green;
-  }
-}
-.SelectDivPanel{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .DataTable{
-    width: 100%;
-
-  }
-}
-.iconDelete img{
-  width: 30px;
-}
 
 
 

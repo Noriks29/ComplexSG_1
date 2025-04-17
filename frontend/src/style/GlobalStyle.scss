@@ -192,6 +192,13 @@ body{
                         input{
                           width: 90%;
                         }
+                    
+                    }
+
+                    &.disable{
+                      input{
+                        pointer-events: none;
+                      }
                     }
                 }   
             }
@@ -290,19 +297,23 @@ body{
       display: flex;
       flex-direction: column;
       flex-wrap: nowrap;
+      align-items: center;
   
       .ContentDiv{
         flex: 1;
         display: flex;
         flex-direction: row;
         align-items: stretch;
+        width: 98%;
   
         .Panel{
           &.RightPanel{
-            flex: 1;
+            flex: 3;
             overflow-y: auto;
+            padding: 20px;
           }
           &.LeftPanel{
+            flex: 1;
             .SystemInfo{
                 display: flex;
                 flex-wrap: wrap;
@@ -329,6 +340,21 @@ body{
               }
             }
           }
+          .ButtonApprovedDiv button{
+            display: flex;
+            width: 94%;
+            justify-content: space-between;
+            margin: 3%;
+            align-items: center;
+            transition: box-shadow 1s ;
+          
+            &.red{
+              box-shadow: inset -2px -2px 1px 0px red;
+            }
+            &.green{
+              box-shadow: inset 2px 2px 1px 0px green;
+            }
+          }
         }
       }
       td{
@@ -340,7 +366,9 @@ body{
     }
 }
 
-
+.iconDelete img{ //в ог 
+  width: 30px;
+}
 
 
 .scroll-table-body {
@@ -601,7 +629,7 @@ input{
     }
 
     input{
-      width: calc(100% - 20px);
+      width: calc(100% - 20px) !important;
     }
   }
 
