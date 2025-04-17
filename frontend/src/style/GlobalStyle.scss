@@ -185,10 +185,6 @@ body{
                   }
                 tr{
                     td{
-                        .iconDelete{
-                            width: 25px;
-                            height: 25px;
-                          }
                         input{
                           width: 90%;
                         }
@@ -631,6 +627,17 @@ input{
     input{
       width: calc(100% - 20px) !important;
     }
+
+    td, th{
+      &.delete{
+        width: 50px; text-align: center;
+        .iconDelete{
+          width: 25px;
+          height: 25px;
+        }
+      }
+    }
+    
   }
 
 }

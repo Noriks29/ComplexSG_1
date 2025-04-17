@@ -9,31 +9,35 @@
     <div class="ContentDiv">
     <div class="Panel RightPanel">
       <table class="TableDefault">
-        <tr>
-          <th></th>
-          <th>Название</th>
-          <th>Широта</th>
-          <th>Долгота</th>
-          <th v-if="!approved && !modellingStatus"></th>
-        </tr>
-        <tr
-          v-for="(data, index) in dataJson"
-          :key="index"
-          :class="approved || modellingStatus ? 'disable' :''"
-          @change="ChangeParam(index)"
-        >
-          <td>{{ index+1 }}</td>
-          <td><input v-model="data.nameEarthPoint"></td>
-          <td><input type="number"  v-model="data.latitude"></td>
-          <td><input type="number"  v-model="data.longitude" ></td>
-          <td v-if="!approved && !modellingStatus" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-        </tr>
-        <tr v-if="!approved && !modellingStatus" class="addRowButton">
-          <td colspan="5"><button @click="AddRow">
-            <img src="../../assets/add.png" alt="" class="addButtonIcon">
-            Добавить наземный пункт
-          </button></td>
-        </tr> 
+        <thead>
+          <tr>
+            <th></th>
+            <th>Название</th>
+            <th>Широта</th>
+            <th>Долгота</th>
+            <th v-if="!approved && !modellingStatus" class="delete"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(data, index) in dataJson"
+            :key="index"
+            :class="approved || modellingStatus ? 'disable' :''"
+            @change="ChangeParam(index)"
+          >
+            <td>{{ index+1 }}</td>
+            <td><input v-model="data.nameEarthPoint"></td>
+            <td><input type="number"  v-model="data.latitude"></td>
+            <td><input type="number"  v-model="data.longitude" ></td>
+            <td v-if="!approved && !modellingStatus" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+          </tr>
+          <tr v-if="!approved && !modellingStatus" class="addRowButton">
+            <td colspan="5"><button @click="AddRow">
+              <img src="../../assets/add.png" alt="" class="addButtonIcon">
+              Добавить наземный пункт
+            </button></td>
+          </tr> 
+        </tbody>
       </table>
       <div class="ButtonApprovedDiv" v-if="!modellingStatus">
           <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
