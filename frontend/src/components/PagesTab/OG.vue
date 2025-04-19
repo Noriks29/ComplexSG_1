@@ -75,8 +75,6 @@
               </tbody>
             </table>
           </div>
-
-
           <div v-if="PageSettings.status == 1">
             <div class="flexrow">
               <div class="inputdiv"><input type="text" v-model="OG_Param.constellationName"></div>
@@ -119,8 +117,6 @@
               Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}
             </div>
           </div>
-
-
     </div>
 </div>
 </div>

@@ -1,25 +1,23 @@
 <template>
-  <div class="main_contain">
+  <div class="main_contain RowSection">
       <div>
           <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
             <img src="../../assets/exit.svg">
           </button>
+          <h1 class="TitleText">Информация о КА</h1>
         </div>
-
-      
       <div class="ContentDiv">
-          <div class="Panel Select" >
-            <h1 class="TitleText">Информация о КА</h1>
+          <div class="Panel Select LeftPanel" >
               <p>Выбор КА</p>
               <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
               <p>Информация</p>
-              <div @click="viewPanel = 1" class="ButtonPage" :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
-              <div @click="viewPanel = 2" class="ButtonPage" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
-              <div @click="viewPanel = 3" class="ButtonPage" :class="viewPanel==3 ? 'SelectPage': ''">• Потребление энергии устройствами</div>
-              <div @click="viewPanel = 4" class="ButtonPage" :class="viewPanel==4 ? 'SelectPage': ''">• Параметры устройств и функционирования</div>
+              <div @click="viewPanel = 1" class="ButtonCommand"  :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
+              <div @click="viewPanel = 2" class="ButtonCommand" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
+              <div @click="viewPanel = 3" class="ButtonCommand" :class="viewPanel==3 ? 'SelectPage': ''">• Потребление энергии устройствами</div>
+              <div @click="viewPanel = 4" class="ButtonCommand" :class="viewPanel==4 ? 'SelectPage': ''">• Параметры устройств и функционирования</div>
           </div>
 
-          <div class="Panel" v-if="viewPanel == 1">
+          <div class="Panel RightPanel" v-if="viewPanel == 1">
               <p> Режимы функционирования </p>
               <div>
                   <div>
@@ -58,7 +56,7 @@
               </div>
           </div>
 
-          <div class="Panel" v-if="viewPanel == 2">
+          <div class="Panel RightPanel" v-if="viewPanel == 2">
               <p> Каталог устройств </p>
               <table class="TableDefault">
                 <tr><th style="padding: 0px 5px;">Использовать</th><th>Прибор</th><th></th></tr>
@@ -87,7 +85,7 @@
                 </tr>
               </table>
           </div>
-          <div class="Panel" v-if="viewPanel == 3">
+          <div class="Panel RightPanel" v-if="viewPanel == 3">
               <p>Потребление энергии устройствами </p>
               <div>
                 <table class="TableDefault PanelDefault" id="TableChargeKA">
@@ -108,7 +106,7 @@
 
               </div>
           </div>
-          <div class="Panel" v-if="viewPanel == 4">
+          <div class="Panel RightPanel" v-if="viewPanel == 4">
               <p>Параметры функционирования</p>
               <div>
                   <table class="TableDefault PanelDefault" @change="ChangeParamKa">
@@ -376,86 +374,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-.ContentDiv{
-    width: 96%;
-    flex-direction: row !important;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    height: 96vh;
-
   .Panel{
-      flex:2;
-      margin: 10px;
-      min-width: 300px;
       max-height: 90%;
       height: 100%;
       padding: 20px;
-      overflow-y: auto;
 
-      .ButtonPage{
-        border: 1px solid white;
-        background-color: #80808000;
-        padding: 15px;
-        border-radius: 10px;
-        margin: 5px 0px;
+      .ButtonCommand{
         &.SelectPage{
             background-color: #80808053;
         }
       }
-
       &.Select{
         flex: 0;
         text-align: left;
       }
   }
-}
-.TableDefault{
-    filter: drop-shadow(2px 4px 6px black);
-    background-color: #72727226;
-    border-collapse: collapse;
-    border-spacing: 4px !important;
-    padding: 0px !important;
 
-    tr{
-      background-color: rgba(8, 8, 8, 0.755);
-
-      th{
-        border: 1px solid white;
-        border-top: none;
-      }
-      .addButtonIcon{
-        left: 0px;
-        top: 0px;
-        width: 20px;
-        margin: 0px 2px;
-      }
-
-      input{
-        width: calc(100% - 20px);
-      }
-    }
-
-  }
-
-
-
-.Description{
-  text-align: left;
-  font-size: 19px;
-  color: white;
-  p{
-      font-size: 22px;
-      font-weight: bold;
-  }
-  .KaIMG{
-      text-align: center;
-      img{
-          width: 200px;
-      }
-  }
-}
 
 #TableChargeKA{
   .null{
