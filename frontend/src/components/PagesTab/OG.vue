@@ -34,9 +34,6 @@
           
           <div v-if="PageSettings.status == 0 && selectOG != null">
             <h3>{{ selectOG.constellationName }}</h3>
-            <div>
-              <button class="ButtonCommand" :class="OGEdit? '' : 'disable'"  @click="SaveOGChange">Сохранить изменения</button>
-            </div>
             <table class="TableDefault">
               <thead>
                 <tr><th>Модель КА</th><th>Имя КА</th>
@@ -57,16 +54,16 @@
                   v-show="!(data.deleted==true)"
                 >
                   <td :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
-                  <td><input :id="index" name="name" type="text" :value="data.name"></td>
+                  <td><input type="text" v-model="data.name"></td>
                   <td v-if="KaRole.length" :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
                   <td v-if="selectOG.inputType === 2">{{ data.plane }}</td>
                   <td v-if="selectOG.inputType === 2">{{ data.position }}</td>
-                  <td><input :id="index" name="altitude" type="number" :value="data.altitude"></td>
-                  <td><input :id="index" name="eccentricity" type="number" :value="data.eccentricity"></td>
-                  <td><input :id="index" name="incline" :value="data.incline"></td>
-                  <td><input :id="index" name="longitudeAscendingNode" type="number" :value="data.longitudeAscendingNode"></td>
-                  <td><input :id="index" name="perigeeWidthArgument" type="number" :value="data.perigeeWidthArgument"></td>
-                  <td><input :id="index" name="trueAnomaly" type="number" :value="data.trueAnomaly"></td>
+                  <td><input type="number" v-model="data.altitude"></td>
+                  <td><input type="number" v-model="data.eccentricity"></td>
+                  <td><input type="number" v-model="data.incline"></td>
+                  <td><input type="number" v-model="data.longitudeAscendingNode"></td>
+                  <td><input type="number" v-model="data.perigeeWidthArgument"></td>
+                  <td><input type="number" v-model="data.trueAnomaly"></td>
                   <td v-if="abilityEdit" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
                 </tr>
                 <tr v-if="abilityEdit" class="addRowButton">
@@ -90,7 +87,7 @@
               </div>
             </div>
             <div v-if="OG_Param.inputType === 2">
-              <table class="TableDefault">
+              <table class="TableDefault"><tbody>
                   <tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="OG_Param.parametersCalculation.modelSat={id: $event.value}"/></td></tr>
                   <tr><td>Количество плоскостей</td><td><input type="number" v-model="OG_Param.parametersCalculation.numberOfPlane"></td></tr>
                   <tr><td>Количество позиций в плоскости</td><td><input v-model="OG_Param.parametersCalculation.positionPlane" type="number"></td></tr>
@@ -107,7 +104,7 @@
                   <tr><td>•	Позиция 1 в плоскости 1</td><td><input v-model="OG_Param.parametersCalculation.firstPositionInPlane1" type="number"></td></tr>
                   <tr><td>•	Разнесение КА в плоскости по</td><td><input v-model="OG_Param.parametersCalculation.spacecraftSpacing" type="number"></td></tr>
                   <tr><td>•	Фазовый сдвиг КА между плоскостями</td><td><input v-model="OG_Param.parametersCalculation.phaseShift" type="number"></td></tr>
-              </table>
+                </tbody></table>
             </div>
             <div v-if="OG_Param.inputType == 3">
               <label class="input-file">
@@ -143,7 +140,6 @@ import SelectDiv from '../SelectDiv.vue';
         KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
         KaModels: [], //список моделей ка
         KaLableId: {}, // чисто для базового вывода имени ка
-        OGEdit: false, //флаг редактирования группировки
         selectOG: undefined, //выбранная группировка ог
         abilityEdit: false, // доступ к редактированию
 
@@ -167,12 +163,6 @@ import SelectDiv from '../SelectDiv.vue';
       SelectDiv
     },
     methods: {
-      async closeTable() {
-        if(!this.approved){
-          this.dataJson = await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
-        }
-        this.PageSettings.status = 0
-      },
       SelectOGFromList(data){
         this.selectOG = data
         if(this.selectOG.inputType in {1:null, 2:null} && !this.approved){
@@ -210,30 +200,37 @@ import SelectDiv from '../SelectDiv.vue';
                     "modelSat": {"id": this.KaModels[0].value},
                     name: "none", role: 0
                 };
-            this.selectOG.satellites.push(addedRow);   
+            this.selectOG.satellites.push(addedRow);  
+            this.SaveOGChange()
         },
-        ChangeParam(event){
-            this.selectOG.satellites[event.target.id][event.target.name] = event.target.value
-            this.OGEdit = true
+        ChangeParam(){
+            this.SaveOGChange()
           },
           SelectRole(data){
             this.selectOG.satellites[data.id].role = data.value
-            this.OGEdit = true
+            this.SaveOGChange()
           },
           SelectChangeKA(data){
             this.selectOG.satellites[data.id].modelSat.id = data.value
-            this.OGEdit = true
+            this.SaveOGChange()
           },
           DeleteRow(index){ // ка из ог
               if (this.selectOG.satellites[index].satelliteId === undefined) {
                 this.selectOG.satellites.splice(index,1)}
               else{this.selectOG.satellites[index].deleted = true}
-              this.OGEdit = true
+              this.SaveOGChange()
           },
           async SaveOGChange() { //сохранение изменения ог
             await FetchPost('/api/v1/constellation/update',this.selectOG)
             this.dataJson = await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
-            this.OGEdit = false
+            for (let i = 0; i < this.dataJson.length; i++) {
+              const element = this.dataJson[i];
+              if(element.id == this.selectOG.id){
+                this.selectOG = element
+                break
+              }              
+            }
+
           },
           async AddOG(){
             if(this.OG_Param.constellationName != undefined)
@@ -299,26 +296,13 @@ import SelectDiv from '../SelectDiv.vue';
   display: grid;
   grid-template-columns: 4fr 3fr 1fr;
   background: var(--background-Button1);
-  color: var(--color-Main);
   border: 1px solid var(--border-button);
   padding: 5px;
-  font-size: var(--font-size);
   border-radius: 5px;
   margin: 1px 5px;
   transition: all 0.2s;
-  
   div{
-    flex: 0 1 auto; 
     padding: 5px 10px;
-    &[type="name"]{
-      flex-basis: 40%;
-    }
-    &[type="type"]{
-      flex-basis: 40%;
-    }
-    &[type="icon"]{
-      flex-basis: 20%;
-    }
   }
 }
 

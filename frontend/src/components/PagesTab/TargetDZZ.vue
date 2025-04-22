@@ -10,7 +10,7 @@
         <div class="Panel">
             <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <table>
+                <table><tbody>
                   <tr><td>Начальное время расчетов:</td>
                       <td v-html="CreateDateTime(systemStatus.startTime)"></td>
                     </tr>
@@ -20,7 +20,7 @@
                     <tr><td>Окончание горизонта моделирования:</td>
                       <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
                     </tr>
-                  </table>
+              </tbody></table>
             </div>
             <div  v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
               <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
@@ -31,10 +31,8 @@
         <p v-if="viewmode == 0">Заявки</p>
         <div class="Panel vwPanel" v-if="viewmode == 0">
             <table class="TableDefault">
-              <tr>
-                <th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th>
-              </tr>
-              <tr
+              <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
+              <tbody><tr
               v-for="data, index in requestJson"
                 :key="index"
                 @change="ChangeParamRequest"
@@ -55,17 +53,14 @@
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
                 <td v-if="requestJson.length > 0"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
-            </table>
-            
+            </tbody></table>
         </div>
 
         <p v-if="viewmode == 1">Каталог</p>
         <div class="Panel" v-if="viewmode == 1">
           <table class="TableDefault">
-            <tr>
-              <th>Цель</th><th>Заявки</th><th></th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th>
-            </tr>
-            <tr v-for="data, index in catalogJson"
+          <thead><tr><th>Цель</th><th>Заявки</th><th></th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
+          <tbody><tr v-for="data, index in catalogJson"
               :key="index"
               @change="ChangeParam"
               v-show="!(data.deleted==true)"
@@ -76,21 +71,18 @@
               <td><input :id="index" name="lat" type="number" :value="data.lat"></td>
               <td><input :id="index" name="lon" type="number" :value="data.lon"></td>
               <td><input :id="index" name="alt" type="number" :value="data.alt"></td>
-              <td :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
             </tr>
             <tr class="addRowButton">
               <td colspan="7"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
-              
             </tr> 
-          </table>
+          </tbody></table>
         </div>
 
         <div class="Panel" v-if="systemStatus.typeWorkplace in {4:null, 5:null}">
           <table class="TableDefault">
-            <tr>
-              <th>Имя</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th>
-            </tr>
-            <tr v-for="data, index in datarequest"
+            <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
+            <tbody><tr v-for="data, index in datarequest"
               :key="index"
               @change="ChangeParamdatarequest"
               v-show="!(data.deleted==true)"
@@ -98,15 +90,14 @@
               <td><input type="text" name="name" :value="data.name" :id="index"></td>
               <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.satellite.name, value: data.satellite.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
               <td><input :id="index" name="capacity" type="number" :value="data.capacity"></td>
-              <td><input :id="index" name="priority" type="number" :value="data.priority"></td><!-- Доделать и сделать правильные обработчики событий изменения
-              -->
+              <td><input :id="index" name="priority" type="number" :value="data.priority"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
-              <td :id="index" @click="DeleteRowdatarequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
             </tr>
             <tr class="addRowButton">
               <td colspan="7"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
-          </table>
+            </tbody></table>
         </div>
         <div  class="Panel">
           <div id="DrawKARoad">
@@ -121,9 +112,8 @@
           <div id="map"></div>
         </div>
     </div>
-
-    </div>
-  </template>
+  </div>
+</template>
   
   <script>
 

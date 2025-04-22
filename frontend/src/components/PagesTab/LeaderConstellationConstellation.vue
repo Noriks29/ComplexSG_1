@@ -10,7 +10,7 @@
       <div class="Panel LeftPanel">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
-              <table>
+              <table><tbody>
                   <tr><th>Начальное время расчетов:</th></tr>
                       <tr><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
                   <tr><th>Начало горизонта моделирования:</th></tr>
@@ -19,7 +19,7 @@
                       <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
                   <tr><th>Шаг моделирования: {{ systemStatus.step }}</th></tr>
                   <tr v-if="PageSettings.mode"><th><div>Минимальный угол <input type="number" :value="experimentObject.angle" @change="experimentObject.angle=Number($event.target.value)"></div></th></tr>
-                </table>
+                </tbody></table>
             </div>
             <div class="FlexColumn">
               <div v-if="PageSettings.mode"><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
@@ -33,36 +33,36 @@
         <div class="Panel RightPanel">
           <div v-if="PageSettings.status == 0">
             <table>
-              <tr><th>Кластер</th><th>Кластер</th><th></th></tr>
-              <tr v-for="data, index in clusterTopology" :key="index">
+              <thead><tr><th>Кластер</th><th>Кластер</th><th></th></tr></thead>
+              <tbody><tr v-for="data, index in clusterTopology" :key="index">
                 <td><SelectDiv  :dataOption="lessConstellation" :valueS="{lable: data.cluster1.constellationName}" :id="index" @valueSelect="ChangeCluster($event, 'cluster1')"/></td>
                 <td><SelectDiv  :dataOption="lessConstellation" :valueS="{lable: data.cluster2.constellationName}" :id="index" @valueSelect="ChangeCluster($event, 'cluster2')"/></td>
                 <td @click="DeleteRow(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr><td colspan="3" @click="AddRow('clusterTopology')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
-            </table>
+            </tbody></table>
           </div>
           <div v-if="PageSettings.status == 1">
             <table class="TableDefault">
-              <tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr>
-              <tr v-for="data, index in PageSettings.SatSat" :key="index">
+            <thead><tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr></thead>
+              <tbody><tr v-for="data, index in PageSettings.SatSat" :key="index">
                 <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
               </tr>
-            </table>
+            </tbody></table>
           </div>
 
           <div v-if="PageSettings.status == 2">
             <h1>Структура полносвязной сети</h1>
             <table>
-              <tr><th></th><th>Время начала</th><th>Время окончания</th><th></th></tr>
-              <tr v-for="data, index in networkClaster" :key="index">
+            <thead><tr><th></th><th>Время начала</th><th>Время окончания</th><th></th></tr></thead>
+              <tbody><tr v-for="data, index in networkClaster" :key="index">
                 <td>{{ data.meshNetworkId }}</td>
                 <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
                 <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
                 <td @click="DeleteRowNetwork(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr><td colspan="3" @click="AddRow('network')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
-            </table>
+            </tbody></table>
           </div>
         </div>
     </div>

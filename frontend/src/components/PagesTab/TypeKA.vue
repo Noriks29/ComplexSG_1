@@ -9,172 +9,134 @@
       <div class="ContentDiv">
           <div class="Panel Select LeftPanel" >
               <p>Выбор КА</p>
-              <SelectDiv  :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
+              <SelectDiv :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
               <p>Информация</p>
               <div @click="viewPanel = 1" class="ButtonCommand"  :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
               <div @click="viewPanel = 2" class="ButtonCommand" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
               <div @click="viewPanel = 3" class="ButtonCommand" :class="viewPanel==3 ? 'SelectPage': ''">• Потребление энергии устройствами</div>
               <div @click="viewPanel = 4" class="ButtonCommand" :class="viewPanel==4 ? 'SelectPage': ''">• Параметры устройств и функционирования</div>
           </div>
-
-          <div class="Panel RightPanel" v-if="viewPanel == 1">
-              <p> Режимы функционирования </p>
+          <div class="Panel RightPanel">
+          <div v-if="viewPanel == 1">
+              <p>Режимы функционирования</p>
               <div>
                   <div>
                     <table class="TableDefault">
-                      <tr>
-                        <th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th><th></th>
-                      </tr>
+                      <thead><tr><th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th><th></th></tr></thead>
                       <tbody v-for="data, index in SelectKA.value.modes" :key="index">
-                        <tr>
-                          <td rowspan="0">{{ data.code || "не назван" }}</td> <td rowspan="0">{{ data.flightMode || "не назван" }}</td>
+                        <tr><td rowspan="0">{{ data.code || "не назван" }}</td><td rowspan="0">{{ data.flightMode || "не назван" }}</td></tr>
+                        <tr v-for="dataModes, indexModes in data.operatingModes" :key="indexModes" @change="ChangeValue($event, 'modes', index)">
+                          <td><input v-model="dataModes.mode"></td>
+                          <td><input v-model="dataModes.method"></td>
+                          <td><input type="number" v-model="dataModes.coefficient"></td>
+                          <td :id="index" @click="DeleteRow(indexModes, 'modes', index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
                         </tr>
-                        <tr v-for="dataModes, indexModes in data.operatingModes" :key="indexModes">
-                          <td><input :id="indexModes" name="mode" @change="ChangeValue($event, 'modes', index)"
-                            :value="dataModes.mode || 0"></td>
-                          <td><input :id="indexModes" name="method" @change="ChangeValue($event, 'modes', index)"
-                            :value="dataModes.method || 0"></td>
-                          <td><input :id="indexModes" type="number" name="coefficient" @change="ChangeValue($event, 'modes', index)"
-                            :value="dataModes.coefficient || 0"></td>
-                          <td :id="index" @click="DeleteRow(indexModes, 'modes', index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-                        </tr>
-                        <tr><td colspan="4" @click="AddRow('modes',index)">........</td></tr>
+                        <tr><td colspan="6" @click="AddRow('modes',index)">...................................</td></tr>
                       </tbody>
                     </table>
                   </div>
                   <p>Правила выбора режима полета, если интервалы времени пересекаются</p>
-                  <div style="margin-top: 20px;">
+                  <div>
                     <table class="TableDefault">
-                      <tr>
-                        <th>Пересечение режимов</th><th>Выполняется</th>
-                      </tr>
-                      <tr><th>A и B</th><td>выбор 1</td></tr>
+                      <thead><tr><th>Пересечение режимов</th><th>Выполняется</th></tr></thead>
+                      <tbody><tr><th>A и B</th><td>выбор 1</td></tr>
                       <tr><th>A и C</th><td>выбор 2</td></tr>
-                      <tr><th>B и C</th><td>выбор 3</td></tr>
+                      <tr><th>B и C</th><td>выбор 3</td></tr></tbody>
                     </table>
                   </div>
               </div>
           </div>
 
-          <div class="Panel RightPanel" v-if="viewPanel == 2">
-              <p> Каталог устройств </p>
+          <div v-if="viewPanel == 2">
+              <p>Каталог устройств</p>
               <table class="TableDefault">
-                <tr><th style="padding: 0px 5px;">Использовать</th><th>Прибор</th><th></th></tr>
-                <tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
-                  <td style="width: 40px;"><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
-                  <td><input :id="index" name="nameDevice" @change="ChangeValue($event, 'devCatalogs')"
-                    :value="data.nameDevice || 'null'"></td>
-                  <td :id="index" @click="DeleteRow(index, 'devCatalogs')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+                <thead><tr><th style="width: 0px;">Использовать</th><th>Прибор</th><th></th></tr></thead>
+                <tbody><tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
+                  <td><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
+                  <td><input @change="ChangeValue($event, 'devCatalogs')" v-model="data.nameDevice"></td>
+                  <td @click="DeleteRow(index, 'devCatalogs')" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
                 </tr>
                 <tr class="addRowButton">
-                  <td colspan="3"><button @click="AddRow('devCatalogs')">
-                    <img src="../../assets/add.png" alt="" class="addButtonIcon">
-                    Добавить
-                  </button></td>
-                </tr> 
+                  <td colspan="3"><button @click="AddRow('devCatalogs')"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+                </tr></tbody>
               </table>
 
               <p>Устройства</p>
-              <table class="TableDefault">
-                <tr><th>Прибор</th><th>Свойство</th><th></th></tr>
-                <tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
+              <table class="TableDefault"><thead>
+                <tr><th>Прибор</th><th style="width: 0px;">Свойство</th><th></th></tr></thead>
+                <tbody><tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
                   <td>{{ data.devCatalog.nameDevice || "null"}}</td>
-                  <td><input type="checkbox" :id="index" name="property" :checked="data.constant" @change="ChangeValue($event, 'property')"/>
+                  <td><input type="checkbox" v-model="data.constant" @change="ChangeValue($event, 'property')"/>
                       <label>{{ data.constant ? "=" : "~" }}</label></td>
-                  <td :id="index" @click="DeleteRow(index, 'devices')"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-                </tr>
+                  <td @click="DeleteRow(index, 'devices')" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
+                </tr></tbody>
               </table>
           </div>
-          <div class="Panel RightPanel" v-if="viewPanel == 3">
+          <div v-if="viewPanel == 3">
               <p>Потребление энергии устройствами </p>
               <div>
-                <table class="TableDefault PanelDefault" id="TableChargeKA">
+                <table class="TableDefault" id="TableChargeKA"><tbody>
                   <tr>
                     <th rowspan="2">Прибор</th>
                     <th v-for="data, index in SelectKA.modesList" :key="index">{{ data.mode }}</th>
                   </tr>
-                  <tr>
-                    <th v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length">{{ data.flightMode }}</th>
-                  </tr>
+                  <tr><th v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length">{{ data.flightMode }}</th></tr>
                   <tr v-for="data, index in SelectKA.value.devices" :key="index" :id="data.devCatalog.id">
                     <td>{{ data.devCatalog.nameDevice }}</td>
                     <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode">
                       <input type="number" @change="ChangeValue($event, 'charge', data.devCatalog.id)" :id="dataMode.id" :name="data.devCatalog.id" :value="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id]" step="0.1" :class="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id] == undefined ? 'null':''"/>
                     </td>
-                  </tr>
+                  </tr></tbody>
                 </table>
-
               </div>
           </div>
-          <div class="Panel RightPanel" v-if="viewPanel == 4">
+          <div v-if="viewPanel == 4">
               <p>Параметры функционирования</p>
               <div>
-                  <table class="TableDefault PanelDefault" @change="ChangeParamKa">
+                  <table class="TableDefault" @change="ChangeParamKa">
+                    <tbody>
                       <tr><th colspan="3">Параметры разворота</th></tr>
-                          <tr><td>Ускорение / замедление КА</td>
-                              <td><input type="number" id="acceleration" :value="SelectKA.value.operatingParameter.acceleration || 0"></td><td>гр/с<sup>2</sup></td></tr>
-                          <tr><td>Максимальная скорость вращения КА</td>
-                            <td><input type="number" id="maxRotationSpeed" :value="SelectKA.value.operatingParameter.maxRotationSpeed || 0"></td><td>гр/с</td></tr>
-                          <tr><td>Время стабилизации</td>
-                            <td><input type="number" id="stabilizationTime" :value="SelectKA.value.operatingParameter.stabilizationTime"></td><td>с</td></tr>
+                          <tr><td>Ускорение / замедление КА</td><td><input type="number" v-model="SelectKA.value.operatingParameter.acceleration"></td><td>гр/с<sup>2</sup></td></tr>
+                          <tr><td>Максимальная скорость вращения КА</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxRotationSpeed"></td><td>гр/с</td></tr>
+                          <tr><td>Время стабилизации</td><td><input type="number" v-model="SelectKA.value.operatingParameter.stabilizationTime"></td><td>с</td></tr>
                       <tr><th colspan="3">Скорость передачи данных</th></tr>
-                          <tr><td>Скорость передачи данных КА - КА</td>
-                            <td><input type="number" id="dataTransferSatSat" :value="SelectKA.value.operatingParameter.dataTransferSatSat"></td><td>Мб/с</td></tr>
-                          <tr><td>Скорость передачи данных КА - НП</td>
-                            <td><input type="number" id="dataTransferEarthSat" :value="SelectKA.value.operatingParameter.dataTransferEarthSat"></td><td>Мб/с</td></tr>
+                          <tr><td>Скорость передачи данных КА - КА</td><td><input type="number" v-model="SelectKA.value.operatingParameter.dataTransferSatSat"></td><td>Мб/с</td></tr>
+                          <tr><td>Скорость передачи данных КА - НП</td><td><input type="number" v-model="SelectKA.value.operatingParameter.dataTransferEarthSat"></td><td>Мб/с</td></tr>
                       <tr><th colspan="3">Максимальные углы съемки</th></tr>
-                          <tr><td>Крен</td>
-                            <td><input type="number" id="lurch" :value="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
-                          <tr><td>Тангаж</td>
-                            <td><input type="number" id="pitch" :value="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
+                          <tr><td>Крен</td><td><input type="number" v-model="SelectKA.value.operatingParameter.lurch"></td><td>Гр.</td></tr>
+                          <tr><td>Тангаж</td><td><input type="number" v-model="SelectKA.value.operatingParameter.pitch"></td><td>Гр.</td></tr>
                       <tr><th colspan="3">Солнечные панели</th></tr>
-                          <tr><td>Генерируемая мощность при ориентации на Солнце</td>
-                            <td><input type="number" id="maxPowerGenerated" :value="SelectKA.value.operatingParameter.maxPowerGenerated"></td><td>Вт/м<sup>2</sup></td></tr>
-                          <tr><td>Средняя генерируемая мощность</td>
-                            <td><input type="number" id="averagePowerGenerates" :value="SelectKA.value.operatingParameter.averagePowerGenerates"></td><td>Вт/м<sup>2</sup></td></tr>
-                          <tr><td>Площадь солнечных панелей</td>
-                            <td><input type="number" id="squareSolarPanels" :value="SelectKA.value.operatingParameter.squareSolarPanels"></td><td>м<sup>2</sup></td></tr>
-                          <tr><td>КПД солнечных панелей</td>
-                            <td><input type="number" id="efficiencySolarPanels" :value="SelectKA.value.operatingParameter.efficiencySolarPanels"></td><td>%</td></tr>                     
+                          <tr><td>Генерируемая мощность при ориентации на Солнце</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxPowerGenerated"></td><td>Вт/м<sup>2</sup></td></tr>
+                          <tr><td>Средняя генерируемая мощность</td><td><input type="number" v-model="SelectKA.value.operatingParameter.averagePowerGenerates"></td><td>Вт/м<sup>2</sup></td></tr>
+                          <tr><td>Площадь солнечных панелей</td><td><input type="number" v-model="SelectKA.value.operatingParameter.squareSolarPanels"></td><td>м<sup>2</sup></td></tr>
+                          <tr><td>КПД солнечных панелей</td><td><input type="number" v-model="SelectKA.value.operatingParameter.efficiencySolarPanels"></td><td>%</td></tr>                     
                       <tr><th colspan="3">Аккумуляторная батарея</th></tr>
-                          <tr><td>Емкость</td>
-                            <td><input type="number" id="accCapacity" :value="SelectKA.value.operatingParameter.accCapacity"></td><td>А-ч</td></tr>
-                          <tr><td>Напряжение</td>
-                            <td><input type="number" id="voltage" :value="SelectKA.value.operatingParameter.voltage"></td><td>В</td></tr>
-                          <tr><td>Порог минимального разряда</td>
-                            <td><input type="number" id="minCharge" :value="SelectKA.value.operatingParameter.minCharge"></td><td>%</td></tr>
+                          <tr><td>Емкость</td><td><input type="number" v-model="SelectKA.value.operatingParameter.accCapacity"></td><td>А-ч</td></tr>
+                          <tr><td>Напряжение</td><td><input type="number" v-model="SelectKA.value.operatingParameter.voltage"></td><td>В</td></tr>
+                          <tr><td>Порог минимального разряда</td><td><input type="number" v-model="SelectKA.value.operatingParameter.minCharge"></td><td>%</td></tr>
                       <tr><th colspan="3">Электромагниты</th></tr>
-                          <tr><td>Максимальная потребляемая мощность</td>
-                            <td><input type="number" id="maxPowerOfElectromagnet" :value="SelectKA.value.operatingParameter.maxPowerOfElectromagnet"></td><td>Вт-ч</td></tr>
-                          <tr><td>Максимальный создаваемый магнитный момент</td>
-                            <td><input type="number" id="maxMagneticMoment" :value="SelectKA.value.operatingParameter.maxMagneticMoment"></td><td>А·м<sup>2</sup></td></tr>
+                          <tr><td>Максимальная потребляемая мощность</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxPowerOfElectromagnet"></td><td>Вт-ч</td></tr>
+                          <tr><td>Максимальный создаваемый магнитный момент</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxMagneticMoment"></td><td>А·м<sup>2</sup></td></tr>
                       <tr><th colspan="3">Маховики</th></tr>
-                          <tr><td>Максимальный управляющий момент маховика</td>
-                            <td><input type="number" id="maxControlMomentOfWheels" :value="SelectKA.value.operatingParameter.maxControlMomentOfWheels"></td><td>Н·м</td></tr>
-                          <tr><td>Максимальный момент инерции маховика</td>
-                            <td><input type="number" id="maxInertiaMomentOfWheels" :value="SelectKA.value.operatingParameter.maxInertiaMomentOfWheels"></td><td>Н·м·с</td></tr>
-                          <tr><td>Момент инерции ротора маховика</td>
-                            <td><input type="number" id="" :value="0"></td><td>кг·м<sup>2</sup></td></tr>     
+                          <tr><td>Максимальный управляющий момент маховика</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxControlMomentOfWheels"></td><td>Н·м</td></tr>
+                          <tr><td>Максимальный момент инерции маховика</td><td><input type="number" v-model="SelectKA.value.operatingParameter.maxInertiaMomentOfWheels"></td><td>Н·м·с</td></tr>
+                          <tr><td>Момент инерции ротора маховика (не активно)</td>
+                          <td><input type="number" :value="0"></td><td>кг·м<sup>2</sup></td></tr>     
                       <tr><th colspan="3">Память</th></tr>
-                          <tr><td>Объем памяти КА</td>
-                            <td><input type="number" id="memory" :value="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
-                        <tr><td>Объем заявки</td>
-                            <td><input type="number" id="shootingDataVolume" :value="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>ГБ</td></tr>
+                          <tr><td>Объем памяти КА</td><td><input type="number" v-model="SelectKA.value.operatingParameter.memory"></td><td>ГБ</td></tr>
+                        <tr><td>Объем заявки</td><td><input type="number" v-model="SelectKA.value.operatingParameter.shootingDataVolume"></td><td>ГБ</td></tr>
                       <tr><th colspan="3">Сенсоры</th></tr>
-                          <tr><td>typeSensor</td>
-                            <td><input type="number" id="typeSensor" :value="SelectKA.value.operatingParameter.typeSensor"></td><td>??</td></tr>
-                        <tr><td>Продолжительность сьёмки</td>
-                            <td><input type="number" id="durationShooting" :value="SelectKA.value.operatingParameter.durationShooting"></td><td>сек.</td></tr>
-                  
-                  </table>
+                          <tr><td>typeSensor</td><td><input type="number" v-model="SelectKA.value.operatingParameter.typeSensor"></td><td>??</td></tr>
+                          <tr><td>Продолжительность сьёмки</td><td><input type="number" v-model="SelectKA.value.operatingParameter.durationShooting"></td><td>сек.</td></tr>
+                  </tbody></table>
               </div>
           </div>
+        </div>
       </div>
   </div>
 </template>
 
 <script>
-
 import { FetchGet, FetchPost } from "@/js/LoadDisplayMetod";
 import SelectDiv from '../SelectDiv.vue';
 import { PagesSettings } from './PagesSettings.js';
@@ -198,25 +160,20 @@ export default {
       SelectDiv
   },
   methods:{
-      SortData(data, type){
-          return data.filter(data => data.Type == type)
-      },
       async ChangeKA(data){
-        console.log(this.SelectKA, data)
           if(data.value == "add"){
             await FetchGet("/api/v1/modelsat/add")
-            this.InItSelectKa()
+            this.ReFerchKA(undefined)
           }
           else{
-            console.log(data)
             this.SelectKA = {lable: data.value.modelName, value: data.value}
             this.SelectKA.value.devCatalogs.forEach(device => {
               device.use = 0;
               this.SelectKA.value.devices.forEach(deviceUse => {
-                if(deviceUse.devCatalog.id == device.id)
-                  device.use = 1
+                if(deviceUse.devCatalog.id == device.id) device.use = 1
               })
             })
+            alert("Ошибка построения зарядов")
             //this.BuildCharges() вызывает ошибку надо поправить
           }
       },
@@ -224,19 +181,13 @@ export default {
         console.log(event)
         switch (category) {
           case 'property':
-              this.SelectKA.value.devices[event.target.id].constant = event.target.checked
               await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
-              await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'devCatalogs':
-              this.SelectKA.value.devCatalogs[event.target.id].nameDevice = event.target.value
               await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
-              await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'modes':
-              this.SelectKA.value.modes[parentIndex].operatingModes[event.target.id][event.target.name] = event.target.value
               await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
-              await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'charge':
               for (let i = 0; i < this.SelectKA.value.charges.length; i++) {
@@ -247,82 +198,63 @@ export default {
                   break
                 }
               }
-              await this.ReFerchKA(this.SelectKA.value.id)
-
             break;
-        
           default:
             break;
         }
+        await this.ReFerchKA(this.SelectKA.value.id)
       },
       async AddRow(category, data=null){
         switch (category) {
           case "devCatalogs":
             this.SelectKA.value.devCatalogs.push({"nameDevice": "null","modelId": this.SelectKA.value.id})
             await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case "devices":
-            this.SelectKA.value.devices.push({
-              "devCatalog": data,
-              "modelId": this.SelectKA.value.id,
-              "property": 0
-            })
+            this.SelectKA.value.devices.push({"devCatalog": data,"modelId": this.SelectKA.value.id,"property": 0})
             await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'modes':
-            this.SelectKA.value.modes[data].operatingModes.push({
-              "coefficient": 1,
-              "method": 1,
-              "mode": "null"
-            })
+            this.SelectKA.value.modes[data].operatingModes.push({"coefficient": 1,"method": 1,"mode": "null"})
             await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
           default:
             break;
         }
+        await this.ReFerchKA(this.SelectKA.value.id)
       },
       async DeleteRow(index, category, parentIndex = 0){
         switch (category) {
           case "devCatalogs":
             this.SelectKA.value.devCatalogs[index].deleted = true
             await FetchPost("/api/v1/modelsat/update/devCatalog", this.SelectKA.value.devCatalogs)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'devices':
             this.SelectKA.value.devices[index].deleted = true
             await FetchPost("/api/v1/modelsat/update/devices", this.SelectKA.value.devices)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
           case 'modes':
             this.SelectKA.value.modes[parentIndex].operatingModes[index].deleted = true
             await FetchPost("/api/v1/modelsat/update/modes", this.SelectKA.value.modes)
-            await this.ReFerchKA(this.SelectKA.value.id)
             break;
-
           default:
             break;
         }
+        await this.ReFerchKA(this.SelectKA.value.id)
       },
-      async ChangeParamKa(target){
-        console.log(target.target.value, target.target.id, this.SelectKA.value.id)
-        this.SelectKA.value.operatingParameter[target.target.id] = Number(target.target.value)
+      async ChangeParamKa(){
         await FetchPost("/api/v1/modelsat/update/parameters", this.SelectKA.value.operatingParameter)
-        console.log(this.SelectKA)
       },
       async ReFerchKA(index){
         let result = await FetchGet('/api/v1/modelsat/all')
         this.KatypeList = []
-        for (let index = 0; index < result.length; index++) {
-            const element = result[index];
-            this.KatypeList.push({lable: element.modelName, value: element})
-        }
+        result.forEach(element => {this.KatypeList.push({lable: element.modelName, value: element})})
         this.KatypeList.push({lable:"Добавить модель", value: "add"})
-        this.KatypeList.forEach(KA => {
-          if(KA.value.id == index) this.SelectKA = KA
-        })
+        if(index != undefined){
+          this.KatypeList.forEach(KA => {if(KA.value.id == index) this.SelectKA = KA})
+        }
+        else{this.SelectKA = this.KatypeList[0]}
+        
         this.SelectKA.value.devCatalogs.forEach(device => {
               device.use = 0;
               this.SelectKA.value.devices.forEach(deviceUse => {
@@ -333,64 +265,34 @@ export default {
         this.BuildCharges()
       },
       BuildCharges(){
-        console.log(this.SelectKA.value.charges)
         this.SelectKA.modesList = [];
         this.SelectKA.value.modes.forEach(mode => {
           this.SelectKA.modesList = this.SelectKA.modesList.concat(mode.operatingModes)
         })
-        
         this.SelectKA.ChargeTable = {}
         this.SelectKA.value.charges.forEach(charge => {
           if(!(charge.deviceId in this.SelectKA.ChargeTable)) this.SelectKA.ChargeTable[charge.deviceId] = {}
           this.SelectKA.ChargeTable[charge.deviceId][charge.flightModeId] = charge.charge
         })
-        console.log("this.SelectKA", this.SelectKA)
-      },  
-      async InItSelectKa(){
-        let result = await FetchGet('/api/v1/modelsat/all')
-        this.KatypeList = []
-        for (let index = 0; index < result.length; index++) {
-            const element = result[index];
-            this.KatypeList.push({lable: element.modelName, value: element})
-        }
-        this.KatypeList.push({lable:"Добавить модель", value: "add"})
-        console.log(this.KatypeList)
-        this.SelectKA = this.KatypeList[0]
-        console.log("Select", this.SelectKA)
-        this.SelectKA.value.devCatalogs.forEach(device => {
-              device.use = 0;
-              this.SelectKA.value.devices.forEach(deviceUse => {
-                if(deviceUse.devCatalog.id == device.id)
-                  device.use = 1
-              })
-            })
-        this.BuildCharges()
       }
   },
   mounted(){
-      this.InItSelectKa()
+    this.ReFerchKA(undefined)
   }
 }
 </script>
 
 <style lang="scss" scoped>
   .Panel{
-      max-height: 90%;
-      height: 100%;
-      padding: 20px;
-
       .ButtonCommand{
         &.SelectPage{
             background-color: #80808053;
         }
       }
       &.Select{
-        flex: 0;
         text-align: left;
       }
   }
-
-
 #TableChargeKA{
   .null{
     background-color: #ff000063;

@@ -1,40 +1,39 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
+            <h1 class="TitleText">Информация системы</h1>
           </div>
       <div class="ContentDiv">
-        <div class="TitleText">Информация системы</div>
-
-        <div class="Panel MaxWidth">
-          <table class="TableDefault">
+        <div class="Panel RightPanel">
+          <table class="TableDefault"><tbody>
           <tr>
-            <th colspan="2" class="Title">Исходные данные. Космическая система (КС) и связь</th><th></th>
+            <th colspan="2">Исходные данные. Космическая система (КС) и связь</th>
           </tr>
-          <tr><td>Earth</td><td>Список и координаты наземных пунктов</td><td id="earthStatus">{{dataSystem.earthStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
-          <tr><td>Constellation</td><td>Список и построение КА в ОГ </td><td id="constellationStatus">{{dataSystem.constellationStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
-          <tr><td>Earth-Sat</td><td>Сеансы связи КА с НП</td><td id="earthSatStatus">{{dataSystem.earthSatStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
-          <tr><td>Sat-Sat</td><td>План контактов между КА</td><td id="satSatStatus">{{dataSystem.satSatStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
-          <tr><td>Grid</td><td>Опорный фрагмент сети связи</td><td id="gridStatus">{{dataSystem.gridStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
+          <tr><td>Список и координаты наземных пунктов</td><td id="earthStatus">{{dataSystem.earthStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
+          <tr><td>Список и построение КА в ОГ </td><td id="constellationStatus">{{dataSystem.constellationStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
+          <tr><td>Сеансы связи КА с НП</td><td id="earthSatStatus">{{dataSystem.earthSatStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
+          <tr><td>План контактов между КА</td><td id="satSatStatus">{{dataSystem.satSatStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
+          <tr><td>Опорный фрагмент сети связи</td><td id="gridStatus">{{dataSystem.gridStatus ? 'Утверждено' : 'Не утверждено'}}</td></tr>
           <tr>
-            <th colspan="2" class="Title">Горизонт времени моделирования</th><th></th>
+            <th colspan="2">Горизонт времени моделирования</th>
           </tr>
-          <tr class="active"><td>S_begin</td><td>Начальное время расчетов</td><td>
+          <tr><td>Начальное время расчетов</td><td>
             <DateTime :valueUnix="dataSystem.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
           </td></tr>
-          <tr class="active"><td>H_begin</td><td>Начало горизонта моделирования</td><td>
+          <tr><td>Начало горизонта моделирования</td><td>
             <DateTime :valueUnix="dataSystem.modelingBegin" :id="'modelingBegin'"  @valueSelect="ChangeTime"/>
           </td></tr>
-          <tr class="active"><td>H_end</td><td>Окончание горизонта моделирования</td><td>
+          <tr><td>Окончание горизонта моделирования</td><td>
             <DateTime :valueUnix="dataSystem.modelingEnd" :id="'modelingEnd'" @valueSelect="ChangeTime"/>
           </td></tr>
           <tr>
-            <th colspan="2" class="Title">Аспекты системы управления</th><th></th>
+            <th colspan="2">Аспекты системы управления</th>
           </tr>
-          <tr class="active"><td>step</td><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="dataSystem.step"><label for="step"></label></td></tr>
-        </table>
+          <tr><td>Шаг моделлирования</td><td><input id="step" @change="ChangeParam" type="number" min="0" :value="dataSystem.step"><label for="step"></label></td></tr>
+        </tbody></table>
         </div>
       </div>
     </div>
@@ -71,60 +70,6 @@ import { SystemObject, ChangeSystemObject } from '@/js/GlobalData';
   </script>
 
 <style lang="scss" scoped>
-input{
-  pointer-events: all;
-}
-td{
-  text-align: left;
-
-  &:last-child{
-    border-left: 1px solid white;
-  }
-}
-th{
-  border-bottom: 2px solid white;
-
-  &:last-child{
-    border-left: 1px solid white;
-  }
-}
-.input-file {
-	background: #2b2b2b;
-  color: white;
-  border: 1px solid black;
-  padding: 14px;
-  font-size: var(--font-size);
-  border-radius: 10px;
-  box-shadow: -3px 3px 1px black;
-  margin: 5px;
-  transition: all 0.2s;
-  position: relative;
-  display: inline-block;
-}
-.input-file span {
-  position: relative;
-  cursor: pointer;
-  outline: none;
-  box-sizing: border-box;
-  display: flex;
-  vertical-align: middle;
-  text-align: center;
-  background: none;
-  height: 100%;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  color: white;
-  align-items: center;
-  flex-direction: row;
-}
-.input-file input[type=file] {
-	position: absolute;
-	z-index: -1;
-	opacity: 0;
-	display: block;
-	width: 0;
-	height: 0;
-}
 
 
 

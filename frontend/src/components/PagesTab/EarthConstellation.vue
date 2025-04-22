@@ -1,50 +1,53 @@
 <template>
-    <div class="main_contain">
-          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
+    <div class="main_contain RowSection">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
+            <div class="TitleText">План контактов НП – ОГ</div>
           </div>
           
           
     <div class="ContentDiv">
-      <div class="TitleText">План контактов НП – ОГ</div>
-      <div class="Panel">
+      <div class="Panel LeftPanel">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
-              <table>
-                  <tr><td>Начальное время расчетов:</td>
-                      <td v-html="CreateDateTime(systemStatus.startTime)"></td>
-                    </tr>
-                    <tr><td>Начало горизонта моделирования:</td>
-                      <td v-html="CreateDateTime(systemStatus.modelingBegin)"></td>
-                    </tr>
-                    <tr><td>Окончание горизонта моделирования:</td>
-                      <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
-                    </tr>
-                  <tr><td>Шаг моделирования:</td><td>{{ systemStatus.step }}</td></tr>
-                  <tr><td>КА для моделлирования:</td><td><input type="checkbox" :checked="KAModellingRoleMode" @change="KAModellingRoleMode = $event.target.checked">{{ KAModellingRoleMode ? 'Только Лидеры' : 'Все КА' }}</td></tr>
-                </table>
+              <table><tbody>
+                <tr><th>Начальное время расчетов:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
+                  <tr><th>Начало горизонта моделирования:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+                  <tr><th>Окончание горизонта моделирования:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+                  <tr><th>Шаг моделирования: {{ systemStatus.step }}</th></tr>
+                  <tr><th><div style="width: fit-content;">Фильтр сети:<input type="checkbox" :checked="KAModellingRoleMode" @change="KAModellingRoleMode = $event.target.checked"><label>{{ KAModellingRoleMode ? 'Только Лидеры' : 'Все КА' }}</label></div></th></tr>
+                </tbody></table>
             </div>
-        </div>
-    <div class="Panel MaxWidth">
-      <div class="FlexColumn">
+        <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
           <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
-          <div><button @click="CommandWork(3)" class="ButtonCommand disable"  v-if="false">Проверка ограничений</button></div>
-          <div><button @click="CommandWork(4)" class="ButtonCommand disable"  v-if="false">Визуальный анализ окон видимости / плана контактов</button></div>
           <div><button @click="CommandWork(5)" class="ButtonCommand">Расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
         </div>
       </div>
+
+      <div class="Panel RightPanel">
+          <div v-if="PageSettings.status == 1">
+            <table class="TableDefault">
+              <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
+              <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
+                <td>{{ data.earthName }}</td><td>{{ data.satelliteName }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
+              </tr>
+            </tbody></table>
+          </div>
+      </div>
+
     </div>
     <div id="PlotlyDiv" v-if="ShowPlotlyContain">
       <div class="ContainerDiv">
         <div class="closebutton"><button @click="ShowPlotlyContain = false">
         <img src="../../assets/close.svg"><span>&#8203;</span>
       </button></div>
-
       <div id="plotlymapContain1" style="height: 79vh;"></div>
       </div>
     </div>
@@ -55,46 +58,26 @@
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings';
-import DefaultTable from '../DefaultTable.vue';
 import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'TargetDZZ',
     mixins: [PagesSettings],
-    components:{
-      DefaultTable
-    },
     data(){
       return{
-        ShowDefaultTable: false,
+        PageSettings:{
+          mode: false, //лидер / все
+          status: 1, //код открытого окна
+          SatNp: [], //список контактов сат-нп
+        },
         ShowPlotlyContain: false,
-        dataLableName: {},
-        dataTable: [],
         KAModellingRoleMode: false
       }
     },
     methods: {
        async CommandWork(commandId){
-            console.log(commandId)
             if(commandId == 2){
-
-              this.ShowDefaultTable = true
-              this.dataLableName = [
-                {lable: "НП", nameParam: "earthName"},
-                {lable: "КА", nameParam: "satelliteName"},
-                {lable: "Начало", nameParam: "begin"},
-                {lable: "Конец", nameParam: "end"},
-              ]
-              //дальше мы типо запрашиваем данные
-              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
-              this.dataTable = await response
-              this.dataTable =this.dataTable.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
-              
-              for (let index = 0; index < this.dataTable.length; index++) {
-                this.dataTable[index].begin = this.CreateDateTime(this.dataTable[index].begin)
-                this.dataTable[index].end = this.CreateDateTime(this.dataTable[index].end)
-                
-              }
+              this.PageSettings.status = 1
             }
             if(commandId == 5){
               DisplayLoad(true)
@@ -107,10 +90,8 @@ import Plotly from 'plotly.js-dist'
               DisplayLoad(false)
             }
             if(commandId == 6){
-              console.log("Уааа график")
               this.ShowPlotlyContain = true
               let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
-              console.log(response)
               let dataGrapf = {
                 type: 'bar',
                 y: [],
@@ -132,14 +113,21 @@ import Plotly from 'plotly.js-dist'
                 dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
               });
-
-
               Plotly.newPlot("plotlymapContain1", [dataGrapf],
                 {
                   title: 'Окна видимости',
                 }
               )
             }
+        },
+        async ReFetch(){
+          this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
+          this.PageSettings.SatNp = this.PageSettings.SatNp.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
+              for (let index = 0; index < this.PageSettings.SatNp.length; index++) {
+                const element = this.PageSettings.SatNp[index]
+                element.begin = this.CreateDateTime(element.begin)
+                element.end = this.CreateDateTime(element.end)
+              }
         }
     },
     
@@ -148,67 +136,13 @@ import Plotly from 'plotly.js-dist'
         if(this.systemStatus.typeWorkplace in {3:null,4:null}){
           this.KAModellingRoleMode = true
         }
+        this.ReFetch()
         DisplayLoad(false)
-
     }
   }
   </script>
 
 <style lang="scss" scoped>
-.main_contain{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  color: white;
-}
-td{
-  text-align: left;
-
-}
-th{
-  border-bottom: 2px solid white;
-
-}
-.PanelDefault{
-    
-    .SystemInfo{
-        display: flex;
-        flex-wrap: wrap;
-        align-content: center;
-        align-items: center;
-        color: white;
-        text-align: left;
-        padding: 10px;
-        justify-content: space-around;
-
-        .paddl{
-            padding-left: 15px;
-        }
-    }
-}
-.CommandButtons{
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    div{
-        padding: 5px;
-    }
-}
-
-.FlexColumn{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  div{
-    width: 100%;
-    button{
-      width: 96%;
-      text-align: start;
-    }
-  }
-}
-
-
 
 #PlotlyDiv{
   width: 100vw;
