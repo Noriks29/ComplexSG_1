@@ -1,85 +1,78 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
+            <div class="TitleText">Эксперимент</div>
           </div>
     <div class="ContentDiv">
-        <h1 class="TitleText">Эксперимент</h1>
-        <div class="Panel">
+        <div class="Panel LeftPanel">
             <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <table><tbody>
-                  <tr><td>Начальное время расчетов:</td>
-                      <td v-html="CreateDateTime(systemStatus.startTime)"></td>
-                    </tr>
-                    <tr><td>Начало горизонта моделирования:</td>
-                      <td v-html="CreateDateTime(systemStatus.modelingBegin)"></td>
-                    </tr>
-                    <tr><td>Окончание горизонта моделирования:</td>
-                      <td v-html="CreateDateTime(systemStatus.modelingEnd)"></td>
-                    </tr>
-              </tbody></table>
+              <table><tbody>
+                <tr><th>Начальное время расчетов:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
+                  <tr><th>Начало горизонта моделирования:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+                  <tr><th>Окончание горизонта моделирования:</th></tr>
+                      <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
+                </tbody></table>
             </div>
-            <div  v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
-              <button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button>
-              <button @click="viewmode=1" class="ButtonCommand">Каталог целей</button>
-              <button @click="viewmode=1" class="ButtonCommand">Данные по заявкам</button>
+            <div class="FlexColumn" v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
+              <div><button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button></div>
+              <div><button @click="viewmode=1" class="ButtonCommand">Каталог целей</button></div>
             </div>
         </div>
-        <p v-if="viewmode == 0">Заявки</p>
-        <div class="Panel vwPanel" v-if="viewmode == 0">
+        <div class="Panel RightPanel" >
+          <div v-if="viewmode == 0">
             <table class="TableDefault">
               <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
               <tbody><tr
               v-for="data, index in requestJson"
                 :key="index"
-                @change="ChangeParamRequest"
-                v-show="!(data.deleted==true)"
               >
               <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange($event, 'catalog')"/></td>
               <td>{{ data.catalog.lat }}</td>
               <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
               <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChange($event, 'earthPoint')"/></td>
               <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChange($event, 'choiceCriteria')"/></td>
-              <td><input :id="index" name="priory" type="number" :value="data.priory"></td>
+              <td><input type="number" v-model="data.priory" @change="ChangeParamRequest"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
               <td v-if="systemStatus.typeWorkplace in {3:null}"><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')"/></td>
-              <td :id="index" @click="DeleteRowRequest(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              <td :id="index" @click="DeleteRowRequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
               </tr>
               <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
+                <td v-if="systemStatus.typeWorkplace in {3:null,4:null}"></td>
                 <td v-if="requestJson.length > 0"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
             </tbody></table>
-        </div>
+          </div>
 
-        <p v-if="viewmode == 1">Каталог</p>
-        <div class="Panel" v-if="viewmode == 1">
+          <div v-if="viewmode == 1">
           <table class="TableDefault">
-          <thead><tr><th>Цель</th><th>Заявки</th><th></th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
+          <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
           <tbody><tr v-for="data, index in catalogJson"
               :key="index"
               @change="ChangeParam"
-              v-show="!(data.deleted==true)"
-            >
-              <td><input :id="index" name="goalName" type="text" :value="data.goalName"></td>
-              <td style="text-align: center;">{{data.countRequest}}</td>
-              <td><img @click="AddRowRequest(data)" src="../../assets/add.png" alt="" class="addButtonIcon"></td>  
-              <td><input :id="index" name="lat" type="number" :value="data.lat"></td>
-              <td><input :id="index" name="lon" type="number" :value="data.lon"></td>
-              <td><input :id="index" name="alt" type="number" :value="data.alt"></td>
-              <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              v-show="!(data.deleted==true)">
+              <td><input type="text" v-model="data.goalName"></td>
+              <td style="display: flex;align-items: center;justify-content: space-around;"><span>{{data.countRequest}}</span><img @click="AddRowRequest(data)" src="../../assets/add.png" alt="" class="addButtonIcon"></td>
+              <td><input type="number" v-model="data.lat"></td>
+              <td><input type="number" v-model="data.lon"></td>
+              <td><input type="number" v-model="data.alt"></td>
+              <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
             </tr>
             <tr class="addRowButton">
-              <td colspan="7"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+              <td colspan="6"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
           </tbody></table>
         </div>
 
-        <div class="Panel" v-if="systemStatus.typeWorkplace in {4:null, 5:null}">
+
+        <div v-if="viewmode == 2">
           <table class="TableDefault">
             <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
             <tbody><tr v-for="data, index in datarequest"
@@ -87,19 +80,20 @@
               @change="ChangeParamdatarequest"
               v-show="!(data.deleted==true)"
             >
-              <td><input type="text" name="name" :value="data.name" :id="index"></td>
+              <td><input type="text" v-model="data.name"></td>
               <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.satellite.name, value: data.satellite.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
-              <td><input :id="index" name="capacity" type="number" :value="data.capacity"></td>
-              <td><input :id="index" name="priority" type="number" :value="data.priority"></td>
+              <td><input type="number" v-model="data.capacity"></td>
+              <td><input type="number" v-model="data.priority"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
-              <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+              <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
             </tr>
             <tr class="addRowButton">
               <td colspan="7"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
             </tbody></table>
         </div>
-        <div  class="Panel">
+
+        <div>
           <div id="DrawKARoad">
             <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
             <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
@@ -111,6 +105,7 @@
           </div>
           <div id="map"></div>
         </div>
+        </div>  
     </div>
   </div>
 </template>
@@ -118,7 +113,6 @@
   <script>
 
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
-import { UnixToDtime } from '@/js/WorkWithDTime.js';
 import { PagesSettings } from './PagesSettings';
 import { OGList, NPList } from '@/js/GlobalData.js';
 import SelectDiv from '../SelectDiv.vue'
@@ -153,19 +147,9 @@ import XLSX from 'xlsx-js-style';
         arr: [],
         arrNP: [],
         map: {},
-        PageSettings:{
-          request: true, // заявки
-          catalog: true, // каталог заявок
-          datarequest: false //данные по заявкам
-        }
       }
     },
     methods: {
-      CreateDateTime(time, full_mode = true){
-          let Dtime = UnixToDtime(time)
-          if(full_mode) return Dtime.date + " " + Dtime.time
-          return Dtime.time
-        },
       ChangeTime(obgtime){
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.SatartSave('request')
@@ -173,43 +157,6 @@ import XLSX from 'xlsx-js-style';
       SelectChange(e, param){
         this.requestJson[e.id][param] = e.value
         this.SatartSave('request')
-      },
-      ChangeTimedatarequest(e){  // изменение времени в данных по заявкам
-        this.datarequest[e.id].time = e.time
-        this.SatartSave('datarequest')
-      },
-      ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
-        this.datarequest[e.id].satellite.id = e.value
-        this.SatartSave('datarequest')
-      },
-      CreateSelectArr(){
-        this.arr = []
-        for (let i = 0; i < this.catalogJson.length; i++) {
-          const element = this.catalogJson[i];
-          this.arr.push({value: element, lable: element.goalName })
-        }
-      },
-      AddRow(){
-            var addedRow = {
-                    'goalId' : 0,
-                    'goalName' : "", 'lat' : 0,
-                    'lon' : 0, 'alt' : 0,
-                    'deleted': false, 'role': "newRow"
-                };
-            this.catalogJson.push(addedRow);   
-            this.SatartSave('catalog')
-          },
-      CreateNewdatarequest(){ // Данные по заявкам добавление
-        var addedRow = {
-                    "capacity": 100,
-                    "priority": 3,
-                    "time" : this.systemStatus.modelingBegin,
-                    "satellite":  {id: this.datarequestКАList[0].value},
-                    "deleted": null
-                };
-        this.datarequest.push(addedRow)
-        this.SatartSave('datarequest')
-        console.log(addedRow)
       },
       AddRowRequest(catalog){
         if(this.catalogJson.length < 1){
@@ -234,50 +181,71 @@ import XLSX from 'xlsx-js-style';
             this.requestJson.push(addedRow);   
             this.SatartSave('request')
       },
-      DeleteRow(index){
-              this.catalogJson[index].deleted = true
-              this.SatartSave('catalog')
-          },
       DeleteRowRequest(index){
               this.requestJson[index].deleted = true
               this.SatartSave('request')
           },
+      ChangeParamRequest(){
+        this.SatartSave('request')
+      },
+      ChangeTimedatarequest(e){  // изменение времени в данных по заявкам
+        this.datarequest[e.id].time = e.time
+        this.SatartSave('datarequest')
+      },
+      ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
+        this.datarequest[e.id].satellite.id = e.value
+        this.SatartSave('datarequest')
+      },
+      CreateNewdatarequest(){ // Данные по заявкам добавление
+        var addedRow = {
+                    "capacity": 100,
+                    "priority": 3,
+                    "time" : this.systemStatus.modelingBegin,
+                    "satellite":  {id: this.datarequestКАList[0].value},
+                    "deleted": null
+                };
+        this.datarequest.push(addedRow)
+        this.SatartSave('datarequest')
+        console.log(addedRow)
+      },
       DeleteRowdatarequest(index){ //удаление из данные по заявкам
         this.datarequest[index].deleted = true
         this.SatartSave('datarequest')
       },
+      ChangeParamdatarequest(){ // this.datarequest изменении параметров данных по заявкам
+          this.SatartSave('datarequest')
+      },
+      CreateSelectArr(){
+        this.arr = []
+        for (let i = 0; i < this.catalogJson.length; i++) {
+          const element = this.catalogJson[i];
+          this.arr.push({value: element, lable: element.goalName })
+        }
+      },
+      AddRow(){
+            var addedRow = {
+                    'goalId' : 0,
+                    'goalName' : "", 'lat' : 0,
+                    'lon' : 0, 'alt' : 0,
+                    'deleted': false, 'role': "newRow"
+                };
+            this.catalogJson.push(addedRow);   
+            this.SatartSave('catalog')
+          },
+      ChangeParam(){
+        this.SatartSave('catalog')
+      },
+      DeleteRow(index){
+              this.catalogJson[index].deleted = true
+              this.SatartSave('catalog')
+          },
       async SatartSave(target){
         if(target == 'catalog'){await FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
         if(target == 'request'){await FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
         if(target == 'datarequest'){await FetchPost("/api/v1/satrequest/data/update", this.datarequest)}
         await this.ReFetch()
       },
-      ChangeParam(target){
-        this.catalogJson[target.target.id][target.target.name] = target.target.value
-        this.CreateSelectArr()
-        this.SatartSave('catalog')
-      },
-      ChangeParamdatarequest(target){ // this.datarequest изменении параметров данных по заявкам
-        console.log(target)
-        if(target.target.name != "date" && target.target.name != "time"){
-          this.datarequest[target.target.id][target.target.name] = target.target.value
-          this.SatartSave('datarequest')
-        }
-      },
-      ChangeParamRequest(target){
-        
-        if(target.target.name == "catalog")
-        {
-          this.requestJson[target.target.id][target.target.name] = this.selectCatalog
-        }
-        else if(target.target.name == "date" || target.target.name == "time"){
-          //обработка через событие компонента
-        }
-        else{
-          this.requestJson[target.target.id][target.target.name] = target.target.value
-        }
-        this.SatartSave('request')
-      },
+      
       async LoadFileKARoad(data){
         const reader = new FileReader();
         if (data.target.files[0]) {
@@ -424,7 +392,7 @@ import XLSX from 'xlsx-js-style';
             if(element.choiceCriteria == 2) crit = "Разворот"
             if(element.choiceCriteria == 3) crit = "Качество"
             let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
-              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time,false), this.CreateDateTime(element.term,false)
+              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
             ]
             if(this.systemStatus.typeWorkplace in {3:null,4:null}){
               row.push(this.TypeRequest[element.type].lable)
@@ -470,13 +438,12 @@ import XLSX from 'xlsx-js-style';
     async mounted() {
       DisplayLoad(true)
       if(this.systemStatus.typeWorkplace in {4:null, 5:null}){
-        this.viewmode = -1
+        this.viewmode = 2
       }
       NPList.forEach(element => {
         this.arrNP.push({value: element, lable: element.nameEarthPoint })
       })
       await this.ReFetch()
-      this.CreateSelectArr()
       //далее всё для карты
       this.KAArray.push({value: undefined, lable: "Все КА" })
       this.datarequestКАList = []
@@ -496,28 +463,7 @@ import XLSX from 'xlsx-js-style';
   </script>
 
 <style lang="scss" scoped>
-.main_contain{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  width: 90%;
-  
-  .ContentDiv{
-    height: 100%;
-    overflow-y: unset; 
-  }
-}
-td{
-  //text-align: left;
-  input[type=number]{
-    width: 100%;
-  }
 
-}
-th{
-  border-bottom: 2px solid white;
-
-}
 
 .ChangeViewMode{
   position: fixed;
@@ -537,16 +483,11 @@ th{
     width: 30px;
   }
 }
-.SystemInfo{
-  display: flex;
-  justify-content: center;
-}
 #map{
   background-color: #2b2b2b;
   position: relative;
     outline-style: none;
-    height: 85vh;
-    width: 90vw;
+    height: 75vh;
   margin: 10px;
   .leaflet-map-pane{
             pointer-events: none;
@@ -568,12 +509,6 @@ th{
   .ButtonCommand{
     margin: 5px 40px;
   }
-
-  
-  
-}
-.TableDefault{
-  min-width: 80vw !important;
 }
 
 .LoadExel{

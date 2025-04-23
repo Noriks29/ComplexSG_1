@@ -82,11 +82,13 @@ import Plotly from 'plotly.js-dist'
             if(commandId == 5){
               DisplayLoad(true)
               await FetchGet("/api/v1/contact-plan/earth")
+              this.ReFetch()
               DisplayLoad(false)
             }
             if(commandId == 1){
               DisplayLoad(true)
               await FetchPost('/api/v1/pro42/view/earth', {leaderProcessing: this.KAModellingRoleMode})
+              this.ReFetch()
               DisplayLoad(false)
             }
             if(commandId == 6){

@@ -8,6 +8,13 @@
           </div>
     <div class="ContentDiv">
     <div class="Panel RightPanel">
+      <div class="ButtonApprovedDiv" v-if="!modellingStatus">
+          <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
+          <span v-if="approved"><img src="../../assets/edit.svg"></span>
+          <span v-else><img src="../../assets/approve.svg"></span>
+          <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
+        </button>
+      </div>
       <table class="TableDefault">
         <thead>
           <tr>
@@ -39,13 +46,6 @@
           </tr> 
         </tbody>
       </table>
-      <div class="ButtonApprovedDiv" v-if="!modellingStatus">
-          <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
-          <span v-if="approved"><img src="../../assets/edit.svg"></span>
-          <span v-else><img src="../../assets/approve.svg"></span>
-          <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
-        </button>
-      </div>
     </div>
     
   </div>
