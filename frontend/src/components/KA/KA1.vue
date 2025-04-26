@@ -6,7 +6,7 @@
       <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
       <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
       <div class="ContentDiv">
-        <h1 class="TitleText">Планирование съемок</h1>
+        <h1 class="TitleText">{{nameModell}}</h1>
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
             <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="Experiment(true)" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Начать эксперимент</button>
@@ -179,6 +179,7 @@ import { NPList, OGList } from '@/js/GlobalData';
 
         arr: [],
         valueSS: {},
+        nameModell: ''
       }
     },
     components:{
@@ -495,6 +496,8 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.modellingSettings.chargeSimulation = 1
       }
       this.ValidateDataPostModellingSettings()
+      console.log(localStorage)
+      this.nameModell = localStorage.getItem('modname')
     }
   }
   </script>

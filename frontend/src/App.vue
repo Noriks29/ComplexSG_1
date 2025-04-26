@@ -109,7 +109,9 @@ export default {
       async StartSystem(data){
         ClearGlobalData()
         DisplayLoad(true)
+        console.log(data)
         await localStorage.setItem('data', data.accessKey)
+        await localStorage.setItem('modname', data.name)
         await InitGlobalData()
         this.systemStatus = SystemObject
         DisplayLoad(false)
@@ -271,11 +273,11 @@ body{
     align-items: center;
     justify-content: space-evenly;
     position: fixed;
-    width: 35%;
+    width: 40%;
     z-index: 1;
     flex-direction: column;
     height: 90vh;
-    margin-left: 65%;
+    margin-left: 60%;
     padding: 5vh 0px;
 
 
@@ -315,19 +317,7 @@ body{
             transform: translate(0px, 1px);
             box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
        }
-        &:before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: var(--backgroung-animatePanel);
-          transition: all 350ms;
-        }
-        &:hover:before {
-          left: 100%;
-        }
+
   }
   }
   

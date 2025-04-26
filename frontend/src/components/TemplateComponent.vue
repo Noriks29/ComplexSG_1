@@ -228,7 +228,7 @@ export default {
 
 .SectionMenu{
     width: 98%;
-    height: 99%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     margin: 0% 1%;
