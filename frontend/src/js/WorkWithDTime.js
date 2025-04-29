@@ -9,8 +9,17 @@ function UnixToDtime(time){
     let time2 = timeL.getFullYear() + "-" + (((timeL.getMonth()+1) < 10)?"0":"") + (timeL.getMonth()+1) +"-"+((timeL.getDate() < 10)?"0":"") + timeL.getDate();
     return {time: time1, date: time2}
 }
+function CreateDateTime(time, mode = 0){
+    if(mode == 2){
+      let Dtime = UnixToDtime(time-10800)
+      return Dtime.date + " " + Dtime.time
+    }
+    let Dtime = UnixToDtime(time) 
+    return Dtime.date + " " + Dtime.time
+  }
 
 export {
     DTimeToUnix,
     UnixToDtime,
+    CreateDateTime
 }

@@ -34,6 +34,7 @@
         </div>
       </div>
     </div>
+    
     <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @changeExperimentStatus="ChangeExperimentStatus"/>
     
     <LoadProcess />

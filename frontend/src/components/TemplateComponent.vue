@@ -41,7 +41,7 @@
             <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
             <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Видимость целей (Оценка ОГ)</button>
           </div>
-        </div>
+        </div>        
       </div>
       <div class="ContainerSystem">
           <div class="PanelSystemData" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">

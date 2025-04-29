@@ -74,16 +74,15 @@
           </div>
           <div v-if="PageSettings.status == 1">
             <div class="flexrow">
-              <div class="inputdiv"><input type="text" v-model="OG_Param.constellationName"></div>
+              <div class="inputdiv"><input type="text" v-model="OG_Param.constellationName" placeholder="Введите название"></div>
               <div class="SelectDivInFlex">
                 <SelectDiv  
                     :dataOption="[{value:1,lable: OGType[1]},{value:3,lable: OGType[3]},{value:2,lable: OGType[2]}]" 
                     :valueS="{lable: OGType[1]}"
                     @valueSelect="OG_Param.inputType=$event.value"/>
               </div>
-              {{ OG_Param }}
               <div>
-                <button @click="AddOG" class="ButtonDefault">Создать</button> 
+                <button @click="AddOG" class="ButtonCommand">Создать</button> 
               </div>
             </div>
             <div v-if="OG_Param.inputType === 2">
@@ -303,6 +302,15 @@ import SelectDiv from '../SelectDiv.vue';
   transition: all 0.2s;
   div{
     padding: 5px 10px;
+  }
+}
+
+.flexrow{
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  .inputdiv input{
+    border-bottom: 1px solid white;
   }
 }
 

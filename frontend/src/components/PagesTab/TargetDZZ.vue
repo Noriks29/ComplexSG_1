@@ -4,7 +4,7 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <div class="TitleText">Эксперимент</div>
+            <div class="TitleText">Заявки</div>
           </div>
     <div class="ContentDiv">
         <div class="Panel LeftPanel">
@@ -19,9 +19,11 @@
                       <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
                 </tbody></table>
             </div>
-            <div class="FlexColumn" v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
-              <div><button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button></div>
-              <div><button @click="viewmode=1" class="ButtonCommand">Каталог целей</button></div>
+            <div class="FlexColumn">
+              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button></div>
+              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=1" class="ButtonCommand">Каталог целей</button></div>
+              <div v-if="(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=2" class="ButtonCommand">Данные по заявкам</button></div>
+              <div><button @click="CreateMap" class="ButtonCommand">Карта</button></div>
             </div>
         </div>
         <div class="Panel RightPanel" >
@@ -46,7 +48,7 @@
               <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
                 <td v-if="systemStatus.typeWorkplace in {3:null,4:null}"></td>
-                <td v-if="requestJson.length > 0"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
+                <td v-if="requestJson.length > 0"><button @click="LoadXLSX('request')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
             </tbody></table>
           </div>
@@ -74,7 +76,7 @@
 
         <div v-if="viewmode == 2">
           <table class="TableDefault">
-            <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбит</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
+            <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбайт</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
             <tbody><tr v-for="data, index in datarequest"
               :key="index"
               @change="ChangeParamdatarequest"
@@ -86,14 +88,15 @@
               <td><input type="number" v-model="data.priority"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
               <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-            </tr>
-            <tr class="addRowButton">
-              <td colspan="7"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+            </tr></tbody>
+            <tbody><tr class="addRowButton">
+              <td colspan="5"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+              <td v-if="datarequest.length > 0"><button @click="LoadXLSX('datarequest')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
             </tr> 
             </tbody></table>
         </div>
 
-        <div>
+        <div v-if="viewmode == 3">
           <div id="DrawKARoad">
             <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
             <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
@@ -300,6 +303,7 @@ import XLSX from 'xlsx-js-style';
         this.CreateSelectArr()
         },
         async CreateMap(){
+          this.viewmode = 3
           this.map = {}
           console.log(await document.getElementById("map"))
           this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 2);
@@ -380,26 +384,35 @@ import XLSX from 'xlsx-js-style';
           }
           DisplayLoad(false)
         },
-        LoadXLSX(){
-          console.log(this.requestJson)
+        LoadXLSX(mode='request'){
           const workbook = XLSX.utils.book_new();
-          let data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
-          if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-            data.push("Признак")
-          }
-
-          this.requestJson.forEach(element => {
-            let crit = "Время"
-            if(element.choiceCriteria == 2) crit = "Разворот"
-            if(element.choiceCriteria == 3) crit = "Качество"
-            let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
-              element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
-            ]
+          let data = []
+          if(mode == 'request')
+          {
+            data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
             if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-              row.push(this.TypeRequest[element.type].lable)
+              data[0].push("Признак")
             }
-            data.push(row)
-          });
+            this.requestJson.forEach(element => {
+              let crit = "Время"
+              if(element.choiceCriteria == 2) crit = "Разворот"
+              if(element.choiceCriteria == 3) crit = "Качество"
+              let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
+                element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
+              ]
+              if(this.systemStatus.typeWorkplace in {3:null,4:null}){
+                row.push(this.TypeRequest[element.type].lable)
+              }
+              data.push(row)
+            });
+          }
+          else{
+            data = [["Имя","МКА","Объём, Мбайт","Приоритет","Время появления"]]
+            this.datarequest.forEach(element => {
+              data.push([element.name,element.satellite.name,element.capacity,element.priority,this.CreateDateTime(element.time)])
+            });
+          }
+          console.log(data)
           let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
           workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
           let style = {
@@ -456,15 +469,12 @@ import XLSX from 'xlsx-js-style';
       });
       this.SelectKa = this.KAArray[0]
       this.KatoDraw = this.SelectKa.value
-      this.CreateMap()
-
       DisplayLoad(false)
     },
   }
   </script>
 
 <style lang="scss" scoped>
-
 
 .ChangeViewMode{
   position: fixed;
