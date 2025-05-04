@@ -7,9 +7,9 @@ let KaSettings = {
       }
     },
     methods:{
-      CreateDateTime(time, text = true){
-            if(text) console.log("ТУТ НУЖНО УБРАТЬ")
+      CreateDateTime(time, onlyTime = false){
             let Dtime = UnixToDtime(time)
+            if(onlyTime) return Dtime.time
             return Dtime.date + " " + Dtime.time
       },
       ShowLog(Rezult){

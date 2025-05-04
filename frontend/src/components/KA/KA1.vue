@@ -1,9 +1,9 @@
 <template>
     <div class="main_contain">
-      <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false" :prevrap="PreWrapDefaultTable"/>
-      <E78Table v-if="ShowE78Table" :dataTable="modellingRezultSelect.E78" @closetable="ShowE78Table = false"/>
-      <E77E78 v-if="ShowE77E78Table" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowE77E78Table = false"/>
-      <BookmarkTable v-if="ShowBookmarkTable" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowBookmarkTable = false"/>
+      <DefaultTable v-if="ShowTable=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowTable=null" :prevrap="PreWrapDefaultTable"/>
+      <E78Table v-if="ShowTable=='E78Table'" :dataTable="modellingRezultSelect.E78" @closetable="ShowTable=null"/>
+      <E77E78 v-if="ShowTable=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
+      <BookmarkTable v-if="ShowTable=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
       <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
       <div class="ContentDiv">
         <h1 class="TitleText">{{nameModell}}</h1>
@@ -36,19 +36,18 @@
                 <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=true" class="ButtonCommand MaxWidth" >Настройки</button>
                 <button v-if="!ExperimentStatus && modellingSettings.experimentEddit" @click="modellingSettings.experimentEddit=false" class="ButtonCommand MaxWidth">Закрыть настройки</button></td></tr>
               <tr v-for="data, index in modellingSettingsLabel" :key="index"
-              
               ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr>
             </table>
           </div>
         </div>
-        <div class="Panel MaxWidth" style="flex:1;">
+        <div class="Panel MaxWidth">
           <div class="PanelWork" v-if="!modellingSettings.experimentEddit">
             <table class="colum">
               <tr>
                 <td>Заявки</td>
                 <td class="tdflexRow">
-                  <button v-if="systemStatus.typeWorkplace==2" @click="EventE77E78" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
-                  <button v-if="systemStatus.typeWorkplace==2" @click="EventBookmark" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
+                  <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='E77E78'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
+                  <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='BookmarkTable'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
                   <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения заявок</button>
                   <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог загрузки сеансов связи</button>
                   <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог передачи данных в сеансе связи</button>
@@ -60,7 +59,7 @@
                 <td class="tdflexRow">
                   {{ ShowTable  }}
                   <button @click="ShowShootingPlan" :class="(modellingRezultSelect.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button>
-                  <button v-if="systemStatus.typeWorkplace in {2:null}" @click="EventE78" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button>
+                  <button v-if="systemStatus.typeWorkplace in {2:null}" @click="ShowTable='E78Table'" :class="(modellingRezultSelect.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button>
                   <button @click="ShowTable='FlightplanForm'" :class="(modellingRezultSelect.E79.length < 1) ? 'disable' : ''" class="ButtonCommand">План полёта</button>
                   <button @click="ShowFcLog" :class="(modellingRezultSelect.fcLog.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button>
                 </td>
@@ -68,9 +67,9 @@
               <tr>
                 <td></td>
                 <td class="tdflexRow">
-                  <button @click="ShowLog(modellingRezult.log)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
+                  <button @click="ShowLogAll" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
                   <button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
-                  <button @click="ShowLog(modellingRezult.Smao)" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button>
+                  <button @click="ShowLogSmao" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button>
                 </td>
               </tr>
             </table>
@@ -129,11 +128,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         NPList: [], // подгружаем импорты
         ConstellationJson: [], //список ог
         ShowTable: null, //переменная для отображения таблиц
-        ShowDefaultTable: false,
         PreWrapDefaultTable: false,
-        ShowE78Table: false,
-        ShowE77E78Table: false,
-        ShowBookmarkTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: {
           engineLogResponse: []
@@ -192,30 +187,6 @@ import { NPList, OGList } from '@/js/GlobalData';
     },
     methods: {
       Experiment(status){
-        if(status){
-          /*
-          if(!this.systemStatus.earthStatus){
-            alert("НП не утверждены")
-            return
-          }
-          if(!this.systemStatus.constellationStatus){
-            alert("КА и ОГ не утверждены")
-            return
-          }
-          if(OGList.length < 1){
-            alert("Нет КА")
-            return
-          }
-          if(NPList.length < 1){
-            alert("Нет НП")
-            return
-          }
-          if(this.purposesJson < 1){
-            alert("Нет заявок")
-            return
-          }*/
-        }
-        else{
           this.dataModelling = {
             engineLogResponse: []
           }
@@ -236,8 +207,6 @@ import { NPList, OGList } from '@/js/GlobalData';
             fcLog: [],
             selectKA: undefined
           }
-
-        }
         this.$emit('ChangeExperimentStatus', {status})
       },
       ValidateDataPostModellingSettings(){
@@ -275,7 +244,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         }
         DisplayLoad(false)
       },
-      ParceModellingRezult(){
+      async ParceModellingRezult(){
         this.modellingRezult = {
           Smao: [],
           log: [],
@@ -286,15 +255,25 @@ import { NPList, OGList } from '@/js/GlobalData';
           hide: [],
           fcLog:[]
         }
-        try{this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)} 
+        try{this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
-        try {this.modellingRezult.events = this.dataModelling.logResponse.logDataArray} 
-          catch (error) {console.error(error)}
+        try {//лог событий
+          let events = await FetchGet('/api/v1/event/codes/all') || []
+          let dataevents = {}
+          events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
+          this.dataModelling.logResponse.logDataArray.forEach(element => {
+            const e = Object.assign({}, element);
+            e.timeUnix = UnixToDtime(e.time).time
+            e.event = dataevents[e.type]
+            this.modellingRezult.events.push(e)
+          })
+        }catch (error) {console.error(error)}
+
         try { //обработка лога полёта
           this.modellingRezult.fcLog = []
           this.dataModelling.logResponse.fcLogArray.forEach(element => {
-            element.timeBegin = this.CreateDateTime(element.timeBegin, false)
-            element.timeEnd = this.CreateDateTime(element.timeEnd, false)
+            element.timeBegin = UnixToDtime(element.timeBegin).time
+            element.timeEnd = UnixToDtime(element.timeEnd).time
             let flag = true
             for (let index = 0; index < this.modellingRezult.fcLog.length; index++)
               if(element.idSender == this.modellingRezult.fcLog[index].idSender){
@@ -306,14 +285,20 @@ import { NPList, OGList } from '@/js/GlobalData';
           })
         }catch (error) {console.error(error)}
         
-        this.dataModelling.engineLogResponse.forEach(element => {
+        this.dataModelling.engineLogResponse.forEach(element => { //обработка других событий
           try {
-            element.time = this.CreateDateTime(element.time, false)
+            element.time = this.CreateDateTime(element.time)
             this.modellingRezult.log.push(element)
-            if(element.type == "E77"){
+            if(element.type == "E77"){ //план съёмок 
               let oneE77 = {idSender:  element.idSender, data: []}
               for (let index = 0; index < element.visualFormsData.visualFormsDataShooting.length; index++) {
                 const e = Object.assign({}, element.visualFormsData.visualFormsDataShooting[index]);
+                e.wsUnix = UnixToDtime(e.ws).time
+                e.weUnix = UnixToDtime(e.we).time
+                e.tsUnix = UnixToDtime(e.ts).time
+                e.teUnix = UnixToDtime(e.te).time
+                e.pitch =  Math.round(e.pitch * 100) / 100
+                e.roll =  Math.round(e.roll * 100) / 100
                 oneE77.data.push(e)
               }
               this.modellingRezult.E77.push(oneE77)
@@ -325,7 +310,13 @@ import { NPList, OGList } from '@/js/GlobalData';
             }
             else if (element.type == "E79"){
               if (element.mainFlightPlan !== null) {
-                this.modellingRezult.E79.push({idSender: element.idSender, data: element.mainFlightPlan.flightPlan})
+                let E79Create = []
+                element.mainFlightPlan.flightPlan.forEach(E79D =>{
+                  const e = Object.assign({}, E79D);
+                  e.timeUnix = UnixToDtime(e.timeBegin).time +' - '+ UnixToDtime(e.timeEnd).time
+                  E79Create.push(e)
+                })
+                this.modellingRezult.E79.push({idSender: element.idSender, data: E79Create})
               }
             }
           } catch (error) {
@@ -336,85 +327,69 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
         console.log("Результат моделлирования и обработки", this.modellingRezult, this.modellingRezultSelect)
       },
-      ShowShootingPlan(){
-        this.dataTable = []
+      ShowShootingPlan(){ // E77 план съёмок
+        this.dataTable = this.modellingRezultSelect.E77
         this.dataLableName = [
           {lable: "Заявка", nameParam: "orderId"},
           {lable: "Цель", nameParam: "targetName"},
-          {lable: "Начало видимости", nameParam: "ws"},
-          {lable: "Окончание видимости", nameParam: "we"},
+          {lable: "Начало видимости", nameParam: "wsUnix"},
+          {lable: "Окончание видимости", nameParam: "weUnix"},
           {lable: "Разворот", nameParam: "transition"},
-          {lable: "Начало съёмки", nameParam: "ts"},
-          {lable: "Окончаниие съёмки", nameParam: "te"},
+          {lable: "Начало съёмки", nameParam: "tsUnix"},
+          {lable: "Окончаниие съёмки", nameParam: "teUnix"},
           {lable: "Тангаж", nameParam: "pitch"},
-          {lable: "Крен", nameParam: "roll"},
+          {lable: "Крен", nameParam: "roll"}
         ]
-        for (let index = 0; index < this.modellingRezultSelect.E77.length; index++) {
-          let element = Object.assign({}, this.modellingRezultSelect.E77[index]);
-          element.ws = UnixToDtime(element.ws).time
-          element.we = UnixToDtime(element.we).time
-          element.ts = UnixToDtime(element.ts).time
-          element.te = UnixToDtime(element.te).time
-          element.pitch =  Math.round(element.pitch * 100) / 100
-          element.roll =  Math.round(element.roll * 100) / 100
-          this.dataTable.push(element) 
-        }
         this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
+        this.ShowTable='DefaultTable'
       },
-      async ShowEventsLogResponse(){
+      ShowLogAll(){
         this.dataTable = []
-        this.dataLableName = [
-          {lable: "Время", nameParam: "time"},
-          {lable: "Код", nameParam: "code"},
-          {lable: "Событие", nameParam: "event"},
-          {lable: "Заявка", nameParam: "orderId"},
-          {lable: "Узел 1", nameParam: "nodeId"},
-          {lable: "Узел 2", nameParam: "nodeId2"},
-          {lable: "Коментарий", nameParam: "text"},
-          {lable: "Значение", nameParam: "value"},
-        ]
-        let events = await FetchGet('/api/v1/event/codes/all') || []
-        let dataevents = {}
-        events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
-        for (let index = 0; index < this.modellingRezult.events.length; index++) {
-          const element = this.modellingRezult.events[index]
+        this.modellingRezult.log.forEach(element =>{
+          const e = Object.assign({}, element)
+          delete e['time']
+          delete e['type']
           this.dataTable.push({
-            time: UnixToDtime(element.time).time,
-            code: element.type,
-            event: dataevents[element.type],
-            orderId: element.orderName,
-            nodeId: element.node1Name,
-            nodeId2: element.node2Name,
-            text: element.text,
-            value: element.value
+            time: element.time,
+            type: element.type,
+            data: e,
+            name: element.senderName || element.receiverName || ''
           })
-        }
+        })
+        this.dataLableName = [
+          {lable: "Время", nameParam: "time", style:'white-space: nowrap;'},
+          {lable: "Код", nameParam: "type"},
+          {lable: 'Источник', nameParam:'name', style:'text-align: left;'},
+          {lable: "data", nameParam: "data", style:'text-align: left;'}
+        ]
         this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
+        this.ShowTable='DefaultTable'
       },
-      EventE78(){
-        this.ShowE78Table = true
+      ShowLogSmao(){
+        this.dataTable = [] 
+        this.modellingRezult.Smao.forEach(element => {
+          this.dataTable.push({data: element})
+        })
+        this.dataLableName = [
+          {lable: "data", nameParam: "data", style:'text-align: left;'}
+        ]
+        this.PreWrapDefaultTable = true
+        this.ShowTable='DefaultTable'
       },
-      EventE79(){
-        this.dataTable = []
-        this.dataLableName = [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},{lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "shootingName"},
-        {lable: "Связь с НП", nameParam: "gsName"},
-        {lable: "Режим", nameParam: "mode"},{lable: "Заряд АКБ", nameParam: "charge"}]
-        for (let index = 0; index < this.modellingRezultSelect.E79.length; index++) {
-          const element = this.modellingRezultSelect.E79[index];
-          this.dataTable.push({
-            shootingName: element.shootingName || '-',
-            light: element.light,
-            charge: element.charge,
-            nRev: element.nRev,
-            gsName: element.gsName || '-',
-            mode: element.mode,
-            time: UnixToDtime(element.timeBegin).time +' - '+ UnixToDtime(element.timeEnd).time
-          }) 
-        }
+      async ShowEventsLogResponse(){ //Лог событий
+        this.dataTable = this.modellingRezult.events
+        this.dataLableName = [
+          {lable: "Время", nameParam: "timeUnix"},
+          {lable: "Код", nameParam: "type"},
+          {lable: "Событие", nameParam: "event"},
+          {lable: "Заявка", nameParam: "orderName"},
+          {lable: "Узел 1", nameParam: "node1Name"},
+          {lable: "Узел 2", nameParam: "node2Name"},
+          {lable: "Коментарий", nameParam: "text"},
+          {lable: "Значение", nameParam: "value"}
+        ]
         this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
+        this.ShowTable='DefaultTable'
       },
       ShowFcLog(){
         this.dataTable = this.modellingRezultSelect.fcLog
@@ -423,45 +398,30 @@ import { NPList, OGList } from '@/js/GlobalData';
           {lable:"Связь с НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
         ]
         this.PreWrapDefaultTable = false
-        this.ShowDefaultTable = true
-      },
-      EventE77E78(){
-        this.ShowE77E78Table = true
-      },
-      EventBookmark(){
-        this.ShowBookmarkTable = true
+        this.ShowTable='DefaultTable'
       },
       SelectChange(target){
           this.modellingRezultSelect_FillById(target.value)
         },
-      modellingRezultSelect_FillById(id){
+      modellingRezultSelect_FillById(id){ //выбор данных под ка
         this.modellingRezultSelect = {
           E77: [],
           E78: [],
           E79: [],
           fcLog: [],
-
           selectKA: id
         }
         this.modellingRezult.E77.forEach(E77 =>{
-          if (E77.idSender == id) {
-            this.modellingRezultSelect.E77 = E77.data
-          }
+          if (E77.idSender == id) {this.modellingRezultSelect.E77 = E77.data}
         })
         this.modellingRezult.E78.forEach(E78 =>{
-          if (E78.idSender == id) {
-            this.modellingRezultSelect.E78 = E78.dataDownPlan.partsPlan
-          }
+          if (E78.idSender == id) {this.modellingRezultSelect.E78 = E78.dataDownPlan.partsPlan}
         })
         this.modellingRezult.E79.forEach(E79 =>{
-          if (E79.idSender == id) {
-            this.modellingRezultSelect.E79 = E79.data
-          }
+          if (E79.idSender == id) {this.modellingRezultSelect.E79 = E79.data}
         })
         this.modellingRezult.fcLog.forEach(fcLog =>{
-          if (fcLog.idSender == id) {
-            this.modellingRezultSelect.fcLog = fcLog.data
-          }
+          if (fcLog.idSender == id) {this.modellingRezultSelect.fcLog = fcLog.data}
         })
         console.log(this.modellingRezultSelect)
       },
@@ -469,7 +429,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.earthList = NPList
         this.ConstellationJson = OGList
         let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
-        this.purposesJson = result.length || 0
+        this.purposesJson = result.length
         this.arr = []
         for (let i = 0; i < this.ConstellationJson.length; i++) {
           for (let index = 0; index < this.ConstellationJson[i].satellites.length; index++) {
@@ -480,9 +440,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         try {
           this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
           this.modellingRezultSelect.selectKA = this.arr[0].value
-        } catch (error) {
-          console.log(error)
-        }
+        } catch (error) {console.error(error)}
       }
     },
     async mounted(){
@@ -496,8 +454,12 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.modellingSettings.chargeSimulation = 1
       }
       this.ValidateDataPostModellingSettings()
-      console.log(localStorage)
       this.nameModell = localStorage.getItem('modname')
+      document.addEventListener('keydown', (event) => {
+            if (event.code == 'Escape') {
+                this.ShowTable = null
+            }
+          });
     }
   }
   </script>
@@ -505,7 +467,7 @@ import { NPList, OGList } from '@/js/GlobalData';
 
 <style lang="scss" scoped>
 .ContentDiv{
-  height: 100%;
+  height: 90vh;
 
   .tdflexRow{
     display: flex;

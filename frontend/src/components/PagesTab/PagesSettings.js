@@ -1,3 +1,4 @@
+
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 let PagesSettings = {
     props:{
@@ -28,6 +29,13 @@ let PagesSettings = {
             let Dtime = UnixToDtime(time) 
             return Dtime.date + " " + Dtime.time
           },
+    },
+    created(){
+        document.addEventListener('keydown', (event) => {
+            if (event.code == 'Escape') {
+                this.SelectComponent('TemplateComponent')
+            }
+          });
     }
 }
 

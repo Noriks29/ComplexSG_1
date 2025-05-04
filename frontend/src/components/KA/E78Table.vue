@@ -7,9 +7,13 @@
         <img src="../../assets/excel.png"><span>&#8203;</span>
       </button>
     </div>
-      <div class="scroll-table">
-        <table class="TableDefault">
-      <thead><tr>
+
+
+    <div class="DataBody">
+        <div class="TableDiv" style="max-height: 85vh;">
+          <table class="TableDefault">
+          <thead>
+            <tr>
           <th>НП</th>
           <th>КА</th>
           <th>Начало сеанса связи</th>
@@ -19,19 +23,12 @@
           <th>Объём данных (МБ)</th>
           <th>Объём передаваемых данных (МБ)</th>
         </tr>
-        </thead>
-      </table>
-      <div class="scroll-table-body">
-      <table class="TableDefault">
-        <tbody v-html="CreateTableBody()">
-          
-
-
-          
-      </tbody>
-      </table>
-    </div>
-    </div>
+          </thead>
+          <tbody v-html="CreateTableBody()">
+            </tbody>
+          </table>
+        </div>  
+      </div> 
   </div>
 </template>
 
@@ -71,9 +68,8 @@ import XLSX from 'xlsx-js-style';
           }
           return htmlcode
         },
-        CreateDateTime(time, msk_mode = true){
+        CreateDateTime(time){
           let Dtime = UnixToDtime(time)
-          if(msk_mode)return Dtime.time + " МСК"
           return Dtime.time
         },
         LoadXLSX(){
@@ -81,7 +77,7 @@ import XLSX from 'xlsx-js-style';
           let data = [["НП","КА","Начало сеанса связи","Окончание сеанса связи","Пропускная способность","Заявка","Объём данных (МБ)","Объём передаваемых данных (МБ)"]]
           console.log(data,workbook)
           this.rebuild_data.forEach(element => {
-            let row = [element.orderList[0].earthPointName, element.scId, this.CreateDateTime(element.timeStartConnect,false),  this.CreateDateTime(element.timeEndConnect,false),
+            let row = [element.orderList[0].earthPointName, element.scId, this.CreateDateTime(element.timeStartConnect),  this.CreateDateTime(element.timeEndConnect),
               element.orderList[0].capacity,element.orderList[0].orderName,element.orderList[0].dataVolume,element.orderList[0].dataVolumeContact]
             data.push(row)
             for (let i = 1; i < element.orderList.length; i++) {
@@ -162,63 +158,4 @@ import XLSX from 'xlsx-js-style';
 
 
 <style lang="scss" scoped>
-.closebutton{
-  display: flex;
-  margin: 20px;
-  flex-direction: row-reverse;
-  button{
-    background: none;
-    border: none;
-    img{
-      width: 25px;
-    }
-
-    &.LoadExel{
-      margin-right: 45px;
-    }
-  }
-  
-}
-.DataTable{
-  -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    position: fixed;
-    top: 0%;
-    left: 0;
-    width: 100%;
-    z-index: 10;
-    max-width: 100%;
-    height: 100%;
-  .TableDefault{
-    filter: drop-shadow(2px 4px 6px black);
-
-  }
-  .PanelTable{
-    position: sticky;
-    bottom: 20px;
-    margin: 0px 5%;
-    width: 90%;
-  }
-}
-.PanelDefault{
-  width: 95%;
-  padding: 5px;
-
-}
-.scroll-table-body {
-	height: 75vh;
-
-}
-.smallTh{
-  width: 50px;
-}
-.scroll-table{
-  margin: 0% 2%;
-    background-color: rgba(151, 151, 151, 0.15);
-    box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
-    border: 2px solid rgba(0, 0, 0, 0.25);
-}
-tr{
-  background-color: rgba(0, 0, 0, 0.755);
-}
 </style>

@@ -70,7 +70,6 @@
     }
     .SectionMenu .ModellingDiv{
       height: 65vh;
-      overflow: hidden;
       .main_contain{
         padding: 0px;
         height: 100%;
@@ -685,3 +684,499 @@ input{
   }
 
 }
+
+body{
+  .ModalLoginBack{
+    position: relative;
+    z-index: 3;
+    height: 100vh;
+    min-width: 500px;
+    max-width: 30vw;
+    background: var(--background-Panel2);
+    border-right: 2px solid var(--border-Panel2);
+    box-shadow: -8px 0px 15px 1px var(--box-shadow-Pabel2);
+    transform: translate(-100%, 0px);
+    transition: all 0.5s ease-in-out;
+
+    &.show{
+      transform: translate(0%, 0px);
+    }
+
+    .ModalLoginPanel{
+      padding: 20px;
+      font-size: var(--font-size);
+
+      .ModalLoginForm{
+
+        h1{
+          margin: 0px;
+        }
+
+        div{
+          padding: 10px 5px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          label{
+            margin: 5px;
+          }
+
+          input{
+            padding: 15px;
+            text-align: left;
+            border: none;
+            border-bottom: 2px solid var(--border-bottom-input);
+            width: 90%;
+            outline: none;
+            background-color: #8a8a8a12;
+            transition: all 0.5s;
+            
+            &:hover{
+              background-color: #0b0b0bd7;
+            }
+            &:focus{
+              background-color: #0101015a;
+            }
+          }
+
+          input:-webkit-autofill,
+          input:-webkit-autofill:hover, 
+          input:-webkit-autofill:focus,
+          textarea:-webkit-autofill,
+          textarea:-webkit-autofill:hover,
+          textarea:-webkit-autofill:focus,
+          select:-webkit-autofill,
+          select:-webkit-autofill:hover,
+          select:-webkit-autofill:focus {
+            -webkit-text-fill-color: rgb(0, 0, 0);
+            -webkit-box-shadow: 0 0 0px 1000px #00000000 inset;
+            transition: background-color 0.5s ease-in-out 0s;
+          }
+
+          &.FormSubmit{
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+
+            div{
+              font-size: 20px;
+              font-weight: bold;
+              color: #ff8e8e;
+              transition: all 1s;
+              &.none{
+                color: #ff8e8e00;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.login{
+  position: relative;
+  padding-right: 35px;
+  img{
+    height: 60%;
+    position: absolute;
+    top: 20%;
+    right: 0px;
+    bottom: 20%;
+  }
+}
+
+.headerSelectMode{
+  display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    position: fixed;
+    width: 40%;
+    z-index: 1;
+    flex-direction: column;
+    height: 90vh;
+    margin-left: 60%;
+    padding: 5vh 0px;
+
+
+  background: var(--background-Panel2);
+  border-left: 2px solid var(--border-Panel2);
+  box-shadow: 8px 0px 15px 1px var(--box-shadow-Pabel2);
+  transform: translate(100%, 0px);
+  transition: all 0.5s ease-in-out;
+
+  &.show{
+    transform: translate(0%, 0px);
+  }
+
+  .SelectMode{
+    flex: 1;
+    width: 100%;
+    .ButtonSelectMode{
+      overflow: hidden;
+      position: relative;
+      font-size: 20px;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: none;
+      color: var(--color-Main);
+      pointer-events: all;
+      background-color: var(--background-Button1);
+        &:hover{
+          background-color: var(--background-Button2);
+          border: 2px solid var(--border-button);
+          transform: translate(4px, -4px);
+          box-shadow: -4px 4px 2px var(--box-shadow-button);
+        }
+        &:active{
+            background-color: var(--background-Button3);
+            border: 2px solid var(--border-button2);
+            transform: translate(0px, 1px);
+            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
+       }
+
+  }
+  }
+  
+}
+
+.idSesion{
+  color: var(--color-Main);
+    position: fixed;
+    right: 10px;
+    top: 6px;
+    border-bottom: 2px solid;
+    box-shadow: 0px 3px 4px -4px var(--box-shadow-Pabel2);
+    transform: translate(0px, -150%);
+    transition: all 0.5s ease-in-out;
+    z-index: 2;
+
+    &.show{
+      transform: translate(0px, 0%);
+    }
+    .flexdiv{
+      display: flex;
+      align-items: center;
+    }
+
+    .Menubutton{
+      background: none;
+      border: none;
+      position: relative;
+      margin: 0px 10px;
+      svg{
+        width: 30px;
+      }
+      transform: translate(0%, -150%);
+      transition: all 0.5s ease-in-out;
+
+      &.show{
+        transform: translate(0%, 0px);
+      }
+    }
+    }
+
+
+    
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(120%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.SectionMenu{
+    width: 98%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0% 1%;
+    flex-wrap: nowrap;
+    align-items: center;
+    overflow: auto;
+    position: absolute;
+    top: 0px;
+
+    .ContainerSystem{
+      height: 8%;
+      overflow: hidden;
+    }
+
+    &.hide{
+      .ButtonSection{
+        transform: translateY(150%);
+        animation: 0.5s ease-out reverse 0s 1 slideInFromBottom;
+      }
+      .PanelSystemData{
+        transform: translateY(120%);
+        animation: 1.3s ease-out reverse 0s 1 slideInFromBottom;
+      }
+    }
+    &.show{
+      .ModellingDiv{
+        animation: 1s ease-out 0s 1 slideInFromTop;
+      }
+      .ButtonSection{
+        animation: 0.5s ease-out 0s 1 slideInFromBottom;
+        &.hide{
+          position: relative;
+          top: 150%;
+        }
+      }
+      .PanelSystemData {
+        animation: 1.3s ease-out  0s 1 slideInFromBottom;
+      }
+    }
+      .ModellingDiv{
+      width: 100%;
+      height: 65%;
+    }
+
+    .FlexMenuSection{
+      display: flex;
+      width: 99%;
+      height: 27%;
+      flex-direction: row;
+      align-items: flex-start;
+      
+      overflow: hidden;
+    }
+
+    .ButtonSection{
+      background-color: var(--background-Panel);
+      box-shadow: -4px 3px 1px var(--box-shadow-Panel);
+      border: 2px solid var(--border-Panel);
+      height: 93%;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      padding: 0px 10px;
+      margin: 10px;
+      transition: all 0.5s ease-out;
+      position: relative;
+      align-items: center;
+      flex: 1;
+      overflow: hidden;
+
+      &.second, &.third, &.fourth, &.first{
+        .ButtonList{
+          flex-direction: column;
+        }
+      }
+
+      h1{
+        margin: 10px;
+        font-size: 25px;
+      }
+      .ButtonList{
+        width: 95%;
+        flex: 1;
+        display: flex;
+        justify-content: space-evenly;
+        button{
+          margin: 5px;
+        }
+      }
+
+      button{
+        border: none;
+        color: var(--color-Main);
+        flex: 1;
+        
+        font-size: 25px;
+        overflow: hidden;
+        text-decoration: none;
+        position: relative;
+
+        border-top: 1px solid var(--border-button);
+        border-right: 1px solid var(--border-button);
+        background-color: rgba(29, 29, 29, 0.4);
+        transform: translate(-1px, 1px);
+        pointer-events: none;
+        transition: all 0.5s ease-out;
+
+        &.active{
+          pointer-events: all;
+          transform: translate(0px, 0px);
+          background-color: var(--background-Button1);
+          &:hover{
+            background-color: var(--background-Button2);
+            border: 2px solid var(--border-button);
+            transform: translate(4px, -4px);
+            box-shadow: -4px 4px 2px var(--box-shadow-button);
+          }
+          &:active{
+            background-color: var(--background-Button3);
+            border: 2px solid var(--border-button2);
+            transform: translate(0px, 1px);
+            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
+          }
+          &:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--backgroung-animatePanel);
+            transition: all 350ms;
+          }
+          &:hover:before {
+            left: 100%;
+          }
+        }
+        &.hideElement{
+          border: none;
+          pointer-events: none;
+          background: none;
+          transform: translate(0px, 1000px);
+        }
+        div{
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          top: 20%;
+          left: 10px;
+          border-radius: 20px;
+          &.approved{
+            background-color: rgb(0, 139, 0);
+            box-shadow: 0px 0px 5px rgb(11, 167, 11);
+          }
+          &.Notapproved{
+            background-color: red;
+            box-shadow: 0px 0px 5px #fe1a1a;
+          }
+        }
+      }
+
+      &:hover{
+        &.first {
+            box-shadow: -4px 3px 3px rgba(12, 12, 73, 0.7);
+        }
+        &.second {
+            box-shadow: -4px 3px 3px rgba(35, 12, 73, 0.7);
+        }
+        &.third {
+            box-shadow: -4px 3px 3px rgba(12, 54, 73, 0.7);
+        }
+        &.fourth {
+            box-shadow: -4px 3px 3px rgba(73, 12, 12, 0.7);
+        }
+        border: 2px solid rgba(71, 71, 71, 0.25);
+      }
+    }
+  }
+
+  .ComponentSelect{
+    position: absolute;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-Main);
+    z-index: 5;
+    overflow-x: hidden;
+  }
+
+
+
+
+  .DataTable{
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    top: 0%;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    max-width: 100%;
+    height: 100%;
+    overflow-y: auto;
+
+    .closebutton{
+      display: flex;
+      margin: 20px;
+      flex-direction: row-reverse;
+      button{
+        background: none;
+        border: none;
+        img{
+          width: 25px;
+        }
+        &.LoadExel{
+          margin-right: 45px;
+        }
+      }
+    }
+
+    .DataBody{
+      margin: 25px;
+    }
+    .GrafDiv{
+      margin: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .js-plotly-plot{
+        padding: 0px 0px 10px 0px;
+        width: 100%;
+      }
+    }
+}
+
+
+div.TableDiv{
+        margin: 10px 1px;
+        overflow: auto;
+        height: fit-content;
+        table{
+          width: 100%;
+          
+          thead,tfoot{
+            position: sticky;
+          }
+          thead{
+            top: 0px;
+            box-shadow: 0px 1px 0px white;
+          }
+          tfoot{
+            bottom: 0px;
+          }
+          tbody{
+            tr{
+              &:nth-child(even){
+                background-color: rgb(10, 10, 10);
+              }
+            }
+          }
+          tr{
+            background-color: black;
+            td,th{
+              padding: 5px;
+            }
+          }
+
+          &.SelectModeTable{
+            tbody tr{
+              &:hover{
+                box-shadow: inset 0px 0px 3px 0px white;
+              }
+              &.select{
+                box-shadow: inset 0px 0px 2px 1px white, inset 5px 0px 1px 0px red;
+              }
+            }
+          }
+        }
+      }

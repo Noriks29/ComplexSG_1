@@ -33,7 +33,7 @@
                 >{{ data.lable }}</th></tr>
           </thead>
           <tbody>
-            <tr v-for="(data, index) in dataT" :key="index">
+            <tr v-for="(data, index) in dataT" :key="index" v-show="data.nRev == selectRevId || selectRevId == null">
               <td
                 v-for="(dataLable, index) in dataLableName"
                 :key="index"
@@ -42,19 +42,21 @@
           </tbody>
           </table>
         </div>
-        <div id="plotlydiv">
-          <!--Карта-->
+        <div class="GrafDiv">
+          <div id="plotlydiv">
+            <!--Карта-->
+          </div>
+          <div id="plotlydivCharge">
+            <!--Карта-->
+          </div>
         </div>
-        <div id="plotlydivCharge">
-          <!--Карта-->
-        </div>
+        
       </div>
       </div>
 </template>
   
   <script>
 
-import { UnixToDtime } from '@/js/WorkWithDTime';
 import XLSX from 'xlsx-js-style';
 import Plotly from 'plotly.js-dist'
 import { CreateDateTime } from '@/js/WorkWithDTime';
@@ -66,12 +68,11 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           type: Array
         },
       },
-  
       data() {
         return {
             dataT: [],
             dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]}],
-          dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "time"},
+          dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
             {lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "shootingName"},
             {lable: "Связь с НП", nameParam: "gsName"},
             {lable: "Режим", nameParam: "mode"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ", nameParam: "charge"}],
@@ -86,11 +87,19 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           },
           SelectRev(id){
             let dataPlotly = []
-            if(id == this.selectRevId) this.selectRevId = null
+            if(id == this.selectRevId){
+              this.selectRevId = null
+              document.getElementById('plotlydiv').innerHTML = ''
+              document.getElementById('plotlydivCharge').innerHTML = ''
+            } 
             else {
+              if(this.selectRevId == null){
+                Plotly.newPlot("plotlydiv", [], {title: 'Графическая форма представления витка:' +id,barmode: 'stack'})
+                Plotly.newPlot("plotlydivCharge", [], {title: 'Заряд АКБ Тестовые данные'})
+              }
               this.selectRevId = id
               let data = this.dataPrevrap[id].data
-              console.log(data, "fsfsfesfes")
+              
               if(data.length > 0 ){
                 let dataGrapf = {type: 'bar',name: "Свет / Тень",y: [],x: [],orientation: 'h', base: [],
                   marker: {opacity: 0.6,color: []}
@@ -151,11 +160,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                 dataPlotly = [dataGrapf,dataGrapf1,dataGrapf2,dataGrapf3,dataGrapf4,dataGrapf6]
                 Plotly.newPlot("plotlydiv", dataPlotly, {title: 'Графическая форма представления витка:' +id,barmode: 'stack'})
                 Plotly.newPlot("plotlydivCharge", [dataGrapf5], {title: 'Заряд АКБ Тестовые данные'})
-                console.log(dataGrapf5)
                 }
               }
-                
-
           },
           LoadXLSX(){
             const workbook = XLSX.utils.book_new();
@@ -164,9 +170,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
               data[0].push(element.lable)
             })
             this.dataT.forEach(element => {
-              data.push([element.nRev,element.time,element.light,element.shootingName,element.gsName,element.mode,element.charge])
+              data.push([element.nRev,element.timeUnix,element.light,element.shootingName,element.gsName,element.mode,element.charge])
             });
-            console.log(data)
             let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
             workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
             let style = {
@@ -182,13 +187,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             let keylist = Object.keys(worksheet)
             for (let keyid = 0; keyid < keylist.length; keyid++) {
               const key = keylist[keyid];
-              console.log(worksheet[key].v, keylist, data[0])
               try {
                 if (data[0].indexOf(worksheet[key].v) != -1) {
                   worksheet[key].s = style
                 }
               } catch (error) {
-                console.log(error)
+                console.error(error)
               }
             }
             workbook.Sheets['Data'] = worksheet;
@@ -197,33 +201,18 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           PrevrapData(){
             for (let index = 0; index < this.dataTable.length; index++) {
                 const element = this.dataTable[index];
-                let createData = {
-                    shootingName: element.shootingName || '-',
-                    light: element.light,
-                    charge: element.charge,
-                    nRev: element.nRev,
-                    gsName: element.gsName || '-',
-                    mode: element.mode,
-                    modeName: element.modeName,
-                    time: UnixToDtime(element.timeBegin).time +' - '+ UnixToDtime(element.timeEnd).time
-                }
-                this.dataT.push(createData) 
+                this.dataT.push(element) 
                 while(this.dataPrevrap.length-1 < element.nRev) {
                     this.dataPrevrap.push({nRev: element.nRev, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]})
                 }
-                console.log(this.dataPrevrap[element.nRev], this.dataPrevrap)
                 this.dataPrevrap[element.nRev].data.push(element)
-                if(createData.shootingName != '-') this.dataPrevrap[element.nRev].shooting+=1
-                if(createData.gsName != '-') this.dataPrevrap[element.nRev].gsContact+=1
+                if(element.shootingName != null) this.dataPrevrap[element.nRev].shooting+=1
+                if(element.gsName != null) this.dataPrevrap[element.nRev].gsContact+=1
                 //доделать добавление остальных параметров
             }
-            console.log( this.dataPrevrap)
           },
-          
-          
       },
       mounted() {
-        console.log(this.dataTable)
         this.PrevrapData()
       }
     }
@@ -231,80 +220,5 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
   
   
   <style lang="scss" scoped>
-  .DataTable{
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0%;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-      max-width: 100%;
-      height: 100%;
-      overflow-y: auto;
 
-      .closebutton{
-        display: flex;
-        margin: 20px;
-        flex-direction: row-reverse;
-        button{
-          background: none;
-          border: none;
-          img{
-            width: 25px;
-          }
-          &.LoadExel{
-            margin-right: 45px;
-          }
-        }
-      }
-
-      .DataBody{
-        margin: 25px;
-      }
-  }
-
-  div.TableDiv{
-    margin: 10px 1px;
-    overflow: auto;
-    height: fit-content;
-    table{
-      width: 100%;
-      
-      thead,tfoot{
-        position: sticky;
-      }
-      thead{
-        top: 0px;
-        box-shadow: 0px 1px 0px white;
-      }
-      tfoot{
-        bottom: 0px;
-      }
-      tbody{
-        tr{
-          &:nth-child(even){
-            background-color: rgb(10, 10, 10);
-          }
-        }
-      }
-      tr{
-        background-color: black;
-        td,th{
-          padding: 5px;
-        }
-      }
-
-      &.SelectModeTable{
-        tbody tr{
-          &:hover{
-            box-shadow: inset 0px 0px 3px 0px white;
-          }
-          &.select{
-            box-shadow: inset 0px 0px 2px 1px white;
-          }
-        }
-      }
-    }
-  }
   </style>

@@ -32,7 +32,7 @@
       </div>
 
       <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 1">
+          <div v-if="PageSettings.status == 1" class="TableDiv" style="max-height: 95%;">
             <table class="TableDefault">
               <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
               <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">

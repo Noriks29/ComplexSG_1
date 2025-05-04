@@ -15,6 +15,7 @@
           <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
         </button>
       </div>
+      <div class="TableDiv" style="max-height: 75%;">
       <table class="TableDefault">
         <thead>
           <tr>
@@ -38,16 +39,18 @@
             <td><input type="number"  v-model="data.longitude" ></td>
             <td v-if="!approved && !modellingStatus" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
           </tr>
+        </tbody>
+        <tfoot>
           <tr v-if="!approved && !modellingStatus" class="addRowButton">
             <td colspan="5"><button @click="AddRow">
               <img src="../../assets/add.png" alt="" class="addButtonIcon">
               Добавить наземный пункт
             </button></td>
           </tr> 
-        </tbody>
+        </tfoot>
       </table>
     </div>
-    
+   </div> 
   </div>
   </div>
 </template>

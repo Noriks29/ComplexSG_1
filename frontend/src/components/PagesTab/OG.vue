@@ -31,9 +31,9 @@
 
 
     <div class="Panel RightPanel">
-          
-          <div v-if="PageSettings.status == 0 && selectOG != null">
+          <div v-if="PageSettings.status == 0 && selectOG != null" style="height: 93%;">
             <h3>{{ selectOG.constellationName }}</h3>
+            <div class="TableDiv" style="max-height: 100%; height: 90%;">
             <table class="TableDefault">
               <thead>
                 <tr><th>Модель КА</th><th>Имя КА</th>
@@ -65,12 +65,13 @@
                   <td><input type="number" v-model="data.perigeeWidthArgument"></td>
                   <td><input type="number" v-model="data.trueAnomaly"></td>
                   <td v-if="abilityEdit" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
-                </tr>
+                </tr></tbody><tfoot>
                 <tr v-if="abilityEdit" class="addRowButton">
                   <td :colspan="9+Number(selectOG.inputType==2)*2 + Number(KaRole.length > 0)"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
                 </tr> 
-              </tbody>
+              </tfoot>
             </table>
+          </div>
           </div>
           <div v-if="PageSettings.status == 1">
             <div class="flexrow">

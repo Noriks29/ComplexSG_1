@@ -7,9 +7,13 @@
           <img src="../../assets/excel.png"><span>&#8203;</span>
         </button>
       </div>
-        <div class="scroll-table">
+
+
+      <div class="DataBody">
+        <div class="TableDiv" style="max-height: 85vh;">
           <table class="TableDefault">
-        <thead><tr>
+          <thead>
+            <tr>
             <th>Заявка</th>
             <th>Цель</th>
             <th>Приоритет</th>
@@ -18,17 +22,16 @@
             <th>Съёмка</th>
             <th>Доставка</th>
             <th>НП</th>
-          </tr>
+        </tr>
           </thead>
-        </table>
-        <div class="scroll-table-body">
-        <table class="TableDefault">
-            <tbody v-html="CreateTableBody()"></tbody>
-        </table>
-      </div>
-      </div>
-    </div>
-  </template>
+          <tbody v-html="CreateTableBody()">
+            </tbody>
+          </table>
+        </div>  
+      </div> 
+  </div>
+  
+</template>
   
   <script>
   
@@ -60,10 +63,9 @@ import XLSX from 'xlsx-js-style';
           CloseTable(){
             this.$emit('closetable', true)
           },
-          CreateDateTime(time, mode = false){
+          CreateDateTime(time){
             let Dtime = UnixToDtime(time)
-            if(mode) return Dtime.time
-            return Dtime.time + " МСК"
+            return Dtime.time
           },
           CreateTableBody(){
           let htmlcode = ""
@@ -90,16 +92,16 @@ import XLSX from 'xlsx-js-style';
               indexrow, 
               element.data77.targetName, 
               this.priory[element.data77.orderId], 
-              this.CreateDateTime(element.data78[0].timeAppearanceOrder, true),
+              this.CreateDateTime(element.data78[0].timeAppearanceOrder),
               element.data78[0].scId,
-              this.CreateDateTime(element.data77.te, true),
-              this.CreateDateTime(element.data78[0].timeEndConnect, true),
+              this.CreateDateTime(element.data77.te),
+              this.CreateDateTime(element.data78[0].timeEndConnect),
               element.data78[0].earthPointName
             ]
             data.push(row)
             for (let i = 1; i < element.data78.length; i++) {
               row = ["","","","","","",
-                this.CreateDateTime(element.data78[i].timeEndConnect, true),
+                this.CreateDateTime(element.data78[i].timeEndConnect),
                 element.data78[i].earthPointName
               ]
               data.push(row)
@@ -166,62 +168,4 @@ import XLSX from 'xlsx-js-style';
   
   
   <style lang="scss" scoped>
-  .closebutton{
-  display: flex;
-  margin: 20px;
-  flex-direction: row-reverse;
-  button{
-    background: none;
-    border: none;
-    img{
-      width: 25px;
-    }
-    &.LoadExel{
-      margin-right: 45px;
-    }
-  }
-  
-}
-  .DataTable{
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    position: fixed;
-    top: 0%;
-    left: 0;
-    width: 100%;
-    z-index: 10;
-    max-width: 100%;
-    height: 100%;
-    .TableDefault{
-      filter: drop-shadow(2px 4px 6px black);
-  
-    }
-    .PanelTable{
-      position: sticky;
-      bottom: 20px;
-      margin: 0px 5%;
-      width: 90%;
-    }
-  }
-  .PanelDefault{
-    width: 95%;
-    padding: 5px;
-  
-  }
-  .scroll-table-body {
-      height: 75vh;
-  
-  }
-  .smallTh{
-    width: 50px;
-  }
-  .scroll-table{
-    margin: 0% 2%;
-      background-color: rgba(151, 151, 151, 0.15);
-      box-shadow: -4px 3px 1px rgba(63, 60, 60, 0.35);
-      border: 2px solid rgba(0, 0, 0, 0.25);
-  }
-  tr{
-    background-color: rgba(0, 0, 0, 0.755);
-  }
   </style>

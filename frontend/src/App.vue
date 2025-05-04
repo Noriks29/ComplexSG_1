@@ -110,7 +110,6 @@ export default {
       async StartSystem(data){
         ClearGlobalData()
         DisplayLoad(true)
-        console.log(data)
         await localStorage.setItem('data', data.accessKey)
         await localStorage.setItem('modname', data.name)
         await InitGlobalData()
@@ -155,7 +154,7 @@ export default {
         document.getElementById("app").className = "whiteMode";
       }
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   },
   components: {
@@ -166,199 +165,6 @@ export default {
 </script>
 
 <style lang="scss">
-body{
-  .ModalLoginBack{
-    position: relative;
-    z-index: 3;
-    height: 100vh;
-    min-width: 500px;
-    max-width: 30vw;
-    background: var(--background-Panel2);
-    border-right: 2px solid var(--border-Panel2);
-    box-shadow: -8px 0px 15px 1px var(--box-shadow-Pabel2);
-    transform: translate(-100%, 0px);
-    transition: all 0.5s ease-in-out;
-
-    &.show{
-      transform: translate(0%, 0px);
-    }
-
-    .ModalLoginPanel{
-      padding: 20px;
-      font-size: var(--font-size);
-
-      .ModalLoginForm{
-
-        h1{
-          margin: 0px;
-        }
-
-        div{
-          padding: 10px 5px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-
-          label{
-            margin: 5px;
-          }
-
-          input{
-            padding: 15px;
-            text-align: left;
-            border: none;
-            border-bottom: 2px solid var(--border-bottom-input);
-            width: 90%;
-            outline: none;
-            background-color: #8a8a8a12;
-            transition: all 0.5s;
-            
-            &:hover{
-              background-color: #0b0b0bd7;
-            }
-            &:focus{
-              background-color: #0101015a;
-            }
-          }
-
-          input:-webkit-autofill,
-          input:-webkit-autofill:hover, 
-          input:-webkit-autofill:focus,
-          textarea:-webkit-autofill,
-          textarea:-webkit-autofill:hover,
-          textarea:-webkit-autofill:focus,
-          select:-webkit-autofill,
-          select:-webkit-autofill:hover,
-          select:-webkit-autofill:focus {
-            -webkit-text-fill-color: rgb(0, 0, 0);
-            -webkit-box-shadow: 0 0 0px 1000px #00000000 inset;
-            transition: background-color 0.5s ease-in-out 0s;
-          }
-
-          &.FormSubmit{
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-
-            div{
-              font-size: 20px;
-              font-weight: bold;
-              color: #ff8e8e;
-              transition: all 1s;
-              &.none{
-                color: #ff8e8e00;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.login{
-  position: relative;
-  padding-right: 35px;
-  img{
-    height: 60%;
-    position: absolute;
-    top: 20%;
-    right: 0px;
-    bottom: 20%;
-  }
-}
-
-.headerSelectMode{
-  display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    position: fixed;
-    width: 40%;
-    z-index: 1;
-    flex-direction: column;
-    height: 90vh;
-    margin-left: 60%;
-    padding: 5vh 0px;
-
-
-  background: var(--background-Panel2);
-  border-left: 2px solid var(--border-Panel2);
-  box-shadow: 8px 0px 15px 1px var(--box-shadow-Pabel2);
-  transform: translate(100%, 0px);
-  transition: all 0.5s ease-in-out;
-
-  &.show{
-    transform: translate(0%, 0px);
-  }
-
-  .SelectMode{
-    flex: 1;
-    width: 100%;
-    .ButtonSelectMode{
-      overflow: hidden;
-      position: relative;
-      font-size: 20px;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: none;
-      color: var(--color-Main);
-      pointer-events: all;
-      background-color: var(--background-Button1);
-        &:hover{
-          background-color: var(--background-Button2);
-          border: 2px solid var(--border-button);
-          transform: translate(4px, -4px);
-          box-shadow: -4px 4px 2px var(--box-shadow-button);
-        }
-        &:active{
-            background-color: var(--background-Button3);
-            border: 2px solid var(--border-button2);
-            transform: translate(0px, 1px);
-            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
-       }
-
-  }
-  }
-  
-}
-
-.idSesion{
-  color: var(--color-Main);
-    position: fixed;
-    right: 10px;
-    top: 6px;
-    border-bottom: 2px solid;
-    box-shadow: 0px 3px 4px -4px var(--box-shadow-Pabel2);
-    transform: translate(0px, -150%);
-    transition: all 0.5s ease-in-out;
-    z-index: 2;
-
-    &.show{
-      transform: translate(0px, 0%);
-    }
-    .flexdiv{
-      display: flex;
-      align-items: center;
-    }
-
-    .Menubutton{
-      background: none;
-      border: none;
-      position: relative;
-      margin: 0px 10px;
-      svg{
-        width: 30px;
-      }
-      transform: translate(0%, -150%);
-      transition: all 0.5s ease-in-out;
-
-      &.show{
-        transform: translate(0%, 0px);
-      }
-    }
-    }
 
 </style>
 
