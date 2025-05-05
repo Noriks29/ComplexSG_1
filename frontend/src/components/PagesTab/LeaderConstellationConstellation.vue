@@ -46,7 +46,7 @@
             <table class="TableDefault">
             <thead><tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr></thead>
               <tbody><tr v-for="data, index in PageSettings.SatSat" :key="index">
-                <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
+                <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.beginUnix }}</td><td>{{ data.endUnix }}</td>
               </tr>
             </tbody></table>
           </div>
@@ -64,21 +64,13 @@
               <tr><td colspan="3" @click="AddRow('network')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
             </tbody></table>
           </div>
+
+          <div id="plotlymapContain1" style="height: 79vh;"></div>
+          </div>
         </div>
     </div>
 
     
-    <!--
-    <div id="PlotlyDiv" v-if="ShowPlotlyContain">
-      <div class="ContainerDiv">
-        <div class="closebutton"><button @click="ShowPlotlyContain = false">
-        <img src="../../assets/close.svg"><span>&#8203;</span>
-      </button></div>
-
-      <div id="plotlymapContain1" style="height: 79vh;"></div>
-      </div>
-    </div>-->
-    </div>
   </template>
   
   <script>
@@ -165,20 +157,22 @@ import DateTime from '../DateTime.vue';
        async CommandWork(commandId){
             DisplayLoad(true)
             let dataPlotly = null
-            let dataGrapf = null
             switch (commandId) {
               case 0:
                 this.PageSettings.status = 0
+                
                 break;
               case 1:
-                
+                document.getElementById("plotlymapContain1").innerHTML=''
                 if(this.PageSettings.mode) await FetchPost('/api/v1/cluster/pro42',this.experimentObject, null)
                 else await FetchGet('/api/v1/pro42/view/sat', null)
                 await this.ReFetch()
                 break;
               case 2:
+                document.getElementById("plotlymapContain1").innerHTML=''
                 await FetchGet('/api/v1/contact-plan/sat')
-                this.ReFetch()
+                await this.ReFetch()
+                this.PageSettings.status = 1
                 break;
 
               case 3:
@@ -187,53 +181,32 @@ import DateTime from '../DateTime.vue';
                 break;
               
               case 4:
+                this.PageSettings.status = 4
+                document.getElementById("plotlymapContain1").innerHTML=''
                 if(this.PageSettings.SatSat.length < 1 ) return
-
                 this.ShowPlotlyContain = true
-                dataGrapf = {
-                  type: 'bar',
-                  name: "NP",
-                  y: [],
-                  x: [],
-                  orientation: 'h',
-                  base: [],
-                  text: [],
-                  marker: {
-                    opacity: 0.5,
-                    color: "red",
-                    line: {
-                      width: 1
-                    }
-                  }
-                }
-                this.PageSettings.SatNp.forEach(element => {
-                  dataGrapf.y.push(element.satelliteId)
-                  dataGrapf.text.push(element.earthName)
-                  dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
-                  dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
-                });
+                dataPlotly = []
 
-                dataPlotly = [dataGrapf]
                 this.PageSettings.SatSat.forEach(element => {
                   let flagadd = false
                   dataPlotly.forEach(plot => {
-                    if(plot.name == element.satellite2Id){
-                      plot.y.push(element.satellite1Id, element.satellite2Id)
-                      plot.text.push(element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id)
-                      plot.x.push(this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2))
-                      plot.base.push(this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1))
+                    if(plot.name == element.satellite2){
+                      plot.y.push(element.satellite1+"-"+element.satellite2)
+                      plot.text.push(element.satellite1+"-"+element.satellite2)
+                      plot.x.push(this.CreateDateTime(element.end - element.begin, 2))
+                      plot.base.push(this.CreateDateTime(element.begin, 1))
                       flagadd = true
                     }
                   })
                   if(!flagadd){
                     dataPlotly.push({
                       type: 'bar',
-                      name: element.satellite2Id,
-                      y: [element.satellite1Id, element.satellite2Id],
-                      x: [this.CreateDateTime(element.end - element.begin, 2), this.CreateDateTime(element.end - element.begin, 2)],
+                      name: element.satellite2,
+                      y: [element.satellite1+"-"+element.satellite2],
+                      x: [this.CreateDateTime(element.end - element.begin, 2)],
                       orientation: 'h',
-                      base: [this.CreateDateTime(element.begin, 1), this.CreateDateTime(element.begin, 1)],
-                      text: [element.satellite1Id+"->"+element.satellite2Id, element.satellite2Id+"->"+element.satellite1Id],
+                      base: [this.CreateDateTime(element.begin, 1)],
+                      text: [element.satellite1+"-"+element.satellite2],
                       textfont: {
                         size: 16,
                         color: '#000000'
@@ -246,11 +219,13 @@ import DateTime from '../DateTime.vue';
                     })
                   }
                 });
-                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости',})
+                console.log(dataPlotly)
+                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', height:150+(dataPlotly.length*70), margin:{l:150,t:40,b:40,r:10}})
                 break
               
               case 5:
                 this.PageSettings.status = 2
+                document.getElementById("plotlymapContain1").innerHTML=''
                 break;
             
               default:
@@ -270,15 +245,14 @@ import DateTime from '../DateTime.vue';
             }
             response = response.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
             for (let index = 0; index < response.length; index++) {
-              response[index].begin = this.CreateDateTime(response[index].begin)
-              response[index].end = this.CreateDateTime(response[index].end)
+              response[index].beginUnix = this.CreateDateTime(response[index].begin)
+              response[index].endUnix = this.CreateDateTime(response[index].end)
             }
           this.PageSettings.SatSat = response
         }
     },
     async mounted() {
       DisplayLoad(true)
-      console.log("fsfesefesfesfesfesfsefs")
       if(this.systemStatus.typeWorkplace in {3:null, 4:null}) {
         this.PageSettings.mode = true
         this.PageSettings.status = 0
