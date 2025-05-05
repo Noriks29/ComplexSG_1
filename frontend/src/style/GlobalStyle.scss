@@ -1107,7 +1107,7 @@ body{
 
     .closebutton{
       display: flex;
-      margin: 20px;
+      margin: 15px;
       flex-direction: row-reverse;
       button{
         background: none;
@@ -1122,15 +1122,17 @@ body{
     }
 
     .DataBody{
-      margin: 25px;
+      margin: 20px 10px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 90px);
     }
     .GrafDiv{
-      margin: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
       .js-plotly-plot{
-        padding: 0px 0px 10px 0px;
+        padding: 0px 0px 5px 0px;
         width: 100%;
       }
     }
@@ -1138,7 +1140,7 @@ body{
 
 
 div.TableDiv{
-        margin: 10px 1px;
+        margin: 5px 1px;
         overflow: auto;
         height: fit-content;
         table{

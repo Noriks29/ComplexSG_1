@@ -9,7 +9,7 @@
         </div>
         
         <div class="DataBody">
-            <div class="TableDiv" style="max-height: 200px;">
+            <div class="TableDiv" :style="(selectRevId!=null)?'max-height:120px;height:120px;':'max-height:200px;'">
                 <table class="TableDefault SelectModeTable">
                     <thead>
                       <tr><th>Виток</th><th>Съёмки</th><th>Связь с НП</th><th>Заряд АКБ</th><th>Память</th></tr>
@@ -23,7 +23,7 @@
                 </table>
             </div>
           
-        <div class="TableDiv" style="max-height: 350px;">
+        <div class="TableDiv" :style="(selectRevId!=null)?'max-height: 250px; height: 250px;':'max-height: 400px;'">
           <table class="TableDefault">
           <thead>
             <tr><th 
@@ -94,8 +94,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             } 
             else {
               if(this.selectRevId == null){
-                Plotly.newPlot("plotlydiv", [], {title: 'Графическая форма представления витка:' +id,barmode: 'stack'})
-                Plotly.newPlot("plotlydivCharge", [], {title: 'Заряд АКБ Тестовые данные'})
+                Plotly.newPlot("plotlydiv", [],  {title: 'Графическая форма представления витка:' +id,barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:200}, {displayModeBar: true})
+                Plotly.newPlot("plotlydivCharge", [], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
               }
               this.selectRevId = id
               let data = this.dataPrevrap[id].data
@@ -117,7 +117,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   marker: {opacity: 0.6,color: "yellow",line: {width: 1}}
                 }
                 let dataGrapf6 = {type: 'bar',name: "Межспутниковая",y: [],x: [],orientation: 'h',base: [],
-                  marker: {opacity: 0.6,color: "blue",line: {width: 1}}
+                  marker: {opacity: 0.6,color: "purple",line: {width: 1}}
                 }
                 let dataGrapf5 = {name: "Заряд", y: [],x: [], type: 'scatter', fill: 'tonexty'}
                 data.forEach(element => {
@@ -158,8 +158,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                 });
 
                 dataPlotly = [dataGrapf,dataGrapf1,dataGrapf2,dataGrapf3,dataGrapf4,dataGrapf6]
-                Plotly.newPlot("plotlydiv", dataPlotly, {title: 'Графическая форма представления витка:' +id,barmode: 'stack'})
-                Plotly.newPlot("plotlydivCharge", [dataGrapf5], {title: 'Заряд АКБ Тестовые данные'})
+                Plotly.newPlot("plotlydiv", dataPlotly,  {title: 'Графическая форма представления витка:' +id,barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:200}, {displayModeBar: true})
+                Plotly.newPlot("plotlydivCharge", [dataGrapf5], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
                 }
               }
           },
