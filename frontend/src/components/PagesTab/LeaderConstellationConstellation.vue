@@ -192,7 +192,7 @@ import DateTime from '../DateTime.vue';
                   dataPlotly.forEach(plot => {
                     if(plot.name == element.satellite2){
                       plot.y.push(element.satellite1+"-"+element.satellite2)
-                      plot.text.push(element.satellite1+"-"+element.satellite2)
+                      plot.text.push(element.end-element.begin)
                       plot.x.push(this.CreateDateTime(element.end - element.begin, 2))
                       plot.base.push(this.CreateDateTime(element.begin, 1))
                       flagadd = true
@@ -206,7 +206,7 @@ import DateTime from '../DateTime.vue';
                       x: [this.CreateDateTime(element.end - element.begin, 2)],
                       orientation: 'h',
                       base: [this.CreateDateTime(element.begin, 1)],
-                      text: [element.satellite1+"-"+element.satellite2],
+                      text: [element.end - element.begin],
                       textfont: {
                         size: 16,
                         color: '#000000'
@@ -220,7 +220,7 @@ import DateTime from '../DateTime.vue';
                   }
                 });
                 console.log(dataPlotly)
-                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', height:150+(dataPlotly.length*70), margin:{l:150,t:40,b:40,r:10}})
+                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', showlegend: false,height:150+(dataPlotly.length*70), margin:{l:150,t:40,b:40,r:10}})
                 break
               
               case 5:
