@@ -1,15 +1,16 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
           <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
+            <h1 class="TitleText">Оценка орбитального построения ОГ</h1>
           </div>
           
       <div class="ContentDiv">
-        <div class="TitleText">Оценка орбитального построения ОГ</div>
-        <div class="Panel ">
+        
+        <div class="Panel LeftPanel">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
                 <table>
@@ -28,22 +29,22 @@
                     <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.satellites.length }}</td></tr>
                   </table>
             </div>
+            <div class="FlexColumn">
+              <div><button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button></div>
+              <div><button @click="ShowViViewWindow(AllResponse)" v-if="TableViewWindow.length > 0" class="ButtonCommand">Отобразить все результаты</button></div>
+              <div><button @click="viewmode = 1" v-if="viewmode == 2 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить таблицу</button></div>
+              <div><button @click="viewmode = 2" v-if="viewmode == 1 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить график</button></div>
+            </div>
         </div>
-        <div class="Panel MaxWidth">
+        <div class="Panel RightPanel">
           <div>Эксперимент</div>
-          <button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button>
-          <button @click="ShowViViewWindow(AllResponse)" v-if="TableViewWindow.length > 0" class="ButtonCommand">Отобразить все результаты</button>
-          <button @click="viewmode = 1" v-if="viewmode == 2 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить таблицу</button>
-          <button @click="viewmode = 2" v-if="viewmode == 1 && TableViewWindow.length > 0" class="ButtonCommand">Отобразить график</button>
-          <div class="scroll-table" v-if="TableViewWindow.length > 0 && viewmode == 1">
+          
+          <div class="TableDefault" v-if="viewmode == 1">
             <table class="TableDefault"><thead>
             <tr>
               <th>Цель</th><th>Колличество окон видимости</th><th>Отображение</th>
             </tr>
            </thead>
-            </table>
-            <div class="scroll-table-body">
-              <table class="TableDefault">
                 <tbody>
                   <tr 
                     v-for="data,index in TableViewWindow"
@@ -56,9 +57,11 @@
                   </tr>
                 </tbody>
               </table>
-            </div></div>  
+          </div>  
+
+            <div :style="viewmode == 2? 'display:block;' : 'display: none;'" id="plot_OG" style="height: 70vh;"></div>
         </div>
-        <div :style="viewmode == 2? 'display:block;' : 'display: none;'" id="plot_OG" style="width: 95vw; height: 70vh;"></div>
+        
       </div>
       </div>
   </template>

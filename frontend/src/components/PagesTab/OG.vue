@@ -21,6 +21,12 @@
         <div>
           <button class="ButtonCommand" :class="!approved? '' : 'disable'"  @click="PageSettings.status=1"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
         </div>
+        <div class="LoadExel">
+          <div><input id="Exel" type="checkbox" v-model="PageSettings.saveEXELmode"><label for="Exel">
+            {{ PageSettings.saveEXELmode ? 'Сохранить все ОГ':'Сохранить выбранную ОГ' }}
+          </label></div>
+          <button @click="LoadXLSX" class="ButtonCommand"><img src="../../assets/excel.png"><span>&#8203;</span></button>
+        </div>
         <div class="ButtonApprovedDiv" v-if="!modellingStatus">
           <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
           <span v-if="approved"><img src="../../assets/edit.svg"></span>
@@ -37,7 +43,7 @@
             <table class="TableDefault">
               <thead>
                 <tr><th>Модель КА</th><th>Имя КА</th>
-                  <th v-if="KaRole.length">Роль</th>
+                  <th v-if="PageSettings.RoleUse">Роль</th>
                   <th v-if="selectOG.inputType === 2">Плосколсть</th>
                   <th v-if="selectOG.inputType === 2">Позиция</th>
                   <th>Большая полуось</th>
@@ -55,7 +61,7 @@
                 >
                   <td :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
                   <td><input type="text" v-model="data.name"></td>
-                  <td v-if="KaRole.length" :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
+                  <td v-if="PageSettings.RoleUse" :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
                   <td v-if="selectOG.inputType === 2">{{ data.plane }}</td>
                   <td v-if="selectOG.inputType === 2">{{ data.position }}</td>
                   <td><input type="number" v-model="data.altitude"></td>
@@ -67,7 +73,7 @@
                   <td v-if="abilityEdit" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
                 </tr></tbody><tfoot>
                 <tr v-if="abilityEdit" class="addRowButton">
-                  <td :colspan="9+Number(selectOG.inputType==2)*2 + Number(KaRole.length > 0)"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
+                  <td :colspan="9+Number(selectOG.inputType==2)*2 + PageSettings.RoleUse"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
                 </tr> 
               </tfoot>
             </table>
@@ -124,6 +130,7 @@ import {DisplayLoad, FetchGet, FetchPost, FetchPostFile} from '@/js/LoadDisplayM
 import { PagesSettings } from './PagesSettings.js';
 import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalData';
 import SelectDiv from '../SelectDiv.vue';
+import XLSX from 'xlsx-js-style';
 
 
   export default {
@@ -134,7 +141,9 @@ import SelectDiv from '../SelectDiv.vue';
         OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"}, //список типов созданий ог
         dataJson: [],
         PageSettings:{
-          status: 0
+          status: 0,
+          saveEXELmode: true,
+          RoleUse:true
         },
 
         KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
@@ -270,13 +279,66 @@ import SelectDiv from '../SelectDiv.vue';
               this.OG_Param.file = file
             }
           },
+          LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [["Модель КА","Имя КА","Роль","Плосколсть","Позиция","Большая полуось","Эксцентриситет","Наклон","Долгота восходящего узла",
+            "Аргумент широты перигея","Истинная аномалия"]]
+            console.log(this.dataJson)
+            let dataLoad = []
+            if(this.PageSettings.saveEXELmode){
+              dataLoad = this.dataJson
+            }
+            else{
+              dataLoad = [this.selectOG]
+            }
+            if(dataLoad.length == 1 && this.selectOG == undefined){
+              alert("группировка не выбрана")
+              return
+            } 
+            dataLoad.forEach(dataOGExel => {
+              if(dataLoad.length > 1) data.push([dataOGExel.constellationName])
+              dataOGExel.satellites.forEach(element => {
+              data.push([this.KaLableId[element.modelSat.id],element.name,this.KaRole[element.role].lable,
+              element.plane,element.position,element.altitude,element.eccentricity,element.incline,element.longitudeAscendingNode,
+              element.perigeeWidthArgument,element.trueAnomaly])
+            });
+            })
+            
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            console.log(worksheet[key].v, keylist, data[0])
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          console.log(worksheet)
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'ОП.xlsx');
+        },
     },
     async mounted(){
       DisplayLoad(true)
       this.approved = SystemObject.constellationStatus
       this.dataJson = OGList
       if(SystemObject.typeWorkplace in {1:null, 2:null}){
-          this.KaRole = []
+          this.PageSettings.RoleUse = false
       }
       let result = await FetchGet('/api/v1/modelsat/all')
       this.KaModels = []
@@ -291,6 +353,19 @@ import SelectDiv from '../SelectDiv.vue';
   </script>
 
 <style lang="scss" scoped>
+
+.LoadExel{
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px;
+  div{
+    display: flex;
+    align-items: center;
+  }
+  img{
+    width: 30px;
+  }
+}
 
 .ElementCol{
   display: grid;

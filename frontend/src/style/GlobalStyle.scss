@@ -1151,10 +1151,11 @@ div.TableDiv{
           }
           thead{
             top: 0px;
-            box-shadow: 0px 1px 0px white;
+            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.741);
           }
           tfoot{
             bottom: 0px;
+            box-shadow: 0px -1px 0px rgba(255, 255, 255, 0.774);
           }
           tbody{
             tr{

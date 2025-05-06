@@ -1,9 +1,10 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
+            <h1 class="TitleText">Маршрут обхода целей</h1>
           </div>
         <div class="MiniMapPanel" v-if="showMap">
           <div class="closebutton"><button @click="showMap = false">
@@ -16,24 +17,23 @@
 
           
     <div class="ContentDiv">
-        <h1 class="TitleText">Маршрут обхода целей</h1>
-        <div class="Panel">
-          <table  style="border-bottom: 1px solid white;">
+        <div class="Panel LeftPanel">
+          <table  style="border-bottom: 1px solid white;"><tbody>
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
               <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
               <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
               <tr><td>Выбранный КА в ОГ</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
-          </table>
+            </tbody></table>
           <p>Цели</p>
-          <table style="width: 100%;">
+          <table style="width: 100%;"><thead>
             <tr>
-                <td>id</td>
-                <td>Имя</td>
-                <td>Широта</td>
-                <td>Долгота</td>
-                <td>Высота</td>
-            </tr>
-            <tr
+                <th>id</th>
+                <th>Имя</th>
+                <th>Широта</th>
+                <th>Долгота</th>
+                <th>Высота</th>
+            </tr></thead>
+            <tbody><tr
                 v-for="data, index in purposesJson"
                 :key="index"
             >
@@ -42,10 +42,10 @@
                 <td> {{ data.catalog.lat }}</td>
                 <td> {{ data.catalog.lon }}</td>
                 <td> {{ data.catalog.alt }}</td>
-            </tr>
+            </tr></tbody>
           </table>
         </div>
-        <div class="Panel MaxWidth">
+        <div class="Panel RightPanel">
             <div class="flexrow">
             <button class="ButtonCommand" @click="StartModelling">Найти маршруты</button>
             <div><input type="number" id="iterationMax" value="10" style="width: 100px;"></div>
@@ -57,10 +57,9 @@
                 <img src="../../assets/arrow1bold.png" alt="+"></button></div>
             <button class="ButtonCommand" @click="CreateMap">Показать на карте</button>
             </div>
-        </div>
-        <div class="Panel MaxWidth tergetRoad">
-          <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
-          <table style="width: 100%;" v-if="roadList.length > 0">
+
+            <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
+          <table style="" v-if="roadList.length > 0">
             <tr>
                 <td> id цели</td>
                 <td> Имя </td>
@@ -88,6 +87,9 @@
             </tr>
           </table>
         </div>
+        </div>
+        <div class="Panel  tergetRoad">
+          
         
     </div>
 

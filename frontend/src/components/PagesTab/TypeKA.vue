@@ -20,7 +20,7 @@
           <div v-if="viewPanel == 1">
               <p>Режимы функционирования</p>
               <div>
-                  <div>
+                  <div class="TableDiv">
                     <table class="TableDefault">
                       <thead><tr><th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th><th></th></tr></thead>
                       <tbody v-for="data, index in SelectKA.value.modes" :key="index">
@@ -36,7 +36,7 @@
                     </table>
                   </div>
                   <p>Правила выбора режима полета, если интервалы времени пересекаются</p>
-                  <div>
+                  <div class="TableDiv">
                     <table class="TableDefault">
                       <thead><tr><th>Пересечение режимов</th><th>Выполняется</th></tr></thead>
                       <tbody><tr><th>A и B</th><td>выбор 1</td></tr>
@@ -49,6 +49,7 @@
 
           <div v-if="viewPanel == 2">
               <p>Каталог устройств</p>
+              <div class="TableDiv">
               <table class="TableDefault">
                 <thead><tr><th style="width: 0px;">Использовать</th><th>Прибор</th><th></th></tr></thead>
                 <tbody><tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
@@ -60,8 +61,10 @@
                   <td colspan="3"><button @click="AddRow('devCatalogs')"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
                 </tr></tbody>
               </table>
-
+              </div>
+              
               <p>Устройства</p>
+              <div class="TableDiv">
               <table class="TableDefault"><thead>
                 <tr><th>Прибор</th><th style="width: 0px;">Свойство</th><th></th></tr></thead>
                 <tbody><tr v-for="data,index in SelectKA.value.devices" :key="index" :id="data.id">
@@ -71,10 +74,11 @@
                   <td @click="DeleteRow(index, 'devices')" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
                 </tr></tbody>
               </table>
+              </div>
           </div>
           <div v-if="viewPanel == 3">
               <p>Потребление энергии устройствами </p>
-              <div>
+              <div class="TableDiv">
                 <table class="TableDefault" id="TableChargeKA"><tbody>
                   <tr>
                     <th rowspan="2">Прибор</th>
@@ -92,7 +96,7 @@
           </div>
           <div v-if="viewPanel == 4">
               <p>Параметры функционирования</p>
-              <div>
+              <div class="TableDiv">
                   <table class="TableDefault" @change="ChangeParamKa">
                     <tbody>
                       <tr><th colspan="3">Параметры разворота</th></tr>

@@ -7,7 +7,7 @@
             <h1 class="TitleText">Информация системы</h1>
           </div>
       <div class="ContentDiv">
-        <div class="Panel RightPanel">
+        <div class="Panel RightPanel TableDiv" >
           <table class="TableDefault"><tbody>
           <tr>
             <th colspan="2">Исходные данные. Космическая система (КС) и связь</th>

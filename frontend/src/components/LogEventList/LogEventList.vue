@@ -9,14 +9,14 @@
           
     <div class="ContentDiv">
       <div class="TitleText">Каталог лога событий</div>
-    <div class="Panel MaxWidth">
-      <table>
+    <div class="Panel MaxWidth TableDiv">
+      <table class="TableDefault"><thead>
         <tr v-if="dataJson.length > 0">
           <th>ID</th>
           <th>Код</th>
           <th>Событие</th>
           <th></th>
-        </tr>
+        </tr></thead><tbody>
         <tr
           v-for="(data, index) in dataJson"
           :key="index"
@@ -29,13 +29,13 @@
             <td><input :id="index" name="descriptionEvent" class="description"
                 :value="data.descriptionEvent"></td>
           <td v-if="!modellingStatus" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-        </tr>
+        </tr></tbody><tfoot>
         <tr class="addRowButton">
-          <td colspan="3"><button @click="AddRow">
+          <td colspan="4"><button @click="AddRow">
             <img src="../../assets/add.png" alt="" class="addButtonIcon">
             Добавить
           </button></td>
-        </tr> 
+        </tr></tfoot>
       </table>
     </div>
     </div>

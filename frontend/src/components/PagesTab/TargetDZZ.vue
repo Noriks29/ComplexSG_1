@@ -4,7 +4,7 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <div class="TitleText">Заявки</div>
+            <h1 class="TitleText">Заявки</h1>
           </div>
     <div class="ContentDiv">
         <div class="Panel LeftPanel">
@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="Panel RightPanel" >
-          <div v-if="viewmode == 0">
+          <div v-if="viewmode == 0" class="TableDiv" style="max-height: 95%; min-height: 95%;">
             <table class="TableDefault">
               <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
               <tbody><tr
@@ -44,16 +44,17 @@
               <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
               <td v-if="systemStatus.typeWorkplace in {3:null}"><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')"/></td>
               <td :id="index" @click="DeleteRowRequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-              </tr>
+              </tr></tbody>
+              <tfoot>
               <tr class="addRowButton">
                 <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
                 <td v-if="systemStatus.typeWorkplace in {3:null,4:null}"></td>
                 <td v-if="requestJson.length > 0"><button @click="LoadXLSX('request')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
-            </tbody></table>
+            </tfoot></table>
           </div>
 
-          <div v-if="viewmode == 1">
+          <div v-if="viewmode == 1" class="TableDiv" style="max-height: 95%; min-height: 95%;">
           <table class="TableDefault">
           <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
           <tbody><tr v-for="data, index in catalogJson"
@@ -66,15 +67,15 @@
               <td><input type="number" v-model="data.lon"></td>
               <td><input type="number" v-model="data.alt"></td>
               <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-            </tr>
-            <tr class="addRowButton">
+            </tr></tbody>
+            <tfoot><tr class="addRowButton">
               <td colspan="6"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
-          </tbody></table>
+          </tfoot></table>
         </div>
 
 
-        <div v-if="viewmode == 2">
+        <div v-if="viewmode == 2" class="TableDiv" style="max-height: 95%; min-height: 95%;">
           <table class="TableDefault">
             <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбайт</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
             <tbody><tr v-for="data, index in datarequest"
@@ -89,11 +90,11 @@
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
               <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
             </tr></tbody>
-            <tbody><tr class="addRowButton">
+            <tfoot><tr class="addRowButton">
               <td colspan="5"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
               <td v-if="datarequest.length > 0"><button @click="LoadXLSX('datarequest')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
             </tr> 
-            </tbody></table>
+            </tfoot></table>
         </div>
 
         <div v-if="viewmode == 3">

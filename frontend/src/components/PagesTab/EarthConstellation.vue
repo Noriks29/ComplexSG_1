@@ -4,7 +4,7 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <div class="TitleText">План контактов НП – ОГ</div>
+            <h1 class="TitleText">Список наземных пунктов</h1>
           </div>
           
           
@@ -40,15 +40,17 @@
               </tr>
             </tbody></table>
           </div>
-      </div>
-
-    </div>
-    <div id="PlotlyDiv" v-if="ShowPlotlyContain">
-      <div class="ContainerDiv">
-        <div class="closebutton"><button @click="ShowPlotlyContain = false">
-        <img src="../../assets/close.svg"><span>&#8203;</span>
-      </button></div>
-      <div id="plotlymapContain1" style="height: 79vh;"></div>
+          <div v-if="PageSettings.status == 2">
+            <div class="TableDiv" style="max-height: 30vh;">
+              <table class="TableDefault">
+                <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
+                <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
+                  <td>{{ data.earthName }}</td><td>{{ data.satelliteName }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
+                </tr>
+              </tbody></table>
+            </div>
+            <div id="plotlymapContain1" style="height: 50vh;"></div>
+          </div>
       </div>
     </div>
     </div>
@@ -70,7 +72,6 @@ import Plotly from 'plotly.js-dist'
           status: 1, //код открытого окна
           SatNp: [], //список контактов сат-нп
         },
-        ShowPlotlyContain: false,
         KAModellingRoleMode: false
       }
     },
@@ -92,7 +93,7 @@ import Plotly from 'plotly.js-dist'
               DisplayLoad(false)
             }
             if(commandId == 6){
-              this.ShowPlotlyContain = true
+              this.PageSettings.status = 2
               let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
               let dataGrapf = {
                 type: 'bar',
@@ -115,6 +116,7 @@ import Plotly from 'plotly.js-dist'
                 dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
               });
+              console.log(await document.getElementById('plotlymapContain1'))
               Plotly.newPlot("plotlymapContain1", [dataGrapf],
                 {
                   title: 'Окна видимости',
