@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="Panel RightPanel" >
-          <div v-if="viewmode == 0" class="TableDiv" style="max-height: 95%; min-height: 95%;">
+          <div v-if="viewmode == 0" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
             <table class="TableDefault">
               <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
               <tbody><tr
@@ -54,7 +54,7 @@
             </tfoot></table>
           </div>
 
-          <div v-if="viewmode == 1" class="TableDiv" style="max-height: 95%; min-height: 95%;">
+          <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
           <table class="TableDefault">
           <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
           <tbody><tr v-for="data, index in catalogJson"
@@ -75,7 +75,7 @@
         </div>
 
 
-        <div v-if="viewmode == 2" class="TableDiv" style="max-height: 95%; min-height: 95%;">
+        <div v-if="viewmode == 2" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
           <table class="TableDefault">
             <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбайт</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
             <tbody><tr v-for="data, index in datarequest"

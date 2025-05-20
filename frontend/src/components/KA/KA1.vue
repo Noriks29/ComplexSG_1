@@ -5,6 +5,9 @@
       <E77E78 v-if="ShowTable=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
       <BookmarkTable v-if="ShowTable=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
       <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
+      <LogDownload v-if="ShowTable=='LogDownload'" :dataTable="modellingRezult.events" @closetable="ShowTable=null"/>
+      <LogComplet v-if="ShowTable=='LogComplet'" :dataTable="modellingRezult.events" @closetable="ShowTable=null" />
+      
       <div class="ContentDiv">
         <h1 class="TitleText">{{nameModell}}</h1>
         <div class="FlexRow Panel">
@@ -48,8 +51,8 @@
                 <td class="tdflexRow">
                   <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='E77E78'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
                   <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='BookmarkTable'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
-                  <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог выполнения заявок</button>
-                  <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог загрузки сеансов связи</button>
+                  <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTable='LogComplet'" class="ButtonCommand">Лог выполнения заявок</button>
+                  <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTable='LogDownload'" class="ButtonCommand">Лог загрузки сеансов связи</button>
                   <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог передачи данных в сеансе связи</button>
                   <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Сроки доставки данных</button>
                 </td>
@@ -113,6 +116,8 @@ import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
 import FlightplanForm from './FlightplanForm.vue';
+import LogDownload from './LogDownload.vue';
+import LogComplet from './LogComplet.vue';
 
 import { KaSettings } from './KaSettings';
 import { NPList, OGList } from '@/js/GlobalData';
@@ -183,7 +188,9 @@ import { NPList, OGList } from '@/js/GlobalData';
       E77E78,
       SelectDiv,
       BookmarkTable,
-      FlightplanForm
+      FlightplanForm,
+      LogDownload,
+      LogComplet
     },
     methods: {
       Experiment(status){
