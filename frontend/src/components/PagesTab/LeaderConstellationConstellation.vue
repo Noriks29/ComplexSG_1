@@ -42,7 +42,7 @@
               <tr><td colspan="3" @click="AddRow('clusterTopology')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
             </tbody></table>
           </div>
-          <div v-if="PageSettings.status == 1">
+          <div v-if="PageSettings.status == 3">
             <table class="TableDefault">
             <thead><tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr></thead>
               <tbody><tr v-for="data, index in PageSettings.SatSat" :key="index">
@@ -51,21 +51,21 @@
             </tbody></table>
           </div>
 
-          <div v-if="PageSettings.status == 2">
-            <h1>Структура полносвязной сети</h1>
+          <div v-if="PageSettings.status == 5">
+            <button @click="NetworkModelling" class="ButtonCommand">Расчёт полносвязной сети</button>
             <table>
             <thead><tr><th></th><th>Время начала</th><th>Время окончания</th><th></th></tr></thead>
               <tbody><tr v-for="data, index in networkClaster" :key="index">
                 <td>{{ data.meshNetworkId }}</td>
-                <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
-                <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event, index)"/></td>
+                <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
+                <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
                 <td @click="DeleteRowNetwork(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
               </tr>
               <tr><td colspan="3" @click="AddRow('network')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
             </tbody></table>
           </div>
 
-          <div id="plotlymapContain1" style="height: 79vh;"></div>
+          <div id="plotlymapContain1"></div>
           </div>
         </div>
     </div>
@@ -95,12 +95,10 @@ import DateTime from '../DateTime.vue';
         lessConstellation: [], // облегчённый список ог для селектора
         PageSettings:{
           mode: false, //лидер / все
-          status: 1, //код открытого окна
-          SatNp: [], //список контактов сат-нп
+          status: 3, //код открытого окна
           SatSat: [], //список контактов сат-сат
         },
         experimentObject: {angle: 0}, //обьект отправки пост
-        ShowPlotlyContain: false,
       }
     },
     methods: {
@@ -148,51 +146,45 @@ import DateTime from '../DateTime.vue';
         await FetchPost('/api/v1/topology/update', this.clusterTopology, null)
         this.ReFetch()
       },
-      async ChangeTime(obgTime, id){
-        console.log(this.networkClaster[id], obgTime.id, obgTime)
+      async ChangeTime(obgTime){
         this.networkClaster[obgTime.id][obgTime.name] = obgTime.time
         await FetchPost('/api/v1/network/update', this.networkClaster, null)
         this.ReFetch()
       },
+      async NetworkModelling(){
+        await FetchGet('/api/v1/network/calc')
+      },
        async CommandWork(commandId){
             DisplayLoad(true)
-            let dataPlotly = null
+            document.getElementById("plotlymapContain1").innerHTML=''
             switch (commandId) {
               case 0:
                 this.PageSettings.status = 0
-                
                 break;
               case 1:
-                document.getElementById("plotlymapContain1").innerHTML=''
                 if(this.PageSettings.mode) await FetchPost('/api/v1/cluster/pro42',this.experimentObject, null)
                 else await FetchGet('/api/v1/pro42/view/sat', null)
                 await this.ReFetch()
                 break;
               case 2:
-                document.getElementById("plotlymapContain1").innerHTML=''
                 await FetchGet('/api/v1/contact-plan/sat')
                 await this.ReFetch()
-                this.PageSettings.status = 1
+                this.PageSettings.status = 2
                 break;
 
               case 3:
-                //Таблица сат-сат
-                this.PageSettings.status = 1
+                this.PageSettings.status = 3
                 break;
               
               case 4:
                 this.PageSettings.status = 4
-                document.getElementById("plotlymapContain1").innerHTML=''
+                var dataPlotly = []
                 if(this.PageSettings.SatSat.length < 1 ) return
-                this.ShowPlotlyContain = true
-                dataPlotly = []
-
                 this.PageSettings.SatSat.forEach(element => {
                   let flagadd = false
                   dataPlotly.forEach(plot => {
                     if(plot.name == element.satellite2){
                       plot.y.push(element.satellite1+"-"+element.satellite2)
-                      plot.text.push(element.end-element.begin)
                       plot.x.push(this.CreateDateTime(element.end - element.begin, 2))
                       plot.base.push(this.CreateDateTime(element.begin, 1))
                       flagadd = true
@@ -206,65 +198,59 @@ import DateTime from '../DateTime.vue';
                       x: [this.CreateDateTime(element.end - element.begin, 2)],
                       orientation: 'h',
                       base: [this.CreateDateTime(element.begin, 1)],
-                      text: [element.end - element.begin],
-                      textfont: {
-                        size: 16,
-                        color: '#000000'
-                      },
                       marker: {
-                        opacity: 0.5,
+                        opacity: 0.7,
                         color: "#0065ff",
                         line: {width: 1}
                       }
                     })
                   }
                 });
-                console.log(dataPlotly)
-                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', showlegend: false,height:150+(dataPlotly.length*70), margin:{l:150,t:40,b:40,r:10}})
+                Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', showlegend: false,height:80+(dataPlotly.length*50), margin:{l:150,t:40,b:40,r:0}})
                 break
               
               case 5:
-                this.PageSettings.status = 2
-                document.getElementById("plotlymapContain1").innerHTML=''
+                this.PageSettings.status = 5
                 break;
-            
+
               default:
                 break;
             }
             DisplayLoad(false)
         },
         async ReFetch(){
-          if(this.PageSettings.mode) this.clusterTopology = await FetchGet("/api/v1/topology/all") || []
-          if(this.PageSettings.mode) this.networkClaster = await FetchGet("/api/v1/network/all") || []
-          this.PageSettings.SatSat = []
           let response = []
-          if(this.PageSettings.mode) response = await FetchGet('/api/v1/cluster/all',false) || []
+          this.PageSettings.SatSat = []
+          if(this.PageSettings.mode) { // при кластер-кластер
+             this.clusterTopology = await FetchGet("/api/v1/topology/all") || []
+             this.networkClaster = await FetchGet("/api/v1/network/all") || []
+             response = await FetchGet('/api/v1/cluster/all') || []
+          }
           else response = await FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
-            if(response.length < 1){
-              return
-            }
-            response = response.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
-            for (let index = 0; index < response.length; index++) {
-              response[index].beginUnix = this.CreateDateTime(response[index].begin)
-              response[index].endUnix = this.CreateDateTime(response[index].end)
-            }
+
+          if(response.length < 1){
+            return
+          }
+          response = response.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
+          for (let index = 0; index < response.length; index++) {
+            response[index].beginUnix = this.CreateDateTime(response[index].begin)
+            response[index].endUnix = this.CreateDateTime(response[index].end)
+          }
           this.PageSettings.SatSat = response
         }
     },
     async mounted() {
       DisplayLoad(true)
-      if(this.systemStatus.typeWorkplace in {3:null, 4:null}) {
+      if(this.systemStatus.typeWorkplace in {3:null, 4:null}) { //для случаев ка-ка кластеры
         this.PageSettings.mode = true
         this.PageSettings.status = 0
+        this.lessConstellation = []
+        let rezult = await FetchGet("/api/v1/constellation/cl/all") || []
+        rezult.forEach(element => {
+          this.lessConstellation.push({lable: element.constellationName, value: element})
+        })
       }
       this.ReFetch()
-      let rezult = await FetchGet("/api/v1/constellation/cl/all") || []
-      this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
-      
-      this.lessConstellation = []
-      rezult.forEach(element => {
-        this.lessConstellation.push({lable: element.constellationName, value: element})
-      })
       DisplayLoad(false)
     }
   }
