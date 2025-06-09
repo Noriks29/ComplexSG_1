@@ -75,6 +75,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   marker: {opacity: 0.8, color: []}
                 }
                 let satlist = {}
+                
                 OGList.forEach(OG => {
                     OG.satellites.forEach(sat => {
                         dataGrapf.y[0].push(OG.constellationName)

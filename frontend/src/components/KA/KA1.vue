@@ -402,7 +402,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.dataTable = this.modellingRezultSelect.fcLog
         this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'light'},
           {lable:"Режим",nameParam:'mode'},{lable:"Цель",nameParam:'orderName'},{lable:"Нацеливание",nameParam:'timeTarget'},
-          {lable:"Связь с НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
         ]
         this.PreWrapDefaultTable = false
         this.ShowTable='DefaultTable'
