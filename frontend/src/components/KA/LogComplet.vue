@@ -4,9 +4,7 @@
             <img src="../../assets/close.svg"><span>&#8203;</span>
           </button>
         </div>
-       {{ dataT }}
         <div class="DataBody">
-            {{ dataTable }}
             <div class="TableDiv">
           <table class="TableDefault">
           <thead>

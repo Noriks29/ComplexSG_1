@@ -4,10 +4,7 @@
             <img src="../../assets/close.svg"><span>&#8203;</span>
           </button>
         </div>
-        Добавить графические блоки на данные в памяти, сеансы связи, сделать межспутниковую связь указателем на ка + блоками у обоих ка. Сделать выбор блока ка https://plotly.com/javascript/plotlyjs-events/ здесь много про это. Двух уровневые блоки от сюда https://plotly.com/javascript/axes/
-
         <div class="DataBody">
-            {{ dataTable }}
         <div class="GrafDiv">
           <div id="plotlydiv">
             <!--Карта-->
@@ -81,29 +78,59 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         dataGrapf.y[0].push(OG.constellationName)
                         dataGrapf.y[1].push(sat.name)
                         dataGrapf.base.push(CreateDateTime(SystemObject.modelingBegin,1))
-                        dataGrapf.x.push(CreateDateTime(0, 2))
+                        dataGrapf.x.push(CreateDateTime(1, 2))
                         satlist[sat.satelliteId] = {og: OG.constellationName, sat: sat.name}
                     })
                 })
                 for(var key in satlist){
-                  console.log(key)
-                  dataGrapf3.marker.color.push("gray")
-                  dataGrapf1.y[0].push(satlist[key].og) // тестовые данные 
-                  dataGrapf1.y[1].push(satlist[key].sat)
-                  dataGrapf1.base.push(CreateDateTime(SystemObject.modelingBegin+(Number(key)*dataGrapf1.base.length),1))
-                  dataGrapf1.x.push(CreateDateTime(key, 2))
-                  dataGrapf2.y[0].push(satlist[key].og)
-                  dataGrapf2.y[1].push(satlist[key].sat)
-                  dataGrapf2.base.push(CreateDateTime(SystemObject.modelingBegin+(Number(key)*dataGrapf1.base.length)+Number(key),1))
-                  dataGrapf2.x.push(CreateDateTime(key, 2))
-                  dataGrapf3.y[0].push(satlist[key].og)
-                  dataGrapf3.y[1].push(satlist[key].sat)
-                  dataGrapf3.base.push(CreateDateTime(SystemObject.modelingEnd-(Number(key)*dataGrapf1.base.length),1))
-                  dataGrapf3.x.push(CreateDateTime(Number(key)*dataGrapf1.base.length, 2))
+                  let timeData = null
+                  let timeToNP = null
+                  let timeSCSC = null
+                  this.dataTable.forEach(element => {
+                    if(element.node1Id == key){
+                      if(element.type in {10:null, 41:null, 42:null}){
+                        if(timeData != null){
+                          dataGrapf1.y[0].push(satlist[key].og)
+                          dataGrapf1.y[1].push(satlist[key].sat)
+                          dataGrapf1.base.push(CreateDateTime(timeData,1))
+                          dataGrapf1.x.push(CreateDateTime(element.time-timeData, 2))
+                        }
+                        if(element.type == 42){
+                          timeData = null
+                        }
+                        else timeData = element.time
+                      }
+                      else if(element.type in {43:null, 44:null}){
+                        if(timeToNP != null){
+                          dataGrapf3.y[0].push(satlist[key].og)
+                          dataGrapf3.y[1].push(satlist[key].sat)
+                          dataGrapf3.base.push(CreateDateTime(timeToNP,1))
+                          dataGrapf3.x.push(CreateDateTime(element.time-timeToNP, 2))
+                          dataGrapf3.marker.color.push("gray")
+                        }
+                        if(element.type == 44){
+                          timeToNP = null
+                        }
+                        else timeToNP = element.time
+                      }
+                      else if(element.type in {45:null, 46:null}){
+                        if(timeSCSC != null){
+                          dataGrapf2.y[0].push("Связь")
+                          dataGrapf2.y[1].push(satlist[key].sat)
+                          dataGrapf2.base.push(CreateDateTime(timeSCSC,1))
+                          dataGrapf2.x.push(CreateDateTime(element.time-timeSCSC, 2))
+                        }
+                        if(element.type == 46){
+                          timeSCSC = null
+                        }
+                        else timeSCSC = element.time
+                      }
+                    }
+                  })
                 }
                 console.log(dataGrapf1)
 
-                dataPlotly = [dataGrapf,dataGrapf1,dataGrapf2,dataGrapf3]
+                dataPlotly = [dataGrapf,dataGrapf1,dataGrapf3,dataGrapf2]
                 Plotly.newPlot("plotlydiv", dataPlotly,  {barmode: 'stack', bargap: 0.1, 
                     showlegend: true, margin:{b:40,r:100, t:30,l:150}, height:50+dataGrapf.y[0].length*50,autosize: true, yaxis:{tickson: "boundaries",ticklen: 20,showdividers: true,dividercolor: 'grey',dividerwidth: 4}},
                     {displayModeBar: true}
