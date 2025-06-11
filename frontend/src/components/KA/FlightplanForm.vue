@@ -74,7 +74,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]}],
           dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
             {lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "shootingName"},
-            {lable: "Связь с НП", nameParam: "gsName"},
+            {lable: "Связь с НП", nameParam: "gsName"},{lable: "Передача в НП", nameParam: "timeGs"},
             {lable: "Режим", nameParam: "mode"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ", nameParam: "charge"}],
             selectRevData: [],
             selectRevId: null

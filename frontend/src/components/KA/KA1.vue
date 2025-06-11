@@ -404,8 +404,8 @@ import { NPList, OGList } from '@/js/GlobalData';
           element.lightName = element.light ? 'Свет':'Тень'
         })
         this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
-          {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},{lable:"Нацеливание",nameParam:'timeTarget'},
-          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Межспутниковая связь",nameParam:'satContactName'},{lable:"АКБ",nameParam:'charge'}
+          {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
         ]
         this.PreWrapDefaultTable = false
         this.ShowTable='DefaultTable'
