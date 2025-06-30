@@ -73,9 +73,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             dataT: [],
             dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]}],
           dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
-            {lable: "C/T", nameParam: "light"},{lable: "Съёмка", nameParam: "shootingName"},
-            {lable: "Связь с НП", nameParam: "gsName"},{lable: "Передача в НП", nameParam: "timeGs"},
-            {lable: "Режим", nameParam: "mode"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ", nameParam: "charge"}],
+            {lable: "C/T", nameParam: "lightForm"},{lable: "Съёмка", nameParam: "shootingName"},
+            {lable: "Связь с НП", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ", nameParam: "chargeForm"}],
             selectRevData: [],
             selectRevId: null
         }
@@ -126,8 +125,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   dataGrapf.x.push(CreateDateTime(element.timeEnd - element.timeBegin, 2))
                   dataGrapf.base.push(CreateDateTime(element.timeBegin, 1))
 
-                  dataGrapf5.y.push(element.timeEnd % 100)
-                  dataGrapf5.x.push(CreateDateTime(element.timeBegin, 1))
+                  dataGrapf5.y.push(element.charge)
+                  dataGrapf5.x.push(CreateDateTime(element.timeEnd, 1))
                   if(element.gsName != null){
                     dataGrapf1.y.push("Связь с НП")
                     dataGrapf1.text.push(element.gsName+' '+ (element.timeEnd-element.timeBegin) + "c.")
@@ -201,6 +200,9 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           PrevrapData(){
             for (let index = 0; index < this.dataTable.length; index++) {
                 const element = this.dataTable[index];
+                element.chargeForm = Math.round(element.charge * 100)/100
+                element.lightForm = element.light ? 'Свет' : 'Тень'
+                console.log(element)
                 this.dataT.push(element) 
                 while(this.dataPrevrap.length-1 < element.nRev) {
                     this.dataPrevrap.push({nRev: element.nRev, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]})

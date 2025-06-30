@@ -4,7 +4,7 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <h1 class="TitleText">Список наземных пунктов</h1>
+            <h1 class="TitleText">КА - НП</h1>
           </div>
           
           
@@ -32,14 +32,6 @@
       </div>
 
       <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 1" class="TableDiv" style="max-height: 95%;">
-            <table class="TableDefault">
-              <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
-              <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
-                <td>{{ data.earthName }}</td><td>{{ data.satelliteName }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
-              </tr>
-            </tbody></table>
-          </div>
           <div v-if="PageSettings.status == 2">
             <div class="TableDiv" style="max-height: 30vh;">
               <table class="TableDefault">
@@ -47,7 +39,11 @@
                 <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
                   <td>{{ data.earthName }}</td><td>{{ data.satelliteName }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
                 </tr>
-              </tbody></table>
+              </tbody>
+              <tfoot>
+                <tr class="addRowButton"><td  colspan="4"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td></tr>
+              </tfoot>
+            </table>
             </div>
             <div id="plotlymapContain1" style="height: 50vh;"></div>
           </div>
@@ -61,6 +57,7 @@
 import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings';
 import Plotly from 'plotly.js-dist'
+import XLSX from 'xlsx-js-style';
 
   export default {
     name: 'TargetDZZ',
@@ -69,7 +66,7 @@ import Plotly from 'plotly.js-dist'
       return{
         PageSettings:{
           mode: false, //лидер / все
-          status: 1, //код открытого окна
+          status: 2, //код открытого окна
           SatNp: [], //список контактов сат-нп
         },
         KAModellingRoleMode: false
@@ -78,7 +75,7 @@ import Plotly from 'plotly.js-dist'
     methods: {
        async CommandWork(commandId){
             if(commandId == 2){
-              this.PageSettings.status = 1
+              this.PageSettings.status = 2
             }
             if(commandId == 5){
               DisplayLoad(true)
@@ -124,6 +121,41 @@ import Plotly from 'plotly.js-dist'
               )
             }
         },
+        LoadXLSX(){
+          const workbook = XLSX.utils.book_new();
+          let data = [["НП","КА","Начало","Конец"]]
+            this.PageSettings.SatNp.forEach(element => {
+              data.push([element.earthName,element.satelliteName,element.begin,element.end])
+            });
+          console.log(data)
+          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          let keylist = Object.keys(worksheet)
+          for (let keyid = 0; keyid < keylist.length; keyid++) {
+            const key = keylist[keyid];
+            console.log(worksheet[key].v, keylist, data[0])
+            try {
+              if (data[0].indexOf(worksheet[key].v) != -1) {
+                worksheet[key].s = style
+              }
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          console.log(worksheet)
+          workbook.Sheets['Data'] = worksheet;
+          XLSX.writeFile(workbook, 'KA-NP.xlsx');
+        },
         async ReFetch(){
           this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
           this.PageSettings.SatNp = this.PageSettings.SatNp.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
@@ -147,6 +179,14 @@ import Plotly from 'plotly.js-dist'
   </script>
 
 <style lang="scss" scoped>
+.LoadExel{
+  padding: 0px !important;
+  width: fit-content !important;
+  height: fit-content !important;
+  img{
+    width: 30px;
+  }
+  }
 
 #PlotlyDiv{
   width: 100vw;

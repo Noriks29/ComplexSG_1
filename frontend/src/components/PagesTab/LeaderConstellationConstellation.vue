@@ -152,7 +152,10 @@ import DateTime from '../DateTime.vue';
         this.ReFetch()
       },
       async NetworkModelling(){
+        DisplayLoad(true)
         await FetchGet('/api/v1/network/calc')
+        this.ReFetch()
+        DisplayLoad(false)
       },
        async CommandWork(commandId){
             DisplayLoad(true)
@@ -206,6 +209,28 @@ import DateTime from '../DateTime.vue';
                     })
                   }
                 });
+                var networkPlot = {
+                      type: 'bar',
+                      name: "Сеть",
+                      y: [],
+                      x: [],
+                      orientation: 'h',
+                      base: [],
+                      text: [],
+                      marker: {
+                        opacity: 0.7,
+                        color: "green",
+                        line: {width: 1}
+                      }
+                    }
+                console.log(networkPlot)
+                this.networkClaster.forEach(elementNet => {
+                  networkPlot.y.push('Полносвязная сеть')
+                  networkPlot.base.push(this.CreateDateTime(elementNet.beginTime, 1))
+                  networkPlot.x.push(this.CreateDateTime(elementNet.endTime - elementNet.beginTime, 2))
+                  networkPlot.text.push(elementNet.meshNetworkId)
+                })
+                dataPlotly.push(networkPlot)
                 Plotly.newPlot("plotlymapContain1", dataPlotly, {title: 'Окна видимости', showlegend: false,height:80+(dataPlotly.length*50), margin:{l:150,t:40,b:40,r:0}})
                 break
               

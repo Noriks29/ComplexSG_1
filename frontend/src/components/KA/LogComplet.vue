@@ -77,7 +77,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
               
               if(data.length > 0 ){
                 let dataGrapf = [
-                    {type: 'bar',name: "Съемка не запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: 'white',line:{color: 'black'}}},
+                    {type: 'bar',name: "Съемка не запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: '#DDDDDD',line:{color: 'black'}}},
                     {type: 'bar',name: "Съемка запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: 'yellow'}},
                     {type: 'bar',name: "Съемка цели",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.8, color: 'red'}},
                     {type: 'bar',name: "Данные в памяти",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: 'green'}},
@@ -95,6 +95,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
                                 if(eventChild.type in {1:null, 6:null, 9:null}){
+                                  console.log("fssefesfesfefes",eventChild.time-eventMain.time, eventMain, eventChild.time, CreateDateTime(eventMain.time, 2) )
                                     if(eventChild.type != 9) console.error("Повторение появление", eventChild)
                                     dataGrapf[0].y.push(eventMain.orderName)
                                     dataGrapf[0].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
@@ -171,6 +172,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         }
                         else{flag = true}
                         if(!flag){
+                          /*
                             let graf = 0
                             if(eventMain.type == 9){graf = 2}
                             else if(eventMain.type == 10){graf = 3}
@@ -180,7 +182,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                             console.error("Событие без завершения", eventMain, graf)
                             dataGrapf[graf].y.push(eventMain.orderName)
                             dataGrapf[graf].x.push(CreateDateTime(SystemObject.modelingEnd-eventMain.time, 1))
-                            dataGrapf[graf].base.push(CreateDateTime(eventMain.time, 2))
+                            dataGrapf[graf].base.push(CreateDateTime(eventMain.time, 2))*/
                         }
                     }
 
