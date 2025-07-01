@@ -1,44 +1,33 @@
 <template>
     <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="@/assets/exit.svg"><span>&#8203;</span>
-            </button>
-            <h1 class="TitleText">Орбитальные группировки и космические аппараты</h1>
-          </div>
+    <div>
+      <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+        <img src="@/assets/exit.svg"><span>&#8203;</span>
+      </button>
+    </div>
     <div class="ContentDiv">
     <div class="Panel LeftPanel">
-      <div>Список ОГ</div>
-        <div v-for="data, index in dataJson"
-          :key="index"
-          v-show="!(data.deleted==true)"
-          class="ElementCol"
-        >
-          <div  @click="SelectOGFromList(data)" type="name">{{ data.constellationName }}</div>
-          <div  @click="SelectOGFromList(data)" type="type">{{ OGType[data.inputType] }}</div>
-          <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
+        <div class="FlexColumn">
+          <div class="OGList">
+            <div v-for="data, index in dataJson"
+              :key="index"
+              class="ButtonCommand" :class="data.id==selectOG.id?'Select':''"
+              @click="SelectOGFromList(data)"
+            >
+              <div type="name">{{ data.constellationName }}</div>
+              <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
+          </div>
+            <button class="ButtonCommand"  @click="PageSettings.status=(PageSettings.status+1)%2">
+              <img src="@/assets/add.png" alt="" class="addButtonIcon">{{ (PageSettings.status == 1) ? 'Прекратить' : 'Добавить орбитальную группировку' }}
+            </button>
+          </div>
         </div>
-        <div>
-          <button class="ButtonCommand" :class="!approved? '' : 'disable'"  @click="PageSettings.status=1"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить орбитальную группировку</button>
-        </div>
-        <div class="LoadExel">
-          <div><input id="Exel" type="checkbox" v-model="PageSettings.saveEXELmode"><label for="Exel">
-            {{ PageSettings.saveEXELmode ? 'Сохранить все ОГ':'Сохранить выбранную ОГ' }}
-          </label></div>
-          <button @click="LoadXLSX" class="ButtonCommand"><img src="../../assets/excel.png"><span>&#8203;</span></button>
-        </div>
-        <div class="ButtonApprovedDiv" v-if="!modellingStatus">
-          <button @click="ChangeApproved(!approved)" class="ButtonCommand" :class="approved? 'green' : 'red'">
-          <span v-if="approved"><img src="../../assets/edit.svg"></span>
-          <span v-else><img src="../../assets/approve.svg"></span>
-          <span>{{ approved ?  'Редактировать' : 'Утвердить'}}</span>
-        </button></div>
     </div>
 
 
     <div class="Panel RightPanel">
           <div v-if="PageSettings.status == 0 && selectOG != null" style="height: 93%;">
-            <h3>{{ selectOG.constellationName }}</h3>
+            <h3>{{ selectOG.constellationName || "Не выбрана ОГ" }} - {{ OGType[selectOG.inputType] }}</h3>
             <div class="TableDiv" style="max-height: 100%; height: 90%;">
             <table class="TableDefault">
               <thead>
@@ -49,30 +38,30 @@
                   <th>Большая полуось</th>
                   <th>Эксцентриситет</th><th>Наклон</th><th>Долгота восходящего узла</th><th>Аргумент широты перигея</th>
                   <th>Истинная аномалия</th>
-                  <th v-if="abilityEdit" class="delete"></th>
+                  <th v-if="!approved && selectOG.inputType!=3" class="delete"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr
                   v-for="(data, index) in selectOG.satellites" :key="index"
-                  :class="!abilityEdit ? 'disable' :''"
+                  :class="approved ? 'disable' :''"
                   @change="ChangeParam"
                   v-show="!(data.deleted==true)"
                 >
-                  <td :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaModels" :valueS="{lable: KaLableId[data.modelSat.id], value: data.modelSat}" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
-                  <td><input type="text" v-model="data.name"></td>
-                  <td v-if="PageSettings.RoleUse" :class="!abilityEdit ? 'disable' : ''"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
+                  <td><SelectDiv  :dataOption="KaModels" :valueS="KaModels.filter(x => x.value == data.modelSat.id)[0]" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
+                  <td><input type="text" v-model="data.name"                     :disabled="selectOG.inputType==3"></td>
+                  <td v-if="PageSettings.RoleUse"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
                   <td v-if="selectOG.inputType === 2">{{ data.plane }}</td>
                   <td v-if="selectOG.inputType === 2">{{ data.position }}</td>
-                  <td><input type="number" v-model="data.altitude"></td>
-                  <td><input type="number" v-model="data.eccentricity"></td>
-                  <td><input type="number" v-model="data.incline"></td>
-                  <td><input type="number" v-model="data.longitudeAscendingNode"></td>
-                  <td><input type="number" v-model="data.perigeeWidthArgument"></td>
-                  <td><input type="number" v-model="data.trueAnomaly"></td>
-                  <td v-if="abilityEdit" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
+                  <td><input type="number" v-model="data.altitude"               :disabled="selectOG.inputType==3"></td>
+                  <td><input type="number" v-model="data.eccentricity"           :disabled="selectOG.inputType==3"></td>
+                  <td><input type="number" v-model="data.incline"                :disabled="selectOG.inputType==3"></td>
+                  <td><input type="number" v-model="data.longitudeAscendingNode" :disabled="selectOG.inputType==3"></td>
+                  <td><input type="number" v-model="data.perigeeWidthArgument"   :disabled="selectOG.inputType==3"></td>
+                  <td><input type="number" v-model="data.trueAnomaly"            :disabled="selectOG.inputType==3"></td>
+                  <td v-if="!approved && selectOG.inputType!=3" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
                 </tr></tbody><tfoot>
-                <tr v-if="abilityEdit" class="addRowButton">
+                <tr v-if="!approved && selectOG.inputType!=3" class="addRowButton">
                   <td :colspan="9+Number(selectOG.inputType==2)*2 + PageSettings.RoleUse"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
                 </tr> 
               </tfoot>
@@ -85,14 +74,19 @@
               <div class="SelectDivInFlex">
                 <SelectDiv  
                     :dataOption="[{value:1,lable: OGType[1]},{value:3,lable: OGType[3]},{value:2,lable: OGType[2]}]" 
-                    :valueS="{lable: OGType[1]}"
+                    :valueS="{lable: OGType[OG_Param.inputType]}"
                     @valueSelect="OG_Param.inputType=$event.value"/>
               </div>
-              <div>
-                <button @click="AddOG" class="ButtonCommand">Создать</button> 
-              </div>
+              <div><button @click="AddOG" class="ButtonCommand">Создать</button> </div>
             </div>
-            <div v-if="OG_Param.inputType === 2">
+            <div v-if="OG_Param.inputType == 3">
+                <label class="input-file">
+                    <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">		
+                    <span>Загрузить файл</span>
+                </label>
+                Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}
+              </div>
+            <div v-if="OG_Param.inputType === 2" class="TableDiv">
               <table class="TableDefault"><tbody>
                   <tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="OG_Param.parametersCalculation.modelSat={id: $event.value}"/></td></tr>
                   <tr><td>Количество плоскостей</td><td><input type="number" v-model="OG_Param.parametersCalculation.numberOfPlane"></td></tr>
@@ -112,13 +106,6 @@
                   <tr><td>•	Фазовый сдвиг КА между плоскостями</td><td><input v-model="OG_Param.parametersCalculation.phaseShift" type="number"></td></tr>
                 </tbody></table>
             </div>
-            <div v-if="OG_Param.inputType == 3">
-              <label class="input-file">
-                  <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">		
-                  <span>Загрузить файл</span>
-              </label>
-              Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}
-            </div>
           </div>
     </div>
 </div>
@@ -126,11 +113,10 @@
 </template>
   
   <script>
-import {DisplayLoad, FetchGet, FetchPost, FetchPostFile} from '@/js/LoadDisplayMetod'
 import { PagesSettings } from './PagesSettings.js';
-import { OGList, ChangeOG, SystemObject, ChangeSystemObject} from '@/js/GlobalData';
-import SelectDiv from '../SelectDiv.vue';
+import { CreateDateTime } from '@/js/WorkWithDTime';
 import XLSX from 'xlsx-js-style';
+import SelectDiv from '../SelectDiv.vue';
 
 
   export default {
@@ -145,15 +131,11 @@ import XLSX from 'xlsx-js-style';
           saveEXELmode: true,
           RoleUse:true
         },
-
         KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
         KaModels: [], //список моделей ка
         KaLableId: {}, // чисто для базового вывода имени ка
-        selectOG: undefined, //выбранная группировка ог
-        abilityEdit: false, // доступ к редактированию
-
-        approved: true, //утверждено или нет
-        
+        selectOG: {id:null}, //выбранная группировка ог
+        approved: false, //утверждено или нет
         //далее для добавления ог
         OG_Param:{
           constellationName: undefined,
@@ -165,6 +147,7 @@ import XLSX from 'xlsx-js-style';
           },
           file: undefined
         },
+        
       }
     },
     components:
@@ -173,30 +156,36 @@ import XLSX from 'xlsx-js-style';
     },
     methods: {
       SelectOGFromList(data){
-        this.selectOG = data
-        if(this.selectOG.inputType in {1:null, 2:null} && !this.approved){
-          this.abilityEdit = true
+        this.selectOG = {id:null}
+        if(data != undefined){
+          this.selectOG = data
+          this.OGTimePrevrap()
+          console.log("select", data)
         }
+      },
+      OGTimePrevrap(){
+        this.selectOG.satellites.forEach(element => {
+          element.timeTLE = CreateDateTime(element.tleTime)
+        });
       },
       async DeleteRowOG(data){
         if(!this.approved){
-          await FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
-          this.selectOG = undefined
-          this.dataJson = await FetchGet('/api/v1/constellation/get/list') || []
-          ChangeOG(this.dataJson)
+          await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
+          this.selectOG = {id:null}
+          this.dataJson = await this.$GetOGList()
+          this.SelectOGFromList(this.dataJson[0])
         }
       },
       async ChangeApproved(stat){
           this.approved = stat
-          this.abilityEdit = false
           try {
-            if(this.selectOG.inputType in {1:null, 2:null} && !this.approved){
-              this.abilityEdit = true
+            if(!this.approved){
+              this.approved = true
             }
           } catch (error) {
-            this.abilityEdit = false
+            this.approved = false
           }
-          await ChangeSystemObject('constellationStatus', stat)
+          //await ChangeSystemObject('constellationStatus', stat)
         },
 
         AddRow(){
@@ -212,8 +201,9 @@ import XLSX from 'xlsx-js-style';
             this.selectOG.satellites.push(addedRow);  
             this.SaveOGChange()
         },
-        ChangeParam(){
-            this.SaveOGChange()
+        ChangeParam(event){
+            if(event.target.nodeName != 'SELECT')
+              this.SaveOGChange()
           },
           SelectRole(data){
             this.selectOG.satellites[data.id].role = data.value
@@ -221,25 +211,26 @@ import XLSX from 'xlsx-js-style';
           },
           SelectChangeKA(data){
             this.selectOG.satellites[data.id].modelSat.id = data.value
+            //this.selectOG.satellites[data.id].modelSat.modelName = data.lable
             this.SaveOGChange()
           },
-          DeleteRow(index){ // ка из ог
-              if (this.selectOG.satellites[index].satelliteId === undefined) {
-                this.selectOG.satellites.splice(index,1)}
-              else{this.selectOG.satellites[index].deleted = true}
-              this.SaveOGChange()
+          async DeleteRow(index){ // ка из ог
+              this.selectOG.satellites[index].deleted = true
+              await this.SaveOGChange(true)
           },
-          async SaveOGChange() { //сохранение изменения ог
-            await FetchPost('/api/v1/constellation/update',this.selectOG)
-            this.dataJson = await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
-            for (let i = 0; i < this.dataJson.length; i++) {
-              const element = this.dataJson[i];
-              if(element.id == this.selectOG.id){
-                this.selectOG = element
-                break
-              }              
+          async SaveOGChange(reload = true) { //сохранение изменения ог
+            await this.$ChangeOGList(this.selectOG)
+            if(reload){
+              this.dataJson = await this.$GetOGList()
+              for (let i = 0; i < this.dataJson.length; i++) {
+                const element = this.dataJson[i];
+                if(element.id == this.selectOG.id){
+                  this.selectOG = element
+                  this.OGTimePrevrap()
+                  break
+                }              
+              }
             }
-
           },
           async AddOG(){
             if(this.OG_Param.constellationName != undefined)
@@ -247,10 +238,10 @@ import XLSX from 'xlsx-js-style';
               let responce =  {}
               if(this.OG_Param.inputType == 1)
               {
-                responce = await FetchPost('/api/v1/constellation/add',this.OG_Param) || {}
+                responce = await this.$FetchPost('/api/v1/constellation/add',this.OG_Param) || {}
               }
               else if(this.OG_Param.inputType == 2) {
-                responce = await FetchPost('/api/v1/constellation/calc/planar',this.OG_Param) || {}
+                responce = await this.$FetchPost('/api/v1/constellation/calc/planar',this.OG_Param) || {}
               }
               else if(this.OG_Param.inputType == 3){
                 const formData = new FormData(); // Создаем FormData
@@ -258,11 +249,13 @@ import XLSX from 'xlsx-js-style';
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.constellationName); // Добавляем имя
                 formData.append('inputType', 3);
-                responce = await FetchPostFile("/api/v1/constellation/upload/tle", formData)
+                responce = await this.$FetchPostFile("/api/v1/constellation/upload/tle", formData)
               }
               if(responce.type == "SUCCESS"){
-                this.dataJson = await ChangeOG(await FetchGet('/api/v1/constellation/get/list') || [])
+                this.dataJson = await this.$GetOGList()
                 this.PageSettings.status = 0
+                this.SelectOGFromList(this.dataJson[this.dataJson.length-1])
+                await this.$reloadSystem()
               }
               else{
                 alert("Ошибка добавления" + JSON.stringify(responce))
@@ -334,39 +327,25 @@ import XLSX from 'xlsx-js-style';
         },
     },
     async mounted(){
-      DisplayLoad(true)
-      this.approved = SystemObject.constellationStatus
-      this.dataJson = OGList
-      if(SystemObject.typeWorkplace in {1:null, 2:null}){
-          this.PageSettings.RoleUse = false
-      }
-      let result = await FetchGet('/api/v1/modelsat/all')
+      this.dataJson = await this.$OGList()
+      let result = await this.$FetchGet('/api/v1/modelsat/all')
       this.KaModels = []
       for (let index = 0; index < result.length; index++) {
         this.KaModels.push({value:result[index].id, lable: result[index].modelName})
-        this.KaLableId[result[index].id] = result[index].modelName
+      }
+      this.selectOG = this.dataJson[0]
+      this.SelectOGFromList(this.dataJson[0])
+      let system = await this.$SystemObject()
+
+      if(system.typeWorkplace in {1:null, 2:null}){
+          this.PageSettings.RoleUse = false
       }
       this.OG_Param.parametersCalculation.modelSat={id:this.KaModels[0].value}
-      DisplayLoad(false)
     },
   }
   </script>
 
 <style lang="scss" scoped>
-
-.LoadExel{
-  display: flex;
-  justify-content: space-between;
-  padding: 0px 20px;
-  div{
-    display: flex;
-    align-items: center;
-  }
-  img{
-    width: 30px;
-  }
-}
-
 .ElementCol{
   display: grid;
   grid-template-columns: 4fr 3fr 1fr;
@@ -390,9 +369,19 @@ import XLSX from 'xlsx-js-style';
   }
 }
 
-
-
-
-
+.OGList{
+  display: flex;
+  .ButtonCommand{
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    width: auto !important;
+    flex: none !important;
+    .addButtonIcon{
+      top: auto;
+    }
+  }
+}
 </style>
+  
   

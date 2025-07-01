@@ -1,21 +1,12 @@
 <template>
-    <div class="SelectDiv">
-        <div class="SelectedValue" :class="displayList ?  'active' : ''"  @click="DisplayList">
-            <div>
-              {{ lable }}
-            </div>
-        </div>
-        <div class="Options" :class="displayList ?  'active' : ''">
-        <div 
-          v-for="data, index in dataOption"
+    <div class="styled-select">
+      <select v-model="lable" @change="ChangeSelect">
+        <option v-for="data, index in dataOption"
           :key="index"
-          v-show="data.lable != lable"
-          @click="ChangeSelect(index)"
-          :title="data.lable"
-        >
-            {{data.lable}}
-        </div>
-        </div>
+          v-show="data.lable != lable">
+          {{data.lable}}
+        </option>
+      </select>
     </div>
 
 </template>
@@ -43,8 +34,6 @@
       return {
         lable: "",
         value: null,
-        displayList: false
-
       }
     },
     watch: { 
@@ -54,31 +43,18 @@
         }
       },
     methods: {
-      ChangeSelect(index){
-        this.lable = this.dataOption[index].lable
-        this.value = this.dataOption[index].value
-        this.displayList = false
+      ChangeSelect(event){
+        this.dataOption.forEach(el => {
+          if(el.lable == event.target.value){
+            this.value = el.value
+          }
+        })
         this.PostValue()
+        console.log({value: this.value, id: this.id, lable: this.lable})
       },
       PostValue() {
-        this.$emit('valueSelect', {value: this.value, id: this.id})
+        this.$emit('valueSelect', {value: this.value, id: this.id, lable: this.lable})
       },
-      DisplayList(){
-        if(this.displayList){
-          this.displayList = false
-        }
-        else{
-          this.displayList = true
-          let flag = true
-          document.getElementById("app").addEventListener("click", function CloseWindow(e) {
-            console.log(e)
-            if(flag){
-              this.displayList = false
-              document.getElementById("app").removeEventListener("click", CloseWindow)
-            }
-          })
-        }
-      }
     },
     mounted (){
       try {
@@ -98,68 +74,44 @@
 
 <style lang="scss" scoped>
 
-.SelectDiv{
-  display: inline-flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
+body { margin: 20px; }
+h1 { font-size: 1.5em; }
+
+.styled-select {
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  border-radius: 3px;
+  
+  overflow: hidden;
   position: relative;
-  width: 100%;
-  text-align: center ;
-
-  .SelectedValue{
-    display: flex;
-    border: 2px solid var(--border-button2);
-    border-radius: 15px;
-    width: 100%;
-    transition: all 0.5s ease-out;
-
-    div{
-      flex: 1;
-      color: var(--color-Main);
-      margin: 10px;
-    }
-    button{
-      margin: 10px 10px 10px 0px;
-    }
-    &.active{
-      border: 1px solid var(--border-button2);
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-      border-bottom: 0.5px solid var(--border-button2);
-    }
-  }
-
-  .Options{
-    z-index: 500;
-    position: absolute;
-    width: 100%;
-    top: 100%;
-    border: 1px solid #6f6f6f00;
-    transition: all 0.5s ease-out;
-    overflow: hidden;
-    pointer-events: none;
-    border-radius: 0px 0px 10px 10px;
-    
-
-    div{
-      color: #6f6f6f00;
-      margin: 5px;
-      border-bottom: 1px solid #6f6f6f00;
-      transition: all 0.5s ease-out;
-    }
-
-    &.active{
-      border: 1px solid var(--border-button2);
-      border-top: 0px;
-      pointer-events: auto;
-      background-color: var(--background-Main);
-
-      div{
-        color: var(--color-Main);
-        border-bottom: 1px solid var(--border-button2);
-      }
-    }
+  option{
+    background-color: var(--background-Main);
   }
 }
+select:focus { outline: none; }
+.styled-select select {
+  height: 34px;
+  padding: 5px 5px 5px 5px;
+  background: transparent;
+  border: none;
+  color: var(--color-Main);
+  width: calc(100%);
+  min-width: fit-content;
+  
+  
+  /*hide default down arrow in webkit */
+  -webkit-appearance: none; 
+}
+
+@-moz-document url-prefix(){
+  .styled-select select { width: 110%; }
+}
+
+ select::-ms-expand { display: none; } /* hide default down arrow in IE10*/
+
+/* hack to fall back in opera */
+_:-o-prefocus, .selector {
+  .styled-select { background: none; }
+  }
 
 </style>

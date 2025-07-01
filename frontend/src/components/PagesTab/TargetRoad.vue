@@ -4,7 +4,6 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <h1 class="TitleText">Маршрут обхода целей</h1>
           </div>
         <div class="MiniMapPanel" v-if="showMap">
           <div class="closebutton"><button @click="showMap = false">
@@ -17,15 +16,9 @@
 
           
     <div class="ContentDiv">
-        <div class="Panel LeftPanel">
-          <table  style="border-bottom: 1px solid white;"><tbody>
-              <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
-              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
-              <tr><td>Окончание горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
-              <tr><td>Выбранный КА в ОГ</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
-            </tbody></table>
+        <div class="Panel LeftPanel TableDiv">
           <p>Цели</p>
-          <table style="width: 100%;"><thead>
+          <table class="TableDefault"><thead>
             <tr>
                 <th>id</th>
                 <th>Имя</th>
@@ -45,7 +38,7 @@
             </tr></tbody>
           </table>
         </div>
-        <div class="Panel RightPanel">
+        <div class="Panel RightPanel TableDiv">
             <div class="flexrow">
             <button class="ButtonCommand" @click="StartModelling">Найти маршруты</button>
             <div><input type="number" id="iterationMax" value="10" style="width: 100px;"></div>
@@ -59,7 +52,7 @@
             </div>
 
             <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
-          <table style="" v-if="roadList.length > 0">
+          <table style="" v-if="roadList.length > 0" class="TableDefault">
             <tr>
                 <td> id цели</td>
                 <td> Имя </td>
@@ -98,12 +91,9 @@
   
   <script>
 
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import { PagesSettings } from './PagesSettings';
-import { NPList, OGList } from '@/js/GlobalData.js';
 import L from 'leaflet';
-import SelectDiv from "../SelectDiv.vue"
 import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
@@ -112,9 +102,6 @@ import "leaflet/dist/leaflet.css";
   export default {
     name: 'TargetRoad',
     mixins: [PagesSettings],
-    components:{
-      SelectDiv
-    },
     data(){
       return{
         purposesJson: [],
@@ -132,14 +119,15 @@ import "leaflet/dist/leaflet.css";
     },
     methods: {
         async StartModelling(){
-          DisplayLoad(true)
+          this.$showLoad(true)
+          let NP = await this.$NPList()
           let data = {
             "satellite": this.selectKA,
-            "earthPoint": NPList[0],
+            "earthPoint": NP[0],
             "iterationMax": document.getElementById("iterationMax").value
         }
           this.roadList = []
-          let rezult = await FetchPost("/api/v1/modelling/traversing", data) || []
+          let rezult = await this.$FetchPost("/api/v1/modelling/traversing", data) || []
           for (let index = 0; index < rezult.length; index++) {
             const element = JSON.parse(rezult[index]);
             console.log(element)
@@ -182,7 +170,7 @@ import "leaflet/dist/leaflet.css";
           }
           if(this.roadList.length > 0) 
             {this.selectroadID = 0}
-          DisplayLoad(false)
+          this.$showLoad(false)
           console.log(this.roadList)
         },
         SelectChange(target){
@@ -267,12 +255,12 @@ import "leaflet/dist/leaflet.css";
     },
     
     async mounted() {
-        DisplayLoad(true)
-        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        this.$showLoad(true)
+        let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result
         console.log(result)
 
-        result = OGList
+        result = await this.$OGList()
         for (let i = 0; i < result.length; i++) {
           
           for (let index = 0; index < result[i].satellites.length; index++) {
@@ -284,9 +272,8 @@ import "leaflet/dist/leaflet.css";
         }
         this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
         this.selectKA = this.arr[0].value
-        //this.showMap = false
 
-        DisplayLoad(false)
+        this.$showLoad(false)
 
     }
   }

@@ -1,6 +1,31 @@
+@keyframes slideInFromBottom {
+  0% {
+    transform: translateY(120%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+
 :root {
   --font-size: 16px;
-
   --background-Table1: #00000054;
   --background-Main: black;
   --background-Panel: rgba(151, 151, 151, 0.15);
@@ -20,6 +45,10 @@
   --border-button2: #31313173;
   --border-Panel2: #ffffff7d;
   --border-bottom-input: white;
+
+  --color-bg-panel: #191919;
+  --color-border1: rgb(0 57 181);
+  
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -52,104 +81,45 @@
     --border-button2: #31313173;
     --border-Panel2: #DCDCDC;
     --border-bottom-input: #bfbfbf;
-
-
-    .headerSelectMode{
-      background: none;
-      padding: 5vh 0px 0px 0px;
-      height: 95vh;
-      border: none;
-      .ButtonSelectMode{
-        background-color: #f3f3f3;
-        margin: 10px 20px;
-        width: calc(100% - 40px);
-        height: calc(100% - 20px);
-        border: 1px solid var(--border-Panel2);
-        border-radius: 10px;
-      }
-    }
-    .SectionMenu .ModellingDiv{
-      height: 65vh;
-      .main_contain{
-        padding: 0px;
-        height: 100%;
-        .ContentDiv{
-          overflow: none; // посмотри как тут убрать все недочёты по скролу 
-        }
-      }
-    }
-    img{
-      filter: invert(1);
-    }
-    #map img{
-      filter: none;
-    }
-    .TableDefault tr {
-      background-color: rgb(255 255 255 / 76%);
-    }
-    .RowSection th {
-      border: none;
-      border-bottom: 2px solid #909090;
-    }
-    .SystemInfo {
-      color: black;
-    }
-    .half-width input {
-      color: black;
-    }
   }
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-} 
-::-webkit-scrollbar-track {
-  box-shadow: inset 0 0 10px rgb(255, 255, 255); 
-} 
-::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 10px rgb(0,0,0); 
-}
 
 body{
+  background-color: #18181b;
   background-attachment: fixed;
   background-repeat: no-repeat;
   margin: 0px;
   height: 100vh;
   position: relative;
-}
-
-
-
-.ChangeViewMode{
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  display: flex;
-  z-index: 10;
-  width: 30px;
-}
-.idSesion{
-  svg{
-    fill: var(--color-Main);
-    *{
-      stroke: var(--color-Main);
-    }
+  --scroll-size: 5px;
+  --scroll-radius: 10px;
+  --scroll-track: rgb(255 255 255 / 10%);
+  --scroll-thumb-color: #fff;
+  ::-webkit-scrollbar {
+    width: var(--scroll-size, 10px);
+    height: var(--scroll-size, 10px);
   }
-
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb-color, grey);
+    background-image: var(--scroll-thumb, none);
+    border-radius: var(--scroll-thumb-radius, var(--scroll-radius));
+  }
+  ::-webkit-scrollbar-track {
+      background-color: var(--scroll-track, transparent);
+      border-radius: var(--scroll-track-radius, var(--scroll-radius));
+  }
 }
-
 
 .FlexRow{
+  width: auto;
+  padding: 2px;
   display: flex;
-    align-items: center;
-    width: 95vw;
-    max-width: 95vw;
-    overflow-x: auto;
-    justify-content: space-evenly;
-    padding: 10px;
-
+  align-items: center;
+  max-width: 95vw;
+  overflow-x: auto;
+  justify-content: space-evenly;
     div{
-      
       margin: 0px 5px;
       &.ButtonModelling{
         flex: 0 1 auto;
@@ -165,16 +135,13 @@ body{
         border: 1px solid var(--border-Table1);
       }
     }
-    
-    
 }
 
-.main_contain {
+.main_contain { //все вкладки
   position: relative;
   font-size: var(--font-size);
-  padding-top: 15px;
-  height: calc(100% - 25px);
-
+  padding: 0px 0px 0px ;
+  height: fit-content;
     .ToMenuButtonDiv {
         position: fixed;
         top: 20px;
@@ -186,154 +153,19 @@ body{
             width: 30px;
         }
     }
-    .TitleText{
-      font-size: 25px;
-      margin: 5px;
-    }
-
     .ContentDiv{
-        display: inline-flex;
         flex-direction: column;
-        align-items: center;
         overflow-y: auto;
         overflow-x: hidden;
         min-width: 60%;
-        
-        .Panel{
-            background-color: var(--background-Panel);
-            box-shadow: -4px 3px 1px var(--box-shadow-Panel);
-            border: 2px solid var(--border-Panel);
-            margin: 3px 0px;
-
-            table{
-                text-align: center;
-                font-size: var(--font-size);
-                padding: 10px;
-                border-spacing: 0px;
-                min-width: 100%;
-                .Title{
-                    border-bottom: 1px solid;
-                    padding-bottom: 5px;
-                    text-align: center;
-                }
-
-                .addRowButton button{
-                    background: none;
-                    border: none;
-                    width: 100%;
-                    height: 100%;
-                    padding: 10px 0px;
-                    font-size: var(--font-size);
-                    color: var(--color-Main);
-                  }
-                tr{
-                    td{
-                        input{
-                          width: 90%;
-                        }
-                    
-                    }
-
-                    &.disable{
-                      input{
-                        pointer-events: none;
-                      }
-                    }
-                }   
-            }
-
-            &.MaxWidth{
-                min-width: 100%;
-            }
-            progress{
-                width: 90%;
-                height: 20px;
-            }
-
-            &.TableInfo{
-                display: inline-flex;
-                flex-wrap: nowrap;
-                align-items: center;
-                justify-content: space-evenly;
-                position: sticky;
-                bottom: 10px;
-                padding: 10px;
-                  div{
-                    &.Yes{
-                      margin: 5px;
-                      border-bottom: 2px solid green;
-                    }
-                    &.No{
-                      margin: 5px;
-                      border-bottom: 2px solid red;
-                    }
-                  }
-                  .ButtonApproved
-                   {
-                    height: 100%;
-                    position: relative;
-                    button{
-                      padding: 7px;
-                      width: 100%;
-                      color: var(--color-Main);
-                      display: flex;
-                      flex-direction: row;
-                      img{
-                        width: 30px;
-                        margin-right: 5px;
-                      }
-                      &.disabled{
-                        pointer-events:none;
-                      }
-                      &.ButtonDefault{
-                        clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
-                        background: linear-gradient(90deg, rgba(53,0,245,1) 0%, rgba(172,0,245,1) 100%);
-                        border: none;
-                        font-size: var(--font-size);
-                        align-items: center;
-                        transition: all 1s;
-                        &.Empty{
-                          border: 2px solid white;
-                          background: none;
-                        }
-                        &:before{
-                            content: "";
-                            position: absolute;
-                            top: 0;
-                            left: -100%;
-                            width: 100%;
-                            height: 100%;
-                            background: linear-gradient(
-                                120deg,
-                                transparent,
-                                rgba(146, 148, 248, 0.4),
-                                transparent
-                                );
-                            transition: all 650ms;
-                        }
-                        &:hover{
-                            &:before{left: 100%;}
-                        }
-                      }
-                      &.ButtonDefaultShadow{
-                        clip-path: polygon(calc(100% - 10px) 0%, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px), 0 0);
-                        background: linear-gradient(90deg, rgba(53,0,245,0.5) 0%, rgba(172,0,245,0.5) 100%);
-                        position: absolute;
-                        z-index: -1;
-                        content: "";
-                        width: 100%;
-                        height: 100%;
-                        left: 5px;
-                        top: 3px;
-                        }
-                    } 
-                } 
-            }
-        }
+        display: flex;
+        height: 100%;
+        align-items: stretch;
     }   
 
     &.RowSection{
       display: flex;
+      flex: 1;
       flex-direction: column;
       flex-wrap: nowrap;
       align-items: center;
@@ -353,19 +185,6 @@ body{
           }
           &.LeftPanel{
             flex: 1;
-            .SystemInfo{
-                display: flex;
-                flex-wrap: wrap;
-                align-content: center;
-                align-items: center;
-                color: white;
-                text-align: left;
-                padding: 10px;
-                justify-content: space-around;
-                .paddl{
-                    padding-left: 15px;
-                }
-            }
             .FlexColumn{
               display: flex;
               flex-direction: column;
@@ -377,114 +196,21 @@ body{
                   text-align: start;
                 }
               }
-            }
-          }
-          .ButtonApprovedDiv button{
-            display: flex;
-            width: 94%;
-            justify-content: space-between;
-            margin: 3%;
-            align-items: center;
-            transition: box-shadow 1s ;
-          
-            &.red{
-              box-shadow: inset -2px -2px 1px 0px red;
-            }
-            &.green{
-              box-shadow: inset 2px 2px 1px 0px green;
+              &.stretch{
+                align-items: stretch;
+              }
+              &.center{
+                align-items: center;
+              }
             }
           }
         }
-      }
-      td{
-        text-align: left;
-      }
-      th{
-        border-bottom: 2px solid white;
       }
     }
 }
 
 .iconDelete img{ //в ог 
   width: 30px;
-}
-
-
-.scroll-table-body {
-	height: 100%;
-	overflow-x: auto;
-	margin-top: 0px;
-	margin-bottom: 20px;
-}
-.scroll-table{
-  table {
-    width:100%;
-    table-layout: fixed;
-  }
-  thead th {
-    font-weight: bold;
-    text-align: left;
-    padding: 10px 15px;
-    font-size: var(--font-size);
-  }
-  tbody td {
-    text-align: left;
-    padding: 10px 15px;
-    font-size: var(--font-size);
-  }
-  
-}
-
-.ButtonCommand{
-  background:  var(--background-Button1);
-  color: var(--color-Main);
-  border: 1px solid var(--border-button);
-  padding: 14px;
-  font-size: var(--font-size);
-  border-radius: 10px;
-  box-shadow: -3px 3px 1px var(--box-shadow-defoult);
-  margin: 5px;
-  transition: all 0.2s;
-  position: relative;
-
-  &.MaxWidth{
-    width: 100%;
-  }
-
-  &.rightPadding{
-    padding-right: 30px;
-  }
-
-  &:hover{
-    box-shadow: -1px 1px 2px var(--box-shadow-button);
-    background: var(--background-Button2);
-  }
-  &:active{
-    border-radius: 5px;
-    background: var(--background-Button3);
-    box-shadow: -3px 3px 10px var(--box-shadow-defoult);
-  }
-  &.small{
-    padding: 5px;
-    font-size: var(--font-size);
-    margin: 3px;
-  }
-  &.disable{
-    pointer-events: none;
-    background: var(--background-Button3);
-    box-shadow: inset -1px 1px 2px var(--box-shadow-defoult);
-    border: 1px solid var(--border-button2);
-  }
-  &.icon{
-    padding: 5px 15px;
-    width: fit-content;
-    img{
-      width: 32px;
-    }
-  }
-}
-.leaflet-attribution-flag{
-  width: 0 !important;
 }
 .addButtonIcon{
   width: 25px;
@@ -500,30 +226,15 @@ body{
 }
 
 
-.logoutbutton{
-  position: relative;
-    background: none;
-    color: var(--color-Main);
-    border: none;
-    margin: 5px 25px 10px 5px;
-  svg{
-    width: 25px;
-    position: absolute;
-    right: -25px;
-    top: -3px;
-  }
-}
 
-input{
+
+input{ //Что-это? общий инпут?
   padding: 10px;
   text-align: center;
   border: none;
   background: none;
   font-size: var(--font-size);
   color: var(--color-Main);
-
-  
-
   &.disable{
       pointer-events: none;
   }
@@ -532,8 +243,7 @@ input{
   }
 }
 
-
-.input-file {
+.input-file{ //чтение файла
 	background: var(--background-Button1);
   color: var(--color-Main);
   border: 1px solid var(---border-button);
@@ -562,7 +272,6 @@ input{
     align-items: center;
     flex-direction: row;
   }
-
   input[type=file] {
     position: absolute;
     z-index: -1;
@@ -573,527 +282,24 @@ input{
   }
 }
 
+
 .ModellingDiv{ //для моделирования 
-  .Divfieldset{
-    width: fit-content;
-    flex: none;
-    fieldset{
-      text-align: left;
-      width: fit-content;
-  
-      div{
-        width: fit-content;
-      }
-    }
-  }
-  
   .PanelWork{
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-  
+    flex:1;
     .colum{
       flex: 1;
       button{
         width: 99%;
       }
-  
-    }
-  
-    .FlexColum{
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 10px;
-  
-      button{
-        margin: 5px;
-      }
-    }
-  }
-  .PanelSettings{
-    display: flex;
-    justify-content: space-around;
-    height: 100%;
-    text-align: left;
-    fieldset{
-      flex: 1;
-    }
-  }
-
-  .SelectMode{
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px;
-    height: 45px;
-    font-size: 18px;
-    div{
-      img{
-        width: 40px;
-        &:active{
-          width: 30px;
-        }
-        &.disable{
-          pointer-events: none;
-        }
-      }
-    }
-    
-  }
-}
-
-
-
-.TableDefault{
-  filter: drop-shadow(2px 4px 6px black);
-  background-color: #72727226;
-  border-collapse: collapse;
-  border-spacing: 4px !important;
-  padding: 0px !important;
-
-  tr{
-    background-color: rgba(8, 8, 8, 0.755);
-
-    th{
-      border: 1px solid white;
-      border-top: none;
-    }
-    .addButtonIcon{
-      left: 0px;
-      top: 0px;
-      width: 20px;
-      margin: 0px 2px;
-    }
-
-    input{
-      width: calc(100% - 20px) !important;
-    }
-
-    td, th{
-      &.delete{
-        width: 50px; text-align: center;
-        .iconDelete{
-          width: 25px;
-          height: 25px;
-        }
-      }
-    }
-    
-  }
-
-}
-
-body{
-  .ModalLoginBack{
-    position: relative;
-    z-index: 3;
-    height: 100vh;
-    min-width: 500px;
-    max-width: 30vw;
-    background: var(--background-Panel2);
-    border-right: 2px solid var(--border-Panel2);
-    box-shadow: -8px 0px 15px 1px var(--box-shadow-Pabel2);
-    transform: translate(-100%, 0px);
-    transition: all 0.5s ease-in-out;
-
-    &.show{
-      transform: translate(0%, 0px);
-    }
-
-    .ModalLoginPanel{
-      padding: 20px;
-      font-size: var(--font-size);
-
-      .ModalLoginForm{
-
-        h1{
-          margin: 0px;
-        }
-
-        div{
-          padding: 10px 5px;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-
-          label{
-            margin: 5px;
-          }
-
-          input{
-            padding: 15px;
-            text-align: left;
-            border: none;
-            border-bottom: 2px solid var(--border-bottom-input);
-            width: 90%;
-            outline: none;
-            background-color: #8a8a8a12;
-            transition: all 0.5s;
-            
-            &:hover{
-              background-color: #0b0b0bd7;
-            }
-            &:focus{
-              background-color: #0101015a;
-            }
-          }
-
-          input:-webkit-autofill,
-          input:-webkit-autofill:hover, 
-          input:-webkit-autofill:focus,
-          textarea:-webkit-autofill,
-          textarea:-webkit-autofill:hover,
-          textarea:-webkit-autofill:focus,
-          select:-webkit-autofill,
-          select:-webkit-autofill:hover,
-          select:-webkit-autofill:focus {
-            -webkit-text-fill-color: rgb(0, 0, 0);
-            -webkit-box-shadow: 0 0 0px 1000px #00000000 inset;
-            transition: background-color 0.5s ease-in-out 0s;
-          }
-
-          &.FormSubmit{
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-
-            div{
-              font-size: 20px;
-              font-weight: bold;
-              color: #ff8e8e;
-              transition: all 1s;
-              &.none{
-                color: #ff8e8e00;
-              }
-            }
-          }
-        }
-      }
     }
   }
 }
 
-.login{
-  position: relative;
-  padding-right: 35px;
-  img{
-    height: 60%;
-    position: absolute;
-    top: 20%;
-    right: 0px;
-    bottom: 20%;
-  }
-}
 
-.headerSelectMode{
-  display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    position: fixed;
-    width: 40%;
-    z-index: 1;
-    flex-direction: column;
-    height: 90vh;
-    margin-left: 60%;
-    padding: 5vh 0px;
-
-
-  background: var(--background-Panel2);
-  border-left: 2px solid var(--border-Panel2);
-  box-shadow: 8px 0px 15px 1px var(--box-shadow-Pabel2);
-  transform: translate(100%, 0px);
-  transition: all 0.5s ease-in-out;
-
-  &.show{
-    transform: translate(0%, 0px);
-  }
-
-  .SelectMode{
-    flex: 1;
-    width: 100%;
-    .ButtonSelectMode{
-      overflow: hidden;
-      position: relative;
-      font-size: 20px;
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: none;
-      color: var(--color-Main);
-      pointer-events: all;
-      background-color: var(--background-Button1);
-        &:hover{
-          background-color: var(--background-Button2);
-          border: 2px solid var(--border-button);
-          transform: translate(4px, -4px);
-          box-shadow: -4px 4px 2px var(--box-shadow-button);
-        }
-        &:active{
-            background-color: var(--background-Button3);
-            border: 2px solid var(--border-button2);
-            transform: translate(0px, 1px);
-            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
-       }
-
-  }
-  }
-  
-}
-
-.idSesion{
-  color: var(--color-Main);
-    position: fixed;
-    right: 10px;
-    top: 6px;
-    border-bottom: 2px solid;
-    box-shadow: 0px 3px 4px -4px var(--box-shadow-Pabel2);
-    transform: translate(0px, -150%);
-    transition: all 0.5s ease-in-out;
-    z-index: 2;
-
-    &.show{
-      transform: translate(0px, 0%);
-    }
-    .flexdiv{
-      display: flex;
-      align-items: center;
-    }
-
-    .Menubutton{
-      background: none;
-      border: none;
-      position: relative;
-      margin: 0px 10px;
-      svg{
-        width: 30px;
-      }
-      transform: translate(0%, -150%);
-      transition: all 0.5s ease-in-out;
-
-      &.show{
-        transform: translate(0%, 0px);
-      }
-    }
-    }
-
-
-    
-@keyframes slideInFromBottom {
-  0% {
-    transform: translateY(120%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
-@keyframes slideInFromTop {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(0%);
-  }
-}
-
-.SectionMenu{
-    width: 98%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    margin: 0% 1%;
-    flex-wrap: nowrap;
-    align-items: center;
-    overflow: auto;
-    position: absolute;
-    top: 0px;
-
-    .ContainerSystem{
-      height: 8%;
-      overflow: hidden;
-    }
-
-    &.hide{
-      .ButtonSection{
-        transform: translateY(150%);
-        animation: 0.5s ease-out reverse 0s 1 slideInFromBottom;
-      }
-      .PanelSystemData{
-        transform: translateY(120%);
-        animation: 1.3s ease-out reverse 0s 1 slideInFromBottom;
-      }
-    }
-    &.show{
-      .ModellingDiv{
-        animation: 1s ease-out 0s 1 slideInFromTop;
-      }
-      .ButtonSection{
-        animation: 0.5s ease-out 0s 1 slideInFromBottom;
-        &.hide{
-          position: relative;
-          top: 150%;
-        }
-      }
-      .PanelSystemData {
-        animation: 1.3s ease-out  0s 1 slideInFromBottom;
-      }
-    }
-      .ModellingDiv{
-      width: 100%;
-      height: 65%;
-    }
-
-    .FlexMenuSection{
-      display: flex;
-      width: 99%;
-      height: 27%;
-      flex-direction: row;
-      align-items: flex-start;
-      
-      overflow: hidden;
-    }
-
-    .ButtonSection{
-      background-color: var(--background-Panel);
-      box-shadow: -4px 3px 1px var(--box-shadow-Panel);
-      border: 2px solid var(--border-Panel);
-      height: 93%;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      padding: 0px 10px;
-      margin: 10px;
-      transition: all 0.5s ease-out;
-      position: relative;
-      align-items: center;
-      flex: 1;
-      overflow: hidden;
-
-      &.second, &.third, &.fourth, &.first{
-        .ButtonList{
-          flex-direction: column;
-        }
-      }
-
-      h1{
-        margin: 10px;
-        font-size: 25px;
-      }
-      .ButtonList{
-        width: 95%;
-        flex: 1;
-        display: flex;
-        justify-content: space-evenly;
-        button{
-          margin: 5px;
-        }
-      }
-
-      button{
-        border: none;
-        color: var(--color-Main);
-        flex: 1;
-        
-        font-size: 25px;
-        overflow: hidden;
-        text-decoration: none;
-        position: relative;
-
-        border-top: 1px solid var(--border-button);
-        border-right: 1px solid var(--border-button);
-        background-color: rgba(29, 29, 29, 0.4);
-        transform: translate(-1px, 1px);
-        pointer-events: none;
-        transition: all 0.5s ease-out;
-
-        &.active{
-          pointer-events: all;
-          transform: translate(0px, 0px);
-          background-color: var(--background-Button1);
-          &:hover{
-            background-color: var(--background-Button2);
-            border: 2px solid var(--border-button);
-            transform: translate(4px, -4px);
-            box-shadow: -4px 4px 2px var(--box-shadow-button);
-          }
-          &:active{
-            background-color: var(--background-Button3);
-            border: 2px solid var(--border-button2);
-            transform: translate(0px, 1px);
-            box-shadow: 0px 0px 11px 2px var(--box-shadow-button);
-          }
-          &:before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--backgroung-animatePanel);
-            transition: all 350ms;
-          }
-          &:hover:before {
-            left: 100%;
-          }
-        }
-        &.hideElement{
-          border: none;
-          pointer-events: none;
-          background: none;
-          transform: translate(0px, 1000px);
-        }
-        div{
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          top: 20%;
-          left: 10px;
-          border-radius: 20px;
-          &.approved{
-            background-color: rgb(0, 139, 0);
-            box-shadow: 0px 0px 5px rgb(11, 167, 11);
-          }
-          &.Notapproved{
-            background-color: red;
-            box-shadow: 0px 0px 5px #fe1a1a;
-          }
-        }
-      }
-
-      &:hover{
-        &.first {
-            box-shadow: -4px 3px 3px rgba(12, 12, 73, 0.7);
-        }
-        &.second {
-            box-shadow: -4px 3px 3px rgba(35, 12, 73, 0.7);
-        }
-        &.third {
-            box-shadow: -4px 3px 3px rgba(12, 54, 73, 0.7);
-        }
-        &.fourth {
-            box-shadow: -4px 3px 3px rgba(73, 12, 12, 0.7);
-        }
-        border: 2px solid rgba(71, 71, 71, 0.25);
-      }
-    }
-  }
-
-  .ComponentSelect{
-    position: absolute;
-    top: 0px;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--background-Main);
-    z-index: 5;
-    overflow-x: hidden;
-  }
-
-
-
-
-  .DataTable{
+.DataTable{ //всплывающее окно информации
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     position: fixed;
@@ -1120,7 +326,6 @@ body{
         }
       }
     }
-
     .DataBody{
       margin: 20px 10px 10px 10px;
       display: flex;
@@ -1138,48 +343,40 @@ body{
     }
 }
 
-
-div.TableDiv{
-        margin: 5px 1px;
-        overflow: auto;
-        height: fit-content;
-        table{
-          width: 100%;
-          
-          thead,tfoot{
-            position: sticky;
-          }
-          thead{
-            top: 0px;
-            box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.741);
-          }
-          tfoot{
-            bottom: 0px;
-            box-shadow: 0px -1px 0px rgba(255, 255, 255, 0.774);
-          }
-          tbody{
-            tr{
-              &:nth-child(even){
-                background-color: rgb(10, 10, 10);
+.ComponentSelect{ // выбранный компонент
+        .ContentDiv{
+          flex-direction: column !important;
+          .LeftPanel{
+            flex: none !important;
+            margin-left: 60px;
+            .FlexColumn{
+              display: flex;
+              flex-wrap: wrap;
+              flex-direction: row !important;
+              div{
+                width: auto;
+                flex: 1;
+                &.ButtonApprovedDiv button{
+                  width: 160px !important;
+                  margin: 0px !important;
+                  padding: 5px;
+                }
+                .ButtonCommand{
+                  white-space: nowrap;
+                }
               }
             }
-          }
-          tr{
-            background-color: black;
-            td,th{
-              padding: 5px;
+            .OGList{
+              max-height: 20vh;
+              overflow-y: auto;
             }
-          }
-
-          &.SelectModeTable{
-            tbody tr{
-              &:hover{
-                box-shadow: inset 0px 0px 3px 0px white;
-              }
-              &.select{
-                box-shadow: inset 0px 0px 2px 1px white, inset 5px 0px 1px 0px red;
-              }
-            }
+            
           }
         }
+
+        .ToMenuButtonDiv{
+          position: absolute !important;
+        }
       }
+
+

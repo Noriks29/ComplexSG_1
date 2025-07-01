@@ -1,10 +1,7 @@
 <template>
-    <div class="ModalBack" id="loadProcess">
+    <div class="ModalBack" id="loadProcess" v-if="showStatus">
         <div class="ModalWindow shape">
           <img id="imgplanet" src="@/assets/ka.gif">
-        </div>
-        <div class="closeButton">
-          <button @click="HideLoadWindow">Скрыть окно</button>
         </div>
     </div>
 </template>
@@ -17,12 +14,14 @@
     name: 'LoadProcess',
     data() {
       return {
+        showStatus: false,
+        title: ''
       }
     },
     methods: {
-      HideLoadWindow(){
-        const element = document.getElementById("loadProcess");
-        element.style.display = "none"
+      showSuccess(status, title=null) {
+        this.title = title
+        this.showStatus = status
       }
     }
 }
@@ -45,7 +44,7 @@
     max-width: 100%;
     max-height: 100vh;
     background-color: #0505054f;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10;

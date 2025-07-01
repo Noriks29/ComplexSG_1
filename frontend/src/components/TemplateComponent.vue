@@ -1,71 +1,77 @@
 <template>
-    <transition name="translate" mode="out-in" v-if="activeComponent != ''">
-      <div class="ComponentSelect">
-        <component :is="activeComponent" :FillingDataStatus="FillingDataStatuss" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
+  <div class="SectionMenu">
+      <div class="HeadersSction">
+        <div class="PanelMenu">
+          <SystemWindow :modellingStatus="false" @updateParentComponent="ChangeComponents" :systemStatus="system" />
+        </div>
+        <transition mode="out-in">
+          <div class="ModellingDiv PanelMenu">
+            моделирование
+            <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
+            <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
+          </div>
+        </transition> 
       </div>
-    </transition> 
-    
-    <div class="SectionMenu" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
-      <transition name="ComponentModelling" mode="out-in" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
-        <div class="ModellingDiv">
-          <component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> 
+      <div class="FooterSection">
+        <div class="workpage">
+          <transition name="translate" mode="out-in" v-if="activeComponent != ''">
+            <div class="ComponentSelect">
+              <component :is="activeComponent" :modellingStatus="false" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
+            </div>
+          </transition>
         </div>
-      </transition> 
-      <div class="FlexMenuSection">
-        <div class="ButtonSection first">
-          <h1>КС</h1>
-          <div class="ButtonList">
-            <button class="active" @click="SelectComponent('NP')"><div :class="system.earthStatus ? 'approved' : 'Notapproved'"></div>НП</button>
-            <button class="active" @click="SelectComponent('OG')"><div :class="system.constellationStatus ? 'approved' : 'Notapproved'"></div>КА и ОГ</button>
-            <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TypeKA')">Модели КА</button>
-          </div>   
-        </div>
-        <div class="ButtonSection second">
-          <h1>Связь</h1>
-          <div class="ButtonList">
-            <button :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('EarthConstellation')"><div :class="system.earthSatStatus ? 'approved' : 'Notapproved'"></div>КА - НП</button>
-            <button v-if="system.typeWorkplace in {4:null, 3:null}" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА Лидеры</button>
-            <button v-else-if="!(system.typeWorkplace in {1:null})" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''"  @click="SelectComponent('LeaderConstellationConstellation')"><div :class="system.satSatStatus ? 'approved' : 'Notapproved'"></div>КА - КА</button>
-          </div>
-        </div>
-        <div class="ButtonSection third" >
-          <h1>Исходные данные</h1>
-          <div class="ButtonList">
-            <button v-if="!(system.typeWorkplace in {5:null})" :class="FillingDataStatus && !ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetDZZ')">Заявки</button>
-            <button :class="!ExperimentStatus > 0 ? 'active' : ''" @click="SelectComponent('SystemWindow')">Система</button>
-          </div>
-        </div>
-        <div class="ButtonSection fourth" v-if:="!(system.typeWorkplace in {2:null,4:null})">
-          <h1>Инструменты</h1>
-          <div class="ButtonList">
-            <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('TargetRoad')">Обход целей</button>
-            <button :class="FillingDataStatus > 0 ? 'active' : ''" @click="SelectComponent('EstimationConstellation')">Видимость целей (Оценка ОГ)</button>
-          </div>
-        </div>        
-      </div>
-      <div class="ContainerSystem">
-          <div class="PanelSystemData" :class="system.typeWorkplace == -1 ? 'hide' : 'show'">
-            <button @click="SelectComponent('LogEventList')" class="ButtonCommand">Логи событий</button>
-            <button @click="SaveWorkplace" class="ButtonCommand">Сохранить копию данных</button>
+        <div class="FlexMenuSection">
+        <div class="ButtonSection">
+          <div class="ButtonList PanelMenu">
+            <button class="ButtonCommand GetData"  @click="SelectComponent('LogEventList')"><span>Логи событий</span></button>
+            <button class="ButtonCommand GetData"  @click="SaveWorkplace"><span>Сохранить проект</span></button>
             <label class="input-file">
               <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
               <span>Открыть файл</span>
             </label>
+          </div>
+        </div>
+        <div class="ButtonSection">
+            <div class="ButtonList">
+              <h1>КС</h1>
+              <button class="buttonType1" :class="activeComponent=='NP'? 'select':''" @click="SelectComponent('NP')"><div :class="system.earthStatus ? 'approved' : 'Notapproved'"></div><span>НП</span></button>
+              <button class="buttonType1" :class="activeComponent=='OG'? 'select':''" @click="SelectComponent('OG')"><div :class="system.constellationStatus ? 'approved' : 'Notapproved'"></div><span>КА и ОГ</span></button>
+              <button class="buttonType1" :class="(activeComponent=='TypeKA'? 'select':'')" @click="SelectComponent('TypeKA')"><span>Модели КА</span></button>
+            </div>   
+          </div>
+          <div class="ButtonSection">
+            <div class="ButtonList">
+              <h1>Исходные данные</h1>
+              <button class="buttonType1" :class="activeComponent=='TargetDZZ'? 'select':''" @click="SelectComponent('TargetDZZ')"><span>Заявки</span></button>
+            </div>
+          </div>
+          <div class="ButtonSection">
+            <div class="ButtonList">
+              <h1>Связь</h1>
+              <button class="buttonType1" :class="(activeComponent=='EarthConstellation'? 'select':'')" @click="SelectComponent('EarthConstellation')"><span>КА - НП</span></button>
+              <button class="buttonType1" v-if="system.typeWorkplace in {4:null, 3:null}" :class="(activeComponent=='LeaderConstellationConstellation'? 'select':'')"  @click="SelectComponent('LeaderConstellationConstellation')"><span>КА - КА Лидеры</span></button>
+              <button class="buttonType1" v-else-if="!(system.typeWorkplace in {1:null})" :class="(activeComponent=='LeaderConstellationConstellation'? 'select':'')"  @click="SelectComponent('LeaderConstellationConstellation')"><span>КА - КА</span></button>
+            </div>
+          </div> 
+          <div class="ButtonSection" v-if="!(system.typeWorkplace in {2:null,4:null})">
+            <div class="ButtonList">
+              <h1>Инструменты</h1>
+              <button class="buttonType1" :class="(activeComponent=='TargetRoad'? 'select':'')" @click="SelectComponent('TargetRoad')">Обход целей</button>
+              <button class="buttonType1" :class="(activeComponent=='EstimationConstellation'? 'select':'')" @click="SelectComponent('EstimationConstellation')">Видимость целей</button>
+            </div>
+          </div>       
         </div>
       </div>
     </div>
 </template>
 
 <script>
-import { saveAs } from 'file-saver';
-import {FetchGet, FetchPostFile, DisplayLoad} from '../js/LoadDisplayMetod'
-import { NPList, OGList, SystemObject } from '@/js/GlobalData';
+//import { saveAs } from 'file-saver';
 
 
 
 import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
-import KAGordeev from "./KA/KAGordeev.vue";
 
 import NP from "./PagesTab/NP.vue";
 import OG from './PagesTab/OG.vue'
@@ -78,9 +84,12 @@ import EstimationConstellation from './PagesTab/EstimationConstellation.vue'
 import TargetRoad from './PagesTab/TargetRoad.vue';
 import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
+import MapContainer from './MapContainer.vue';
+
+
 export default {
   name: 'TemplateComponent',
-  emits: ['changeExperimentStatus'],
+  //emits: ['changeExperimentStatus'],
   components: {
     NP,
     OG,
@@ -95,36 +104,25 @@ export default {
 
     KA1,
     KARealTime,
-    KAGordeev
+    MapContainer
   },
   data(){
       return{
-        activeComponent: "",
-        FillingDataStatus: 0,
+        activeComponent: "MapContainer",
         system: {typeWorkplace: -1},
-        reload: 0,
-        ExperimentStatus: false,
-        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime","KAGordeev",null]
+        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime",null,null]
     }
   },
   methods: {
     SelectComponent(nameComponent) {
         this.activeComponent = nameComponent
       },
-      ChangeExperimentStatus(status){
-        this.ExperimentStatus = status.status
-        this.$emit('changeExperimentStatus', this.ExperimentStatus)
-        this.reload++
-      },
-      ChangeComponents() {
-        this.activeComponent = ''
-        this.system = SystemObject
-        this.ChengeFillingDataStatus()
-        if(!this.ExperimentStatus){
-          this.reload++
-        }
+      async ChangeComponents() {
+        this.system = await this.$SystemObject()
+        this.activeComponent = 'MapContainer'
       },
       async SaveWorkplace(){
+        /*
         DisplayLoad(true)
         let dataLoad = {}
         dataLoad.modelSat = await FetchGet('/api/v1/modelsat/all')
@@ -179,34 +177,124 @@ export default {
             type: 'application/json'
         });
         saveAs(fileToSave, fileName);
-        DisplayLoad(false)
+        DisplayLoad(false)*/
       },
       async LoadFile(data){
+        console.log(data)
+        /*
         if (data.target.files[0]) {
           var file = data.target.files[0];
           const formData = new FormData();
           formData.append('file', file);
           await FetchPostFile("/api/v1/workplace/upload/file", formData)
-        }
+        }*/
       },
-      ChengeFillingDataStatus(){
-      if(this.system.constellationStatus && this.system.earthStatus){
-        this.FillingDataStatus = 1
-      }
-      else{
-        this.FillingDataStatus = 0
-      }
-    },
     },
     
     created(){
-      this.system = SystemObject
-      this.ChengeFillingDataStatus()
+      this.ChangeComponents()
     },
 }
 
 </script>
 
 <style lang="scss" scoped>
+.PanelMenu{
+  margin-left: 0px !important;
+  .GetData{
+    margin-right: 5px !important;
+  }
+}
+.SectionMenu{
+    width: 99%;
+    display: flex;
+    flex-direction: column;
+    margin: 0% 0% 0% 1%;
+    flex-wrap: nowrap;
+    overflow: auto;
+    position: absolute;
+    align-items: normal;
+    top: 40px;
+    height: calc(100% - 40px);
 
+    .HeadersSction{
+      display: flex;
+      .ModellingDiv{ // далее смотри в глабольных стялях
+        width: 100%;
+        height: calc(100% - 46px);
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+    .FooterSection{
+      display: flex;
+      flex: 1;
+      flex-direction: row-reverse;
+      overflow: hidden;
+      .workpage{
+        flex: 1;
+        background-color: var(--color-bg-panel);
+        border: 3px solid var(--color-border1);
+        display: flex;
+        border-top-left-radius: 10px;
+        border-bottom: none;
+        border-right: none;
+        .ComponentSelect{
+          display: flex;
+          overflow-x: hidden;
+          position: relative;
+          flex: 1;
+          z-index: 1;
+          height: auto;
+          background: none;
+        }
+      }
+      .FlexMenuSection{
+        flex-direction: column;
+        height: auto ;
+        width: fit-content ;
+        align-items: normal ;
+        display: flex;
+        .ButtonSection{
+          display: flex;
+          flex-direction: column;
+          flex-wrap: nowrap;
+          transition: all 0.5s ease-out;
+          position: relative;
+
+          h1{
+            margin: 5px;
+            font-size: 18px;
+            text-align: left;
+            color: #777777;
+          }
+          .ButtonList{
+            flex: 1;
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: column;
+            &.PanelMenu{
+              margin: 0px 10px 0px 0px;
+              padding: 5px;
+            }
+          }
+          button{
+            flex: 1;
+            margin: 3px 0px 3px 0px;
+            padding: 10px 0px 10px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 2;
+            span{
+              padding-left: 8px;
+            }
+          }
+        }
+      }
+  } 
+  }
 </style>

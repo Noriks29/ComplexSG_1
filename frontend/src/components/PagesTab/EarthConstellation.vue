@@ -4,28 +4,13 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <h1 class="TitleText">КА - НП</h1>
           </div>
           
           
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
-          <div>Парамертры системы</div>
-            <div class="SystemInfo">
-              <table><tbody>
-                <tr><th>Начальное время расчетов:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
-                  <tr><th>Начало горизонта моделирования:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
-                  <tr><th>Окончание горизонта моделирования:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
-                  <tr><th>Шаг моделирования: {{ systemStatus.step }}</th></tr>
-                  <tr><th><div style="width: fit-content;">Фильтр сети:<input type="checkbox" :checked="KAModellingRoleMode" @change="KAModellingRoleMode = $event.target.checked"><label>{{ KAModellingRoleMode ? 'Только Лидеры' : 'Все КА' }}</label></div></th></tr>
-                </tbody></table>
-            </div>
         <div class="FlexColumn">
           <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
-          <div><button @click="CommandWork(2)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
           <div><button @click="CommandWork(5)" class="ButtonCommand">Расчёт плана контактов</button></div>
           <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
         </div>
@@ -33,7 +18,7 @@
 
       <div class="Panel RightPanel">
           <div v-if="PageSettings.status == 2">
-            <div class="TableDiv" style="max-height: 30vh;">
+            <div class="TableDiv" style="max-height: 60vh;">
               <table class="TableDefault">
                 <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
                 <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
@@ -53,9 +38,8 @@
   </template>
   
   <script>
-
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings';
+import { CreateDateTime } from '@/js/WorkWithDTime';
 import Plotly from 'plotly.js-dist'
 import XLSX from 'xlsx-js-style';
 
@@ -78,20 +62,20 @@ import XLSX from 'xlsx-js-style';
               this.PageSettings.status = 2
             }
             if(commandId == 5){
-              DisplayLoad(true)
-              await FetchGet("/api/v1/contact-plan/earth")
+              this.$showLoad(true)
+              await this.$FetchGet("/api/v1/contact-plan/earth")
               this.ReFetch()
-              DisplayLoad(false)
+              this.$showLoad(false)
             }
             if(commandId == 1){
-              DisplayLoad(true)
-              await FetchPost('/api/v1/pro42/view/earth', {leaderProcessing: this.KAModellingRoleMode})
+              this.$showLoad(true)
+              await this.$FetchPost('/api/v1/pro42/view/earth', {leaderProcessing: this.KAModellingRoleMode})
               this.ReFetch()
-              DisplayLoad(false)
+              this.$showLoad(false)
             }
             if(commandId == 6){
               this.PageSettings.status = 2
-              let response = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+              let response = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all') || []
               let dataGrapf = {
                 type: 'bar',
                 y: [],
@@ -107,11 +91,11 @@ import XLSX from 'xlsx-js-style';
                 }
               }
               response.forEach(element => {
-                console.log(this.CreateDateTime(element.end - element.begin, 2))
+                console.log(CreateDateTime(element.end - element.begin, 2))
                 dataGrapf.y.push(element.earthName)
                 dataGrapf.text.push(element.satelliteName)
-                dataGrapf.x.push(this.CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.base.push(this.CreateDateTime(element.begin, 1))
+                dataGrapf.x.push(CreateDateTime(element.end - element.begin, 2))
+                dataGrapf.base.push(CreateDateTime(element.begin, 1))
               });
               console.log(await document.getElementById('plotlymapContain1'))
               Plotly.newPlot("plotlymapContain1", [dataGrapf],
@@ -157,23 +141,24 @@ import XLSX from 'xlsx-js-style';
           XLSX.writeFile(workbook, 'KA-NP.xlsx');
         },
         async ReFetch(){
-          this.PageSettings.SatNp = await FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
+          this.PageSettings.SatNp = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
           this.PageSettings.SatNp = this.PageSettings.SatNp.sort((a, b) => parseFloat(a.begin) - parseFloat(b.begin))
               for (let index = 0; index < this.PageSettings.SatNp.length; index++) {
                 const element = this.PageSettings.SatNp[index]
-                element.begin = this.CreateDateTime(element.begin)
-                element.end = this.CreateDateTime(element.end)
+                element.begin = CreateDateTime(element.begin)
+                element.end = CreateDateTime(element.end)
               }
         }
     },
     
     async mounted() {
-        DisplayLoad(true)
-        if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-          this.KAModellingRoleMode = true
-        }
-        this.ReFetch()
-        DisplayLoad(false)
+      this.$showLoad(true)
+      let system = await this.$SystemObject()
+      if(system.typeWorkplace in {3:null,4:null}){
+        this.KAModellingRoleMode = true
+      }
+      this.ReFetch()
+      this.$showLoad(false)
     }
   }
   </script>

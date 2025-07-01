@@ -4,26 +4,13 @@
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
-            <h1 class="TitleText">Заявки</h1>
           </div>
     <div class="ContentDiv">
         <div class="Panel LeftPanel">
-            <div>Парамертры системы</div>
-            <div class="SystemInfo">
-              <table><tbody>
-                <tr><th>Начальное время расчетов:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
-                  <tr><th>Начало горизонта моделирования:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
-                  <tr><th>Окончание горизонта моделирования:</th></tr>
-                      <tr><td v-html="CreateDateTime(systemStatus.modelingEnd)"></td></tr>
-                </tbody></table>
-            </div>
             <div class="FlexColumn">
-              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=0" class="ButtonCommand">Заявки ДЗЗ</button></div>
-              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=1" class="ButtonCommand">Каталог целей</button></div>
-              <div v-if="(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=2" class="ButtonCommand">Данные по заявкам</button></div>
-              <div><button @click="CreateMap" class="ButtonCommand">Карта</button></div>
+              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=0" class="ButtonCommand" :class="viewmode==0?'Select':''">Заявки ДЗЗ</button></div>
+              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=1" class="ButtonCommand" :class="viewmode==1?'Select':''">Каталог целей</button></div>
+              <div v-if="(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=2" class="ButtonCommand"  :class="viewmode==2?'Select':''">Данные по заявкам</button></div>
             </div>
         </div>
         <div class="Panel RightPanel" >
@@ -107,7 +94,6 @@
             </label>
             <button class="ButtonCommand" @click="ReloadMapContainer">Обновить карту</button>
           </div>
-          <div id="map"></div>
         </div>
         </div>  
     </div>
@@ -115,17 +101,10 @@
 </template>
   
   <script>
-
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import { PagesSettings } from './PagesSettings';
-import { OGList, NPList } from '@/js/GlobalData.js';
+import { CreateDateTime } from '@/js/WorkWithDTime';
 import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import shadow from 'leaflet/dist/images/marker-shadow.png';
 import XLSX from 'xlsx-js-style';
 
   export default {
@@ -140,6 +119,7 @@ import XLSX from 'xlsx-js-style';
         viewmode: 0,
         catalogJson: [],
         selectCatalog: null,
+        systemStatus: {typeWorkplace: null},
 
         datarequest: [],
         datarequestКАList: [],
@@ -151,13 +131,15 @@ import XLSX from 'xlsx-js-style';
         TypeRequest: [{value: 0, lable: 'в НП'},{value: 1, lable: 'Лидером'}],
         arr: [],
         arrNP: [],
-        map: {},
       }
     },
     methods: {
       ChangeTime(obgtime){
         this.requestJson[obgtime.id][obgtime.name] = obgtime.time
         this.SatartSave('request')
+      },
+      CreateDateTime(time, mode){
+        CreateDateTime(time, mode)
       },
       SelectChange(e, param){
         this.requestJson[e.id][param] = e.value
@@ -168,13 +150,14 @@ import XLSX from 'xlsx-js-style';
           alert("Нет целей в каталоге, пожалуйста создайте")
           return;
         }
+        let system = this.$SystemObject()
         var addedRow = {
                       "requestId": undefined,
                       "catalog": catalog,
                       "orderId": this.requestJson.length + 1,
                       "priory": 3,
-                      "term": this.systemStatus.modelingEnd,
-                      "time": this.systemStatus.modelingBegin,
+                      "term": system.modelingEnd,
+                      "time": system.modelingBegin,
                       "earthPoint": this.arrNP[0].value,
                       "choiceCriteria": 1,
                       "filter": false,
@@ -202,10 +185,11 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('datarequest')
       },
       CreateNewdatarequest(){ // Данные по заявкам добавление
+        let system = this.$SystemObject()
         var addedRow = {
                     "capacity": 100,
                     "priority": 3,
-                    "time" : this.systemStatus.modelingBegin,
+                    "time" : system.modelingBegin,
                     "satellite":  {id: this.datarequestКАList[0].value},
                     "deleted": null
                 };
@@ -245,53 +229,18 @@ import XLSX from 'xlsx-js-style';
               this.SatartSave('catalog')
           },
       async SatartSave(target){
-        if(target == 'catalog'){await FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
-        if(target == 'request'){await FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
-        if(target == 'datarequest'){await FetchPost("/api/v1/satrequest/data/update", this.datarequest)}
+        if(target == 'catalog'){await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
+        if(target == 'request'){await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
+        if(target == 'datarequest'){await this.$FetchPost("/api/v1/satrequest/data/update", this.datarequest)}
         await this.ReFetch()
       },
-      
-      async LoadFileKARoad(data){
-        const reader = new FileReader();
-        if (data.target.files[0]) {
-          var file = data.target.files[0];
-          reader.readAsText(file);
-          reader.addEventListener('load', () => {
-            let dataFile = reader.result.split("\n")
-            let dataFormat = [[]]
-            let line_index = 0
-            for (let index = 1; index < dataFile.length; index++) {
-              const element = dataFile[index].split(" ");
-              let lat = Number(element[0])
-              let lng = Number(element[1])
-              if (!isNaN(lat) && !isNaN(lng)) {
-                if (dataFormat[line_index].length > 0) {
-                  if(dataFormat[line_index][dataFormat[line_index].length-1].lng * lng < -6){
-                    line_index++
-                    dataFormat.push([])
-                  }
-                }
-                dataFormat[line_index].push({lat: lat*180/Math.PI, lng: lng*180/Math.PI}) 
-              }
-            }
-            const color = document.getElementById("inputColorKa").value
-            dataFormat.forEach(dataRoad =>{
-              L.polyline(dataRoad, {color: color + "d4", weight: 2}).addTo(this.map);
-            })
-            
-          });
-          reader.addEventListener('error', () => {
-            console.error(`Произошла ошибка при чтении файла`);
-          });
-        }
-      },
       async ReFetch(){
-        this.datarequest = await FetchGet('/api/v1/satrequest/data/get/all') || []
-        this.catalogJson = await FetchGet('/api/v1/satrequest/catalog/get/all') || []
+        this.datarequest = await this.$FetchGet('/api/v1/satrequest/data/get/all') || []
+        this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
         for (let index = 0; index < this.catalogJson.length; index++) {
           this.catalogJson[index].countRequest = 0;
         }
-        this.requestJson = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        this.requestJson = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         for (let index = 0; index < this.requestJson.length; index++) {
           const element = this.requestJson[index].catalog.goalId
           for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
@@ -302,88 +251,6 @@ import XLSX from 'xlsx-js-style';
           }
         }
         this.CreateSelectArr()
-        },
-        async CreateMap(){
-          this.viewmode = 3
-          this.map = {}
-          console.log(await document.getElementById("map"))
-          this.map = L.map('map').setView(new L.LatLng(59.932936, 30.311349), 2);
-          L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
-          {
-            minZoom: 2, 
-            maxZoom: 5,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }).addTo(this.map);
-          let DefaultIcon = new L.icon({
-                iconUrl: icon,
-                shadowUrl: shadow,
-                iconRetinaUrl: icon2x
-          });
-          L.Marker.prototype.options.icon = DefaultIcon;
-          for (let i = 0; i < this.requestJson.length; i++) {
-              const element = this.requestJson[i].catalog;
-              L.circle([element.lat, element.lon], 21000, {
-                color: 'blue',
-                fillColor: '#f03',
-                fillOpacity: 0.4
-              }).addTo(this.map)
-          }
-          
-          this.arrNP.forEach(element => {
-              L.circle([element.value.latitude, element.value.longitude], 17000, {
-                color: 'green',
-                fillColor: '#121100',
-                fillOpacity: 0.4
-              }).addTo(this.map)
-          });
-        },
-        ChangeKaDraw(e){
-          this.KatoDraw = e.value
-        },
-        async GetKARoad(){
-          DisplayLoad(true)
-          let color = document.getElementById("inputColorKa")
-          let colors = ['#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#990000','#009900','#999900','#000099','#ffcc00','#00ffcc','#cc0000','#00cc00','#cccc00','#0000cc','#ee0000','#00ee00','#eeee00','#00eeee','#aaaa00']
-          if (this.KatoDraw == undefined) {
-            let roads = await FetchGet("/api/v1/pro42/gps/all") || []
-            let colorid = 0
-            roads.forEach(road => {
-              let arrayPoint = [[]]
-              let line_index = 0
-              for (let index = 0; index < road.coordinates.length; index+=1) {
-                const element = road.coordinates[index];
-                if (arrayPoint[line_index].length > 0) {
-                  if(arrayPoint[line_index][arrayPoint[line_index].length-1].lng * element.longitude < -1000){
-                    line_index++
-                    arrayPoint.push([])
-                  }
-                }
-                arrayPoint[line_index].push({lat: element.latitude, lng: element.longitude})
-              }
-              arrayPoint.forEach(dataRoad => {
-                L.polyline(dataRoad, {color: colors[colorid] + "d4", weight: 2}).addTo(this.map);
-              })
-              colorid++
-            });
-
-          }
-          else{
-            let road = await FetchPost("/api/v1/pro42/gps/sat", {}, "satelliteId="+this.KatoDraw.satelliteId) || []
-            let arrayPoint = [[]]
-            let line_index = 0
-            for (let index = 0; index < road.length; index+=1) {
-              const element = road[index];
-              if (arrayPoint[line_index].length > 0) {
-                  if(arrayPoint[line_index][arrayPoint[line_index].length-1].lng * element.longitude < -1000){
-                    line_index++
-                    arrayPoint.push([])
-                  }
-                }
-              arrayPoint[line_index].push({lat: element.latitude, lng: element.longitude})
-            }
-            L.polyline(arrayPoint, {color: color.value + "d4", weight: 2}).addTo(this.map);
-          }
-          DisplayLoad(false)
         },
         LoadXLSX(mode='request'){
           const workbook = XLSX.utils.book_new();
@@ -413,7 +280,6 @@ import XLSX from 'xlsx-js-style';
               data.push([element.name,element.satellite.name,element.capacity,element.priority,this.CreateDateTime(element.time)])
             });
           }
-          console.log(data)
           let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
           workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
           let style = {
@@ -442,35 +308,28 @@ import XLSX from 'xlsx-js-style';
           workbook.Sheets['Data'] = worksheet;
           XLSX.writeFile(workbook, 'dataRequest.xlsx');
         },
-        ReloadMapContainer(){
-          this.map.off();
-          this.map.remove();
-          this.CreateMap()
-        }
-      
     },
     
     async mounted() {
-      DisplayLoad(true)
+      this.$showLoad(true)
+      this.systemStatus = await this.$SystemObject()
       if(this.systemStatus.typeWorkplace in {4:null, 5:null}){
         this.viewmode = 2
       }
-      NPList.forEach(element => {
+      let NP = await this.$NPList()
+      NP.forEach(element => {
         this.arrNP.push({value: element, lable: element.nameEarthPoint })
       })
       await this.ReFetch()
       //далее всё для карты
-      this.KAArray.push({value: undefined, lable: "Все КА" })
       this.datarequestКАList = []
+      let OGList = await this.$OGList()
       OGList.forEach(OG => {
         OG.satellites.forEach(element =>{
-          this.KAArray.push({value: element, lable: OG.constellationName + "-" + element.name })
           this.datarequestКАList.push({value: element.satelliteId, lable: element.name })
         })
       });
-      this.SelectKa = this.KAArray[0]
-      this.KatoDraw = this.SelectKa.value
-      DisplayLoad(false)
+      this.$showLoad(false)
     },
   }
   </script>

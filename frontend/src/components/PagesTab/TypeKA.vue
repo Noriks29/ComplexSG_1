@@ -4,17 +4,18 @@
           <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
             <img src="../../assets/exit.svg">
           </button>
-          <h1 class="TitleText">Информация о КА</h1>
         </div>
       <div class="ContentDiv">
           <div class="Panel Select LeftPanel" >
-              <p>Выбор КА</p>
-              <SelectDiv :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
-              <p>Информация</p>
-              <div @click="viewPanel = 1" class="ButtonCommand"  :class="viewPanel==1 ? 'SelectPage': ''">• Режимы функционирования</div>
-              <div @click="viewPanel = 2" class="ButtonCommand" :class="viewPanel==2 ? 'SelectPage': ''">• Устройства</div>
-              <div @click="viewPanel = 3" class="ButtonCommand" :class="viewPanel==3 ? 'SelectPage': ''">• Потребление энергии устройствами</div>
-              <div @click="viewPanel = 4" class="ButtonCommand" :class="viewPanel==4 ? 'SelectPage': ''">• Параметры устройств и функционирования</div>
+              <div class="FlexColumn center">
+                <p>Выбор КА</p>
+                <SelectDiv :dataOption="KatypeList" :valueS="SelectKA"  @valueSelect="ChangeKA"/>
+              </div><div class="FlexColumn stretch">
+              <div @click="viewPanel = 1" class="ButtonCommand"  :class="viewPanel==1 ? 'Select': ''">Режимы функционирования</div>
+              <div @click="viewPanel = 2" class="ButtonCommand" :class="viewPanel==2 ? 'Select': ''">Устройства</div>
+              <div @click="viewPanel = 3" class="ButtonCommand" :class="viewPanel==3 ? 'Select': ''">Потребление энергии устройствами</div>
+              <div @click="viewPanel = 4" class="ButtonCommand" :class="viewPanel==4 ? 'Select': ''">Параметры устройств и функционирования</div>
+              </div>
           </div>
           <div class="Panel RightPanel">
           <div v-if="viewPanel == 1">
@@ -287,16 +288,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .Panel{
-      .ButtonCommand{
-        &.SelectPage{
-            background-color: #80808053;
-        }
-      }
-      &.Select{
-        text-align: left;
-      }
-  }
 #TableChargeKA{
   .null{
     background-color: #ff000063;
