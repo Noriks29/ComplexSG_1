@@ -28,9 +28,16 @@ const ModellingProcess = {
     };
 
     app.component('ModelingRezult', ModelingRezult);
-    app.config.globalProperties.$SettingsShowChange = function (data) {
-      if (RezultComponent.value && RezultComponent.value.SettingsShowChange) {
-        RezultComponent.value.SettingsShowChange(data);
+    app.config.globalProperties.$SettingsShowRezult = function (data) {
+      if (RezultComponent.value && RezultComponent.value.SettingsShowRezult) {
+        RezultComponent.value.SettingsShowRezult(data);
+      } else {
+        this.$showToast('Ошибка сохранения настроек','error',"LOAD");
+      }
+    };
+    app.config.globalProperties.$dataTransfer = function (data) {
+      if (RezultComponent.value && RezultComponent.value.dataTransfer) {
+        RezultComponent.value.dataTransfer(data);
       } else {
         this.$showToast('Ошибка сохранения настроек','error',"LOAD");
       }

@@ -1,4 +1,5 @@
 <template>
+    <DefaultTable v-if="ShowTable=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowTable=null" :prevrap="PreWrapDefaultTable"/>
     <div class="main_contain">
       <div class="ContentDiv">
         <div class="FlexRow Panel">
@@ -29,8 +30,10 @@
           <div class="PanelWork">
           <table class="colum">
             <tbody>
-              <tr><td class="tdflexRow"><button @click="ShowLogAll" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Результаты моделлирования</button></td></tr>
-              <tr><td class="tdflexRow"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button></td></tr>
+              <tr><td class="tdflexRow">
+                <button @click="ShowRezult(true)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand" v-if="!rezultShow">Результаты моделлирования</button>
+                <button @click="ShowRezult(false)" class="ButtonCommand Select" v-else>Скрыть результат</button></td></tr>
+              <tr><td class="tdflexRow"><button @click="ShowLogAll" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td></tr>
               <tr>
                 <td class="tdflexRow"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
                     <button @click="ShowLogSmao" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
@@ -46,7 +49,7 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-
+import DefaultTable from '../DefaultTable.vue';
 import { KaSettings } from './KaSettings';
   export default {
     name: 'ModellingComponent',
@@ -73,6 +76,7 @@ import { KaSettings } from './KaSettings';
           optionPro42: 0
         },
         experimentEddit: false,
+        rezultShow:false,
         modellingSettingsLabel:{
           experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
           flightPlanning: {name: "Планирование полёта", label:["не выполняется", "выполняется"]},
@@ -94,6 +98,9 @@ import { KaSettings } from './KaSettings';
         },
       }
     },
+    components:{
+      DefaultTable
+    },
     methods: {
         ShowSettings(status){
             this.$SettingsShowChange(status)
@@ -101,6 +108,11 @@ import { KaSettings } from './KaSettings';
         },
         ReloadSettings(data){
             this.modellingSettings = data
+        },
+        ShowRezult(status){
+          console.log(status)
+          this.rezultShow = status
+          this.$SettingsShowRezult(status)
         },
       async StartModelling(){
         this.$showLoad(true);
@@ -199,10 +211,7 @@ import { KaSettings } from './KaSettings';
           }
         });
         console.log("Результат моделлирования и обработки", this.modellingRezult)
-      },
-      ShowShootingPlan(){ // E77 план съёмок
-        this.dataTable = this.modellingRezult.E77
-        this.ShowTable='ShootingPlan'
+        this.$dataTransfer(this.modellingRezult)
       },
       ShowLogAll(){
         this.dataTable = []
@@ -263,6 +272,14 @@ import { KaSettings } from './KaSettings';
     },
     async mounted(){
       this.ReLoadComponent()
+      if (this.systemStatus.typeWorkplace in {2:null}) {
+        this.modellingSettings.experiment = 1
+      }
+      if (this.systemStatus.typeWorkplace in {4:null}) {
+        this.modellingSettings.experiment = 2
+        this.modellingSettings.chargeForecasting = 2
+        this.modellingSettings.chargeSimulation = 1
+      }
       document.addEventListener('keydown', (event) => {
             if (event.code == 'Escape') {
                 this.ShowTable = null

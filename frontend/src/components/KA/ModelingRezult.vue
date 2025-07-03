@@ -1,5 +1,6 @@
 <template>
-    <div class="ModellingPanel" v-if="SettingsShow">
+    <DefaultTable v-if="ShowTable=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowTable=null" :prevrap="PreWrapDefaultTable"/>
+    <div class="ModellingPanel" v-if="RezultShow">
           <div class="PanelSettings">
             <table class="colum">
               <tr>
@@ -34,7 +35,7 @@ import SelectDiv from '../SelectDiv.vue';
     name: 'ModelingRezult',
     data(){
       return{
-        SettingsShow: true,
+        RezultShow: false,
         modellingRezult: {
           log: [],
           E77: [],
@@ -54,6 +55,11 @@ import SelectDiv from '../SelectDiv.vue';
         },
         arr: [],
         valueSS: {},
+
+        ShowTable: null, //переменная для отображения таблиц
+        PreWrapDefaultTable: false,
+        dataLableName: [{label: "data", nameParam: "data"}],
+        dataTable: [],
       }
     },
     props:{
@@ -65,12 +71,82 @@ import SelectDiv from '../SelectDiv.vue';
         SelectDiv
     },
     methods: {
-        SettingsShowChange(stat){
-            this.SettingsShow = stat
+        SettingsShowRezult(stat){
+            this.RezultShow = stat
         },
+        dataTransfer(data){
+          this.modellingRezult = data
+          this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
+        },
+        modellingRezultSelect_FillById(id){ //выбор данных под ка
+        this.modellingRezultSelect = {
+          E77: [],
+          E78: [],
+          E79: [],
+          fcLog: [],
+          selectKA: id
+        }
+        this.modellingRezult.E77.forEach(E77 =>{
+          if (E77.idSender == id) {this.modellingRezultSelect.E77 = E77.data}
+        })
+        this.modellingRezult.E78.forEach(E78 =>{
+          if (E78.idSender == id) {this.modellingRezultSelect.E78 = E78.dataDownPlan.partsPlan}
+        })
+        this.modellingRezult.E79.forEach(E79 =>{
+          if (E79.idSender == id) {this.modellingRezultSelect.E79 = E79.data}
+        })
+        this.modellingRezult.fcLog.forEach(fcLog =>{
+          if (fcLog.idSender == id) {this.modellingRezultSelect.fcLog = fcLog.data}
+        })
+        console.log('modellingRezultSelect',this.modellingRezultSelect)
+      },
+      ShowShootingPlan(){ // E77 план съёмок
+        this.dataTable = this.modellingRezultSelect.E77
+        this.dataLableName = [
+          {lable: "Заявка", nameParam: "orderId"},
+          {lable: "Цель", nameParam: "targetName"},
+          {lable: "Начало видимости", nameParam: "wsUnix"},
+          {lable: "Окончание видимости", nameParam: "weUnix"},
+          {lable: "Разворот", nameParam: "transition"},
+          {lable: "Начало съёмки", nameParam: "tsUnix"},
+          {lable: "Окончаниие съёмки", nameParam: "teUnix"},
+          {lable: "Тангаж", nameParam: "pitch"},
+          {lable: "Крен", nameParam: "roll"}
+        ]
+        this.PreWrapDefaultTable = false
+        this.ShowTable='DefaultTable'
+      },
+      ShowFcLog(){
+        this.dataTable = this.modellingRezultSelect.fcLog
+        this.dataTable.forEach(element => {
+          element.lightName = element.light ? 'Свет':'Тень'
+        })
+        this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
+          {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
+        ]
+        this.PreWrapDefaultTable = false
+        this.ShowTable='DefaultTable'
+      },
+      async ReLoadComponent(){
+        this.ConstellationJson = this.$OGList()
+        let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
+        this.purposesJson = result.length
+        this.arr = []
+        for (let i = 0; i < this.ConstellationJson.length; i++) {
+          for (let index = 0; index < this.ConstellationJson[i].satellites.length; index++) {
+            const element = this.ConstellationJson[i].satellites[index];
+            this.arr.push({value: element.satelliteId, lable: element.name})
+          }
+        }
+        try {
+          this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
+          this.modellingRezultSelect.selectKA = this.arr[0].value
+        } catch (error) {console.error(error)}
+      }
     },
     async mounted(){
-
+      await this.ReLoadComponent()
     }
   }
   </script>

@@ -89,7 +89,15 @@
       },
     },
     async mounted(){
-
+      if (this.systemStatus.typeWorkplace in {2:null}) {
+        this.modellingSettings.experiment = 1
+      }
+      if (this.systemStatus.typeWorkplace in {4:null}) {
+        this.modellingSettings.experiment = 2
+        this.modellingSettings.chargeForecasting = 2
+        this.modellingSettings.chargeSimulation = 1
+      }
+      this.ValidateDataPostModellingSettings()
     }
   }
   </script>
