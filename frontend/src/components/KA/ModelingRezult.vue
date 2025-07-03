@@ -29,6 +29,14 @@
                   <button @click="ShowFcLog" :class="(modellingRezultSelect.fcLog.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог полёта</button>
                 </td>
               </tr>
+              <tr>
+                <td></td>
+                <td class="tdflexRow">
+                  <button @click="ShowLogAll" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
+                  <button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
+                  <button @click="ShowLogSmao" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button>
+                </td>
+              </tr>
             </table>
           </div>
           </div>
@@ -99,6 +107,56 @@ import LogComplet from './LogComplet.vue';
         SelectChange(target){
           this.modellingRezultSelect_FillById(target.value)
         },
+        ShowLogAll(){
+        this.dataTable = []
+        this.modellingRezult.log.forEach(element =>{
+          const e = Object.assign({}, element)
+          let deleteName = ['time','type','idReceiver','receiverName','idSender','senderName']
+          for (let i = 0; i < deleteName.length; i++) {
+            delete e[deleteName[i]]
+          }
+          this.dataTable.push({
+            time: element.time,
+            type: element.type,
+            data: e,
+            name: element.senderName || element.receiverName || ''
+          })
+        })
+        this.dataLableName = [
+          {lable: "Время", nameParam: "time", style:'white-space: nowrap;'},
+          {lable: "Код", nameParam: "type"},
+          {lable: 'Источник', nameParam:'name', style:'text-align: left;'},
+          {lable: "data", nameParam: "data", style:'text-align: left;'}
+        ]
+        this.PreWrapDefaultTable = false
+        this.ShowTable='DefaultTable'
+      },
+      ShowLogSmao(){
+        this.dataTable = [] 
+        this.modellingRezult.Smao.forEach(element => {
+          this.dataTable.push({data: element})
+        })
+        this.dataLableName = [
+          {lable: "data", nameParam: "data", style:'text-align: left;'}
+        ]
+        this.PreWrapDefaultTable = true
+        this.ShowTable='DefaultTable'
+      },
+      async ShowEventsLogResponse(){ //Лог событий
+        this.dataTable = this.modellingRezult.events
+        this.dataLableName = [
+          {lable: "Время", nameParam: "timeUnix"},
+          {lable: "Код", nameParam: "type"},
+          {lable: "Событие", nameParam: "event"},
+          {lable: "Заявка", nameParam: "orderName"},
+          {lable: "Узел 1", nameParam: "node1Name"},
+          {lable: "Узел 2", nameParam: "node2Name"},
+          {lable: "Коментарий", nameParam: "text"},
+          {lable: "Значение", nameParam: "value"}
+        ]
+        this.PreWrapDefaultTable = false
+        this.ShowTable='DefaultTable'
+      },
         modellingRezultSelect_FillById(id){ //выбор данных под ка
         this.modellingRezultSelect = {
           E77: [],
@@ -201,5 +259,8 @@ import LogComplet from './LogComplet.vue';
     min-width: 30%;
     height: calc(100% - 4px);
     animation: 0.5s ease-out 0s 1 slideInFromRight;
+  }
+  .tdflexRow{
+    display: flex;
   }
 </style>

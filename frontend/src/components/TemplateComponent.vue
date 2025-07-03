@@ -21,15 +21,24 @@
             </div>
           </transition>
         </div>
-        <div class="FlexMenuSection">
-        <div class="ButtonSection">
-          <div class="ButtonList PanelMenu">
-            <button class="ButtonCommand GetData"  @click="SelectComponent('LogEventList')"><span>Логи событий</span></button>
-            <button class="ButtonCommand GetData"  @click="SaveWorkplace"><span>Сохранить проект</span></button>
-            <label class="input-file">
+        <div class="FlexMenuSection" :class="animation.menuButton?'Hide':''">
+        <div class="MenuButton">
+          <img src="@/assets/menuPanel.png" id="menu" alt="" @click="animation.menuButton=!animation.menuButton">
+          <img src="@/assets/exportIcon.png" id="export" alt="" @click="SaveWorkplace">
+          <label class="input-fileMenu">
               <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
-              <span>Открыть файл</span>
-            </label>
+              <img src="@/assets/importIcon.png" id="import" alt="">
+          </label>
+          
+
+          <img src="@/assets/NP.png" id="NP" alt="" @click="SelectComponent('NP')" :class="activeComponent=='NP'? 'select':''">
+          <img src="@/assets/OG.png" id="OG" alt="" @click="SelectComponent('OG')" :class="activeComponent=='OG'? 'select':''">
+          <img src="@/assets/SAT.png" id="SAT" alt="" @click="SelectComponent('TypeKA')" :class="(activeComponent=='TypeKA'? 'select':'')">
+          <img src="@/assets/DZZ.png" id="DZZ" alt="" @click="SelectComponent('TargetDZZ')" :class="activeComponent=='TargetDZZ'? 'select':''">
+        </div>
+        <div class="ButtonSection">
+          <div class="ButtonList">
+            <button class="ButtonCommand GetData"  @click="SelectComponent('LogEventList')"><span>Логи событий</span></button>
           </div>
         </div>
         <div class="ButtonSection">
@@ -57,8 +66,8 @@
           <div class="ButtonSection" v-if="!(system.typeWorkplace in {2:null,4:null})">
             <div class="ButtonList">
               <h1>Инструменты</h1>
-              <button class="buttonType1" :class="(activeComponent=='TargetRoad'? 'select':'')" @click="SelectComponent('TargetRoad')">Обход целей</button>
-              <button class="buttonType1" :class="(activeComponent=='EstimationConstellation'? 'select':'')" @click="SelectComponent('EstimationConstellation')">Видимость целей</button>
+              <button class="buttonType1" :class="(activeComponent=='TargetRoad'? 'select':'')" @click="SelectComponent('TargetRoad')"><span>Обход целей</span></button>
+              <button class="buttonType1" :class="(activeComponent=='EstimationConstellation'? 'select':'')" @click="SelectComponent('EstimationConstellation')"><span>Видимость целей</span></button>
             </div>
           </div>       
         </div>
@@ -116,7 +125,10 @@ export default {
       return{
         activeComponent: "MapContainer",
         system: {typeWorkplace: -1},
-        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime",null,null]
+        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime",null,null],
+        animation:{
+          menuButton: false
+        }
     }
   },
   methods: {
@@ -231,6 +243,7 @@ export default {
         min-height: calc(100% - 45px);
         flex: 1;
         overflow-y: hidden;
+
       }
     }
     .FooterSection{
@@ -259,11 +272,12 @@ export default {
       }
       .FlexMenuSection{
         flex-direction: column;
-        height: auto ;
-        width: fit-content ;
-        align-items: normal ;
+        height: auto;
+        width: 200px;
+        align-items: normal;
         display: flex;
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         .ButtonSection{
           display: flex;
           flex-direction: column;
@@ -302,5 +316,90 @@ export default {
         }
       }
   } 
+  }
+
+
+
+.FlexMenuSection
+{
+  transition: all 0.5s linear;
+  h1, span{
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .MenuButton{
+    flex-direction: row;
+    justify-content: space-between;
+    position: relative;
+    align-items: flex-start;
+    .input-fileMenu{
+      transition: all 0.5s linear;
+      display: block;
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      left: calc(100% - 42px);
+      top: 5px;
+      input{
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+        display: block;
+        width: 0;
+        height: 0;
+      }
+    }
+    #export{
+      position: absolute;
+      left: calc(50% - 16px);
+      top: 5px;
+    }
+    #NP,#OG,#SAT,#DZZ{
+      position: absolute;
+      left: -50px;
+      background-color: rgba(0, 0, 0, 0);
+      padding: 0px;
+      border-radius: 10px;
+    }
+    #NP{top: calc((32px + 20px) * 3);}
+    #OG{top: calc((32px + 20px) * 4);}
+    #SAT{top: calc((32px + 20px) * 5);}
+    #DZZ{top: calc((32px + 20px) * 6);}
+  }
+  &.Hide{
+    width: 60px !important;
+    overflow: hidden !important;
+    .MenuButton{
+      flex-direction: column;
+    }
+    #menu{
+      transform: rotate(180deg);
+    }
+    --leftAbsolute: 5px;
+    #export{left: var(--leftAbsolute);top: calc((32px + 20px));}
+    .input-fileMenu{left: var(--leftAbsolute);top: calc((32px + 20px) * 2);}
+    #NP,#OG,#SAT,#DZZ{
+      left: var(--leftAbsolute);
+      &.select{
+        background-color: #0039b5;
+        padding: 5px 25px 5px 5px;
+      }
+    }
+
+    .ButtonSection{
+      transform: translateX(-200px);
+    }
+  }
+}
+
+  .MenuButton{
+    display: flex;
+    margin: 0px 5px 0px 0px;
+    justify-content: space-between;
+    padding: 5px 5px 5px 5px;
+    img{
+      transition: all 0.5s linear;
+    }
+    
   }
 </style>
