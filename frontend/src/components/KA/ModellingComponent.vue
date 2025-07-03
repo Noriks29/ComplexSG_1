@@ -4,9 +4,11 @@
       <div class="ContentDiv">
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
-            <button  @click="StartModelling" class="ButtonCommand rightPadding"><img src="../../assets/start.png" alt="" class="iconButton">Старт планирования</button>
-            <button v-if="!ExperimentStatus && !experimentEddit" @click="ShowSettings(true)" class="ButtonCommand MaxWidth" >Настройки</button>
-            <button v-if="!ExperimentStatus && experimentEddit" @click="ShowSettings(false)" class="ButtonCommand MaxWidth">Закрыть настройки</button>
+            <button  @click="StartModelling" class="ButtonCommand">Старт моделирования</button>
+            <button v-if="!ExperimentStatus && !experimentEddit" @click="ShowSettings(true)" class="ButtonCommand">Настройки</button>
+            <button v-if="!ExperimentStatus && experimentEddit" @click="ShowSettings(false)" class="ButtonCommand Select">Закрыть настройки</button>
+            <button @click="ShowRezult(true)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand" v-if="!rezultShow">Результаты моделлирования</button>
+            <button @click="ShowRezult(false)" class="ButtonCommand Select" v-else>Скрыть результат</button>
           </div>
           <div class="TableSystem">
             <table>
@@ -27,6 +29,7 @@
               ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr>
             </table>
           </div>
+          <!--
           <div class="PanelWork">
           <table class="colum">
             <tbody>
@@ -40,7 +43,7 @@
               </tr>
               </tbody>
             </table>
-            </div>
+            </div>-->
         </div>
       </div>
     </div>
@@ -105,12 +108,15 @@ import { KaSettings } from './KaSettings';
         ShowSettings(status){
             this.$SettingsShowChange(status)
             this.experimentEddit = status
+            this.$SettingsShowRezult(false)
+            this.rezultShow = false
         },
         ReloadSettings(data){
             this.modellingSettings = data
         },
         ShowRezult(status){
-          console.log(status)
+          this.$SettingsShowChange(false)
+          this.experimentEddit = false
           this.rezultShow = status
           this.$SettingsShowRezult(status)
         },
@@ -297,6 +303,9 @@ import { KaSettings } from './KaSettings';
   .tdflexRow{
     display: flex;
   }
+}
+.ButtonModelling{
+  overflow: auto;
 }
 
 </style>

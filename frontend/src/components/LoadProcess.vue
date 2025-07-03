@@ -47,7 +47,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 25;
     box-shadow: inset 0px 0px 1000px 9px black;
 
   .ModalWindow{
@@ -104,7 +104,7 @@
   border: 5px solid black;
   transition: all 1s ease-in-out;
   padding: 50px;
-  z-index: 5;
+  z-index: 25;
 
   #imgplanet{
       width: 250px;

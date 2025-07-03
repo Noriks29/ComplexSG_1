@@ -1,5 +1,11 @@
 <template>
     <DefaultTable v-if="ShowTable=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowTable=null" :prevrap="PreWrapDefaultTable"/>
+    <E78Table v-if="ShowTable=='E78Table'" :dataTable="modellingRezultSelect.E78" @closetable="ShowTable=null"/>
+      <E77E78 v-if="ShowTable=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
+      <BookmarkTable v-if="ShowTable=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78" @closetable="ShowTable=null"/>
+      <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
+      <LogDownload v-if="ShowTable=='LogDownload'" :dataTable="modellingRezult.events" @closetable="ShowTable=null"/>
+      <LogComplet v-if="ShowTable=='LogComplet'" :dataTable="modellingRezult.events" @closetable="ShowTable=null" />
     <div class="ModellingPanel" v-if="RezultShow">
           <div class="PanelSettings">
             <table class="colum">
@@ -30,7 +36,13 @@
   
 <script>
 import SelectDiv from '../SelectDiv.vue';
-
+import DefaultTable from '../DefaultTable.vue';
+import E78Table from './E78Table.vue';
+import E77E78 from './E77E78.vue';
+import BookmarkTable from './BookmarkComponent.vue';
+import FlightplanForm from './FlightplanForm.vue';
+import LogDownload from './LogDownload.vue';
+import LogComplet from './LogComplet.vue';
   export default {
     name: 'ModelingRezult',
     data(){
@@ -68,7 +80,13 @@ import SelectDiv from '../SelectDiv.vue';
         },
     },
     components:{
-        SelectDiv
+        SelectDiv,DefaultTable,
+        E78Table,
+      E77E78,
+      BookmarkTable,
+      FlightplanForm,
+      LogDownload,
+      LogComplet
     },
     methods: {
         SettingsShowRezult(stat){
@@ -77,6 +95,9 @@ import SelectDiv from '../SelectDiv.vue';
         dataTransfer(data){
           this.modellingRezult = data
           this.modellingRezultSelect_FillById(this.modellingRezultSelect.selectKA)
+        },
+        SelectChange(target){
+          this.modellingRezultSelect_FillById(target.value)
         },
         modellingRezultSelect_FillById(id){ //выбор данных под ка
         this.modellingRezultSelect = {
@@ -147,6 +168,11 @@ import SelectDiv from '../SelectDiv.vue';
     },
     async mounted(){
       await this.ReLoadComponent()
+      document.addEventListener('keydown', (event) => {
+            if (event.code == 'Escape') {
+                this.ShowTable = null
+            }
+          });
     }
   }
   </script>

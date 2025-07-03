@@ -3,10 +3,10 @@
           <tr><td>Начальное время расчетов</td><td>
             <DateTime :valueUnix="dataSystem.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
           </td><td rowspan="4"><button class="ButtonCommand ButtonUpload" :class="!systemChange ? 'disable': ''" @click="SaveSystem"><img src="@/assets/save.svg" alt=""></button></td></tr>
-          <tr><td>Начало горизонта моделирования</td><td>
+          <tr><td rowspan="2">Горизонт моделирования</td><td>
             <DateTime :valueUnix="dataSystem.modelingBegin" :id="'modelingBegin'"  @valueSelect="ChangeTime"/>
           </td></tr>
-          <tr><td>Окончание горизонта моделирования</td><td>
+          <tr><td>
             <DateTime :valueUnix="dataSystem.modelingEnd" :id="'modelingEnd'" @valueSelect="ChangeTime"/>
           </td></tr>
           <tr><td>Шаг моделлирования</td><td><input placeholder="Введите шаг" class="inputType2" id="step" @change="ChangeParam" type="number" min="0" :value="dataSystem.step"><label for="step"></label></td></tr>

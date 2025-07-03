@@ -240,6 +240,7 @@ export default {
       overflow: hidden;
       .workpage{
         flex: 1;
+        z-index: 21;
         background-color: var(--color-bg-panel);
         border: 3px solid var(--color-border1);
         display: flex;
@@ -262,6 +263,7 @@ export default {
         width: fit-content ;
         align-items: normal ;
         display: flex;
+        overflow: auto;
         .ButtonSection{
           display: flex;
           flex-direction: column;
