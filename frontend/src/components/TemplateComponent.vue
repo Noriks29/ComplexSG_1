@@ -6,7 +6,7 @@
         </div>
         <transition mode="out-in">
           <div class="ModellingDiv PanelMenu">
-            моделирование
+            <ModellingComponent :systemStatus="system" />
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
           </div>
@@ -17,6 +17,7 @@
           <transition name="translate" mode="out-in" v-if="activeComponent != ''">
             <div class="ComponentSelect">
               <component :is="activeComponent" :modellingStatus="false" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
+              <ModelingPanel :systemStatus="system"/><ModelingRezult :systemStatus="system"/>
             </div>
           </transition>
         </div>
@@ -68,7 +69,7 @@
 <script>
 //import { saveAs } from 'file-saver';
 
-
+import ModelingPanel from './KA/ModelingPanel.vue';
 
 import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
@@ -85,6 +86,8 @@ import TargetRoad from './PagesTab/TargetRoad.vue';
 import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
 import MapContainer from './MapContainer.vue';
+import ModellingComponent from './KA/ModellingComponent.vue';
+import ModelingRezult from './KA/ModelingRezult.vue';
 
 
 export default {
@@ -104,7 +107,10 @@ export default {
 
     KA1,
     KARealTime,
-    MapContainer
+    MapContainer,
+
+    ModellingComponent,
+    ModelingPanel,ModelingRezult
   },
   data(){
       return{
@@ -221,12 +227,10 @@ export default {
       display: flex;
       .ModellingDiv{ // далее смотри в глабольных стялях
         width: 100%;
-        height: calc(100% - 46px);
+        height: 100px;
+        min-height: calc(100% - 45px);
         flex: 1;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        overflow-y: hidden;
       }
     }
     .FooterSection{

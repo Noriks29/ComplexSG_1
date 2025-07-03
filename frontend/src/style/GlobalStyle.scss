@@ -113,9 +113,9 @@ body{
 
 .FlexRow{
   width: auto;
-  padding: 2px;
+  height: 140px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   max-width: 95vw;
   overflow-x: auto;
   justify-content: space-evenly;
@@ -128,9 +128,8 @@ body{
         flex-direction: column;
       }
       &.TableSystem{
-        flex: 6 0 auto;
-        height: 24vh;
         overflow-y: auto;
+        padding: 0px 5px;
         background-color: var(--background-Table1);
         border: 1px solid var(--border-Table1);
       }
@@ -288,6 +287,7 @@ input{ //Что-это? общий инпут?
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    overflow: auto;
     flex:1;
     .colum{
       flex: 1;
