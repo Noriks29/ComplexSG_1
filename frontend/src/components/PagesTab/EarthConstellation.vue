@@ -30,7 +30,8 @@
               </tfoot>
             </table>
             </div>
-            <div id="plotlymapContain1" style="height: 50vh;"></div>
+            <div id="plotlymapContain1"></div>
+            <div id="plotlymapContain2"></div>
           </div>
       </div>
     </div>
@@ -58,9 +59,6 @@ import XLSX from 'xlsx-js-style';
     },
     methods: {
        async CommandWork(commandId){
-            if(commandId == 2){
-              this.PageSettings.status = 2
-            }
             if(commandId == 5){
               this.$showLoad(true)
               await this.$FetchGet("/api/v1/contact-plan/earth")
@@ -76,7 +74,7 @@ import XLSX from 'xlsx-js-style';
             if(commandId == 6){
               this.PageSettings.status = 2
               let response = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all') || []
-              let dataGrapf = {
+              let dataGrapfKANP = {
                 type: 'bar',
                 y: [],
                 x: [],
@@ -90,19 +88,41 @@ import XLSX from 'xlsx-js-style';
                   }
                 }
               }
+              let dataGrapfNPKA = {
+                type: 'bar',
+                y: [],
+                x: [],
+                orientation: 'h',
+                base: [],
+                text: [],
+                marker: {
+                  opacity: 0.7,
+                  line: {
+                    width: 2
+                  }
+                }
+              }
+              let NPGrafList = []
+              let OGGrafList = []
+              
               response.forEach(element => {
                 console.log(CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.y.push(element.earthName)
-                dataGrapf.text.push(element.satelliteName)
-                dataGrapf.x.push(CreateDateTime(element.end - element.begin, 2))
-                dataGrapf.base.push(CreateDateTime(element.begin, 1))
+                dataGrapfKANP.y.push(element.earthName)
+                dataGrapfKANP.text.push(element.satelliteName)
+                dataGrapfKANP.x.push(CreateDateTime(element.end - element.begin, 2))
+                dataGrapfKANP.base.push(CreateDateTime(element.begin, 1))
+                if( NPGrafList.indexOf(element.earthName) == -1){NPGrafList.push(element.earthName)}
+
+                dataGrapfNPKA.y.push(element.satelliteName)
+                dataGrapfNPKA.text.push(element.earthName)
+                dataGrapfNPKA.x.push(CreateDateTime(element.end - element.begin, 2))
+                dataGrapfNPKA.base.push(CreateDateTime(element.begin, 1))
+                if( OGGrafList.indexOf(element.earthName) != -1){OGGrafList.push(element.earthName)}
               });
               console.log(await document.getElementById('plotlymapContain1'))
-              Plotly.newPlot("plotlymapContain1", [dataGrapf],
-                {
-                  title: 'Окна видимости',
-                }
-              )
+              console.log(await document.getElementById('plotlymapContain2'))
+              Plotly.newPlot("plotlymapContain1", [dataGrapfKANP],{title: 'Окна видимости',margin:{b:30,r:10, t:30,l:70}, height:(60+NPGrafList.length * 100)})
+              Plotly.newPlot("plotlymapContain2", [dataGrapfNPKA],{margin:{b:30,r:10, t:30,l:70}, height:(60+NPGrafList.length * 100)})
             }
         },
         LoadXLSX(){
@@ -148,6 +168,7 @@ import XLSX from 'xlsx-js-style';
                 element.begin = CreateDateTime(element.begin)
                 element.end = CreateDateTime(element.end)
               }
+          await this.CommandWork(6)
         }
     },
     

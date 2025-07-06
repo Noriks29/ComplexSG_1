@@ -25,7 +25,7 @@
     </div>
     <div id="map"></div>
     <div class="AddPointDiv" v-if="AddPoint.showadd">
-    <div class="PanelMenu" style="position: relative;">
+    <div class="PanelMenu" style="position: relative;" :class="modellingStatus?'DisableForModelling':''">
       <div class="closeButton" @click="AddPoint.showadd=false"><img src="@/assets/close.svg" alt="закрыть"></div>
       <h1>Добавление точки</h1>
       <div>
@@ -57,11 +57,12 @@ import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
+import { PagesSettings } from './PagesTab/PagesSettings';
 
 
 export default {
   name: 'MapContain',
-
+  mixins: [PagesSettings],
   data(){
       return{
         map: {},

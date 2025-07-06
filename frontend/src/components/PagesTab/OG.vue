@@ -20,8 +20,14 @@
             <button class="ButtonCommand"  @click="PageSettings.status=(PageSettings.status+1)%2" :class="modellingStatus?'disable':''">
               <img src="@/assets/add.png" alt="" class="addButtonIcon">{{ (PageSettings.status == 1) ? 'Прекратить' : 'Добавить орбитальную группировку' }}
             </button>
-          </div>
         </div>
+        <div class="LoadExel">
+            <div><input id="Exel" type="checkbox" v-model="PageSettings.saveEXELmode"><label for="Exel">
+                {{ PageSettings.saveEXELmode ? 'Сохранить все ОГ':'Сохранить выбранную ОГ' }}
+              </label></div>
+              <div><button @click="LoadXLSX" class="ButtonCommand"><img src="../../assets/excel.png" width="32px"><span>&#8203;</span></button></div>
+            </div>
+          </div>
     </div>
 
 
@@ -273,10 +279,10 @@ import SelectDiv from '../SelectDiv.vue';
             }
           },
           LoadXLSX(){
+
           const workbook = XLSX.utils.book_new();
-          let data = [["Модель КА","Имя КА","Роль","Плосколсть","Позиция","Большая полуось","Эксцентриситет","Наклон","Долгота восходящего узла",
+          let data = [["Модель КА","Имя КА","Роль","Плоскость","Позиция","Большая полуось","Эксцентриситет","Наклон","Долгота восходящего узла",
             "Аргумент широты перигея","Истинная аномалия"]]
-            console.log(this.dataJson)
             let dataLoad = []
             if(this.PageSettings.saveEXELmode){
               dataLoad = this.dataJson
@@ -380,6 +386,18 @@ import SelectDiv from '../SelectDiv.vue';
     .addButtonIcon{
       top: auto;
     }
+  }
+}
+.LoadExel{
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 20px;
+  div{
+    display: flex;
+    align-items: center;
+  }
+  img{
+    width: 30px;
   }
 }
 </style>
