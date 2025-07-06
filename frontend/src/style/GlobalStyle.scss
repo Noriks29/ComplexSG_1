@@ -118,7 +118,7 @@ body{
   align-items: stretch;
   max-width: 95vw;
   overflow-x: auto;
-  justify-content: space-evenly;
+  justify-content: space-between;
     div{
       margin: 0px 5px;
       &.ButtonModelling{
@@ -126,6 +126,9 @@ body{
         width: fit-content;
         display: flex;
         flex-direction: column;
+        button{
+          flex: 1;
+        }
       }
       &.TableSystem{
         overflow-y: auto;
@@ -380,3 +383,33 @@ input{ //Что-это? общий инпут?
       }
 
 
+.DisableForModelling{
+  input{
+    pointer-events: none !important;
+  }
+  .addRowButton{
+    button{
+      pointer-events: none !important;
+      opacity: 0;
+    }
+  }
+  .delete{
+    pointer-events: none !important;
+    img{
+      opacity: 0;
+    }
+  }
+  .iconDelete{
+    //для ог
+    pointer-events: none;
+    opacity: 0;
+  }
+  .TableDefault{
+    td{
+      pointer-events: none;
+    }
+    select{
+      pointer-events: none;
+    }
+  }
+}

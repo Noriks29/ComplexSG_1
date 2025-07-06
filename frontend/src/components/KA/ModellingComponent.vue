@@ -1,14 +1,13 @@
 <template>
-    <DefaultTable v-if="ShowTable=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowTable=null" :prevrap="PreWrapDefaultTable"/>
     <div class="main_contain">
       <div class="ContentDiv">
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
-            <button  @click="StartModelling" class="ButtonCommand">Старт моделирования</button>
+            <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="Experiment(true)" class="ButtonCommand">Начать эксперимент</button>
+            <button v-if="ExperimentStatus" @click="StartModelling" class="ButtonCommand">Старт моделирования</button>
+            <button v-if="ExperimentStatus" @click="Experiment(false)" class="ButtonCommand">Закончить эксперимент</button>
             <button v-if="!ExperimentStatus && !experimentEddit" @click="ShowSettings(true)" class="ButtonCommand">Настройки</button>
             <button v-if="!ExperimentStatus && experimentEddit" @click="ShowSettings(false)" class="ButtonCommand Select">Закрыть настройки</button>
-            <button @click="ShowRezult(true)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand" v-if="!rezultShow">Результаты моделлирования</button>
-            <button @click="ShowRezult(false)" class="ButtonCommand Select" v-else>Скрыть результат</button>
           </div>
           <div class="TableSystem">
             <table>
@@ -29,21 +28,6 @@
               ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr>
             </table>
           </div>
-          <!--
-          <div class="PanelWork">
-          <table class="colum">
-            <tbody>
-              <tr><td class="tdflexRow">
-                <button @click="ShowRezult(true)" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand" v-if="!rezultShow">Результаты моделлирования</button>
-                <button @click="ShowRezult(false)" class="ButtonCommand Select" v-else>Скрыть результат</button></td></tr>
-              <tr><td class="tdflexRow"><button @click="ShowLogAll" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button></td></tr>
-              <tr>
-                <td class="tdflexRow"><button @click="ShowEventsLogResponse" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
-                    <button @click="ShowLogSmao" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
-              </tr>
-              </tbody>
-            </table>
-            </div>-->
         </div>
       </div>
     </div>
@@ -52,7 +36,6 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import DefaultTable from '../DefaultTable.vue';
 import { KaSettings } from './KaSettings';
   export default {
     name: 'ModellingComponent',
@@ -61,7 +44,6 @@ import { KaSettings } from './KaSettings';
       return{
         purposesJson: 0, //колличество заявок
         ConstellationJson: [], //список ог
-        ShowTable: null, //переменная для отображения таблиц
         PreWrapDefaultTable: false,
         dataLableName: [{label: "data", nameParam: "data"}],
         dataModelling: {
@@ -82,8 +64,6 @@ import { KaSettings } from './KaSettings';
         rezultShow:false,
         modellingSettingsLabel:{
           experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
-          flightPlanning: {name: "Планирование полёта", label:["не выполняется", "выполняется"]},
-          planSimulation: {name: "Моделлирование выполнения плана", label:["не выполняется", "выполняется"]},
           chargeForecasting: {name: "Прогнозирование заряда АКБ", label:["не выполняется", "выполняется, не учитывается", "выполняется, учитывается"]},
           chargeSimulation: {name: "Расчёт заряда АКБ при моделировании", label:["не используется", "используется"]},
           optionPro42: {name: "Расчёт Pro42 при моделировании", label:["не используется", "используется"]},
@@ -101,9 +81,6 @@ import { KaSettings } from './KaSettings';
         },
       }
     },
-    components:{
-      DefaultTable
-    },
     methods: {
         ShowSettings(status){
             this.$SettingsShowChange(status)
@@ -120,6 +97,23 @@ import { KaSettings } from './KaSettings';
           this.rezultShow = status
           this.$SettingsShowRezult(status)
         },
+        Experiment(status){
+          this.ShowRezult(status)
+          this.dataModelling = {
+            engineLogResponse: []
+          }
+          this.modellingRezult= {
+            log: [],
+            E77: [],
+            E78: [],
+            hide: [],
+            E79: [],
+            Smao: [],
+            events: [],
+            fcLog: []
+          }
+        this.$emit('ChangeExperimentStatus', {status})
+      },
       async StartModelling(){
         this.$showLoad(true);
         let dataPost = Object.assign(this.modellingSettings)
@@ -219,56 +213,6 @@ import { KaSettings } from './KaSettings';
         console.log("Результат моделлирования и обработки", this.modellingRezult)
         this.$dataTransfer(this.modellingRezult)
       },
-      ShowLogAll(){
-        this.dataTable = []
-        this.modellingRezult.log.forEach(element =>{
-          const e = Object.assign({}, element)
-          let deleteName = ['time','type','idReceiver','receiverName','idSender','senderName']
-          for (let i = 0; i < deleteName.length; i++) {
-            delete e[deleteName[i]]
-          }
-          this.dataTable.push({
-            time: element.time,
-            type: element.type,
-            data: e,
-            name: element.senderName || element.receiverName || ''
-          })
-        })
-        this.dataLableName = [
-          {lable: "Время", nameParam: "time", style:'white-space: nowrap;'},
-          {lable: "Код", nameParam: "type"},
-          {lable: 'Источник', nameParam:'name', style:'text-align: left;'},
-          {lable: "data", nameParam: "data", style:'text-align: left;'}
-        ]
-        this.PreWrapDefaultTable = false
-        this.ShowTable='DefaultTable'
-      },
-      ShowLogSmao(){
-        this.dataTable = [] 
-        this.modellingRezult.Smao.forEach(element => {
-          this.dataTable.push({data: element})
-        })
-        this.dataLableName = [
-          {lable: "data", nameParam: "data", style:'text-align: left;'}
-        ]
-        this.PreWrapDefaultTable = true
-        this.ShowTable='DefaultTable'
-      },
-      async ShowEventsLogResponse(){ //Лог событий
-        this.dataTable = this.modellingRezult.events
-        this.dataLableName = [
-          {lable: "Время", nameParam: "timeUnix"},
-          {lable: "Код", nameParam: "type"},
-          {lable: "Событие", nameParam: "event"},
-          {lable: "Заявка", nameParam: "orderName"},
-          {lable: "Узел 1", nameParam: "node1Name"},
-          {lable: "Узел 2", nameParam: "node2Name"},
-          {lable: "Коментарий", nameParam: "text"},
-          {lable: "Значение", nameParam: "value"}
-        ]
-        this.PreWrapDefaultTable = false
-        this.ShowTable='DefaultTable'
-      },
       async ReLoadComponent(){
         this.earthList = await this.$NPList()
         this.ConstellationJson = await this.$OGList()
@@ -286,11 +230,6 @@ import { KaSettings } from './KaSettings';
         this.modellingSettings.chargeForecasting = 2
         this.modellingSettings.chargeSimulation = 1
       }
-      document.addEventListener('keydown', (event) => {
-            if (event.code == 'Escape') {
-                this.ShowTable = null
-            }
-          });
     }
   }
   </script>

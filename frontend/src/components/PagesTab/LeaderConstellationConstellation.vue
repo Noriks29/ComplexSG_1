@@ -8,6 +8,7 @@
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
             <div class="FlexColumn">
+              <div v-if="PageSettings.mode"><label for="angle">Минимальный угол</label><input id="angle" type="number" v-model="experimentObject.angle"></div>
               <div v-if="PageSettings.mode"><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
               <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
               <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>

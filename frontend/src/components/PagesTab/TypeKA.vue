@@ -5,7 +5,7 @@
             <img src="../../assets/exit.svg">
           </button>
         </div>
-      <div class="ContentDiv">
+      <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
           <div class="Panel Select LeftPanel" >
               <div class="FlexColumn center">
                 <p>Выбор КА</p>

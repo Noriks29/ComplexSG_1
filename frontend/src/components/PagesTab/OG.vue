@@ -5,7 +5,7 @@
         <img src="@/assets/exit.svg"><span>&#8203;</span>
       </button>
     </div>
-    <div class="ContentDiv">
+    <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
     <div class="Panel LeftPanel">
         <div class="FlexColumn">
           <div class="OGList">
@@ -17,7 +17,7 @@
               <div type="name">{{ data.constellationName }}</div>
               <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
           </div>
-            <button class="ButtonCommand"  @click="PageSettings.status=(PageSettings.status+1)%2">
+            <button class="ButtonCommand"  @click="PageSettings.status=(PageSettings.status+1)%2" :class="modellingStatus?'disable':''">
               <img src="@/assets/add.png" alt="" class="addButtonIcon">{{ (PageSettings.status == 1) ? 'Прекратить' : 'Добавить орбитальную группировку' }}
             </button>
           </div>

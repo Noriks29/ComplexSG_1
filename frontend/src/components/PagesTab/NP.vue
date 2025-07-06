@@ -5,7 +5,7 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <div class="ContentDiv" style="margin-top: 30px;">
+    <div class="ContentDiv" style="margin-top: 30px;" :class="modellingStatus?'DisableForModelling':''">
 
     <div class="Panel RightPanel">
       <DefaultTable2  :dataTable="dataTable" :settings="{showIndex:true,deleteMode: true,editAccess:true}" @changeT="ChangeParamTable" @addRow="AddRow(0,0)" @DeletedRow="DeleteRow"/>

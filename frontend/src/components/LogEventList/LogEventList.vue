@@ -1,5 +1,5 @@
 <template>
-    <div class="main_contain">
+    <div class="main_contain RowSection">
           <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
@@ -8,8 +8,8 @@
           
           
     <div class="ContentDiv">
-      <div class="TitleText">Каталог лога событий</div>
-    <div class="Panel MaxWidth TableDiv">
+    <div class="Panel RightPanel">
+      <div class="TableDiv">
       <table class="TableDefault"><thead>
         <tr v-if="dataJson.length > 0">
           <th>ID</th>
@@ -28,7 +28,7 @@
                 :value="data.codeEvent"></td>
             <td><input :id="index" name="descriptionEvent" class="description"
                 :value="data.descriptionEvent"></td>
-          <td v-if="!modellingStatus" :id="index" @click="DeleteRow(index)"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
+          <td v-if="!modellingStatus" :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
         </tr></tbody><tfoot>
         <tr class="addRowButton">
           <td colspan="4"><button @click="AddRow">
@@ -37,13 +37,13 @@
           </button></td>
         </tr></tfoot>
       </table>
+      </div>
     </div>
     </div>
     </div>
   </template>
   
   <script>
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
   export default {
     name: 'LogEventList',
     data(){
@@ -66,7 +66,7 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
         })
       },
       async setPost() {
-          DisplayLoad(true)
+          this.$showLoad(true)
           let data = []
           this.dataJson.forEach(element => {
             console.log(element.codeEvent, element.descriptionEvent)
@@ -75,10 +75,10 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             }
           })
           if(data.length == this.dataJson.length){
-            await FetchPost("/api/v1/event/code/add", data)
+            await this.$FetchPost("/api/v1/event/code/add", data)
             await this.ReFetch()
           }
-          DisplayLoad(false)
+          this.$showLoad(false)
         },
         async AddRow(){
           var addedRow = {'id' : undefined, 'codeEvent' : "", 'descriptionEvent' : "", 'deleted': false};
@@ -95,23 +95,21 @@ import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
             await this.ReFetch()
         },
         async ReFetch(){
-          DisplayLoad(true)
-          this.dataJson = await FetchGet('/api/v1/event/codes/all') || []
-          DisplayLoad(false)
+          this.$showLoad(true)
+          this.dataJson = await this.$FetchGet('/api/v1/event/codes/all') || []
+          this.$showLoad(false)
         }
       
     },
-    async mounted() {
-      DisplayLoad(true)
-      this.dataJson = await FetchGet('/api/v1/event/codes/all') || []
-      DisplayLoad(false)
+    mounted() {
+      this.ReFetch()
     }
   }
   </script>
 
   <style lang="scss" scoped>
-.description{
-    width: 30vw;
-}
+  .description{
+        width: 30vw;
+    }
 
 </style>

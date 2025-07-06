@@ -2,22 +2,23 @@
   <div class="SectionMenu">
       <div class="HeadersSction">
         <div class="PanelMenu">
-          <SystemWindow :modellingStatus="false" @updateParentComponent="ChangeComponents" :systemStatus="system" />
+          <SystemWindow :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" />
         </div>
         <transition mode="out-in">
           <div class="ModellingDiv PanelMenu">
-            <ModellingComponent :systemStatus="system" />
+            <ModellingComponent :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
           </div>
         </transition> 
       </div>
       <div class="FooterSection">
+        <ModelingRezult :systemStatus="system"/>
         <div class="workpage">
           <transition name="translate" mode="out-in" v-if="activeComponent != ''">
             <div class="ComponentSelect">
-              <component :is="activeComponent" :modellingStatus="false" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
-              <ModelingPanel :systemStatus="system"/><ModelingRezult :systemStatus="system"/>
+              <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
+              <ModelingPanel :systemStatus="system"/>
             </div>
           </transition>
         </div>
@@ -71,6 +72,7 @@
             </div>
           </div>       
         </div>
+        
       </div>
     </div>
 </template>
@@ -101,7 +103,7 @@ import ModelingRezult from './KA/ModelingRezult.vue';
 
 export default {
   name: 'TemplateComponent',
-  //emits: ['changeExperimentStatus'],
+  emits: ['changeExperimentStatus'],
   components: {
     NP,
     OG,
@@ -125,7 +127,7 @@ export default {
       return{
         activeComponent: "MapContainer",
         system: {typeWorkplace: -1},
-        ComponentModellingList: [null,"KA1","KA1","KA1","KA1","KARealTime",null,null],
+        ExperimentStatus: false,
         animation:{
           menuButton: false
         }
@@ -138,6 +140,11 @@ export default {
       async ChangeComponents() {
         this.system = await this.$SystemObject()
         this.activeComponent = 'MapContainer'
+      },
+      ChangeExperimentStatus(emit){
+        this.ExperimentStatus = emit.status
+        this.animation.menuButton = emit.status
+        this.ChangeComponents()
       },
       async SaveWorkplace(){
         /*

@@ -5,7 +5,7 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <div class="ContentDiv">
+    <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
         <div class="Panel LeftPanel">
             <div class="FlexColumn">
               <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=0" class="ButtonCommand" :class="viewmode==0?'Select':''">Заявки ДЗЗ</button></div>

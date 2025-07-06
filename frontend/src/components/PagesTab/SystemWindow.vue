@@ -1,5 +1,5 @@
 <template>
-          <table class="TableDefault"><tbody>
+          <table class="TableDefault" :class="modellingStatus?'DisableForModelling':''"><tbody>
           <tr><td>Начальное время расчетов</td><td>
             <DateTime :valueUnix="dataSystem.startTime" :id="'startTime'"  @valueSelect="ChangeTime"/>
           </td><td rowspan="4"><button class="ButtonCommand ButtonUpload" :class="!systemChange ? 'disable': ''" @click="SaveSystem"><img src="@/assets/save.svg" alt=""></button></td></tr>
