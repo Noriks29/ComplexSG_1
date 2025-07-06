@@ -6,19 +6,18 @@
         </div>
         <transition mode="out-in">
           <div class="ModellingDiv PanelMenu">
-            <ModellingComponent :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"/>
+            <ModellingComponent :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
           </div>
         </transition> 
       </div>
       <div class="FooterSection">
-        <ModelingRezult :systemStatus="system"/>
+        <ModelingRezult :systemStatus="system" @showRezult="SelectComponent('ModelingPanel')"/>
         <div class="workpage">
           <transition name="translate" mode="out-in" v-if="activeComponent != ''">
             <div class="ComponentSelect">
               <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
-              <ModelingPanel :systemStatus="system"/>
             </div>
           </transition>
         </div>
@@ -80,7 +79,7 @@
 <script>
 //import { saveAs } from 'file-saver';
 
-import ModelingPanel from './KA/ModelingPanel.vue';
+
 
 import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
@@ -97,8 +96,10 @@ import TargetRoad from './PagesTab/TargetRoad.vue';
 import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
 import MapContainer from './MapContainer.vue';
+
 import ModellingComponent from './KA/ModellingComponent.vue';
 import ModelingRezult from './KA/ModelingRezult.vue';
+import ModelingPanel from './KA/ModelingPanel.vue';
 
 
 export default {
@@ -121,13 +122,15 @@ export default {
     MapContainer,
 
     ModellingComponent,
-    ModelingPanel,ModelingRezult
+    ModelingPanel,
+    ModelingRezult
   },
   data(){
       return{
         activeComponent: "MapContainer",
         system: {typeWorkplace: -1},
         ExperimentStatus: false,
+        experimentEddit: false,
         animation:{
           menuButton: false
         }
@@ -136,15 +139,21 @@ export default {
   methods: {
     SelectComponent(nameComponent) {
         this.activeComponent = nameComponent
+        this.experimentEddit = false
       },
       async ChangeComponents() {
         this.system = await this.$SystemObject()
-        this.activeComponent = 'MapContainer'
+        this.SelectComponent('MapContainer')
+        
       },
       ChangeExperimentStatus(emit){
         this.ExperimentStatus = emit.status
         this.animation.menuButton = emit.status
         this.ChangeComponents()
+      },
+      ChangeExperimentEddit(status){
+        this.experimentEddit = status
+        this.activeComponent = status?'ModelingPanel':'MapContainer'
       },
       async SaveWorkplace(){
         /*

@@ -1,5 +1,16 @@
 <template>
-    <div class="ModellingPanel" v-if="SettingsShow">
+  <div class="main_contain RowSection">
+          <div>
+            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
+              <img src="../../assets/exit.svg">
+            </button>
+          </div>
+    <div class="ContentDiv" style="margin-top: 30px;" >
+        <div class="Panel LeftPanel">
+
+        </div>
+        <div class="Panel RightPanel" >
+
           <div class="PanelSettings"  @change="ValidateDataPostModellingSettings">
             <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null}">
               <legend>Тип эксперимента:</legend>
@@ -24,7 +35,11 @@
               <div><input type="radio" :value="1" v-model="modellingSettings.useInteraction"/><label>используется</label></div>
             </fieldset>
           </div>
+
+
+        </div>  
     </div>
+  </div>
 </template>
   
 <script>
@@ -43,7 +58,7 @@
           optionPro42: 0,
           experimentEddit: false
         },
-        SettingsShow: false
+        SettingsShow: true
       }
     },
     props:{
@@ -55,6 +70,11 @@
 
     },
     methods: {
+        SelectComponent(nameComponent) {
+          this.$emit('updateParentComponent', {
+              nameComponent: nameComponent
+          })
+        },
         SettingsReset(){
             this.modellingSettings={
                 experiment: 0,

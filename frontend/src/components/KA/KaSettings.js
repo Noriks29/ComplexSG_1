@@ -32,6 +32,9 @@ let KaSettings = {
       },
       ExperimentStatus:{
         type: Boolean
+      },
+      experimentEddit:{
+        type:Boolean
       }
     },
     watch: {

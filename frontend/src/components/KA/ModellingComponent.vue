@@ -44,11 +44,6 @@ import { KaSettings } from './KaSettings';
       return{
         purposesJson: 0, //колличество заявок
         ConstellationJson: [], //список ог
-        PreWrapDefaultTable: false,
-        dataLableName: [{label: "data", nameParam: "data"}],
-        dataModelling: {
-          engineLogResponse: []
-        },
         dataTable: [],
         earthList: [],
         modellingSettings:{
@@ -60,7 +55,6 @@ import { KaSettings } from './KaSettings';
           chargeSimulation: 0,
           optionPro42: 0
         },
-        experimentEddit: false,
         rezultShow:false,
         modellingSettingsLabel:{
           experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
@@ -83,8 +77,7 @@ import { KaSettings } from './KaSettings';
     },
     methods: {
         ShowSettings(status){
-            this.$SettingsShowChange(status)
-            this.experimentEddit = status
+            this.$emit('showSettings', status)
             this.$SettingsShowRezult(false)
             this.rezultShow = false
         },
@@ -92,16 +85,13 @@ import { KaSettings } from './KaSettings';
             this.modellingSettings = data
         },
         ShowRezult(status){
-          this.$SettingsShowChange(false)
-          this.experimentEddit = false
+          this.$emit('showSettings', false)
           this.rezultShow = status
           this.$SettingsShowRezult(status)
         },
         Experiment(status){
           this.ShowRezult(status)
-          this.dataModelling = {
-            engineLogResponse: []
-          }
+          this.$InitModellingRezult()
           this.modellingRezult= {
             log: [],
             E77: [],
@@ -116,21 +106,23 @@ import { KaSettings } from './KaSettings';
       },
       async StartModelling(){
         this.$showLoad(true);
+        this.$InitModellingRezult()
         let dataPost = Object.assign(this.modellingSettings)
         dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
         dataPost.optionPro42 = Number(dataPost.optionPro42)
-        let rezult = {}
+        let rezult = {engineLogResponse: []}
         if(this.systemStatus.typeWorkplace in {3:null,4:null}){
           rezult = await this.$FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
         }
         else rezult = await this.$FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
         if(rezult.engineLogResponse.length > 0){
-          this.dataModelling = rezult
-          this.ParceModellingRezult()
+          let events = await this.$FetchGet('/api/v1/event/codes/all') || []
+          console.log(events)
+          this.ParceModellingRezult(rezult)
         }
         this.$showLoad(false);
       },
-      async ParceModellingRezult(){
+      async ParceModellingRezult(rezult){
         this.modellingRezult = {
           Smao: [],
           log: [],
@@ -141,13 +133,13 @@ import { KaSettings } from './KaSettings';
           hide: [],
           fcLog:[]
         }
-        try{this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)} //лог движка 
+        try{this.modellingRezult.Smao.push(rezult.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
         try {//лог событий
           let events = await this.$FetchGet('/api/v1/event/codes/all') || []
           let dataevents = {}
           events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
-          this.dataModelling.logResponse.logDataArray.forEach(element => {
+          rezult.logResponse.logDataArray.forEach(element => {
             const e = Object.assign({}, element);
             e.timeUnix = UnixToDtime(e.time).time
             e.event = dataevents[e.type]
@@ -157,7 +149,7 @@ import { KaSettings } from './KaSettings';
 
         try { //обработка лога полёта
           this.modellingRezult.fcLog = []
-          this.dataModelling.logResponse.fcLogArray.forEach(element => {
+          rezult.logResponse.fcLogArray.forEach(element => {
             element.timeBegin = UnixToDtime(element.timeBegin).time
             element.timeEnd = UnixToDtime(element.timeEnd).time
             let flag = true
@@ -171,7 +163,7 @@ import { KaSettings } from './KaSettings';
           })
         }catch (error) {console.error(error)}
         
-        this.dataModelling.engineLogResponse.forEach(element => { //обработка других событий
+        rezult.engineLogResponse.forEach(element => { //обработка других событий
           try {
             element.time = this.CreateDateTime(element.time)
             this.modellingRezult.log.push(element)

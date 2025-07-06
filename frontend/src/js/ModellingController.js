@@ -1,27 +1,110 @@
 import { ref } from 'vue';
 import ModellingComponent from '@/components/KA/ModellingComponent.vue';
-import ModelingPanel from '@/components/KA/ModelingPanel.vue';
 import ModelingRezult from '@/components/KA/ModelingRezult.vue';
+import { UnixToDtime } from '@/js/WorkWithDTime';
 const ModellingProcess = {
   install(app) {
     const ModelComponent = ref(null);
-    const SettingsComponent = ref(null);
     const RezultComponent = ref(null);
+    let ModellingRezultData = ref(undefined)
+    app.config.globalProperties.$SetModellingRezult = function (ModellingData, eventsList) {
+      
+      console.log(ModellingRezultData)
+      try{ModellingRezultData.value.Smao.push(ModellingData.smaoLogResponse)} //лог движка 
+          catch (error) {console.error(error)}
+        try {//лог событий
+          let dataevents = {}
+          eventsList.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
+          ModellingData.logResponse.logDataArray.forEach(element => {
+            const e = Object.assign({}, element);
+            e.timeUnix = UnixToDtime(e.time).time
+            e.event = dataevents[e.type]
+            ModellingRezultData.value.events.push(e)
+          })
+        }catch (error) {console.error(error)}
 
+        try { //обработка лога полёта
+          ModellingRezultData.value.fcLog = []
+          ModellingData.logResponse.fcLogArray.forEach(element => {
+            element.timeBegin = UnixToDtime(element.timeBegin).time
+            element.timeEnd = UnixToDtime(element.timeEnd).time
+            let flag = true
+            for (let index = 0; index < ModellingRezultData.value.fcLog.length; index++)
+              if(element.idSender == ModellingRezultData.value.fcLog[index].idSender){
+                ModellingRezultData.value.fcLog[index].data.push(element)
+                flag = false
+                break
+              }
+            if(flag) ModellingRezultData.value.fcLog.push({idSender: element.idSender, data:[element]})
+          })
+        }catch (error) {console.error(error)}
+        
+        ModellingData.engineLogResponse.forEach(element => { //обработка других событий
+          try {
+            element.time = this.CreateDateTime(element.time)
+            ModellingRezultData.value.log.push(element)
+            if(element.type == "E77"){ //план съёмок 
+              let oneE77 = {idSender:  element.idSender, data: []}
+              for (let index = 0; index < element.visualFormsData.visualFormsDataShooting.length; index++) {
+                const e = Object.assign({}, element.visualFormsData.visualFormsDataShooting[index]);
+                e.wsUnix = UnixToDtime(Math.floor(e.ws)).time
+                e.weUnix = UnixToDtime(Math.floor(e.we)).time
+                e.tsUnix = UnixToDtime(Math.floor(e.ts)).time
+                e.teUnix = UnixToDtime(Math.floor(e.te)).time
+                e.pitch =  Math.round(e.pitch * 100) / 100
+                e.roll =  Math.round(e.roll * 100) / 100
+                oneE77.data.push(e)
+              }
+              ModellingRezultData.value.E77.push(oneE77)
+            }
+            else if (element.type == "E78"){
+              if (element.dataDownPlan.partsPlan.length > 0) {
+                ModellingRezultData.value.E78.push(element)
+              }
+            }
+            else if (element.type == "E79"){
+              if (element.mainFlightPlan !== null) {
+                let E79Create = []
+                element.mainFlightPlan.flightPlan.forEach(E79D =>{
+                  const e = Object.assign({}, E79D);
+                  e.timeUnix = UnixToDtime(e.timeBegin).time +' - '+ UnixToDtime(e.timeEnd).time
+                  E79Create.push(e)
+                })
+                ModellingRezultData.value.E79.push({idSender: element.idSender, data: E79Create})
+              }
+            }
+          } catch (error) {
+            console.error(error, element)
+            ModellingRezultData.value.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + element)
+          }
+        });
+        console.log("Результат моделлирования и обработки", ModellingRezultData.value)
+        this.$dataTransfer(ModellingRezultData)
+    };
+    app.config.globalProperties.$InitModellingRezult = function () {
+      ModellingRezultData = ref({
+            log: [],
+            E77: [],
+            E78: [],
+            hide: [],
+            E79: [],
+            Smao: [],
+            events: [],
+            fcLog:[],
+            Select:{
+              E77: [],
+              E78: [],
+              E79: [],
+              fcLog:[],
+              selectKA: undefined
+            }
+      });
+      console.log("grgeg", ModellingRezultData)
+    }
     app.component('ModellingComponent', ModellingComponent);
     app.config.globalProperties.$ReloadSettings = function (data) {
       if (ModelComponent.value && ModelComponent.value.ReloadSettings) {
         ModelComponent.value.ReloadSettings(data);
-      } else {
-        this.$showToast('Ошибка сохранения настроек','error',"LOAD");
-      }
-    };
-
-
-    app.component('ModelingPanel', ModelingPanel);
-    app.config.globalProperties.$SettingsShowChange = function (data) {
-      if (SettingsComponent.value && SettingsComponent.value.SettingsShowChange) {
-        SettingsComponent.value.SettingsShowChange(data);
       } else {
         this.$showToast('Ошибка сохранения настроек','error',"LOAD");
       }
@@ -42,18 +125,12 @@ const ModellingProcess = {
         this.$showToast('Ошибка сохранения настроек','error',"LOAD");
       }
     };
-    /*
-    app.config.globalProperties.$FetchGet = async function (http, AlertError = true, massage=null){
 
-    }*/
 
     app.mixin({
       mounted() {
         if (this.$options.name === "ModellingComponent") {
           ModelComponent.value = this;
-        }
-        else if (this.$options.name === "ModelingPanel") {
-          SettingsComponent.value = this;
         }
         else if (this.$options.name === "ModelingRezult") {
           RezultComponent.value = this;
