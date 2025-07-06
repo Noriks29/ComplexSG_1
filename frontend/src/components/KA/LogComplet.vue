@@ -8,7 +8,7 @@
             <div class="TableDiv">
           <table class="TableDefault">
           <thead>
-            <tr><th></th></tr>
+            <tr><th>Заявка</th><th>Тип</th><th>Время</th><th>Описание</th><th>Узел 1</th><th>Узел 2</th></tr>
           </thead>
           <tbody v-for="(data, index) in dataT" :key="index">
             <tr v-for="(dataev, indexev) in data.data" :key="indexev">
@@ -60,12 +60,14 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             console.log(this.dataTable, SystemObject)
             this.dataT = {}
             this.dataTable.forEach(event => {
+              if(event.orderId != 0 && event.orderName != null){
                 if(this.dataT[event.orderId] != undefined){
                     this.dataT[event.orderId].data.push(event)
                 }
                 else{
                     this.dataT[event.orderId]={data: [event], status: 0}
                 }
+              }
             })
             
             this.CreatePlot()
@@ -90,16 +92,17 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                     for (let i = 0; i < element.length; i++) {
                         let flag = false
                         const eventMain = element[i];
-
+                        
                         if(eventMain.type in {1:null, 6:null}){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 2))
                                 if(eventChild.type in {1:null, 6:null, 9:null}){
                                   console.log("fssefesfesfefes",eventChild.time-eventMain.time, eventMain, eventChild.time, CreateDateTime(eventMain.time, 2) )
                                     if(eventChild.type != 9) console.error("Повторение появление", eventChild)
                                     dataGrapf[0].y.push(eventMain.orderName)
-                                    dataGrapf[0].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[0].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[0].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[0].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }
@@ -108,11 +111,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 9){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {10:null, 9:null}){
                                     if(eventChild.type == 9) console.error("Повторение съёмки цели", eventChild)
                                     dataGrapf[2].y.push(eventMain.orderName)
-                                    dataGrapf[2].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[2].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[2].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[2].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }
@@ -121,11 +125,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 10){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {10:null, 12:null}){
                                     if(eventChild.type == 10) console.error("Повторное хранение", eventChild)
                                     dataGrapf[3].y.push(eventMain.orderName)
-                                    dataGrapf[3].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[3].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[3].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[3].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }
@@ -134,11 +139,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 5){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {9:null, 4:null, 5:null}){
                                     if(eventChild.type == 5) console.error("Повторное планирование", eventChild)
                                     dataGrapf[1].y.push(eventMain.orderName)
-                                    dataGrapf[1].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[1].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[1].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[1].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }
@@ -147,11 +153,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 13){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {13:null, 14:null}){
                                     if(eventChild.type == 13) console.error("Повторный старт передачи в КА", eventChild)
                                     dataGrapf[4].y.push(eventMain.orderName)
-                                    dataGrapf[4].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[4].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[4].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[4].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }
@@ -160,11 +167,12 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 11){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
+                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {11:null, 12:null}){
                                     if(eventChild.type == 11) console.error("Повторный старт передачи в НП", eventChild)
                                     dataGrapf[5].y.push(eventMain.orderName)
-                                    dataGrapf[5].x.push(CreateDateTime(eventChild.time-eventMain.time, 1))
-                                    dataGrapf[5].base.push(CreateDateTime(eventMain.time, 2))
+                                    dataGrapf[5].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
+                                    dataGrapf[5].base.push(CreateDateTime(eventMain.time, 1))
                                     flag = true
                                     break
                                 }

@@ -19,7 +19,6 @@
 </template>
   
 <script>
-import { OGList, SystemObject} from '@/js/GlobalData'
 import Plotly from 'plotly.js-dist'
 import { CreateDateTime } from '@/js/WorkWithDTime';
 
@@ -48,15 +47,16 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             
           },
           PrevrapData(){
-            console.log(this.dataTable, OGList, SystemObject)
+            console.log(this.dataTable)
 
             this.CreatePlot()
           },
-          CreatePlot(){
+          async CreatePlot(){
               let dataPlotly = []
               Plotly.newPlot("plotlydiv", [])
               Plotly.newPlot("plotlydivCharge", [], {title: 'не готов', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
               let data = [0]
+              let SystemObject = this.$SystemObject()
               
               if(data.length > 0 ){
                 let dataGrapf = {type: 'bar',name: "Пустой",y: [[],[]],x: [],orientation: 'h', base: [], showlegend: false,hoverinfo: 'none',
@@ -72,7 +72,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   marker: {opacity: 0.8, color: []}
                 }
                 let satlist = {}
-                
+                let OGList = await this.$OGList()
                 OGList.forEach(OG => {
                     OG.satellites.forEach(sat => {
                         dataGrapf.y[0].push(OG.constellationName)

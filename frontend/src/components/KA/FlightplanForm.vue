@@ -74,7 +74,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]}],
           dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
             {lable: "C/T", nameParam: "lightForm"},{lable: "Съёмка", nameParam: "shootingName"},
-            {lable: "Связь с НП", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ", nameParam: "chargeForm"}],
+            {lable: "Связь с НП ", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ теор.", nameParam: "chargeTheoForm"},{lable: "Заряд АКБ факт.", nameParam: "chargeFacForm"}],
             selectRevData: [],
             selectRevId: null
         }
@@ -124,6 +124,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   dataGrapf.marker.color.push(element.light ? 'yellow' : "blue")
                   dataGrapf.x.push(CreateDateTime(element.timeEnd - element.timeBegin, 2))
                   dataGrapf.base.push(CreateDateTime(element.timeBegin, 1))
+                  console.log(CreateDateTime(element.timeEnd - element.timeBegin, 2), CreateDateTime(element.timeBegin, 1))
 
                   dataGrapf5.y.push(element.charge)
                   dataGrapf5.x.push(CreateDateTime(element.timeEnd, 1))
@@ -168,8 +169,13 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             this.dataLableName.forEach(element => {
               data[0].push(element.lable)
             })
+            
             this.dataT.forEach(element => {
-              data.push([element.nRev,element.timeUnix,element.light,element.shootingName,element.gsName,element.mode,element.charge])
+              let rowData = []
+              this.dataLableName.forEach(label => {
+                rowData.push(element[label.nameParam])
+              })
+              data.push(rowData)
             });
             let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
             workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
@@ -198,9 +204,11 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             XLSX.writeFile(workbook, 'FlightplanForm.xlsx');
           },
           PrevrapData(){
+            console.log(this.dataTable)
             for (let index = 0; index < this.dataTable.length; index++) {
                 const element = this.dataTable[index];
-                element.chargeForm = Math.round(element.charge * 100)/100
+                element.chargeTheoForm = Math.round(element.charge * 100)/100
+                element.chargeFacForm = Math.round(element.factCharge * 100)/100
                 element.lightForm = element.light ? 'Свет' : 'Тень'
                 console.log(element)
                 this.dataT.push(element) 

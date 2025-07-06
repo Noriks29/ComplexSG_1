@@ -13,7 +13,7 @@
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='BookmarkTable'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
         <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTable='LogComplet'" class="ButtonCommand">Лог выполнения заявок</button>
         <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTable='LogDownload'" class="ButtonCommand">Лог загрузки сеансов связи</button>
-        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Сроки доставки данных</button>
+        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Статистика</button>
       </div>
       
       <div class="tdflexRow">
@@ -190,10 +190,11 @@ import LogComplet from './LogComplet.vue';
         this.dataTable = this.modellingRezultSelect.fcLog
         this.dataTable.forEach(element => {
           element.lightName = element.light ? 'Свет':'Тень'
+          element.charge100 = Math.floor(element.charge * 100)/100
         })
         this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
           {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
-          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge'}
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge100'}
         ]
         this.PreWrapDefaultTable = false
         this.ShowTable='DefaultTable'
@@ -240,7 +241,7 @@ import LogComplet from './LogComplet.vue';
 
   .ModellingPanel{
     overflow: auto;
-    border-left: 3px solid var(--color-border1);
+    border-top: 3px solid var(--color-border1);
     background-color: var(--color-bg-panel);
     animation: 0.5s ease-out 0s 1 slideInFromRight;
     padding: 5px;
