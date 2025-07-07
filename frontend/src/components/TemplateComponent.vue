@@ -23,7 +23,7 @@
         </div>
         <div class="FlexMenuSection" :class="animation.menuButton?'Hide':''">
         <div class="MenuButton">
-          <img src="@/assets/menuPanel.png" id="menu" alt="" @click="animation.menuButton=!animation.menuButton">
+          <img src="@/assets/menuPanel.png" id="menu" alt="" @click="animation.menuButton=!animation.menuButton" v-if="!ExperimentStatus">
           <img src="@/assets/exportIcon.png" id="export" alt="" @click="SaveWorkplace">
           <label class="input-fileMenu">
               <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		

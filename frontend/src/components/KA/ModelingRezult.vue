@@ -6,7 +6,7 @@
     <FlightplanForm v-if="ShowTable=='FlightplanForm'" :dataTable="modellingRezultSelect.E79" @closetable="ShowTable=null"/>
     <LogDownload v-if="ShowTable=='LogDownload'" :dataTable="modellingRezult.events" @closetable="ShowTable=null"/>
     <LogComplet v-if="ShowTable=='LogComplet'" :dataTable="modellingRezult.events" @closetable="ShowTable=null" />
-    <div class="ModellingPanel" v-if="RezultShow">
+    <div class="ModellingPanel" :class="RezultShow?'show':''">
       <div class="tdflexRow">
         <p>Сводки</p>
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='E77E78'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
@@ -191,10 +191,11 @@ import LogComplet from './LogComplet.vue';
         this.dataTable.forEach(element => {
           element.lightName = element.light ? 'Свет':'Тень'
           element.charge100 = Math.floor(element.charge * 100)/100
+          element.factCharge100 = Math.floor(element.factCharge * 100)/100
         })
         this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
           {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
-          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"АКБ",nameParam:'charge100'}
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"Заряд АКБ теор.",nameParam:'charge100'},{lable:"Заряд АКБ факт.",nameParam:'factCharge100'}
         ]
         this.PreWrapDefaultTable = false
         this.ShowTable='DefaultTable'
@@ -240,18 +241,26 @@ import LogComplet from './LogComplet.vue';
   }
 
   .ModellingPanel{
-    overflow: auto;
+    
     border-top: 3px solid var(--color-border1);
     background-color: var(--color-bg-panel);
-    animation: 0.5s ease-out 0s 1 slideInFromRight;
-    padding: 5px;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    width: 0px;
+    overflow: hidden;
+    padding: 0px;
+    transition: all 0.5s linear;
+    &.show{
+      padding: 5px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 210px;
+    }
   }
   .tdflexRow{
+    width: 210px;
     display: flex;
     flex-direction: column;
   }
