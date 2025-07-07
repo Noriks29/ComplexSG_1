@@ -8,7 +8,6 @@ const ModellingProcess = {
     const RezultComponent = ref(null);
     let ModellingRezultData = ref(undefined)
     app.config.globalProperties.$SetModellingRezult = function (ModellingData, eventsList) {
-      
       console.log(ModellingRezultData)
       try{ModellingRezultData.value.Smao.push(ModellingData.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
@@ -81,6 +80,30 @@ const ModellingProcess = {
         console.log("Результат моделлирования и обработки", ModellingRezultData.value)
         this.$dataTransfer(ModellingRezultData)
     };
+    app.config.globalProperties.$SetModellingRezultSelect = function (id) {
+        let data = {
+          E77: [],
+          E78: [],
+          E79: [],
+          fcLog: [],
+          selectKA: id
+        }
+        ModellingRezultData.value.E77.forEach(E77 =>{
+          if (E77.idSender == id) {data.E77 = E77.data}
+        })
+        ModellingRezultData.value.E78.forEach(E78 =>{
+          if (E78.idSender == id) {data.E78 = E78.dataDownPlan.partsPlan}
+        })
+        ModellingRezultData.value.E79.forEach(E79 =>{
+          if (E79.idSender == id) {data.E79 = E79.data}
+        })
+        ModellingRezultData.value.fcLog.forEach(fcLog =>{
+          if (fcLog.idSender == id) {data.fcLog = fcLog.data}
+        })
+      ModellingRezultData.value.Select = data
+      console.log("Выбранный КА", ModellingRezultData)
+      return data
+    }
     app.config.globalProperties.$InitModellingRezult = function () {
       ModellingRezultData = ref({
             log: [],
@@ -101,6 +124,11 @@ const ModellingProcess = {
       });
       console.log("grgeg", ModellingRezultData)
     }
+    app.config.globalProperties.$GetModellingRezult = function () {
+      console.log(ModellingRezultData.value, "получение данных")
+      return ModellingRezultData.value
+    }
+
     app.component('ModellingComponent', ModellingComponent);
     app.config.globalProperties.$ReloadSettings = function (data) {
       if (ModelComponent.value && ModelComponent.value.ReloadSettings) {

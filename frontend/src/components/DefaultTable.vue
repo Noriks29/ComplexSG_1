@@ -1,15 +1,9 @@
 <template>
-  <div class="DataTable">
-      <div class="closebutton"><button @click="CloseTable">
-        <img src="../assets/close.svg"><span>&#8203;</span>
-      </button>
       <button @click="LoadXLSX" class="LoadExel">
         <img src="../assets/excel.png"><span>&#8203;</span>
       </button>
-      </div>
-
       <div class="DataBody">
-        <div class="TableDiv" style="max-height: 85vh;">
+        <div class="TableDiv" style="max-height: 65vh;">
           <table class="TableDefault">
           <thead>
             <tr><th 
@@ -35,7 +29,6 @@
           </table>
         </div>  
       </div> 
-  </div>
 </template>
 
 <script>

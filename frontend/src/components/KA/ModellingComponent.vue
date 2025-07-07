@@ -35,7 +35,6 @@
   
 <script>
 
-import { UnixToDtime } from '@/js/WorkWithDTime';
 import { KaSettings } from './KaSettings';
   export default {
     name: 'ModellingComponent',
@@ -63,16 +62,6 @@ import { KaSettings } from './KaSettings';
           optionPro42: {name: "Расчёт Pro42 при моделировании", label:["не используется", "используется"]},
           useInteraction: {name: "Межспутниковая связь для доставки", label:["не используется", "используется"]},
         },
-        modellingRezult: {
-          log: [],
-          E77: [],
-          E78: [],
-          hide: [],
-          E79: [],
-          Smao: [],
-          events: [],
-          fcLog:[]
-        },
       }
     },
     methods: {
@@ -92,17 +81,7 @@ import { KaSettings } from './KaSettings';
         Experiment(status){
           this.ShowRezult(status)
           this.$InitModellingRezult()
-          this.modellingRezult= {
-            log: [],
-            E77: [],
-            E78: [],
-            hide: [],
-            E79: [],
-            Smao: [],
-            events: [],
-            fcLog: []
-          }
-        this.$emit('ChangeExperimentStatus', {status})
+          this.$emit('ChangeExperimentStatus', {status})
       },
       async StartModelling(){
         this.$showLoad(true);
@@ -117,95 +96,12 @@ import { KaSettings } from './KaSettings';
         else rezult = await this.$FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
         if(rezult.engineLogResponse.length > 0){
           let events = await this.$FetchGet('/api/v1/event/codes/all') || []
-          console.log(events)
-          this.ParceModellingRezult(rezult)
+          this.$SetModellingRezult(rezult,events)
         }
         this.$showLoad(false);
       },
-      async ParceModellingRezult(rezult){
-        this.modellingRezult = {
-          Smao: [],
-          log: [],
-          events: [],
-          E77: [],
-          E78: [],
-          E79: [],
-          hide: [],
-          fcLog:[]
-        }
-        try{this.modellingRezult.Smao.push(rezult.smaoLogResponse)} //лог движка 
-          catch (error) {console.error(error)}
-        try {//лог событий
-          let events = await this.$FetchGet('/api/v1/event/codes/all') || []
-          let dataevents = {}
-          events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
-          rezult.logResponse.logDataArray.forEach(element => {
-            const e = Object.assign({}, element);
-            e.timeUnix = UnixToDtime(e.time).time
-            e.event = dataevents[e.type]
-            this.modellingRezult.events.push(e)
-          })
-        }catch (error) {console.error(error)}
-
-        try { //обработка лога полёта
-          this.modellingRezult.fcLog = []
-          rezult.logResponse.fcLogArray.forEach(element => {
-            element.timeBegin = UnixToDtime(element.timeBegin).time
-            element.timeEnd = UnixToDtime(element.timeEnd).time
-            let flag = true
-            for (let index = 0; index < this.modellingRezult.fcLog.length; index++)
-              if(element.idSender == this.modellingRezult.fcLog[index].idSender){
-                this.modellingRezult.fcLog[index].data.push(element)
-                flag = false
-                break
-              }
-            if(flag) this.modellingRezult.fcLog.push({idSender: element.idSender, data:[element]})
-          })
-        }catch (error) {console.error(error)}
-        
-        rezult.engineLogResponse.forEach(element => { //обработка других событий
-          try {
-            element.time = this.CreateDateTime(element.time)
-            this.modellingRezult.log.push(element)
-            if(element.type == "E77"){ //план съёмок 
-              let oneE77 = {idSender:  element.idSender, data: []}
-              for (let index = 0; index < element.visualFormsData.visualFormsDataShooting.length; index++) {
-                const e = Object.assign({}, element.visualFormsData.visualFormsDataShooting[index]);
-                e.wsUnix = UnixToDtime(Math.floor(e.ws)).time
-                e.weUnix = UnixToDtime(Math.floor(e.we)).time
-                e.tsUnix = UnixToDtime(Math.floor(e.ts)).time
-                e.teUnix = UnixToDtime(Math.floor(e.te)).time
-                e.pitch =  Math.round(e.pitch * 100) / 100
-                e.roll =  Math.round(e.roll * 100) / 100
-                oneE77.data.push(e)
-              }
-              this.modellingRezult.E77.push(oneE77)
-            }
-            else if (element.type == "E78"){
-              if (element.dataDownPlan.partsPlan.length > 0) {
-                this.modellingRezult.E78.push(element)
-              }
-            }
-            else if (element.type == "E79"){
-              if (element.mainFlightPlan !== null) {
-                let E79Create = []
-                element.mainFlightPlan.flightPlan.forEach(E79D =>{
-                  const e = Object.assign({}, E79D);
-                  e.timeUnix = UnixToDtime(e.timeBegin).time +' - '+ UnixToDtime(e.timeEnd).time
-                  E79Create.push(e)
-                })
-                this.modellingRezult.E79.push({idSender: element.idSender, data: E79Create})
-              }
-            }
-          } catch (error) {
-            console.error(error, element)
-            this.modellingRezult.log.push("-!-!-!-!-ОШИБКА обработки на строке - " + element)
-          }
-        });
-        console.log("Результат моделлирования и обработки", this.modellingRezult)
-        this.$dataTransfer(this.modellingRezult)
-      },
       async ReLoadComponent(){
+        this.$InitModellingRezult()
         this.earthList = await this.$NPList()
         this.ConstellationJson = await this.$OGList()
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []

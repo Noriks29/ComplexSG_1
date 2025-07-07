@@ -13,11 +13,11 @@
         </transition> 
       </div>
       <div class="FooterSection">
-        <ModelingRezult :systemStatus="system" @showRezult="SelectComponent('ModelingPanel')"/>
+        <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
         <div class="workpage">
           <transition name="translate" mode="out-in" v-if="activeComponent != ''">
             <div class="ComponentSelect">
-              <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" ></component> 
+              <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" :ModelingRezultMode="ModelingRezultMode"></component> 
             </div>
           </transition>
         </div>
@@ -131,6 +131,7 @@ export default {
         system: {typeWorkplace: -1},
         ExperimentStatus: false,
         experimentEddit: false,
+        ModelingRezultMode: 'Settings',
         animation:{
           menuButton: false
         }
@@ -146,6 +147,17 @@ export default {
         this.SelectComponent('MapContainer')
         
       },
+      async ShowModellingPanel(mode){
+        if(!(this.ModelingRezultMode == 'Settings' && mode == null)){
+          if(mode == null){
+            await this.SelectComponent('')
+          }
+          else{
+            this.ModelingRezultMode = mode || 'Settings'
+          }
+          this.SelectComponent('ModelingPanel')
+        } 
+      },
       ChangeExperimentStatus(emit){
         this.ExperimentStatus = emit.status
         this.animation.menuButton = emit.status
@@ -154,6 +166,7 @@ export default {
       ChangeExperimentEddit(status){
         this.experimentEddit = status
         this.activeComponent = status?'ModelingPanel':'MapContainer'
+        this.ModelingRezultMode = 'Settings'
       },
       async SaveWorkplace(){
         /*

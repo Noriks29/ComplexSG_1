@@ -1,21 +1,15 @@
 <template>
-    <div class="DataTable">
-        <div class="closebutton"><button @click="CloseTable">
-            <img src="../../assets/close.svg"><span>&#8203;</span>
-          </button>
-        </div>
-        <div class="DataBody">
-        <div class="GrafDiv">
-          <div id="plotlydiv">
-            <!--Карта-->
-          </div>
-          <div id="plotlydivCharge">
-            <!--Карта-->
-          </div>
-        </div>
-        
+  <div class="DataBody">
+    <div class="GrafDiv">
+      <div id="plotlydiv">
+        <!--Карта-->
       </div>
+      <div id="plotlydivCharge">
+        <!--Карта-->
       </div>
+    </div>
+    
+  </div>
 </template>
   
 <script>

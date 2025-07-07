@@ -1,13 +1,7 @@
 <template>
-    <div class="DataTable">
-        <div class="closebutton"><button @click="CloseTable">
-            <img src="../../assets/close.svg"><span>&#8203;</span>
-          </button>
           <button @click="LoadXLSX" class="LoadExel">
-            <img src="../../assets/excel.png"><span>&#8203;</span>
+            <img src="../../assets/excel.png" ><span>&#8203;</span>
           </button>
-        </div>
-        
         <div class="DataBody">
             <div class="TableDiv" :style="(selectRevId!=null)?'max-height:120px;height:120px;':'max-height:200px;'">
                 <table class="TableDefault SelectModeTable">
@@ -51,7 +45,6 @@
           </div>
         </div>
         
-      </div>
       </div>
 </template>
   

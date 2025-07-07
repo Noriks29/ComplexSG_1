@@ -1,11 +1,6 @@
 <template>
-    <div class="DataTable">
-        <div class="closebutton"><button @click="CloseTable">
-            <img src="../../assets/close.svg"><span>&#8203;</span>
-          </button>
-        </div>
         <div class="DataBody">
-            <div class="TableDiv">
+          <div class="TableDiv">
           <table class="TableDefault">
           <thead>
             <tr><th>Заявка</th><th>Тип</th><th>Время</th><th>Описание</th><th>Узел 1</th><th>Узел 2</th></tr>
@@ -21,9 +16,7 @@
           <div id="plotlydiv">
             <!--Карта-->
           </div>
-        </div>
-        
-      </div>
+        </div> 
       </div>
 </template>
   
@@ -57,7 +50,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             
           },
           PrevrapData(){
-            console.log(this.dataTable, SystemObject)
+            console.log(this.dataTable, SystemObject, "Данные компонента")
             this.dataT = {}
             this.dataTable.forEach(event => {
               if(event.orderId != 0 && event.orderName != null){
