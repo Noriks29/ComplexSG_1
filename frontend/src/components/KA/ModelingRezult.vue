@@ -51,13 +51,7 @@ import SelectDiv from '../SelectDiv.vue';
             selectKA: undefined
           }
         },
-        modellingRezultSelect:{
-          E77: [],
-          E78: [],
-          E79: [],
-          fcLog:[],
-          selectKA: undefined
-        },
+
         arr: [],
         valueSS: {},
 
@@ -112,7 +106,7 @@ import SelectDiv from '../SelectDiv.vue';
         }
         try {
           this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
-          this.modellingRezultSelect.selectKA = this.arr[0].value
+          this.modellingRezult.Select.selectKA = this.arr[0].value
         } catch (error) {console.error(error)}
       }
     },
