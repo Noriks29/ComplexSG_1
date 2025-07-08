@@ -110,7 +110,6 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import { FetchGet, DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
 import DefaultTable from '@/components/DefaultTable.vue'
 import SelectDiv from "../SelectDiv.vue"
 import E78Table from './E78Table.vue';
@@ -237,20 +236,20 @@ import { NPList, OGList } from '@/js/GlobalData';
         this.modellingSettings[target.target.name] = Number(target.target.value)
       },
       async StartModelling(){
-        DisplayLoad(true)
+        this.$showLoad(true)
         let dataPost = Object.assign(this.modellingSettings)
         dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
         dataPost.optionPro42 = Number(dataPost.optionPro42)
         let rezult = {}
         if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-          rezult = await FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
+          rezult = await this.$FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
         }
-        else rezult = await FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
+        else rezult = await this.$FetchPost('/api/v1/smao', dataPost) || {engineLogResponse: []}
         if(rezult.engineLogResponse.length > 0){
           this.dataModelling = rezult
           this.ParceModellingRezult()
         }
-        DisplayLoad(false)
+        this.$showLoad(false)
       },
       async ParceModellingRezult(){
         this.modellingRezult = {
@@ -266,7 +265,7 @@ import { NPList, OGList } from '@/js/GlobalData';
         try{this.modellingRezult.Smao.push(this.dataModelling.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
         try {//лог событий
-          let events = await FetchGet('/api/v1/event/codes/all') || []
+          let events = await this.$this.$FetchGet('/api/v1/event/codes/all') || []
           let dataevents = {}
           events.forEach(element => dataevents[element.codeEvent]=element.descriptionEvent)
           this.dataModelling.logResponse.logDataArray.forEach(element => {
@@ -439,7 +438,7 @@ import { NPList, OGList } from '@/js/GlobalData';
       async ReLoadComponent(){
         this.earthList = NPList
         this.ConstellationJson = OGList
-        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        let result = await this.$this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
         this.arr = []
         for (let i = 0; i < this.ConstellationJson.length; i++) {

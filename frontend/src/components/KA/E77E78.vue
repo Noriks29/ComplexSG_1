@@ -35,7 +35,6 @@
   
   <script>
   
-import { FetchGet } from '@/js/LoadDisplayMetod';
 import { UnixToDtime } from '../../js/WorkWithDTime'
 import XLSX from 'xlsx-js-style';
   
@@ -140,7 +139,7 @@ import XLSX from 'xlsx-js-style';
       },
       async mounted() {
         console.log(this.dataTable1, this.dataTable2)
-        let target = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        let target = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         target.forEach(el => {
           this.priory[el.requestId] = el.priory
         })

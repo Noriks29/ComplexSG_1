@@ -21,7 +21,7 @@
               <img src="@/assets/add.png" alt="" class="addButtonIcon">{{ (PageSettings.status == 1) ? 'Прекратить' : 'Добавить орбитальную группировку' }}
             </button>
         </div>
-        <div class="LoadExel">
+        <div class="LoadExel" style="position: unset; flex: none; width: fit-content;">
             <div><input id="Exel" type="checkbox" v-model="PageSettings.saveEXELmode"><label for="Exel">
                 {{ PageSettings.saveEXELmode ? 'Сохранить все ОГ':'Сохранить выбранную ОГ' }}
               </label></div>

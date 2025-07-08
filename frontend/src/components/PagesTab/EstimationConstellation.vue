@@ -68,7 +68,6 @@
   
   <script>
 
-import {DisplayLoad, FetchGet, FetchPost} from '../../js/LoadDisplayMetod.js'
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
@@ -130,7 +129,7 @@ import Plotly from 'plotly.js-dist'
         async CreateViewWindow(){
           this.TableViewWindow = []
           let fill = false
-          let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+          let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
 
           for (let index = 0; index < this.dataTable.length; index++) {
             const element = this.dataTable[index];
@@ -166,9 +165,9 @@ import Plotly from 'plotly.js-dist'
           }
         },
         async StartModelling(){
-          DisplayLoad(true)
+          this.$showLoad(true)
           this.CommandWork()
-          let response = await FetchPost("/api/v1/pro42/view/request", this.experimentObject) || []
+          let response = await this.$FetchPost("/api/v1/pro42/view/request", this.experimentObject) || []
           
           try {
             for (let index = 0; index < response.length; index++) {
@@ -208,7 +207,7 @@ import Plotly from 'plotly.js-dist'
           }
         )
 
-          DisplayLoad(false)
+          this.$showLoad(false)
 
         },
         SelectChange(target){
@@ -217,8 +216,8 @@ import Plotly from 'plotly.js-dist'
     },
     
     async mounted() {
-        DisplayLoad(true)
-        let result = await FetchGet('/api/v1/satrequest/request/get/all') || []
+        this.$showLoad(true)
+        let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
 
         for (let i = 0; i < OGList.length; i++) {
@@ -233,7 +232,7 @@ import Plotly from 'plotly.js-dist'
         this.experimentObject.modellingBegin = this.systemStatus.modelingBegin
         this.experimentObject.modellingStep = this.systemStatus.step
         console.log(this.systemStatus)
-        DisplayLoad(false)
+        this.$showLoad(false)
 
 
     }

@@ -30,10 +30,8 @@
   
   <script>
   
-import { FetchGet } from '@/js/LoadDisplayMetod';
 import { UnixToDtime } from '../../js/WorkWithDTime'
 import XLSX from 'xlsx-js-style';
-  //import { FetchGet } from '../../js/LoadDisplayMetod'
   
     export default {
       name: 'BookmarkTable',
@@ -137,7 +135,7 @@ import XLSX from 'xlsx-js-style';
       async mounted() {
         console.log(this.dataTable1, this.dataTable2)
 
-        let target = await FetchGet('/api/v1/modelling/data/earth-sat/all') || []
+        let target = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all') || []
         this.rebuild_data = target
         this.rebuild_data.forEach(datareb => {
           datareb.data = []

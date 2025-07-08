@@ -69,7 +69,6 @@
 <script>
 
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
   export default {
     name: 'KA2',
     data(){
@@ -96,15 +95,15 @@ import { DisplayLoad, FetchPost } from '@/js/LoadDisplayMetod';
           return Dtime.date + " " + Dtime.time + " МСК"
         },
       async StartModelling(){
-        DisplayLoad(true)
+        this.$showLoad(true)
         let datamodelling = {
           "experimentType": 1,
           "modellingMode": 1
         }
-        let rezult = await FetchPost("/api/v1/modelling/smao/dtn", datamodelling)
+        let rezult = await this.$FetchPost("/api/v1/modelling/smao/dtn", datamodelling)
         console.log(rezult)
 
-        DisplayLoad(false)
+        this.$showLoad(false)
       },
     },
     async mounted(){
