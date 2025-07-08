@@ -65,9 +65,10 @@ import { KaSettings } from './KaSettings';
       }
     },
     methods: {
-        ShowSettings(status){
+        async ShowSettings(status){
             this.$emit('showSettings', status)
-            this.$SettingsShowRezult(false)
+            await this.$SettingsShowRezult(false)
+            this.$SetSettings(this.modellingSettings)
             this.rezultShow = false
         },
         ReloadSettings(data){
@@ -106,10 +107,26 @@ import { KaSettings } from './KaSettings';
         this.ConstellationJson = await this.$OGList()
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
-      }
+      },
+      ValidateDataPostModellingSettings(){
+        console.log(this.modellingSettings)
+        if(this.modellingSettings.experiment < 1){
+          this.modellingSettings.chargeForecasting = 0
+          this.modellingSettings.flightPlanning = 0
+        }
+        if(this.modellingSettings.experiment < 2){
+          this.modellingSettings.chargeSimulation = 0
+          this.modellingSettings.planSimulation = 0
+          this.modellingSettings.optionPro42 = 0
+        }
+        if(this.modellingSettings.experiment >= 1) this.modellingSettings.flightPlanning = 1
+        if(this.modellingSettings.experiment >= 2) this.modellingSettings.planSimulation = 1
+        this.$ReloadSettings(this.modellingSettings)
+      },
     },
     async mounted(){
       this.ReLoadComponent()
+      console.log("Моделлирование создано", this.systemStatus.typeWorkplace)
       if (this.systemStatus.typeWorkplace in {2:null}) {
         this.modellingSettings.experiment = 1
       }
@@ -118,6 +135,8 @@ import { KaSettings } from './KaSettings';
         this.modellingSettings.chargeForecasting = 2
         this.modellingSettings.chargeSimulation = 1
       }
+      this.ValidateDataPostModellingSettings()
+
     }
   }
   </script>

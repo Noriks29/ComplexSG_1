@@ -123,18 +123,8 @@ import BookmarkTable from './BookmarkComponent.vue';
               nameComponent: nameComponent
           })
         },
-        SettingsReset(){
-            this.modellingSettings={
-                experiment: 0,
-                flightPlanning: 0,
-                planSimulation: 0,
-                chargeForecasting: 0,
-                useInteraction: 0,
-                chargeSimulation: 0,
-                optionPro42: 0,
-                experimentEddit: false
-            }
-            this.ValidateDataPostModellingSettings()
+        SetSettings(data){
+          this.modellingSettings = data
         },
         SettingsShowChange(stat){
             this.SettingsShow = stat
@@ -232,15 +222,6 @@ import BookmarkTable from './BookmarkComponent.vue';
       this.modellingRezult = await this.$GetModellingRezult()
       console.log(this.modellingRezult, "Результат получен")
        this.ValidateShowPanel(this.ModelingRezultMode)
-      if (this.systemStatus.typeWorkplace in {2:null}) {
-        this.modellingSettings.experiment = 1
-      }
-      if (this.systemStatus.typeWorkplace in {4:null}) {
-        this.modellingSettings.experiment = 2
-        this.modellingSettings.chargeForecasting = 2
-        this.modellingSettings.chargeSimulation = 1
-      }
-      this.ValidateDataPostModellingSettings()
     }
   }
   </script>

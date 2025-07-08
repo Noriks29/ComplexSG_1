@@ -6,13 +6,13 @@
         </div>
         <transition mode="out-in">
           <div class="ModellingDiv PanelMenu">
-            <ModellingComponent :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
+            <ModellingComponent v-if="system.typeWorkplace != -1" :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
             <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
           </div>
         </transition> 
       </div>
-      <div class="FooterSection">
+      <div class="FooterSection" v-if="system.typeWorkplace != -1">
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
         <div class="workpage">
           <transition name="translate" mode="out-in" v-if="activeComponent != ''">
