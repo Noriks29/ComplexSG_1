@@ -5,9 +5,9 @@
         <h1 class="TitleText">Моделирование НЕЧЕГО НЕ ТРОГАТЬ ПОЖАЛУЙСТА</h1>
 
         <div class="Panel">
-          <table>
+          <table><tbody>
               <tr><td>Начальное время расчетов:</td><td v-html="CreateDateTime(systemStatus.startTime)"></td></tr>
-              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr>
+              <tr><td>Начало горизонта моделирования:</td><td v-html="CreateDateTime(systemStatus.modelingBegin)"></td></tr></tbody>
           </table>
         </div>
         <div class="Panel MaxWidth">
@@ -41,7 +41,7 @@
         <div class="Panel MaxWidth" v-if="true">
           <div class="PanelWork">
 
-            <table class="colum">
+            <table class="colum"><tbody>
               <tr>
                 <td>Заявки</td>
                 <td><button class="ButtonCommand">Невыполнимые</button></td>
@@ -51,7 +51,7 @@
                 <td></td>
                 <td colspan="3"><button class="ButtonCommand">Лог движка</button></td>
                 <td colspan="1"><button class="ButtonCommand icon"><img src="../../assets/instructions.png" alt="smaoResponse"></button></td>
-              </tr>
+              </tr></tbody>
             </table>
 
 

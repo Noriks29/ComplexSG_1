@@ -52,7 +52,7 @@
             </div>
 
             <div v-if="nIteration != undefined ">nIteration: {{ nIteration }}</div>
-          <table style="" v-if="roadList.length > 0" class="TableDefault">
+          <table style="" v-if="roadList.length > 0" class="TableDefault"><thead>
             <tr>
                 <td> id цели</td>
                 <td> Имя </td>
@@ -63,7 +63,7 @@
                 <td>te</td>
                 <td>pitch</td>
                 <td>roll</td>
-            </tr>
+            </tr></thead><tbody>
             <tr
                 v-for="data, index in roadList[selectroadID].VisualFormsData.VisualFormsDataShooting"
                 :key="index"
@@ -77,7 +77,7 @@
                 <td> {{ data.te }}</td>
                 <td> {{ data.pitch }}</td>
                 <td> {{ data.roll }}</td>
-            </tr>
+            </tr></tbody>
           </table>
         </div>
         </div>

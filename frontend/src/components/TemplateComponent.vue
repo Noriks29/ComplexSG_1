@@ -81,7 +81,6 @@
 
 
 
-import KA1 from './KA/KA1.vue';
 import KARealTime from "./KA/KARealTime.vue";
 
 import NP from "./PagesTab/NP.vue";
@@ -117,7 +116,6 @@ export default {
     LeaderConstellationConstellation,
     LogEventList,
 
-    KA1,
     KARealTime,
     MapContainer,
 

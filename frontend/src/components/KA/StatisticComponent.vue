@@ -36,7 +36,19 @@
 
           <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
           <table class="TableDefault">
-          <thead><tr><th>Окно видимости</th><th>Окно видимости</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
+          <thead><tr><th>Окно видимости</th><th>Кол-во заявок</th><th>% заявок</th></tr></thead>
+            <tbody>
+                <tr><th>1</th><td>{{ TableReallocation.target1 }}</td><td>{{ (TableReallocation.target1 / TableReallocation.targetCount *100) || '0' }}</td></tr>
+                <tr><th>2</th><td>{{ TableReallocation.target2 }}</td><td>{{ (TableReallocation.target2 / TableReallocation.targetCount*100) || '0' }}</td></tr>
+                <tr><th>3</th><td>{{ TableReallocation.target3 }}</td><td>{{ (TableReallocation.target3 / TableReallocation.targetCount*100) || '0' }}</td></tr>
+                <tr><th>Не запланировано</th><td>{{ TableReallocation.targetNone }}</td><td>{{ (TableReallocation.targetNone / TableReallocation.targetCount*100) || '0' }}</td></tr>
+            </tbody>
+          </table>
+          <table class="TableDefault TopM">
+          <thead><tr><th>Кластер</th><th>Кластер</th><th>Время начала</th><th>Длитель-ность</th><th>% использования</th></tr></thead>
+          </table>
+          <table class="TableDefault TopM">
+          <thead><tr><th>Кластер</th><th>Кол-во заявок</th></tr></thead>
           </table>
         </div>
         </div>  
@@ -60,9 +72,8 @@
                 timePost: 0, timePostCount: 0, timePostMin: 99999999999999999999, timePostMax: 0
             },
             TableSelect: undefined,
-
+            TableReallocation: {targetCount:0, target1: 0, target2: 0, target3: 0, targetNone: 0},
             viewmode: 0,
-            
         }
       },
       methods:
@@ -78,7 +89,7 @@
             dataT.forEach(event => {
                 if(event.orderName != null){
                     if(!(event.orderName in this.targetEvent)){
-                        this.targetEvent[event.orderName] = {events:[], status: false, timeDelayStart: null, timeDelay: null, timePostStart: null, timePost: null }
+                        this.targetEvent[event.orderName] = {events:[], status: false, timeDelayStart: null, timeDelay: null, timePostStart: null, timePost: null, events7: 0 }
                     }
                     this.targetEvent[event.orderName].events.push(event)
                     if(event.type == 9){
@@ -90,6 +101,7 @@
                     }
                     else if(event.type == 10){this.targetEvent[event.orderName].timePostStart = event.time}
                     else if(event.type == 12){this.targetEvent[event.orderName].timePost = event.time - this.targetEvent[event.orderName].timePostStart}
+                    else if(event.type == 7){this.targetEvent[event.orderName].events7 += 1}
                 }
             })
             for (var i in this.targetEvent){
@@ -105,6 +117,14 @@
                     this.dataStatistic.timePostMin = Math.min(this.dataStatistic.timePostMin, this.targetEvent[i].timePost)
                     this.dataStatistic.timePostMax = Math.max(this.dataStatistic.timePostMax, this.targetEvent[i].timePost)
                 }
+                if(this.targetEvent[i].status){
+                    this.TableReallocation.targetCount+=1
+                    if(this.targetEvent[i].events7 == 0){this.TableReallocation.target1+=1}
+                    else if(this.targetEvent[i].events7 == 1){this.TableReallocation.target2+=1}
+                    else if(this.targetEvent[i].events7 > 1){this.TableReallocation.target3+=1}
+                    else this.TableReallocation.targetNone += 1
+                }
+                else this.TableReallocation.targetNone += 1
             }
           },
       },

@@ -21,7 +21,6 @@
 </template>
   
 <script>
-import { SystemObject} from '@/js/GlobalData'
 import Plotly from 'plotly.js-dist'
 import { CreateDateTime } from '@/js/WorkWithDTime';
 
@@ -50,7 +49,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             
           },
           PrevrapData(){
-            console.log(this.dataTable, SystemObject, "Данные компонента")
+            console.log(this.dataTable, "Данные компонента")
             this.dataT = {}
             this.dataTable.forEach(event => {
               if(event.orderId != 0 && event.orderName != null){

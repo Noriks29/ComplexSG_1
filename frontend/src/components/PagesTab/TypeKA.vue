@@ -92,6 +92,12 @@
                       <input type="number" @change="ChangeValue($event, 'charge', data.devCatalog.id)" :id="dataMode.id" :name="data.devCatalog.id" :value="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id]" step="0.1" :class="SelectKA.ChargeTable[data.devCatalog.id][dataMode.id] == undefined ? 'null':''"/>
                     </td>
                   </tr></tbody>
+                  <tfoot>
+                    <tr><th>Сумма</th>
+                    <td v-for="dataMode, indexMode in SelectKA.modesList" :key="indexMode">
+                      {{SelectKA.ChargeTableSum[dataMode.id]}}
+                    </td></tr>
+                  </tfoot>
                 </table>
               </div>
           </div>
@@ -274,10 +280,16 @@ export default {
           this.SelectKA.modesList = this.SelectKA.modesList.concat(mode.operatingModes)
         })
         this.SelectKA.ChargeTable = {}
+        let chargeDeviceSum = {}
         this.SelectKA.value.charges.forEach(charge => {
           if(!(charge.deviceId in this.SelectKA.ChargeTable)) this.SelectKA.ChargeTable[charge.deviceId] = {}
           this.SelectKA.ChargeTable[charge.deviceId][charge.flightModeId] = charge.charge
+          if(chargeDeviceSum[charge.flightModeId]!=undefined) chargeDeviceSum[charge.flightModeId] += charge.charge
+          else chargeDeviceSum[charge.flightModeId]=charge.charge
         })
+        this.SelectKA.ChargeTableSum = chargeDeviceSum
+        
+        console.log(this.SelectKA.ChargeTable, this.SelectKA.modesList,chargeDeviceSum, "charge")
       }
   },
   mounted(){

@@ -18,7 +18,7 @@
       <div class="SatList">
         <div v-for="data, index in RoadKaList" :key="index" 
         >
-          <span :style="'border-bottom: 1px solid ' + (data.color || 'black') +';'">{{ data.name }}</span>
+          <span :style="'flex: 1;border-bottom: 1px solid ' + (data.color || 'black') +';'">{{ data.name }}</span>
           <span class="delete"><img src="@/assets/delete.svg" alt=" - " @click="DeleteRoad(data, index)"></span>
         </div>
       </div>
@@ -322,7 +322,8 @@ export default {
   .SatList{
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    min-width: 100%;
+    align-items: stretch;
     max-height: 200px;
     overflow-y: auto;
     div{

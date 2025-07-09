@@ -10,7 +10,7 @@
             <button v-if="!ExperimentStatus && experimentEddit" @click="ShowSettings(false)" class="ButtonCommand Select">Закрыть настройки</button>
           </div>
           <div class="TableSystem">
-            <table>
+            <table><tbody>
               <tr><td>Количество заявок:</td><td>{{ purposesJson }}</td></tr>
               <tr><td>Количество НП:</td><td>{{ earthList.length }}</td></tr>
               <tr><td>Количество КА:</td><td></td></tr>
@@ -19,13 +19,13 @@
                 :key="index"
               >
               <td>- {{ data.constellationName }}:</td><td>{{ data.satellites.length }} КА</td>
-              </tr>
+              </tr></tbody>
             </table>
           </div>
           <div class="TableSystem">
-            <table style="text-align: left;">
+            <table style="text-align: left;"><tbody>
               <tr v-for="data, index in modellingSettingsLabel" :key="index"
-              ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr>
+              ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr></tbody>
             </table>
           </div>
         </div>

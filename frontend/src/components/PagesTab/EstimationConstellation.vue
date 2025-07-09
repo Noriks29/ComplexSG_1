@@ -13,7 +13,7 @@
         <div class="Panel LeftPanel">
           <div>Парамертры системы</div>
             <div class="SystemInfo">
-                <table>
+                <table><tbody>
                     <tr><td>Начальное время расчетов:</td>
                       <td><DateTime :valueUnix="systemStatus.startTime" :name="'startTime'" @valueSelect="ChangeTimeSystem"/></td>
                     </tr>
@@ -27,7 +27,7 @@
                     <tr><td>Количество целей:</td><td>{{ purposesJson }}</td></tr>
                     <tr><td>Орбитальная группировка</td><td><SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/></td></tr>
                     <tr><td>Количество КА:</td><td>{{ experimentObject.constellation.satellites.length }}</td></tr>
-                  </table>
+                  </tbody></table>
             </div>
             <div class="FlexColumn">
               <div><button @click="StartModelling" class="ButtonCommand">Начать эксперимент</button></div>
@@ -73,7 +73,6 @@ import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
 import SelectDiv from '../SelectDiv.vue';
 import DateTime from '../DateTime.vue';
-import { OGList } from '@/js/GlobalData.js';
 
 import Plotly from 'plotly.js-dist'
 
@@ -219,7 +218,7 @@ import Plotly from 'plotly.js-dist'
         this.$showLoad(true)
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length || 0
-
+        let OGList = await this.$OGList()
         for (let i = 0; i < OGList.length; i++) {
           const element = OGList[i];
           this.arr.push({value: element, lable: element.constellationName })
