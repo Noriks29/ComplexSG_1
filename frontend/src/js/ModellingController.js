@@ -2,15 +2,60 @@ import { ref } from 'vue';
 import ModellingComponent from '@/components/KA/ModellingComponent.vue';
 import ModelingRezult from '@/components/KA/ModelingRezult.vue';
 import { UnixToDtime } from '@/js/WorkWithDTime';
-import ModelingPanel from '@/components/KA/ModelingPanel.vue';
 const ModellingProcess = {
   install(app) {
     const ModelComponent = ref(null);
     const RezultComponent = ref(null);
     const ModelingPanelComponent = ref(null)
     let ModellingRezultData = ref(undefined)
+
+    let ModellingSettings = ref({
+      experiment: 0,flightPlanning: 0,planSimulation: 0,chargeForecasting: 0,useInteraction: 0,chargeSimulation: 0,optionPro42: 0
+    })
+    function ValidateDataPostModellingSettings(){
+      if(ModellingSettings.value.experiment < 1){
+        ModellingSettings.value.chargeForecasting = 0
+        ModellingSettings.value.flightPlanning = 0
+      }
+      if(ModellingSettings.value.experiment < 2){
+        ModellingSettings.value.chargeSimulation = 0
+        ModellingSettings.value.planSimulation = 0
+        ModellingSettings.value.optionPro42 = 0
+      }
+      if(ModellingSettings.value.experiment >= 1) ModellingSettings.value.flightPlanning = 1
+      if(ModellingSettings.value.experiment >= 2) ModellingSettings.value.planSimulation = 1
+    }
+    app.config.globalProperties.$SetSettings = async function (data=null) {
+      if(data == null){
+        let system = this.$SystemObject()
+        ModellingSettings.value = {experiment: 0,flightPlanning: 0,planSimulation: 0,chargeForecasting: 0,useInteraction: 0,chargeSimulation: 0,optionPro42: 0}
+        if (system.typeWorkplace in {2:null}) {
+          ModellingSettings.value.experiment = 1
+        }
+        if (system.typeWorkplace in {4:null}) {
+          ModellingSettings.value.experiment = 2
+          ModellingSettings.value.chargeForecasting = 2
+          ModellingSettings.value.chargeSimulation = 1
+        }
+      }
+      else ModellingSettings.value = data
+      await ValidateDataPostModellingSettings()
+      return ModellingSettings.value
+    }
+    app.config.globalProperties.$GetSettings = function () {
+      return ModellingSettings.value
+    }
+    app.component('ModellingComponent', ModellingComponent);
+    app.config.globalProperties.$ReloadSettings = function () {
+      if (ModelComponent.value && ModelComponent.value.ReloadSettings) {
+        ModelComponent.value.ReloadSettings(ModellingSettings.value);
+      } else {
+        this.$showToast('Ошибка сохранения настроек','error',"LOAD");
+      }
+    };
+
+
     app.config.globalProperties.$SetModellingRezult = function (ModellingData, eventsList) {
-      console.log(ModellingRezultData)
       try{ModellingRezultData.value.Smao.push(ModellingData.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
         try {//лог событий
@@ -124,34 +169,16 @@ const ModellingProcess = {
               selectKA: undefined
             }
       });
-      console.log("grgeg", ModellingRezultData)
     }
     app.config.globalProperties.$GetModellingRezult = function () {
       console.log(ModellingRezultData.value, "получение данных")
       return ModellingRezultData.value
     }
 
-    app.component('ModelingPanel', ModelingPanel);
-    app.config.globalProperties.$SetSettings = function (data) {
-      if (ModelingPanelComponent.value && ModelingPanelComponent.value.SetSettings) {
-        ModelingPanelComponent.value.SetSettings(data);
-      } else {
-        this.$showToast('Ошибка сохранения настроек','error',"LOAD");
-      }
-    };
-    app.component('ModellingComponent', ModellingComponent);
-    app.config.globalProperties.$ReloadSettings = function (data) {
-      if (ModelComponent.value && ModelComponent.value.ReloadSettings) {
-        ModelComponent.value.ReloadSettings(data);
-      } else {
-        this.$showToast('Ошибка сохранения настроек','error',"LOAD");
-      }
-    };
-
     app.component('ModelingRezult', ModelingRezult);
-    app.config.globalProperties.$SettingsShowRezult = function (data) {
-      if (RezultComponent.value && RezultComponent.value.SettingsShowRezult) {
-        RezultComponent.value.SettingsShowRezult(data);
+    app.config.globalProperties.$RezultShow = function (status) {
+      if (RezultComponent.value && RezultComponent.value.RezultShowChange) {
+        RezultComponent.value.RezultShowChange(status);
       } else {
         this.$showToast('Ошибка сохранения настроек','error',"LOAD");
       }

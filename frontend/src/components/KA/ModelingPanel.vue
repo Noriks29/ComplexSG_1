@@ -17,7 +17,7 @@
           <E78Table v-if="ShowMode=='E78Table'" :dataTable="modellingRezult.Select.E78"/>
           <E77E78 v-if="ShowMode=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
           <BookmarkTable v-if="ShowMode=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
-          <div class="PanelSettings"  @change="ValidateDataPostModellingSettings" v-if="ShowMode=='Settings'">
+          <div class="PanelSettings"  @change="ChangeSettings" v-if="ShowMode=='Settings'">
 
             <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null}">
               <legend>Тип эксперимента:</legend>
@@ -118,37 +118,24 @@ import BookmarkTable from './BookmarkComponent.vue';
       },
     },
     methods: {
-        SelectComponent(nameComponent) {
-          this.$emit('updateParentComponent', {
-              nameComponent: nameComponent
-          })
-        },
-        SetSettings(data){
-          this.modellingSettings = data
-        },
-        SettingsShowChange(stat){
-            this.SettingsShow = stat
-        },
-        ValidateDataPostModellingSettings(){
-        console.log(this.modellingSettings)
-        if(this.modellingSettings.experiment < 1){
-          this.modellingSettings.chargeForecasting = 0
-          this.modellingSettings.flightPlanning = 0
-        }
-        if(this.modellingSettings.experiment < 2){
-          this.modellingSettings.chargeSimulation = 0
-          this.modellingSettings.planSimulation = 0
-          this.modellingSettings.optionPro42 = 0
-        }
-        if(this.modellingSettings.experiment >= 1) this.modellingSettings.flightPlanning = 1
-        if(this.modellingSettings.experiment >= 2) this.modellingSettings.planSimulation = 1
-        this.$ReloadSettings(this.modellingSettings)
+      SelectComponent(nameComponent) {
+        this.$emit('updateParentComponent', {
+            nameComponent: nameComponent
+        })
+      },
+      async ChangeSettings(){
+        this.modellingSettings = await this.$SetSettings(this.modellingSettings)
+        this.$ReloadSettings()
       },
       ValidateShowPanel(Panel){
         if(Panel == "FcLog")this.ShowFcLog()
         else if(Panel == "LogAll")this.ShowLogAll()
         else if(Panel == "EventsLogResponse")this.ShowEventsLogResponse()
         else if(Panel == "LogSmao")this.ShowLogSmao()
+        else if(Panel == "Settings"){
+          this.modellingSettings = this.$GetSettings()
+          this.ShowMode = "Settings"
+        }
 
         else this.ShowMode = Panel
       },
@@ -157,11 +144,10 @@ import BookmarkTable from './BookmarkComponent.vue';
         this.dataTable.forEach(element => {
           element.lightName = element.light ? 'Свет':'Тень'
           element.charge100 = Math.floor(element.charge * 100)/100
-          element.factCharge100 = Math.floor(element.factCharge * 100)/100
         })
         this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
           {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
-          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"Заряд АКБ теор.",nameParam:'charge100'},{lable:"Заряд АКБ факт.",nameParam:'factCharge100'}
+          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"Заряд АКБ",nameParam:'charge100'}
         ]
         this.PreWrapDefaultTable = false
         this.ShowMode='DefaultTable'
@@ -221,7 +207,7 @@ import BookmarkTable from './BookmarkComponent.vue';
     async mounted(){
       this.modellingRezult = await this.$GetModellingRezult()
       console.log(this.modellingRezult, "Результат получен")
-       this.ValidateShowPanel(this.ModelingRezultMode)
+      this.ValidateShowPanel(this.ModelingRezultMode)
     }
   }
   </script>

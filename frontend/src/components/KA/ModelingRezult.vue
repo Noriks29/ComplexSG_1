@@ -70,19 +70,16 @@ import SelectDiv from '../SelectDiv.vue';
         SelectDiv,
     },
     methods: {
-        SettingsShowRezult(stat){
-            this.RezultShow = stat
-            this.modellingRezult = this.$GetModellingRezult()
+        RezultShowChange(status){
+            this.RezultShow = status
         },
-        dataTransfer(data){
+        dataTransfer(data){ //доставка данных в компонент с моделлирования
           this.modellingRezult = data
-          this.modellingRezult.Select.selectKA = this.valueSS.value
-          this.modellingRezultSelect_FillById(this.modellingRezult.Select.selectKA)
+          this.SelectChange(this.valueSS)
         },
-        SelectChange(target){
-          console.log(target)
+        async SelectChange(target){
           this.valueSS = {value: target.value, lable: target.lable}
-          this.modellingRezultSelect_FillById(target.value)
+          await this.$SetModellingRezultSelect(target.value)
           this.modellingRezult = this.$GetModellingRezult()
           this.ShowTablePanel(null)
         },

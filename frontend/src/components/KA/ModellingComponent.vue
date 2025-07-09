@@ -3,7 +3,7 @@
       <div class="ContentDiv">
         <div class="FlexRow Panel">
           <div class="ButtonModelling">
-            <button v-if="!ExperimentStatus && !modellingSettings.experimentEddit" @click="Experiment(true)" class="ButtonCommand">Начать эксперимент</button>
+            <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand">Начать эксперимент</button>
             <button v-if="ExperimentStatus" @click="StartModelling" class="ButtonCommand">Старт моделирования</button>
             <button v-if="ExperimentStatus" @click="Experiment(false)" class="ButtonCommand">Закончить эксперимент</button>
             <button v-if="!ExperimentStatus && !experimentEddit" @click="ShowSettings(true)" class="ButtonCommand">Настройки</button>
@@ -54,6 +54,7 @@ import { KaSettings } from './KaSettings';
           chargeSimulation: 0,
           optionPro42: 0
         },
+        experimentEddit: false,
         rezultShow:false,
         modellingSettingsLabel:{
           experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
@@ -67,17 +68,18 @@ import { KaSettings } from './KaSettings';
     methods: {
         async ShowSettings(status){
             this.$emit('showSettings', status)
-            await this.$SettingsShowRezult(false)
-            this.$SetSettings(this.modellingSettings)
+            await this.$RezultShow(false)
             this.rezultShow = false
+            this.experimentEddit = status
         },
         ReloadSettings(data){
             this.modellingSettings = data
         },
         ShowRezult(status){
           this.$emit('showSettings', false)
+          this.experimentEddit = false
           this.rezultShow = status
-          this.$SettingsShowRezult(status)
+          this.$RezultShow(status)
         },
         Experiment(status){
           this.ShowRezult(status)
@@ -108,35 +110,10 @@ import { KaSettings } from './KaSettings';
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
       },
-      ValidateDataPostModellingSettings(){
-        console.log(this.modellingSettings)
-        if(this.modellingSettings.experiment < 1){
-          this.modellingSettings.chargeForecasting = 0
-          this.modellingSettings.flightPlanning = 0
-        }
-        if(this.modellingSettings.experiment < 2){
-          this.modellingSettings.chargeSimulation = 0
-          this.modellingSettings.planSimulation = 0
-          this.modellingSettings.optionPro42 = 0
-        }
-        if(this.modellingSettings.experiment >= 1) this.modellingSettings.flightPlanning = 1
-        if(this.modellingSettings.experiment >= 2) this.modellingSettings.planSimulation = 1
-        this.$ReloadSettings(this.modellingSettings)
-      },
     },
     async mounted(){
       this.ReLoadComponent()
-      console.log("Моделлирование создано", this.systemStatus.typeWorkplace)
-      if (this.systemStatus.typeWorkplace in {2:null}) {
-        this.modellingSettings.experiment = 1
-      }
-      if (this.systemStatus.typeWorkplace in {4:null}) {
-        this.modellingSettings.experiment = 2
-        this.modellingSettings.chargeForecasting = 2
-        this.modellingSettings.chargeSimulation = 1
-      }
-      this.ValidateDataPostModellingSettings()
-
+      this.modellingSettings = await this.$SetSettings(null)
     }
   }
   </script>
