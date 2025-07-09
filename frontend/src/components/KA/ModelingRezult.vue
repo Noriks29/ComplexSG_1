@@ -7,7 +7,7 @@
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='BookmarkTable'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
         <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('LogComplet')" class="ButtonCommand">Лог выполнения заявок</button>
         <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('LogDownload')" class="ButtonCommand">Лог загрузки сеансов связи</button>
-        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.hide.length < 1) ? 'disable' : ''" class="ButtonCommand">Статистика</button>
+        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('StatisticComponent')" class="ButtonCommand">Статистика</button>
       </div>
       <div class="tdflexRow">
         <p>Работа КА</p>

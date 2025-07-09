@@ -5,7 +5,8 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <div class="ContentDiv" style="margin-top: 30px;" >
+    <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult.events"/>
+    <div class="ContentDiv" v-else style="margin-top: 30px;" >
         <div class="Panel LeftPanel">
         </div>
         <div class="Panel RightPanel" >
@@ -58,6 +59,7 @@ import ShootingPlan from './ShootingPlan.vue';
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
+import StatisticComponent from './StatisticComponent.vue';
   export default {
     name: 'ModelingPanel',
     data(){
@@ -109,7 +111,8 @@ import BookmarkTable from './BookmarkComponent.vue';
       DefaultTable,ShootingPlan,
         E78Table,
       E77E78,
-      BookmarkTable
+      BookmarkTable,
+      StatisticComponent
     },
     watch: {
       ModelingRezultMode(newreload) {
