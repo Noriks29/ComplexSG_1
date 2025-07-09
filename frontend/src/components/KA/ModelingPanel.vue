@@ -206,7 +206,7 @@ import BookmarkTable from './BookmarkComponent.vue';
     },
     async mounted(){
       this.modellingRezult = await this.$GetModellingRezult()
-      console.log(this.modellingRezult, "Результат получен")
+      console.log(this.modellingRezult, "Результат получен компонентом")
       this.ValidateShowPanel(this.ModelingRezultMode)
     }
   }
