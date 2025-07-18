@@ -38,10 +38,10 @@
           <table class="TableDefault">
           <thead><tr><th>Окно видимости</th><th>Кол-во заявок</th><th>% заявок</th></tr></thead>
             <tbody>
-                <tr><th>1</th><td>{{ TableReallocation.target1 }}</td><td>{{ (TableReallocation.target1 / TableReallocation.targetCount *100) || '0' }}</td></tr>
-                <tr><th>2</th><td>{{ TableReallocation.target2 }}</td><td>{{ (TableReallocation.target2 / TableReallocation.targetCount*100) || '0' }}</td></tr>
-                <tr><th>3</th><td>{{ TableReallocation.target3 }}</td><td>{{ (TableReallocation.target3 / TableReallocation.targetCount*100) || '0' }}</td></tr>
-                <tr><th>Не запланировано</th><td>{{ TableReallocation.targetNone }}</td><td>{{ (TableReallocation.targetNone / TableReallocation.targetCount*100) || '0' }}</td></tr>
+                <tr><th>1</th><td>{{ TableReallocation.target1 }}</td><td>{{ (Math.round(TableReallocation.target1 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
+                <tr><th>2</th><td>{{ TableReallocation.target2 }}</td><td>{{ (Math.round(TableReallocation.target2 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
+                <tr><th>3</th><td>{{ TableReallocation.target3 }}</td><td>{{ (Math.round(TableReallocation.target3 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
+                <tr><th>Не запланировано</th><td>{{ TableReallocation.targetNone }}</td><td>{{ (Math.round(TableReallocation.targetNone / TableReallocation.targetCount*100)) || '0' }}</td></tr>
             </tbody>
           </table>
           <table class="TableDefault TopM">
@@ -49,6 +49,12 @@
           </table>
           <table class="TableDefault TopM">
           <thead><tr><th>Кластер</th><th>Кол-во заявок</th></tr></thead>
+          <tbody>
+                <tr v-for="data, index in KPIOG" :key="index">
+                  <td>{{ index }}</td> <td>{{ data.orderCount }}</td>
+                </tr>
+              
+            </tbody>
           </table>
         </div>
         </div>  
@@ -71,6 +77,7 @@
                 timeDelay: 0, timeDelayCount: 0, timeDelayMin: 99999999999999999999, timeDelayMax: 0,
                 timePost: 0, timePostCount: 0, timePostMin: 99999999999999999999, timePostMax: 0
             },
+            KPIOG: {},
             TableSelect: undefined,
             TableReallocation: {targetCount:0, target1: 0, target2: 0, target3: 0, targetNone: 0},
             viewmode: 0,
@@ -81,11 +88,21 @@
           LoadXLSX(){},
           CreatePlot(){},
           UnixToDtimeL(time){
-            return UnixToDtime(time, true).time
+            return UnixToDtime(time, true, false).time
           },
           PrevrapData(){
             let dataT = []
             dataT = dataT.concat(this.dataTable)
+            let OGlist = this.$OGList()
+            
+            
+            let SatOgList = {}
+            OGlist.forEach(og => {
+              og.satellites.forEach(sat => {
+                SatOgList[sat.name] = og.constellationName
+              })
+              this.KPIOG[og.constellationName] = {orderCount: 0}
+            })
             dataT.forEach(event => {
                 if(event.orderName != null){
                     if(!(event.orderName in this.targetEvent)){
@@ -94,6 +111,9 @@
                     this.targetEvent[event.orderName].events.push(event)
                     if(event.type == 9){
                         this.targetEvent[event.orderName].status = true
+                        
+                        if(this.KPIOG[SatOgList[event.node1Name]] == undefined) this.KPIOG[SatOgList[event.node1Name]] = {orderCount: 0}
+                        this.KPIOG[SatOgList[event.node1Name]].orderCount += 1
                         if(this.targetEvent[event.orderName].timeDelayStart != null) this.targetEvent[event.orderName].timeDelay = event.time - this.targetEvent[event.orderName].timeDelayStart
                     }
                     else if(event.type == 1 && this.targetEvent[event.orderName].timeDelayStart == null){
@@ -124,7 +144,11 @@
                     else if(this.targetEvent[i].events7 > 1){this.TableReallocation.target3+=1}
                     else this.TableReallocation.targetNone += 1
                 }
-                else this.TableReallocation.targetNone += 1
+                else {
+                  this.TableReallocation.targetNone += 1
+                  this.TableReallocation.targetCount+=1
+                }
+                console.log(dataT, "fsfesfsefesfesf", OGlist, SatOgList,this.KPIOG)
             }
           },
       },

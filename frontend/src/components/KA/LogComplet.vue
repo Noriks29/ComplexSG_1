@@ -90,7 +90,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                                 const eventChild = element[j];
                                 console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 2))
                                 if(eventChild.type in {1:null, 6:null, 9:null}){
-                                  console.log("fssefesfesfefes",eventChild.time-eventMain.time, eventMain, eventChild.time, CreateDateTime(eventMain.time, 2) )
+                      
                                     if(eventChild.type != 9) console.error("Повторение появление", eventChild)
                                     dataGrapf[0].y.push(eventMain.orderName)
                                     dataGrapf[0].x.push(CreateDateTime(eventChild.time-eventMain.time, 2))
@@ -103,7 +103,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 9){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
-                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {10:null, 9:null}){
                                     if(eventChild.type == 9) console.error("Повторение съёмки цели", eventChild)
                                     dataGrapf[2].y.push(eventMain.orderName)
@@ -117,7 +116,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 10){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
-                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {10:null, 12:null}){
                                     if(eventChild.type == 10) console.error("Повторное хранение", eventChild)
                                     dataGrapf[3].y.push(eventMain.orderName)
@@ -131,7 +129,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 5){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
-                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {9:null, 4:null, 5:null}){
                                     if(eventChild.type == 5) console.error("Повторное планирование", eventChild)
                                     dataGrapf[1].y.push(eventMain.orderName)
@@ -145,7 +142,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 13){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
-                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {13:null, 14:null}){
                                     if(eventChild.type == 13) console.error("Повторный старт передачи в КА", eventChild)
                                     dataGrapf[4].y.push(eventMain.orderName)
@@ -159,7 +155,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                         else if(eventMain.type == 11){
                             for (let j = i+1; j < element.length; j++) {
                                 const eventChild = element[j];
-                                console.log(CreateDateTime(eventChild.time-eventMain.time, 2), CreateDateTime(eventMain.time, 1))
                                 if(eventChild.type in {11:null, 12:null}){
                                     if(eventChild.type == 11) console.error("Повторный старт передачи в НП", eventChild)
                                     dataGrapf[5].y.push(eventMain.orderName)
