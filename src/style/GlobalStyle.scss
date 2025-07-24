@@ -24,6 +24,8 @@
 }
 
 
+
+
 :root {
   --font-size: 16px;
   --background-Table1: #00000054;
@@ -54,7 +56,6 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   height: 100%;
   color: var(--color-Main);
   background: var(--background-Main);
@@ -229,21 +230,6 @@ body{
 
 
 
-
-input{ //Что-это? общий инпут?
-  padding: 10px;
-  text-align: center;
-  border: none;
-  background: none;
-  font-size: var(--font-size);
-  color: var(--color-Main);
-  &.disable{
-      pointer-events: none;
-  }
-  &.small{
-      width: 100px;
-  }
-}
 
 .input-file{ //чтение файла
 	background: var(--background-Button1);

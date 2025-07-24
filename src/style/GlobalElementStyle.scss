@@ -1,4 +1,18 @@
+
+
 .inputType1{
+  padding: 10px;
+  text-align: center;
+  border: none;
+  background: none;
+  font-size: var(--font-size);
+  color: var(--color-Main);
+  &.disable{
+      pointer-events: none;
+  }
+  &.small{
+      width: 100px;
+  }
     text-align: left;
     border: none;
     border-bottom: 2px solid var(--border-bottom-input);
@@ -16,6 +30,18 @@
     }
 }
 .inputType2{
+  padding: 10px;
+  text-align: center;
+  border: none;
+  background: none;
+  font-size: var(--font-size);
+  color: var(--color-Main);
+  &.disable{
+      pointer-events: none;
+  }
+  &.small{
+      width: 100px;
+  }
   text-align: center;
   border: none;
   background: none;
@@ -152,6 +178,21 @@ div.TableDiv{ // базовая таблица
           max-height: 98%;
           overflow: auto;
           margin: 5px 5px;
+
+        input{
+          padding: 10px;
+          text-align: center;
+          border: none;
+          background: none;
+          font-size: var(--font-size);
+          color: var(--color-Main);
+          &.disable{
+              pointer-events: none;
+          }
+          &.small{
+              width: 100px;
+          }
+        }
         table{
           width: 100%;
           

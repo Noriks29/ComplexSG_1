@@ -1,14 +1,10 @@
 <template>
   <div class="SectionMenu">
       <div class="HeadersSction">
-        <div class="PanelMenu">
-          <SystemWindow :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" />
-        </div>
+        <SystemWindow :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" />
         <transition mode="out-in">
           <div class="ModellingDiv PanelMenu">
             <ModellingComponent v-if="system.typeWorkplace != -1" :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
-            <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :ExperimentStatus="false"></component> --> 
-            <!--<component :is="ComponentModellingList[system.typeWorkplace]" :systemStatus="system" :reload="reload" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"></component> -->
           </div>
         </transition> 
       </div>
@@ -267,10 +263,10 @@ export default {
       .ModellingDiv{ // далее смотри в глабольных стялях
         width: 100%;
         height: 100px;
-        min-height: calc(100% - 45px);
+        min-height: calc(100% - -4px);
         flex: 1;
-        overflow-y: hidden;
-
+        overflow-y: auto;
+        margin: 0px;
       }
     }
     .FooterSection{
