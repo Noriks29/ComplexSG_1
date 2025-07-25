@@ -13,19 +13,6 @@
         <template #content><p class="m-0">("Комплекс-СГ-3.1.2.1")</p></template>
       </Card>
     </div>
-    <Menubar :model="items" class="idSesion" :class="login !== undefined ? titleModule==''?'show':'max show':''">
-      <template #start>
-        <div class="ModuleTitle" :class="titleModule==''?'hide':''">{{ titleModule }}</div>
-      </template>
-      <template #end>
-        <div class="endMenu">
-          <p>Пользователь: {{ login }} {{ SystemObject }}</p>
-          <Button icon="pi pi-bars" outlined :class="systemStatus.typeWorkplace !== -1 ? 'show' : ''" @click="ChangetypeWorkplace(-1)" class="p-button-sm" severity="info"/>
-          <Button label="Выйти" outlined @click="Log_out" icon="pi pi-sign-out" iconPos="right" class="p-button-sm" severity="danger"/>
-        </div>
-      </template>
-    </Menubar>
-    
     <div :class="login == undefined ? 'show' : ''" class="ModalLoginBack p-sidebar">
       <div class="ModalLoginPanel">
         <h1>Вход в систему</h1>
@@ -44,7 +31,21 @@
         </form>
       </div>
     </div>
-    <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @reload="ReloadTemplate"/>
+    <div class="WorkPage">
+      <Menubar :model="items" class="idSesion" :class="login !== undefined ? titleModule==''?'show':'max show':''">
+        <template #start>
+          <div class="ModuleTitle" :class="titleModule==''?'hide':''">{{ titleModule }}</div>
+        </template>
+        <template #end>
+          <div class="endMenu">
+            <p>Пользователь: {{ login }} {{ SystemObject }}</p>
+            <Button icon="pi pi-bars" outlined :class="systemStatus.typeWorkplace !== -1 ? 'show' : ''" @click="ChangetypeWorkplace(-1)" class="p-button-sm" severity="info"/>
+            <Button label="Выйти" outlined @click="Log_out" icon="pi pi-sign-out" iconPos="right" class="p-button-sm" severity="danger"/>
+          </div>
+        </template>
+      </Menubar>
+      <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @reload="ReloadTemplate"/>
+    </div>
     <div class="ChangeViewMode" @click="ChangeColor"><Button :icon="'pi '+(!colorthemBlack?'pi-sun':'pi-moon') " severity="secondary" style="height: 1.5rem;width: 1.5rem;"/></div>
     <AlertToast /><LoadProcess />
 </template> 
@@ -248,9 +249,16 @@ export default {
       }
     }
 }
+.WorkPage{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  height: 100%;
+}
 
   .ModalLoginBack{
-    position: relative;
+    position: absolute;
+    top: 0px;
     z-index: 3;
     height: 100vh;
     min-width: 500px;
@@ -299,9 +307,7 @@ export default {
 
 
 .idSesion{
-  position: fixed;
-  right: 5px;
-  top: 2px;
+  position: relative;
   transform: translate(0px, -150%);
   transition: width 1s ease-in-out, transform 1s ease-in-out;
   width: calc(1% - 9px);
@@ -309,6 +315,7 @@ export default {
   overflow: hidden;
   z-index: 2;
   padding: 5px;
+  margin: 5px;
   &.show{
     transform: translate(0px, 0%);
   }

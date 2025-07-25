@@ -6,73 +6,82 @@
       </div>
       <div class="FooterSection" v-if="system.typeWorkplace != -1">
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
-        <div class="workpage">
-          <transition name="translate" mode="out-in" v-if="activeComponent != ''">
-            <div class="ComponentSelect">
-              <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" :ModelingRezultMode="ModelingRezultMode"></component> 
-            </div>
-          </transition>
-        </div>
-        <div class="FlexMenuSection" :class="animation.menuButton?'Hide':''">
+        <Panel class="workpage" :pt="{ header: { style: 'display: none' }, content:{style:'display: flex;padding: 0px;height:100%'},toggleablecontent:{style:'height: 100%;'} }">
+            <transition name="translate" mode="out-in" v-if="activeComponent != ''">
+              <div class="ComponentSelect">
+                <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" :ModelingRezultMode="ModelingRezultMode"></component> 
+              </div>
+            </transition>
+        </Panel>
+        <Menu :class="{ 'p-collapsed-menu': animation.menuhide}" :style="'margin: 5px;min-width: fit-content;overflow-y:auto;overflow-x:hidden;'" :model="[
+          {
+            items: [
+              { label: 'Логи событий', command: () => SelectComponent('LogEventList'), active: activeComponent=='LogEventList'},
+            ]
+          },
+          {
+            label: 'КС',
+            items: [
+              { label: 'НП', command: () => SelectComponent('NP'), active: activeComponent=='NP'},
+              { label: 'КА и ОГ', command: () => SelectComponent('OG'), active: activeComponent=='OG'},
+              { label: 'Модели КА', command: () => SelectComponent('TypeKA'), active: activeComponent=='TypeKA'}
+            ]
+          },
+          {
+            label: 'Исходные данные',
+            items: [
+              {label: 'Заявки', command: () => SelectComponent('TargetDZZ'), active: activeComponent=='TargetDZZ'}
+            ]
+          },
+          {
+            label: 'Связь',
+            items: [
+              { label: 'КА - НП', command: () => SelectComponent('EarthConstellation'), active: activeComponent=='EarthConstellation'},
+              { label: 'КА - КА', command: () => SelectComponent('LeaderConstellationConstellation'), active: activeComponent=='LeaderConstellationConstellation'}
+            ]
+          },
+          {
+            label: 'Инструменты',
+            visible: ![2, 4].includes(system.typeWorkplace),
+            items: [
+              { label: 'Обход целей', command: () => SelectComponent('TargetRoad'), active: activeComponent=='TargetRoad'},
+              { label: 'Видимость целей', command: () => SelectComponent('EstimationConstellation'), active: activeComponent=='EstimationConstellation'}
+            ]
+          }
+        ]">
+          <template #start>
+            <span class="ButtonStartMenu">
+              <Button icon="pi pi-th-large" severity="info" text :style="'height: 35px;width: 35px;'" @click="animation.menuhide = !animation.menuhide"/>
+              <div class="ImportExport">
+                <Button icon="pi pi-upload"   severity="success" text outlined :style="'height: 35px;width: 35px;'"/>
+                <Button icon="pi pi-download" severity="danger" text outlined :style="'height: 35px;width: 35px;'"/>
+              </div>
+            </span>
+          </template>
+          <template #item="{ item }">
+            <a v-ripple class="flex align-items-center p-menuitem-link" :class="{ 'p-menuitem-active': item.active }">
+              <span>{{ item.label }}</span>
+              <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
+                {{ item.shortcut }}
+              </span>
+            </a>
+          </template>
+        </Menu>
+        <!--
         <div class="MenuButton">
-          <img src="@/assets/menuPanel.png" id="menu" alt="" @click="animation.menuButton=!animation.menuButton" v-if="!ExperimentStatus">
           <img src="@/assets/exportIcon.png" id="export" alt="" @click="SaveWorkplace">
           <label class="input-fileMenu">
               <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
               <img src="@/assets/importIcon.png" id="import" alt="">
           </label>
-          
-
-          <img src="@/assets/NP.png" id="NP" alt="" @click="SelectComponent('NP')" :class="activeComponent=='NP'? 'select':''">
-          <img src="@/assets/OG.png" id="OG" alt="" @click="SelectComponent('OG')" :class="activeComponent=='OG'? 'select':''">
-          <img src="@/assets/SAT.png" id="SAT" alt="" @click="SelectComponent('TypeKA')" :class="(activeComponent=='TypeKA'? 'select':'')">
-          <img src="@/assets/DZZ.png" id="DZZ" alt="" @click="SelectComponent('TargetDZZ')" :class="activeComponent=='TargetDZZ'? 'select':''">
-        </div>
-        <div class="ButtonSection">
-          <div class="ButtonList">
-            <button class="ButtonCommand GetData"  @click="SelectComponent('LogEventList')"><span>Логи событий</span></button>
-          </div>
-        </div>
-        <div class="ButtonSection">
-            <div class="ButtonList">
-              <h1>КС</h1>
-              <button class="buttonType1" :class="activeComponent=='NP'? 'select':''" @click="SelectComponent('NP')"><div :class="system.earthStatus ? 'approved' : 'Notapproved'"></div><span>НП</span></button>
-              <button class="buttonType1" :class="activeComponent=='OG'? 'select':''" @click="SelectComponent('OG')"><div :class="system.constellationStatus ? 'approved' : 'Notapproved'"></div><span>КА и ОГ</span></button>
-              <button class="buttonType1" :class="(activeComponent=='TypeKA'? 'select':'')" @click="SelectComponent('TypeKA')"><span>Модели КА</span></button>
-            </div>   
-          </div>
-          <div class="ButtonSection">
-            <div class="ButtonList">
-              <h1>Исходные данные</h1>
-              <button class="buttonType1" :class="activeComponent=='TargetDZZ'? 'select':''" @click="SelectComponent('TargetDZZ')"><span>Заявки</span></button>
-            </div>
-          </div>
-          <div class="ButtonSection">
-            <div class="ButtonList">
-              <h1>Связь</h1>
-              <button class="buttonType1" :class="(activeComponent=='EarthConstellation'? 'select':'')" @click="SelectComponent('EarthConstellation')"><span>КА - НП</span></button>
-              <button class="buttonType1" v-if="system.typeWorkplace in {4:null, 3:null}" :class="(activeComponent=='LeaderConstellationConstellation'? 'select':'')"  @click="SelectComponent('LeaderConstellationConstellation')"><span>КА - КА Лидеры</span></button>
-              <button class="buttonType1" v-else-if="!(system.typeWorkplace in {1:null})" :class="(activeComponent=='LeaderConstellationConstellation'? 'select':'')"  @click="SelectComponent('LeaderConstellationConstellation')"><span>КА - КА</span></button>
-            </div>
-          </div> 
-          <div class="ButtonSection" v-if="!(system.typeWorkplace in {2:null,4:null})">
-            <div class="ButtonList">
-              <h1>Инструменты</h1>
-              <button class="buttonType1" :class="(activeComponent=='TargetRoad'? 'select':'')" @click="SelectComponent('TargetRoad')"><span>Обход целей</span></button>
-              <button class="buttonType1" :class="(activeComponent=='EstimationConstellation'? 'select':'')" @click="SelectComponent('EstimationConstellation')"><span>Видимость целей</span></button>
-            </div>
-          </div>       
-        </div>
-        
+        </div>  
+        -->
       </div>
     </div>
 </template>
 
 <script>
 //import { saveAs } from 'file-saver';
-
-
-
 import KARealTime from "./KA/KARealTime.vue";
 
 import NP from "./PagesTab/NP.vue";
@@ -92,7 +101,9 @@ import ModellingComponent from './KA/ModellingComponent.vue';
 import ModelingRezult from './KA/ModelingRezult.vue';
 import ModelingPanel from './KA/ModelingPanel.vue';
 
-
+import Menu from 'primevue/menu';
+import Button from 'primevue/button';
+import Panel from 'primevue/panel';
 export default {
   name: 'TemplateComponent',
   emits: ['changeExperimentStatus'],
@@ -113,7 +124,9 @@ export default {
 
     ModellingComponent,
     ModelingPanel,
-    ModelingRezult
+    ModelingRezult,
+
+    Menu,Button,Panel
   },
   data(){
       return{
@@ -123,7 +136,8 @@ export default {
         experimentEddit: false,
         ModelingRezultMode: 'Settings',
         animation:{
-          menuButton: false
+          menuButton: false,
+          menuhide: false
         }
     }
   },
@@ -236,6 +250,34 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.p-menu{
+  .hide{
+    display: none;
+  }
+}
+.p-menuitem-active {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
+.ButtonStartMenu{
+  display: flex;
+  justify-content: space-between;
+  div{
+    button{
+      margin: 0px 5px;
+    }
+  }
+}
+:deep(.p-menu.p-collapsed-menu) {
+  width: calc(35px + 0.5rem) !important;
+  overflow: hidden;
+  transition: width 1.3s ease;
+  min-width: unset;
+  .p-menu-list, .ImportExport {
+    display: none;
+  }
+}
+
 .PanelMenu{
   margin-left: 0px !important;
   .GetData{
@@ -249,13 +291,12 @@ export default {
     margin: 0px;
     flex-wrap: nowrap;
     overflow: auto;
-    position: absolute;
     align-items: normal;
-    top: 40px;
-    height: calc(100% - 40px);
+    position: relative;
+    flex: 1;
     .HeadersSction{
       display: flex;
-      margin: 5px 5px;
+      margin: 0px 5px;
       .ModellingDiv{ // далее смотри в глабольных стялях
         width: 100%;
         height: 100px;
@@ -273,12 +314,7 @@ export default {
       .workpage{
         flex: 1;
         z-index: 21;
-        background-color: var(--color-bg-panel);
-        border: 3px solid var(--color-border1);
-        display: flex;
-        border-top-left-radius: 10px;
-        border-bottom: none;
-        border-right: none;
+        margin: 5px 5px 5px 0px;
         .ComponentSelect{
           display: flex;
           overflow-x: hidden;
@@ -289,127 +325,8 @@ export default {
           background: none;
         }
       }
-      .FlexMenuSection{
-        flex-direction: column;
-        height: auto;
-        width: 200px;
-        align-items: normal;
-        display: flex;
-        overflow-y: auto;
-        overflow-x: hidden;
-        .ButtonSection{
-          display: flex;
-          flex-direction: column;
-          flex-wrap: nowrap;
-          transition: all 0.5s ease-out;
-          position: relative;
-
-          h1{
-            margin: 5px;
-            font-size: 18px;
-            text-align: left;
-            color: #777777;
-          }
-          .ButtonList{
-            flex: 1;
-            display: flex;
-            justify-content: space-evenly;
-            flex-direction: column;
-            &.PanelMenu{
-              margin: 0px 10px 0px 0px;
-              padding: 5px;
-            }
-          }
-          button{
-            flex: 1;
-            margin: 3px 0px 3px 0px;
-            padding: 10px 0px 10px 5px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            z-index: 2;
-            span{
-              padding-left: 8px;
-            }
-          }
-        }
-      }
   } 
   }
-
-
-
-.FlexMenuSection
-{
-  transition: all 0.5s linear;
-  h1, span{
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .MenuButton{
-    flex-direction: row;
-    justify-content: space-between;
-    position: relative;
-    align-items: flex-start;
-    .input-fileMenu{
-      transition: all 0.5s linear;
-      display: block;
-      width: 32px;
-      height: 32px;
-      position: absolute;
-      left: calc(100% - 42px);
-      top: 5px;
-      input{
-        position: absolute;
-        z-index: -1;
-        opacity: 0;
-        display: block;
-        width: 0;
-        height: 0;
-      }
-    }
-    #export{
-      position: absolute;
-      left: calc(50% - 16px);
-      top: 5px;
-    }
-    #NP,#OG,#SAT,#DZZ{
-      position: absolute;
-      left: -50px;
-      background-color: rgba(0, 0, 0, 0);
-      padding: 0px;
-      border-radius: 10px;
-    }
-    #NP{top: calc((32px + 20px) * 3);}
-    #OG{top: calc((32px + 20px) * 4);}
-    #SAT{top: calc((32px + 20px) * 5);}
-    #DZZ{top: calc((32px + 20px) * 6);}
-  }
-  &.Hide{
-    width: 60px !important;
-    overflow: hidden !important;
-    .MenuButton{
-      flex-direction: column;
-    }
-    #menu{
-      transform: rotate(180deg);
-    }
-    --leftAbsolute: 5px;
-    #export{left: var(--leftAbsolute);top: calc((32px + 20px));}
-    .input-fileMenu{left: var(--leftAbsolute);top: calc((32px + 20px) * 2);}
-    #NP,#OG,#SAT,#DZZ{
-      left: var(--leftAbsolute);
-      &.select{
-        background-color: #0039b5;
-        padding: 5px 25px 5px 5px;
-      }
-    }
-
-    .ButtonSection{
-      transform: translateX(-200px);
-    }
-  }
-}
 
   .MenuButton{
     display: flex;

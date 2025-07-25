@@ -95,8 +95,8 @@ body{
   position: relative;
   --scroll-size: 5px;
   --scroll-radius: 10px;
-  --scroll-track: rgb(255 255 255 / 10%);
-  --scroll-thumb-color: #fff;
+  --scroll-track: var(--surface-200);
+  --scroll-thumb-color: var(--primary-color);
   ::-webkit-scrollbar {
     width: var(--scroll-size, 10px);
     height: var(--scroll-size, 10px);

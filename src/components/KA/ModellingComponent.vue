@@ -2,7 +2,7 @@
     <Panel :pt="{ 
       header: { style: 'display: none' }, 
       content:{style:'display: flex;padding: 5px;justify-content: space-between;height: 100%;'}, 
-      toggleablecontent:{ style:'height: 100%;'} }" style="flex: 1;margin-left:2px;">
+      toggleablecontent:{ style:'height: 100%;'} }" style="flex: 1;margin-left:5px;">
           <div class="ButtonModelling">
             <Button v-if="!ExperimentStatus" @click="Experiment(true)" label="Начать эксперимент" severity="success" icon="pi pi-play" iconPos="right"/>
             <Button v-if="ExperimentStatus" @click="StartModelling" label="Старт моделирования" severity="success" icon="pi pi-play" iconPos="right"/>
@@ -120,13 +120,6 @@ import { KaSettings } from './KaSettings';
 
 
 <style lang="scss" scoped>
-.ContentDiv{
-  height: 90vh;
-
-  .tdflexRow{
-    display: flex;
-  }
-}
 .ButtonModelling{
     flex: 0 1 auto;
     width: fit-content;

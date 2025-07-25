@@ -369,11 +369,9 @@ export default {
 #map{
     background-color: var(--color-bg-panel);
     position: relative;
-    outline-style: none;
-    height: calc(100% - 14px);
-    margin: 7px;
+    height: 100%;
     z-index: 0;
-    border-radius: 10px;
+    border-radius: 6px;
   .leaflet-map-pane{
             pointer-events: none;
         }
