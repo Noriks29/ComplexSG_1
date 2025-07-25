@@ -2,11 +2,7 @@
   <div class="SectionMenu">
       <div class="HeadersSction">
         <SystemWindow :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" />
-        <transition mode="out-in">
-          <div class="ModellingDiv PanelMenu">
-            <ModellingComponent v-if="system.typeWorkplace != -1" :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
-          </div>
-        </transition> 
+        <ModellingComponent v-if="system.typeWorkplace != -1" :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
       </div>
       <div class="FooterSection" v-if="system.typeWorkplace != -1">
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
@@ -247,19 +243,19 @@ export default {
   }
 }
 .SectionMenu{
-    width: 99%;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    margin: 0% 0% 0% 1%;
+    margin: 0px;
     flex-wrap: nowrap;
     overflow: auto;
     position: absolute;
     align-items: normal;
     top: 40px;
     height: calc(100% - 40px);
-
     .HeadersSction{
       display: flex;
+      margin: 5px 5px;
       .ModellingDiv{ // далее смотри в глабольных стялях
         width: 100%;
         height: 100px;

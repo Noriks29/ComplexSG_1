@@ -1,41 +1,36 @@
 <template>
-    <div class="main_contain">
-      <div class="ContentDiv">
-        <div class="FlexRow Panel">
+    <Panel :pt="{ 
+      header: { style: 'display: none' }, 
+      content:{style:'display: flex;padding: 5px;justify-content: space-between;height: 100%;'}, 
+      toggleablecontent:{ style:'height: 100%;'} }" style="flex: 1;margin-left:2px;">
           <div class="ButtonModelling">
-            <button v-if="!ExperimentStatus" @click="Experiment(true)" class="ButtonCommand">Начать эксперимент</button>
-            <button v-if="ExperimentStatus" @click="StartModelling" class="ButtonCommand">Старт моделирования</button>
-            <button v-if="ExperimentStatus" @click="Experiment(false)" class="ButtonCommand">Закончить эксперимент</button>
-            <button v-if="!ExperimentStatus && !experimentEddit" @click="ShowSettings(true)" class="ButtonCommand">Настройки</button>
-            <button v-if="!ExperimentStatus && experimentEddit" @click="ShowSettings(false)" class="ButtonCommand Select">Закрыть настройки</button>
+            <Button v-if="!ExperimentStatus" @click="Experiment(true)" label="Начать эксперимент" severity="success" icon="pi pi-play" iconPos="right"/>
+            <Button v-if="ExperimentStatus" @click="StartModelling" label="Старт моделирования" severity="success" icon="pi pi-play" iconPos="right"/>
+            <Button v-if="ExperimentStatus" @click="Experiment(false)" label="Закончить эксперимент" severity="danger" icon="pi pi-stop" iconPos="right"/>
+            <Button v-if="!ExperimentStatus" @click="ShowSettings" label="Настройки" severity="help" :outlined="experimentEddit" icon="pi pi-sliders-h" iconPos="right"/>
           </div>
-          <div class="TableSystem">
-            <table><tbody>
-              <tr><td>Количество заявок:</td><td>{{ purposesJson }}</td></tr>
-              <tr><td>Количество НП:</td><td>{{ earthList.length }}</td></tr>
-              <tr><td>Количество КА:</td><td></td></tr>
-              <tr 
-                v-for="(data, index) in ConstellationJson"
-                :key="index"
-              >
-              <td>- {{ data.constellationName }}:</td><td>{{ data.satellites.length }} КА</td>
-              </tr></tbody>
-            </table>
-          </div>
-          <div class="TableSystem">
-            <table style="text-align: left;"><tbody>
-              <tr v-for="data, index in modellingSettingsLabel" :key="index"
-              ><td>{{ data.name }}:</td><td>{{ data.label[Number(modellingSettings[index])] }}</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+          <DataTable :size="'small'" :value="[{name:'Заявки:',count:purposesJson},{name:'НП:',count:earthList.length},{name:'КА:',count:ConstellationJson.satCount}]" tableStyle="" :pt="{ thead: { style: 'display: none' }}">
+              <Column field="name" style="font-weight: bold;" ></Column>
+              <Column field="count"></Column>
+          </DataTable>
+          <DataTable :size="'small'" :value="modellingSettingsLabel" tableStyle="" :pt="{ thead: { style: 'display: none' }}" scrollable scrollHeight="110px">
+              <Column field="name" style="font-weight: bold;" ></Column>
+              <Column>
+                <template #body="{ data, index }">
+                  {{ data.label[Number(modellingSettings[index])] }}
+                </template>
+              </Column>
+          </DataTable>
+    </Panel>
 </template>
   
 <script>
-
+import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Panel from 'primevue/panel';
 import { KaSettings } from './KaSettings';
+
   export default {
     name: 'ModellingComponent',
     mixins: [KaSettings],
@@ -65,12 +60,16 @@ import { KaSettings } from './KaSettings';
         },
       }
     },
+    components:{
+      Button,DataTable,Column,Panel
+    },
     methods: {
-        async ShowSettings(status){
-            this.$emit('showSettings', status)
-            await this.$RezultShow(false)
-            this.rezultShow = false
-            this.experimentEddit = status
+        async ShowSettings(){
+          console.log("fesfefsfef")
+          this.experimentEddit = !this.experimentEddit
+          this.$emit('showSettings', this.experimentEddit)
+          await this.$RezultShow(false)
+          this.rezultShow = false
         },
         ReloadSettings(data){
             this.modellingSettings = data
@@ -103,6 +102,11 @@ import { KaSettings } from './KaSettings';
         this.$InitModellingRezult()
         this.earthList = await this.$NPList()
         this.ConstellationJson = await this.$OGList()
+        this.ConstellationJson.satCount = 0
+        this.ConstellationJson.forEach(Og=>{
+          console.log(Og.satellites.length)
+          this.ConstellationJson.satCount += Og.satellites.length
+        })
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
       },
@@ -124,7 +128,11 @@ import { KaSettings } from './KaSettings';
   }
 }
 .ButtonModelling{
-  overflow: auto;
+    flex: 0 1 auto;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 </style>

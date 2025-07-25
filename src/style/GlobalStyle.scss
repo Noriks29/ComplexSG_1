@@ -122,15 +122,6 @@ body{
   justify-content: space-between;
     div{
       margin: 0px 5px;
-      &.ButtonModelling{
-        flex: 0 1 auto;
-        width: fit-content;
-        display: flex;
-        flex-direction: column;
-        button{
-          flex: 1;
-        }
-      }
       &.TableSystem{
         overflow-y: auto;
         padding: 0px 5px;
