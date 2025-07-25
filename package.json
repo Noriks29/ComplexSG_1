@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@primevue/forms": "^4.3.6",
+    "crypto-browserify": "^3.12.1",
     "leaflet": "^1.9.4",
     "plotly.js-dist": "^3.0.1",
     "primeflex": "^4.0.0",
@@ -26,6 +27,7 @@
     "path": "^0.12.7",
     "sass": "^1.89.2",
     "three": "^0.140.2",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vite-plugin-node-polyfills": "^0.24.0"
   }
 }
