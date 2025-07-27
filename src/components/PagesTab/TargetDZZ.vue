@@ -253,7 +253,7 @@ import XLSX from 'xlsx-js-style';
         this.CreateSelectArr()
         },
         LoadXLSX(mode='request'){
-          const workbook = XLSX.utils.book_new();
+          
           let data = []
           if(mode == 'request')
           {
@@ -281,7 +281,6 @@ import XLSX from 'xlsx-js-style';
             });
           }
           let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
-          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
           let style = {
             font: {
               name: 'Calibri',
@@ -304,8 +303,9 @@ import XLSX from 'xlsx-js-style';
               console.log(error)
             }
           }
-          console.log(worksheet)
-          workbook.Sheets['Data'] = worksheet;
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Data")
+          console.log(worksheet, workbook)
           XLSX.writeFile(workbook, 'dataRequest.xlsx');
         },
     },

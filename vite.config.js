@@ -15,7 +15,8 @@ export default defineConfig({
       }
     })],
   optimizeDeps: {
-    exclude: ['crypto']
+    exclude: ['crypto'],
+    include: ['xlsx-js-style']
   },
   resolve: {
     alias: {

@@ -78,7 +78,7 @@ export default {
       login: undefined,
       workplaceList: [],
       SystemObject: null,
-      colorthemBlack: false,
+      colorthemBlack: true,
       form: {login: undefined, password: undefined}
     }
   },
@@ -197,6 +197,7 @@ export default {
   async mounted() {
     this.$showLoad(true);
     this.CreateBg()
+    this.$primevue.changeTheme('aura-light-blue', 'aura-dark-blue', 'theme-link', () => {});
     this.workplaceList = []
     if(localStorage.nameUser != undefined && localStorage.email != undefined && localStorage.password != undefined){
       let data = {
