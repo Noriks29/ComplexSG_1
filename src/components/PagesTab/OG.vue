@@ -5,7 +5,44 @@
         <img src="@/assets/exit.svg"><span>&#8203;</span>
       </button>
     </div>
+
     <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
+      {{ value }}
+    <DataTable :value="dataJson"
+      tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+      ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">
+      <template #header>
+        <Toolbar class="mb-4">
+          <template #start>
+            <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+          </template>
+          <template #center>
+            <SelectButton v-model="value" :options="dataJson" optionLabel="constellationName" dataKey="id" aria-labelledby="custom" :pt="{button:{style:'padding: 7px 5px 7px 13px;'}}">
+              <template #option="slotProps">
+                 <div style="display: flex;align-items: center;">
+                  <span style="position: relative;">{{ slotProps.option.constellationName }}</span>
+                  <Button 
+                    icon="pi pi-trash" 
+                    class="p-button-rounded p-button-danger p-button-text" 
+                    :style="'width: 25px;height: 25px;'"
+                    @click="slotProps.data.deleted = true; DeleteRow()"
+                  />
+                </div>
+              </template>
+            </SelectButton>
+          </template>
+          <template #end>
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить ОГ" rounded text @click="PageSettings.status=(PageSettings.status+1)%2" />
+            <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
+          </template>
+        </Toolbar>
+      </template>
+    </DataTable> 
+
+
+
+
+
     <div class="Panel LeftPanel">
         <div class="FlexColumn">
           <div class="OGList">
@@ -121,9 +158,15 @@
   <script>
 import { PagesSettings } from './PagesSettings.js';
 import { CreateDateTime } from '@/js/WorkWithDTime';
-import XLSX from 'xlsx-js-style';
 import SelectDiv from '../SelectDiv.vue';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
+import Toolbar from 'primevue/toolbar';
+import SelectButton from 'primevue/selectbutton';
+import XLSX from 'xlsx-js-style';
 
   export default {
     name: 'OG',
@@ -153,12 +196,28 @@ import SelectDiv from '../SelectDiv.vue';
           },
           file: undefined
         },
+        options:[
+          { 
+            value: 'option1',  // Отображаемое значение (учитывая optionLabel="value")
+            icon: 'pi pi-check' // Класс иконки
+          },
+          { 
+            value: 'option2',
+            icon: 'pi pi-times' 
+          },
+          { 
+            value: 'option3',
+            icon: 'pi pi-star'
+          }
+        ],
+        value : null 
         
       }
     },
     components:
     {
-      SelectDiv
+      SelectDiv, 
+      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton
     },
     methods: {
       SelectOGFromList(data){
