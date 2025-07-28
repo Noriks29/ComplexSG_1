@@ -18,7 +18,9 @@
 
       <div class="Panel RightPanel">
           <div v-if="PageSettings.status == 2">
+            
             <div class="TableDiv" style="max-height: 60vh;">
+              <button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button>
               <table class="TableDefault">
                 <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
                 <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
@@ -26,7 +28,7 @@
                 </tr>
               </tbody>
               <tfoot>
-                <tr class="addRowButton"><td  colspan="4"><button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td></tr>
+                <tr class="addRowButton"><td  colspan="4"></td></tr>
               </tfoot>
             </table>
             </div>
@@ -189,6 +191,9 @@ import XLSX from 'xlsx-js-style';
   padding: 0px !important;
   width: fit-content !important;
   height: fit-content !important;
+      top: 5px;
+    left: 20px;
+    position: relative;
   img{
     width: 30px;
   }

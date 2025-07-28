@@ -16,15 +16,14 @@
         <div class="Panel RightPanel" >
           <div v-if="viewmode == 0" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
             <table class="TableDefault">
-              <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Высота</th><th>НП</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
+              <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
               <tbody><tr
               v-for="data, index in requestJson"
                 :key="index"
               >
               <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange($event, 'catalog')"/></td>
               <td>{{ data.catalog.lat }}</td>
-              <td>{{ data.catalog.lon }}</td><td>{{ data.catalog.alt }}</td>
-              <td><SelectDiv  :dataOption="arrNP" :valueS="{value:data.earthPoint, lable:data.earthPoint.nameEarthPoint}" :id="String(index)" @valueSelect="SelectChange($event, 'earthPoint')"/></td>
+              <td>{{ data.catalog.lon }}</td>
               <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChange($event, 'choiceCriteria')"/></td>
               <td><input type="number" v-model="data.priory" @change="ChangeParamRequest"></td>
               <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
@@ -34,7 +33,7 @@
               </tr></tbody>
               <tfoot>
               <tr class="addRowButton">
-                <td colspan="9"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
+                <td colspan="8"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
                 <td v-if="systemStatus.typeWorkplace in {3:null,4:null}"></td>
                 <td v-if="requestJson.length > 0"><button @click="LoadXLSX('request')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
               </tr>   
@@ -43,7 +42,7 @@
 
           <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
           <table class="TableDefault">
-          <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th>Высота</th><th></th></tr></thead>
+          <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th></th></tr></thead>
           <tbody><tr v-for="data, index in catalogJson"
               :key="index"
               @change="ChangeParam"
@@ -52,11 +51,10 @@
               <td style="display: flex;align-items: center;justify-content: space-around;"><span>{{data.countRequest}}</span><img @click="AddRowRequest(data)" src="../../assets/add.png" alt="" class="addButtonIcon"></td>
               <td><input type="number" v-model="data.lat"></td>
               <td><input type="number" v-model="data.lon"></td>
-              <td><input type="number" v-model="data.alt"></td>
               <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
             </tr></tbody>
             <tfoot><tr class="addRowButton">
-              <td colspan="6"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
+              <td colspan="5"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
             </tr> 
           </tfoot></table>
         </div>
@@ -128,7 +126,7 @@ import XLSX from 'xlsx-js-style';
         SelectKa: {},
         KatoDraw: {},
         choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
-        TypeRequest: [{value: 0, lable: 'в НП'},{value: 1, lable: 'Лидером'}],
+        TypeRequest: [{value: 0, lable: 'НП'},{value: 1, lable: 'Лидер'}],
         arr: [],
         arrNP: [],
       }
@@ -139,7 +137,7 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('request')
       },
       CreateDateTime(time, mode){
-        CreateDateTime(time, mode)
+        return CreateDateTime(time, mode)
       },
       SelectChange(e, param){
         this.requestJson[e.id][param] = e.value
@@ -257,7 +255,7 @@ import XLSX from 'xlsx-js-style';
           let data = []
           if(mode == 'request')
           {
-            data = [["Цель","Широта","Долгота","Высота","НП","Критерий","Приоритет","Время появления","Срок выполнения"]]
+            data = [["Цель","Широта","Долгота","Критерий","Приоритет","Время появления","Срок выполнения"]]
             if(this.systemStatus.typeWorkplace in {3:null,4:null}){
               data[0].push("Признак")
             }
@@ -265,8 +263,7 @@ import XLSX from 'xlsx-js-style';
               let crit = "Время"
               if(element.choiceCriteria == 2) crit = "Разворот"
               if(element.choiceCriteria == 3) crit = "Качество"
-              let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, element.catalog.alt,
-                element.earthPoint.nameEarthPoint, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
+              let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
               ]
               if(this.systemStatus.typeWorkplace in {3:null,4:null}){
                 row.push(this.TypeRequest[element.type].lable)

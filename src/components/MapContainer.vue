@@ -148,6 +148,7 @@ export default {
 
             })
             await this.$ChangeNPList(this.NPList)
+            this.NPList = await this.$GetNPList()
             L.circle([this.AddPoint.lat||0, this.AddPoint.lng||0], 40000, {
                   color: 'green',
                   fillColor: '#121100',
@@ -168,6 +169,7 @@ export default {
               alt: 0, goalId: 0 
             })
             await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)
+            this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
             L.circle([this.AddPoint.lat||0, this.AddPoint.lng||0], 28000, {
                 color: 'yellow',
                 fillColor: 'yellow',

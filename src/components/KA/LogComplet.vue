@@ -1,4 +1,9 @@
 <template>
+        <div class="GrafDiv">
+          <div id="plotlydiv">
+            <!--Карта-->
+          </div>
+        </div> 
         <div class="DataBody">
           <button @click="selectOrder=undefined" v-show="selectOrder != undefined">Сброс фильтра</button>
           <div class="TableDiv" style="max-height: 40vh; min-height: 40%;">
@@ -13,11 +18,7 @@
           </tbody>
           </table>
         </div>
-        <div class="GrafDiv">
-          <div id="plotlydiv">
-            <!--Карта-->
-          </div>
-        </div> 
+        
       </div>
 </template>
   

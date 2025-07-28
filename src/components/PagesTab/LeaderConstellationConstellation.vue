@@ -44,9 +44,8 @@
           <div v-if="PageSettings.status == 5" class="TableDiv">
             <button @click="NetworkModelling" class="ButtonCommand">Расчёт полносвязной сети</button>
             <table class="TableDefault">
-            <thead><tr><th></th><th>Время начала</th><th>Время окончания</th><th></th></tr></thead>
+            <thead><tr><th>Время начала</th><th>Время окончания</th><th></th></tr></thead>
               <tbody><tr v-for="data, index in networkClaster" :key="index">
-                <td>{{ data.meshNetworkId }}</td>
                 <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
                 <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
                 <td @click="DeleteRowNetwork(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>

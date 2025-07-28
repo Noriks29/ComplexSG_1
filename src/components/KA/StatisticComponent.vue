@@ -19,8 +19,8 @@
             <table class="TableDefault SelectModeTable TopM">
               <thead><tr><th>Заявка</th><th>Выполнена</th><th>Ожидание съемки</th><th>Время доставки</th></tr></thead>
               <tbody>
-                <tr v-for="data, index in targetEvent" :key="index" @click="TableSelect=index" :class="index==TableSelect?'select':''">
-                    <td>{{ data.events[0].orderName}}</td><td>{{ data.status}}</td><td>{{ UnixToDtimeL(data.timeDelay)}}</td><td>{{ UnixToDtimeL(data.timePost)}}</td>
+                <tr v-for="data, index in targetEvent" :key="index" @click="TableSelect=index" :class="index==TableSelect?'select':''" style="text-align: center;">
+                    <td>{{ data.events[0].orderName}}</td><td>{{ data.status?'Да':'Нет'}}</td><td>{{ UnixToDtimeL(data.timeDelay)}}</td><td>{{ UnixToDtimeL(data.timePost)}}</td>
                 </tr>
               </tbody>
             </table>
@@ -162,5 +162,11 @@
   <style lang="scss" scoped>
 .TopM{
         margin-top: 40px;
+
+        tr{
+          td{
+            text-align: center !important;
+          }
+        }
 }
   </style>
