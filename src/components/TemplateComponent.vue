@@ -6,7 +6,7 @@
       </div>
       <div class="FooterSection" v-if="system.typeWorkplace != -1">
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
-        <Panel class="workpage" :pt="{ header: { style: 'display: none' }, content:{style:'display: flex;padding: 0px;height:100%'},toggleablecontent:{style:'height: 100%;'} }">
+        <Panel class="workpage" :pt="{ header: { style: 'display: none' }, content:{style:'display: flex;padding: 0px;height:100%'},toggleablecontent:{style:'height: 100%;'} }" :style="'overflow: hidden;'">
             <transition name="translate" mode="out-in" v-if="activeComponent != ''">
               <div class="ComponentSelect">
                 <component :is="activeComponent" :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" :ModelingRezultMode="ModelingRezultMode"></component> 

@@ -5,7 +5,7 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <div class="ContentDiv" style="margin-top: 50px;">
+    <div class="ContentDiv" style="margin-top: 20px;">
     <DataTable :value="dataJson" 
       tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
       ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">

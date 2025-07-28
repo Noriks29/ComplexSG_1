@@ -1,116 +1,72 @@
 <template>
-    <div class="main_contain RowSection">
+    <div class="main_contain RowSection" style="width: 100%;">
     <div>
       <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
         <img src="@/assets/exit.svg"><span>&#8203;</span>
       </button>
     </div>
 
-    <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
-      {{ value }}
-    <DataTable :value="dataJson"
-      tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
-      ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">
+    <div class="ContentDiv" style="margin-top: 20px;">
+    <DataTable :value="valueSelectOG.satellites"
+      tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort
+      ref="dtSat" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)" scrollable>
       <template #header>
         <Toolbar class="mb-4">
           <template #start>
-            <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+            <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel"/>
           </template>
           <template #center>
-            <SelectButton v-model="value" :options="dataJson" optionLabel="constellationName" dataKey="id" aria-labelledby="custom" :pt="{button:{style:'padding: 7px 5px 7px 13px;'}}">
+            <SelectButton v-model="valueSelectOG" :options="dataJson" optionLabel="constellationName" dataKey="id" aria-labelledby="custom" 
+            :pt="{button:{style:'padding: 7px 5px 7px 13px;'}}">
               <template #option="slotProps">
                  <div style="display: flex;align-items: center;">
                   <span style="position: relative;">{{ slotProps.option.constellationName }}</span>
-                  <Button 
-                    icon="pi pi-trash" 
-                    class="p-button-rounded p-button-danger p-button-text" 
-                    :style="'width: 25px;height: 25px;'"
-                    @click="slotProps.data.deleted = true; DeleteRow()"
-                  />
+                  <Button icon="pi pi-trash" 
+                    class="p-button-rounded p-button-danger p-button-text"  :style="'width: 25px;height: 25px;'"
+                    @click.stop="DeleteRowOG(slotProps.option)" @mousedown.stop @mouseup.stop/>
                 </div>
               </template>
             </SelectButton>
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="" text @click="PageSettings.status=(PageSettings.status+1)%2" />
           </template>
           <template #end>
-            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить ОГ" rounded text @click="PageSettings.status=(PageSettings.status+1)%2" />
-            <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить КА" rounded text @click="AddRow" />
           </template>
         </Toolbar>
       </template>
+      <Column field="name" header="Имя КА" sortable frozen>
+        <template #body="slotProps"><InputText v-model="slotProps.data.name" @input="ChangeParam(slotProps.data)" :style="'width:150px'"/></template>
+      </Column>
+      <Column field="modelSat" header="Модель КА">
+        <template #body="slotProps">
+          <Dropdown v-model="slotProps.data.modelSat" :options="KaModels" optionLabel="modelName"  placeholder="Выберите модель"/>
+        </template>
+      </Column>
+      <Column field="role" header="Роль" v-if="PageSettings.RoleUse">
+        <template #body="slotProps">
+          <Dropdown v-model="slotProps.data.role" :options="KaRole" optionLabel="lable" optionValue="value" placeholder="Выберите модель"/>
+        </template>
+      </Column>
+      <Column field="plane" header="Плосколсть" sortable v-if="valueSelectOG.inputType===2":style="'width:50px'"/>
+      <Column field="position" header="Позиция" sortable v-if="valueSelectOG.inputType===2" :style="'width:50px'"/>
+      <Column v-for="data,index in {
+        'altitude':'Большая полуось','eccentricity':'Эксцентриситет',
+        'incline':'Наклон','longitudeAscendingNode':'Долгота восходящего узла',
+        'perigeeWidthArgument':'Аргумент широты перигея','trueAnomaly':'Истинная аномалия'
+        }" :key="index" :field="index" :header="data">
+        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam(slotProps.data)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/></div></template>
+      </Column>
+      <Column header="" :exportable="false" headerStyle="width: 3rem">
+        <template #body="slotProps">
+          <Button 
+            icon="pi pi-trash" 
+            class="p-button-rounded p-button-danger p-button-text" 
+            @click="slotProps.data.deleted = true; DeleteRow()"
+          />
+        </template>
+      </Column>
     </DataTable> 
-
-
-
-
-
-    <div class="Panel LeftPanel">
-        <div class="FlexColumn">
-          <div class="OGList">
-            <div v-for="data, index in dataJson"
-              :key="index"
-              class="ButtonCommand" :class="data.id==selectOG.id?'Select':''"
-              @click="SelectOGFromList(data)"
-            >
-              <div type="name">{{ data.constellationName }}</div>
-              <div class="iconDelete" @click="DeleteRowOG(data)" type="icon"><img  src="@/assets/delete.svg" alt="Удалить"></div>
-          </div>
-            <button class="ButtonCommand"  @click="PageSettings.status=(PageSettings.status+1)%2" :class="modellingStatus?'disable':''">
-              <img src="@/assets/add.png" alt="" class="addButtonIcon">{{ (PageSettings.status == 1) ? 'Прекратить' : 'Добавить орбитальную группировку' }}
-            </button>
-        </div>
-        <div class="LoadExel" style="position: unset; flex: none; width: fit-content;">
-            <div><input id="Exel" type="checkbox" v-model="PageSettings.saveEXELmode"><label for="Exel">
-                {{ PageSettings.saveEXELmode ? 'Сохранить все ОГ':'Сохранить выбранную ОГ' }}
-              </label></div>
-              <div><button @click="LoadXLSX" class="ButtonCommand"><img src="../../assets/excel.png" width="32px"><span>&#8203;</span></button></div>
-            </div>
-          </div>
-    </div>
-
-
     <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 0 && selectOG != null" style="height: 93%;">
-            <h3>{{ selectOG.constellationName || "Не выбрана ОГ" }} - {{ OGType[selectOG.inputType] }}</h3>
-            <div class="TableDiv" style="max-height: 100%; height: 90%;">
-            <table class="TableDefault">
-              <thead>
-                <tr><th>Модель КА</th><th>Имя КА</th>
-                  <th v-if="PageSettings.RoleUse">Роль</th>
-                  <th v-if="selectOG.inputType === 2">Плосколсть</th>
-                  <th v-if="selectOG.inputType === 2">Позиция</th>
-                  <th>Большая полуось</th>
-                  <th>Эксцентриситет</th><th>Наклон</th><th>Долгота восходящего узла</th><th>Аргумент широты перигея</th>
-                  <th>Истинная аномалия</th>
-                  <th v-if="!approved && selectOG.inputType!=3" class="delete"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(data, index) in selectOG.satellites" :key="index"
-                  :class="approved ? 'disable' :''"
-                  @change="ChangeParam"
-                  v-show="!(data.deleted==true)"
-                >
-                  <td><SelectDiv  :dataOption="KaModels" :valueS="KaModels.filter(x => x.value == data.modelSat.id)[0]" :id="String(index)" @valueSelect="SelectChangeKA" /></td>
-                  <td><input type="text" v-model="data.name"                     :disabled="selectOG.inputType==3"></td>
-                  <td v-if="PageSettings.RoleUse"><SelectDiv  :dataOption="KaRole" :valueS="KaRole[data.role]" :id="String(index)" @valueSelect="SelectRole" /></td>
-                  <td v-if="selectOG.inputType === 2">{{ data.plane }}</td>
-                  <td v-if="selectOG.inputType === 2">{{ data.position }}</td>
-                  <td><input type="number" v-model="data.altitude"               :disabled="selectOG.inputType==3"></td>
-                  <td><input type="number" v-model="data.eccentricity"           :disabled="selectOG.inputType==3"></td>
-                  <td><input type="number" v-model="data.incline"                :disabled="selectOG.inputType==3"></td>
-                  <td><input type="number" v-model="data.longitudeAscendingNode" :disabled="selectOG.inputType==3"></td>
-                  <td><input type="number" v-model="data.perigeeWidthArgument"   :disabled="selectOG.inputType==3"></td>
-                  <td><input type="number" v-model="data.trueAnomaly"            :disabled="selectOG.inputType==3"></td>
-                  <td v-if="!approved && selectOG.inputType!=3" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="@/assets/delete.svg" alt="Удалить"></td>
-                </tr></tbody><tfoot>
-                <tr v-if="!approved && selectOG.inputType!=3" class="addRowButton">
-                  <td :colspan="9+Number(selectOG.inputType==2)*2 + PageSettings.RoleUse"><button @click="AddRow"><img src="@/assets/add.png" alt="" class="addButtonIcon">Добавить КА</button></td>
-                </tr> 
-              </tfoot>
-            </table>
-          </div>
-          </div>
           <div v-if="PageSettings.status == 1">
             <div class="flexrow">
               <div class="inputdiv"><input type="text" v-model="OG_Param.constellationName" placeholder="Введите название"></div>
@@ -131,7 +87,7 @@
               </div>
             <div v-if="OG_Param.inputType === 2" class="TableDiv">
               <table class="TableDefault"><tbody>
-                  <tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="OG_Param.parametersCalculation.modelSat={id: $event.value}"/></td></tr>
+                  <!--<tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="OG_Param.parametersCalculation.modelSat={id: $event.value}"/></td></tr>-->
                   <tr><td>Количество плоскостей</td><td><input type="number" v-model="OG_Param.parametersCalculation.numberOfPlane"></td></tr>
                   <tr><td>Количество позиций в плоскости</td><td><input v-model="OG_Param.parametersCalculation.positionPlane" type="number"></td></tr>
                   <tr><td>Большая полуось</td><td><input v-model="OG_Param.parametersCalculation.altitude" type="number"></td></tr>
@@ -157,7 +113,6 @@
   
   <script>
 import { PagesSettings } from './PagesSettings.js';
-import { CreateDateTime } from '@/js/WorkWithDTime';
 import SelectDiv from '../SelectDiv.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -167,6 +122,7 @@ import InputText from 'primevue/inputtext';
 import Toolbar from 'primevue/toolbar';
 import SelectButton from 'primevue/selectbutton';
 import XLSX from 'xlsx-js-style';
+import Dropdown from 'primevue/dropdown';
 
   export default {
     name: 'OG',
@@ -182,10 +138,6 @@ import XLSX from 'xlsx-js-style';
         },
         KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
         KaModels: [], //список моделей ка
-        KaLableId: {}, // чисто для базового вывода имени ка
-        selectOG: {id:null}, //выбранная группировка ог
-        approved: false, //утверждено или нет
-        //далее для добавления ог
         OG_Param:{
           constellationName: undefined,
           inputType: 1,
@@ -196,43 +148,16 @@ import XLSX from 'xlsx-js-style';
           },
           file: undefined
         },
-        options:[
-          { 
-            value: 'option1',  // Отображаемое значение (учитывая optionLabel="value")
-            icon: 'pi pi-check' // Класс иконки
-          },
-          { 
-            value: 'option2',
-            icon: 'pi pi-times' 
-          },
-          { 
-            value: 'option3',
-            icon: 'pi pi-star'
-          }
-        ],
-        value : null 
+        valueSelectOG : {id:null, satellites:[]} 
         
       }
     },
     components:
     {
       SelectDiv, 
-      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton
+      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown
     },
     methods: {
-      SelectOGFromList(data){
-        this.selectOG = {id:null}
-        if(data != undefined){
-          this.selectOG = data
-          this.OGTimePrevrap()
-          console.log("select", data)
-        }
-      },
-      OGTimePrevrap(){
-        this.selectOG.satellites.forEach(element => {
-          element.timeTLE = CreateDateTime(element.tleTime)
-        });
-      },
       async DeleteRowOG(data){
         if(!this.approved){
           await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
@@ -241,18 +166,6 @@ import XLSX from 'xlsx-js-style';
           this.SelectOGFromList(this.dataJson[0])
         }
       },
-      async ChangeApproved(stat){
-          this.approved = stat
-          try {
-            if(!this.approved){
-              this.approved = true
-            }
-          } catch (error) {
-            this.approved = false
-          }
-          //await ChangeSystemObject('constellationStatus', stat)
-        },
-
         AddRow(){
             var addedRow = {
                     'altitude' : 0, 'eccentricity' : 0,
@@ -263,35 +176,24 @@ import XLSX from 'xlsx-js-style';
                     "modelSat": {"id": this.KaModels[0].value},
                     name: "none", role: 0
                 };
-            this.selectOG.satellites.push(addedRow);  
+            this.valueSelectOG.satellites.push(addedRow);  
             this.SaveOGChange()
         },
-        ChangeParam(event){
-            if(event.target.nodeName != 'SELECT')
-              this.SaveOGChange()
+          ChangeParam(event){
+              this.SaveOGChange(false)
+              console.log(event, 'сделать тут отдельное обновление каждой строчки')
           },
-          SelectRole(data){
-            this.selectOG.satellites[data.id].role = data.value
-            this.SaveOGChange()
-          },
-          SelectChangeKA(data){
-            this.selectOG.satellites[data.id].modelSat.id = data.value
-            //this.selectOG.satellites[data.id].modelSat.modelName = data.lable
-            this.SaveOGChange()
-          },
-          async DeleteRow(index){ // ка из ог
-              this.selectOG.satellites[index].deleted = true
-              await this.SaveOGChange(true)
+          DeleteRow(){ // ка из ог
+              this.SaveOGChange(true)
           },
           async SaveOGChange(reload = true) { //сохранение изменения ог
-            await this.$ChangeOGList(this.selectOG)
+            await this.$ChangeOGList(this.valueSelectOG)
             if(reload){
               this.dataJson = await this.$GetOGList()
               for (let i = 0; i < this.dataJson.length; i++) {
                 const element = this.dataJson[i];
-                if(element.id == this.selectOG.id){
-                  this.selectOG = element
-                  this.OGTimePrevrap()
+                if(element.id == this.valueSelectOG.id){
+                  this.valueSelectOG = element
                   break
                 }              
               }
@@ -338,68 +240,18 @@ import XLSX from 'xlsx-js-style';
             }
           },
           LoadXLSX(){
-
-          const workbook = XLSX.utils.book_new();
-          let data = [["Модель КА","Имя КА","Роль","Плоскость","Позиция","Большая полуось","Эксцентриситет","Наклон","Долгота восходящего узла",
-            "Аргумент широты перигея","Истинная аномалия"]]
-            let dataLoad = []
-            if(this.PageSettings.saveEXELmode){
-              dataLoad = this.dataJson
-            }
-            else{
-              dataLoad = [this.selectOG]
-            }
-            if(dataLoad.length == 1 && this.selectOG == undefined){
-              alert("группировка не выбрана")
-              return
-            } 
-            dataLoad.forEach(dataOGExel => {
-              if(dataLoad.length > 1) data.push([dataOGExel.constellationName])
-              dataOGExel.satellites.forEach(element => {
-              data.push([this.KaLableId[element.modelSat.id],element.name,this.KaRole[element.role].lable,
-              element.plane,element.position,element.altitude,element.eccentricity,element.incline,element.longitudeAscendingNode,
-              element.perigeeWidthArgument,element.trueAnomaly])
-            });
-            })
-            
-          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
-          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
-          let style = {
-            font: {
-              name: 'Calibri',
-              sz: 12,
-              bold: true,
-                  color: {rgb: '000000'} // red font
-            },
-            border: {
-              bottom: { style: 'thin', color: { rgb: '000000' } }
-            }}
-          let keylist = Object.keys(worksheet)
-          for (let keyid = 0; keyid < keylist.length; keyid++) {
-            const key = keylist[keyid];
-            console.log(worksheet[key].v, keylist, data[0])
-            try {
-              if (data[0].indexOf(worksheet[key].v) != -1) {
-                worksheet[key].s = style
-              }
-            } catch (error) {
-              console.log(error)
-            }
-          }
-          console.log(worksheet)
-          workbook.Sheets['Data'] = worksheet;
-          XLSX.writeFile(workbook, 'ОП.xlsx');
-        },
+            console.log("fsef")
+          },
     },
     async mounted(){
       this.dataJson = await this.$OGList()
       let result = await this.$FetchGet('/api/v1/modelsat/all')
       this.KaModels = []
       for (let index = 0; index < result.length; index++) {
-        this.KaModels.push({value:result[index].id, lable: result[index].modelName})
+        this.KaModels.push({modelName:result[index].modelName, id:result[index].id, "description": null, "imageFile": null, "operatingParameter": null, "rules": null, "modes": null, "devCatalogs": null, "devices": null, "charges": null})
       }
-      this.selectOG = this.dataJson[0]
-      this.SelectOGFromList(this.dataJson[0])
+      this.valueSelectOG = this.dataJson[0]
+
       let system = await this.$SystemObject()
 
       if(system.typeWorkplace in {1:null, 2:null}){
@@ -411,6 +263,18 @@ import XLSX from 'xlsx-js-style';
   </script>
 
 <style lang="scss" scoped>
+/* Глобальные стили или scoped */
+.narrow-input-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .p-inputnumber {//контроль размеров инпута
+    width: 100px !important;
+    min-width: 100%;
+    flex-direction: column;
+  }
+}
+
 .ElementCol{
   display: grid;
   grid-template-columns: 4fr 3fr 1fr;
