@@ -5,15 +5,10 @@
         <img src="@/assets/exit.svg"><span>&#8203;</span>
       </button>
     </div>
-
     <div class="ContentDiv" style="margin-top: 20px;">
-    <DataTable :value="valueSelectOG.satellites"
-      tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort
-      ref="dtSat" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)" scrollable>
-      <template #header>
-        <Toolbar class="mb-4">
+      <Toolbar class="mb-4">
           <template #start>
-            <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel"/>
+            <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel" :disabled="valueSelectOG == undefined" />
           </template>
           <template #center>
             <SelectButton v-model="valueSelectOG" :options="dataJson" optionLabel="constellationName" dataKey="id" aria-labelledby="custom" 
@@ -27,12 +22,18 @@
                 </div>
               </template>
             </SelectButton>
-            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="" text @click="PageSettings.status=(PageSettings.status+1)%2" />
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="ОГ" text @click="valueSelectOG = undefined" />
           </template>
           <template #end>
-            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить КА" rounded text @click="AddRow" />
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить КА" rounded text @click="AddRow" :disabled="valueSelectOG == undefined" />
           </template>
-        </Toolbar>
+        </Toolbar> 
+    <span>{{ valueSelectOG?.inputType?OGType[valueSelectOG.inputType]:''}}</span>
+    <DataTable :value="valueSelectOG.satellites" v-if="valueSelectOG != undefined"
+      tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort
+      ref="dtSat" :exportFilename="'OG_' + new Date().toISOString().slice(0, 10)" scrollable>
+      <template #header>
+        
       </template>
       <Column field="name" header="Имя КА" sortable frozen>
         <template #body="slotProps"><InputText v-model="slotProps.data.name" @input="ChangeParam(slotProps.data)" :style="'width:150px'"/></template>
@@ -67,25 +68,23 @@
       </Column>
     </DataTable> 
     <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 1">
+          <div v-if="valueSelectOG == undefined">
             <div class="flexrow">
-              <div class="inputdiv"><input type="text" v-model="OG_Param.constellationName" placeholder="Введите название"></div>
-              <div class="SelectDivInFlex">
-                <SelectDiv  
-                    :dataOption="[{value:1,lable: OGType[1]},{value:3,lable: OGType[3]},{value:2,lable: OGType[2]}]" 
-                    :valueS="{lable: OGType[OG_Param.inputType]}"
-                    @valueSelect="OG_Param.inputType=$event.value"/>
-              </div>
-              <div><button @click="AddOG" class="ButtonCommand">Создать</button> </div>
+                <FloatLabel>
+                  <InputText v-model="OG_Param.constellationName" inputId="constellationName" :invalid="!OG_Param.constellationName"/>
+                  <label for="constellationName">Название</label>
+                </FloatLabel>
+                <FloatLabel>
+                  <Dropdown v-model="OG_Param.inputType" :options="[{value:1,lable: OGType[1]},{value:3,lable: OGType[3]},{value:2,lable: OGType[2]}]" optionLabel="lable" optionValue="value" inputId="inputType"/>
+                  <label for="inputType">Тип</label>
+                </FloatLabel>
+              <div><Button label="Создать" severity="success" raised @click="AddOG"/></div>
             </div>
             <div v-if="OG_Param.inputType == 3">
-                <label class="input-file">
-                    <input type="file" name="file" id="file-Json" @change="LoadFile" enctype="multipart/form-data">		
-                    <span>Загрузить файл</span>
-                </label>
+                <FileUpload mode="basic" name="file" accept=".txt,text/plain" :maxFileSize="1000000" :customUpload="true" @select="LoadFile" :auto="true" :chooseLabel="OG_Param.file?OG_Param.file.name:'Выбрать файл'" />
                 Файл: {{ (OG_Param.file !== undefined) ? OG_Param.file.name : "Не выбран" }}
               </div>
-            <div v-if="OG_Param.inputType === 2" class="TableDiv">
+            <div v-if="OG_Param.inputType === 2" >
               <table class="TableDefault"><tbody>
                   <!--<tr><td>Модель КА</td><td><SelectDiv  :dataOption="KaModels" :valueS="KaModels[0]" :id="index" @valueSelect="OG_Param.parametersCalculation.modelSat={id: $event.value}"/></td></tr>-->
                   <tr><td>Количество плоскостей</td><td><input type="number" v-model="OG_Param.parametersCalculation.numberOfPlane"></td></tr>
@@ -123,6 +122,9 @@ import Toolbar from 'primevue/toolbar';
 import SelectButton from 'primevue/selectbutton';
 import XLSX from 'xlsx-js-style';
 import Dropdown from 'primevue/dropdown';
+import FloatLabel from 'primevue/floatlabel';
+import FileUpload from 'primevue/fileupload';
+
 
   export default {
     name: 'OG',
@@ -132,8 +134,6 @@ import Dropdown from 'primevue/dropdown';
         OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"}, //список типов созданий ог
         dataJson: [],
         PageSettings:{
-          status: 0,
-          saveEXELmode: true,
           RoleUse:true
         },
         KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
@@ -148,22 +148,21 @@ import Dropdown from 'primevue/dropdown';
           },
           file: undefined
         },
-        valueSelectOG : {id:null, satellites:[]} 
+        valueSelectOG : undefined
         
       }
     },
     components:
     {
       SelectDiv, 
-      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown
+      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown,FloatLabel,FileUpload
     },
     methods: {
       async DeleteRowOG(data){
         if(!this.approved){
           await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
-          this.selectOG = {id:null}
           this.dataJson = await this.$GetOGList()
-          this.SelectOGFromList(this.dataJson[0])
+          this.valueSelectOG = this.dataJson[0]
         }
       },
         AddRow(){
@@ -200,6 +199,7 @@ import Dropdown from 'primevue/dropdown';
             }
           },
           async AddOG(){
+            try {
             if(this.OG_Param.constellationName != undefined)
             {
               let responce =  {}
@@ -216,12 +216,12 @@ import Dropdown from 'primevue/dropdown';
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.constellationName); // Добавляем имя
                 formData.append('inputType', 3);
+                console.log(formData)
                 responce = await this.$FetchPostFile("/api/v1/constellation/upload/tle", formData)
               }
               if(responce.type == "SUCCESS"){
                 this.dataJson = await this.$GetOGList()
-                this.PageSettings.status = 0
-                this.SelectOGFromList(this.dataJson[this.dataJson.length-1])
+                this.valueSelectOG = this.dataJson[this.dataJson.length-1]
                 await this.$reloadSystem()
               }
               else{
@@ -232,15 +232,68 @@ import Dropdown from 'primevue/dropdown';
             else{
               alert("Некоректные входные данные - '"+this.OG_Param.constellationName+"' - '"+this.OG_Param.inputType+"'")
             }
+            } catch (error) {
+              console.error(error)
+            }
           },
           async LoadFile(data){
-            if (data.target.files[0]) {
-              var file = data.target.files[0];
+            if (data.files[0]) {
+              var file = data.files[0];
               this.OG_Param.file = file
+              console.log(this.OG_Param.file)
             }
           },
           LoadXLSX(){
-            console.log("fsef")
+            const filename = this.$refs.dtSat.$props.exportFilename || 'export';
+            const headers = [];
+            const fields = [];
+            this.$refs.dtSat.$slots.default()
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                if(col.props != null){
+                  headers.push(col.props?.header || col.props?.field);
+                  fields.push(col.props?.field);
+                }
+                else if(typeof col.children == "object" && col.children.length > 0){
+                  col.children.forEach(colChild => {
+                    headers.push(colChild.props?.header);
+                    fields.push(colChild.props?.field);
+                  })
+                }
+              });
+            // 3. Подготавливаем данные
+            const data = this.valueSelectOG.satellites.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                if(field == 'modelSat') newRow[field] = row.modelSat.modelName;
+                else if(field == 'role') newRow[field] = this.KaRole[row.role].lable;
+                else newRow[field] = row[field];
+              });
+              return newRow;
+            });
+            // 4. Создаем лист Excel
+            let style = {
+              font: {
+                name: 'Calibri',
+                sz: 12,
+                bold: true,
+                    color: {rgb: '000000'} // red font
+              },
+              border: {
+                bottom: { style: 'thin', color: { rgb: '000000' } }
+              }}
+            // Преобразуем заголовки в массив объектов с стилями
+            const styledHeaders = headers.map(text => ({
+              v: text,
+              t: 's',
+              s: style
+            }));
+            const worksheet = XLSX.utils.json_to_sheet(data, { header: fields });
+            XLSX.utils.sheet_add_aoa(worksheet, [styledHeaders], { origin: 'A1' })
+            // 7. Сохраняем файл
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+            XLSX.writeFile(workbook, `${filename}.xlsx`);
           },
     },
     async mounted(){
@@ -250,7 +303,7 @@ import Dropdown from 'primevue/dropdown';
       for (let index = 0; index < result.length; index++) {
         this.KaModels.push({modelName:result[index].modelName, id:result[index].id, "description": null, "imageFile": null, "operatingParameter": null, "rules": null, "modes": null, "devCatalogs": null, "devices": null, "charges": null})
       }
-      this.valueSelectOG = this.dataJson[0]
+      this.valueSelectOG = this.dataJson[0] || undefined
 
       let system = await this.$SystemObject()
 
@@ -291,10 +344,10 @@ import Dropdown from 'primevue/dropdown';
 
 .flexrow{
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: space-evenly;
-  .inputdiv input{
-    border-bottom: 1px solid white;
+  .p-float-label{
+    margin: 10px 10px;
   }
 }
 
