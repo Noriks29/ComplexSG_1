@@ -30,15 +30,15 @@
     </Column>
       <Column field="latitude" header="Широта" sortable>
       <template #body="slotProps">
-        <InputNumber :min="-180" :max="180"
-          v-model="slotProps.data.latitude" 
-          @input="saveChanges(slotProps.data)"
+        <InputNumber :min="-180" :max="180" mode="decimal" :maxFractionDigits="5"
+          v-model="slotProps.data.latitude"  
+          @input="saveChanges(slotProps.data)" 
         />
       </template>
     </Column>
       <Column field="longitude" header="Долгота" sortable>
       <template #body="slotProps">
-        <InputNumber :min="-90" :max="90"
+        <InputNumber :min="-90" :max="90"  mode="decimal" :maxFractionDigits="5"
           v-model="slotProps.data.longitude" 
           @input="saveChanges(slotProps.data)"
         />

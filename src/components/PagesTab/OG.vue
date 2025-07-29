@@ -55,7 +55,7 @@
         'incline':'Наклон','longitudeAscendingNode':'Долгота восходящего узла',
         'perigeeWidthArgument':'Аргумент широты перигея','trueAnomaly':'Истинная аномалия'
         }" :key="index" :field="index" :header="data">
-        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam(slotProps.data)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/></div></template>
+        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam(slotProps.data)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"  mode="decimal" :maxFractionDigits="5"/></div></template>
       </Column>
       <Column header="" :exportable="false" headerStyle="width: 3rem">
         <template #body="slotProps">
