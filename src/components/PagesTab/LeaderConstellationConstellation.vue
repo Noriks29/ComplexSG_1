@@ -7,8 +7,13 @@
           </div>
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
-            <div class="FlexColumn">
-              <div v-if="PageSettings.mode"><label for="angle">Минимальный угол</label><input id="angle" type="number" v-model="experimentObject.angle"></div>
+            <div class="FlexColumn" style="align-items: center; padding-top: 25px;">
+              <div v-if="PageSettings.mode">
+                <FloatLabel>
+                  <InputNumber v-model="experimentObject.angle" inputId="angle" showButtons :invalid="!experimentObject.angle && experimentObject.angle !== 0"/>
+                  <label for="angle">Минимальный угол</label>
+                </FloatLabel>
+              </div>
               <div v-if="PageSettings.mode"><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
               <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
               <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>
@@ -18,44 +23,65 @@
             </div>
         </div>
         <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 0" class="TableDiv">
-            <table class="TableDefault">
-              <thead><tr><th>Кластер</th><th>Кластер</th><th></th></tr></thead>
-              <tbody><tr v-for="data, index in clusterTopology" :key="index">
-                <td><SelectDiv  :dataOption="lessConstellation" :valueS="{lable: data.cluster1.constellationName}" :id="index" @valueSelect="ChangeCluster($event, 'cluster1')"/></td>
-                <td><SelectDiv  :dataOption="lessConstellation" :valueS="{lable: data.cluster2.constellationName}" :id="index" @valueSelect="ChangeCluster($event, 'cluster2')"/></td>
-                <td @click="DeleteRow(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr><td colspan="3" @click="AddRow('clusterTopology')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
-            </tfoot>
-          </table>
-          </div>
-          <div v-if="PageSettings.status == 3" class="TableDiv">
-            <table class="TableDefault">
-            <thead><tr><th>КА</th><th>Видимый КА</th><th>Начало</th><th>Конец</th></tr></thead>
-              <tbody><tr v-for="data, index in PageSettings.SatSat" :key="index">
-                <td>{{ data.satellite1 }}</td><td>{{ data.satellite2 }}</td><td>{{ data.beginUnix }}</td><td>{{ data.endUnix }}</td>
-              </tr>
-            </tbody></table>
-          </div>
+          <Toolbar class="mb-4">
+            <template #start>
+              <Button v-if="PageSettings.status in {0:null,3:null,5:null}" icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+            </template>
+            <template #center>
+              <Button v-if="PageSettings.status == 5" @click="NetworkModelling" label="Расчёт полносвязной сети" severity="success" />
+            </template>
+            <template #end>
+              <Button v-if="PageSettings.status in {0:null,5:null}" icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
+            </template>
+          </Toolbar>
+          <DataTable :value="clusterTopology" v-if="PageSettings.status == 0"
+            tableStyle="min-width: 50rem" sortMode="multiple" stripedRows
+            ref="dtSatSatTopology" :exportFilename="'Топология_КА_КА_' + new Date().toISOString().slice(0, 10)">
+            <Column field="cluster1" header="Кластер">
+              <template #body="slotProps">
+                <Dropdown v-model="slotProps.data.cluster1" :options="lessConstellation" @change="ChangeCluster($event)" optionLabel="constellationName" placeholder="Выберите кластер"/>
+              </template>
+            </Column>
+            <Column field="cluster2" header="Кластер">
+              <template #body="slotProps">
+                <Dropdown v-model="slotProps.data.cluster2" :options="lessConstellation" @change="ChangeCluster($event)" optionLabel="constellationName" placeholder="Выберите кластер"/>
+              </template>
+            </Column>
+            <Column header="" :exportable="false" headerStyle="width: 3rem">
+              <template #body="slotProps">
+                <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                  @click="slotProps.data.deleted = true; DeleteRow('Topology')"/>
+              </template>
+            </Column>
+          </DataTable>
+            <DataTable :value="PageSettings.SatSat" v-if="PageSettings.status == 3"
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              ref="dtSatSat" :exportFilename="'Окна_КА_КА_' + new Date().toISOString().slice(0, 10)">
+              <Column :field="field" :header="header" sortable  v-for="header, field in {
+                satellite1:'КА', satellite2:'Видимый КА',beginUnix:'Начало',endUnix:'Конец'
+                }" :key="header" />
+            </DataTable>
 
-          <div v-if="PageSettings.status == 5" class="TableDiv">
-            <button @click="NetworkModelling" class="ButtonCommand">Расчёт полносвязной сети</button>
-            <table class="TableDefault">
-            <thead><tr><th>Время начала</th><th>Время окончания</th><th></th></tr></thead>
-              <tbody><tr v-for="data, index in networkClaster" :key="index">
-                <td><DateTime :valueUnix="data.beginTime" :name="'beginTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
-                <td><DateTime :valueUnix="data.endTime" :name="'endTime'" :id="index" @valueSelect="ChangeTime($event)"/></td>
-                <td @click="DeleteRowNetwork(index)" style="width: 20px;"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-              </tr>
-            </tbody>
-          <tfoot>
-            <tr><td colspan="3" @click="AddRow('network')" style="text-align: center;"><img src="../../assets/add.png" alt="" class="addButtonIcon"> Добавить</td></tr>
-          </tfoot>
-          </table>
-          </div>
+            <DataTable :value="networkClaster" v-if="PageSettings.status == 5"
+              tableStyle="min-width: 50rem" stripedRows removableSort
+              ref="dtSatSatNet" :exportFilename="'Сеть_КА_КА_' + new Date().toISOString().slice(0, 10)">
+              <Column field="beginTime" header="Время начал" sortables>
+                <template #body="slotProps">
+                  <Calendar v-model="slotProps.data.beginTimeDate"  @date-select="ChangeTimeInput($event, 'beginTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'beginTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.beginTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                </template>
+              </Column>
+              <Column field="endTime" header="Время окончания">
+                <template #body="slotProps">
+                  <Calendar v-model="slotProps.data.endTimeDate"  @date-select="ChangeTimeInput($event, 'endTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'endTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.endTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                </template>
+              </Column>
+              <Column header="" :exportable="false" headerStyle="width: 3rem">
+                <template #body="slotProps">
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                    @click="slotProps.data.deleted = true; DeleteRow('Net')"/>
+                </template>
+              </Column>
+            </DataTable>
 
           <div id="plotlymapContain1"></div>
           </div>
@@ -73,12 +99,23 @@ import SelectDiv from '../SelectDiv.vue';
 import Plotly from 'plotly.js-dist'
 import DateTime from '../DateTime.vue';
 
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Toolbar from 'primevue/toolbar';
+import Button from 'primevue/button';
+import Calendar from 'primevue/calendar';
+import Dropdown from 'primevue/dropdown';
+import FloatLabel from 'primevue/floatlabel';
+import InputNumber from 'primevue/inputnumber';
+
+import XLSX from 'xlsx-js-style';
   export default {
     name: 'LeaderConstellationConstellation',
     mixins: [PagesSettings],
     components:{
       SelectDiv,
-      DateTime
+      DateTime,
+      DataTable, Column, Toolbar, Button,Calendar,Dropdown, FloatLabel, InputNumber
     },
     data(){
       return{
@@ -94,13 +131,103 @@ import DateTime from '../DateTime.vue';
       }
     },
     methods: {
-      async AddRow(mode){
-        switch (mode) {
-          case 'clusterTopology':
+      exportExcel() {
+          // 1. Получаем имя файла
+          const headers = [];
+          const fields = [];
+          let filename = 'export'
+          let data = []
+          if(this.PageSettings.status == 0){
+            filename = this.$refs.dtSatSatTopology.$props.exportFilename || 'export';
+            this.$refs.dtSatSatTopology.$slots.default()
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                headers.push(col.props?.header || col.props?.field);
+                fields.push(col.props?.field);
+              });
+            data = this.clusterTopology.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                newRow[field] = row[field].constellationName;
+              });
+              return newRow;
+            });
+          }
+          else if(this.PageSettings.status == 3){
+            filename = this.$refs.dtSatSat.$props.exportFilename || 'export';
+            this.$refs.dtSatSat.$slots.default()[0].children
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                headers.push(col.props?.header || col.props?.field);
+                fields.push(col.props?.field);
+              });
+            data = this.PageSettings.SatSat.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                newRow[field] = row[field];
+              });
+              return newRow;
+            });
+          }
+          else if(this.PageSettings.status == 5){
+            filename = this.$refs.dtSatSatNet.$props.exportFilename || 'export';
+            this.$refs.dtSatSatNet.$slots.default()
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                headers.push(col.props?.header || col.props?.field);
+                fields.push(col.props?.field);
+              });
+            data = this.networkClaster.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                newRow[field] = CreateDateTime(row[field]);
+              });
+              return newRow;
+            });
+          }
+          else{return}
+          // 4. Создаем лист Excel
+          let style = {
+            font: {
+              name: 'Calibri',
+              sz: 12,
+              bold: true,
+                  color: {rgb: '000000'} // red font
+            },
+            border: {
+              bottom: { style: 'thin', color: { rgb: '000000' } }
+            }}
+          // Преобразуем заголовки в массив объектов с стилями
+          const styledHeaders = headers.map(text => ({
+            v: text,
+            t: 's',
+            s: style
+          }));
+          const worksheet = XLSX.utils.json_to_sheet(data, { header: fields });
+          XLSX.utils.sheet_add_aoa(worksheet, [styledHeaders], { origin: 'A1' });
+          // 7. Сохраняем файл
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+          XLSX.writeFile(workbook, `${filename}.xlsx`);
+        },
+      async ChangeTimeInput(value, param, index){
+        for (let i = 0; i < this.networkClaster.length; i++) {
+          if(this.networkClaster[i].meshNetworkId == index){
+            this.networkClaster[i][param] = Math.floor(Date.parse(value)/1000)
+            console.log(Math.floor(Date.parse(value)/1000))
+            break
+          }
+        }
+        await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
+      },
+      async AddRow(){
+        let page = this.PageSettings.status
+        switch (page) {
+          case 0:
             console.log(this.lessConstellation)
             this.clusterTopology.push({
-              "cluster1": this.lessConstellation[0].value,
-              "cluster2": this.lessConstellation[1].value,
+              "cluster1": this.lessConstellation[0],
+              "cluster2": this.lessConstellation[1],
               "beginTime": null,
               "endTime": null,
               "deleted": null
@@ -108,41 +235,32 @@ import DateTime from '../DateTime.vue';
             await this.$FetchPost('/api/v1/topology/update', this.clusterTopology, null)
             this.ReFetch()
             break;
-          case 'network':
+          case 5:
             this.networkClaster.push({
-                "beginTime": 10000000,
-                "endTime": 10002000,
+                "beginTime": 10000000,'beginTimeDate': Math.floor(Date.parse(10000000)/1000),
+                "endTime": 10000001,'endTimeDate': Math.floor(Date.parse(10000001)/1000),
                 "deleted": null
               })
             await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
             this.ReFetch()
-          
             break;
-        
           default:
             break;
         }
       },
       async DeleteRow(index){
-        this.clusterTopology[index].deleted= true
-        await this.$FetchPost('/api/v1/topology/update', this.clusterTopology, null)
-        this.ReFetch()
-      },
-      async DeleteRowNetwork(index){
-        this.networkClaster[index].deleted= true
-        await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
+        if(index == 'Net'){
+          await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
+        }
+        else if(index == 'Topology'){
+          await this.$FetchPost('/api/v1/topology/update', this.clusterTopology, null)
+        }
         this.ReFetch()
       },
       
-      async ChangeCluster(event, param){
-        this.clusterTopology[event.id][param] = event.value
+      async ChangeCluster(event){
+        console.log('сделать изменение отдельной записи', event)
         await this.$FetchPost('/api/v1/topology/update', this.clusterTopology, null)
-        this.ReFetch()
-      },
-      async ChangeTime(obgTime){
-        this.networkClaster[obgTime.id][obgTime.name] = obgTime.time
-        await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
-        this.ReFetch()
       },
       async NetworkModelling(){
         this.$showLoad(true)
@@ -242,6 +360,10 @@ import DateTime from '../DateTime.vue';
           if(this.PageSettings.mode) { // при кластер-кластер
              this.clusterTopology = await this.$FetchGet("/api/v1/topology/all") || []
              this.networkClaster = await this.$FetchGet("/api/v1/network/all") || []
+             this.networkClaster.forEach(windownet => {
+              windownet.beginTimeDate = new Date(windownet.beginTime * 1000) || null
+              windownet.endTimeDate = new Date(windownet.endTime * 1000) || null
+             })
              response = await this.$FetchGet('/api/v1/cluster/all') || []
           }
           else response = await this.$FetchGet('/api/v1/modelling/data/sat-sat/all',false) || []
@@ -265,7 +387,7 @@ import DateTime from '../DateTime.vue';
         this.lessConstellation = []
         let rezult = await this.$FetchGet("/api/v1/constellation/cl/all") || []
         rezult.forEach(element => {
-          this.lessConstellation.push({lable: element.constellationName, value: element})
+          this.lessConstellation.push(element)
         })
       }
       this.ReFetch()
