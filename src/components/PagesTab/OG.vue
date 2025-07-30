@@ -40,12 +40,12 @@
       </Column>
       <Column field="modelSat" header="Модель КА">
         <template #body="slotProps">
-          <Dropdown v-model="slotProps.data.modelSat" :options="KaModels" optionLabel="modelName"  placeholder="Выберите модель"/>
+          <Dropdown v-model="slotProps.data.modelSat" :options="KaModels" @change="ChangeParam(slotProps.data)" optionLabel="modelName"  placeholder="Выберите модель"/>
         </template>
       </Column>
       <Column field="role" header="Роль" v-if="PageSettings.RoleUse">
         <template #body="slotProps">
-          <Dropdown v-model="slotProps.data.role" :options="KaRole" optionLabel="lable" optionValue="value" placeholder="Выберите модель"/>
+          <Dropdown v-model="slotProps.data.role" :options="KaRole" @change="ChangeParam(slotProps.data)" optionLabel="lable" optionValue="value" placeholder="Выберите модель"/>
         </template>
       </Column>
       <Column field="plane" header="Плосколсть" sortable v-if="valueSelectOG.inputType===2":style="'width:50px'"/>
