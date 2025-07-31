@@ -14,6 +14,43 @@
             </div>
         </div>
         <div class="Panel RightPanel" >
+          <DataTable :value="requestJson"
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              ref="dtDZZ" :exportFilename="'Заявки_' + new Date().toISOString().slice(0, 10)">
+              <Column field="catalog" header="Цель">
+                <template #body="slotProps">
+                  <Dropdown v-model="slotProps.data.catalog" :options="catalogJson" @change="SaveChange($event,'request')" optionLabel="goalName" placeholder="Выберите цель"/>
+                </template>
+              </Column>
+              <Column field="lat" header="Широта"><template #body="slotProps">{{ slotProps.data.catalog.lat }}</template></Column>
+              <Column field="lon" header="Долгота"><template #body="slotProps">{{ slotProps.data.catalog.lon }}</template></Column>
+              <Column field="choiceCriteria" header="Критерий">
+                <template #body="slotProps">
+                  <Dropdown v-model="slotProps.data.choiceCriteria" :options="choiceCriteriaArr" @change="SaveChange($event,'request')" optionLabel="lable" optionValue="value" placeholder="Выберите цель"/>
+                </template>
+              </Column>
+              <Column field="priory" header="Приоритет">
+                <template #body="slotProps"><div class="narrow-input-container">
+                  <InputNumber v-model="slotProps.data.priory" showButtons @input="SaveChange($event,'request')" :invalid="!slotProps.data.choiceCriteria && slotProps.data.choiceCriteria !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
+                </div></template>
+              </Column>
+              <Column field="timeDate" header="Время появления">
+                <template #body="slotProps">
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                </template>
+              </Column>
+              <Column field="termDate" header="Срок выполнения">
+                <template #body="slotProps">
+                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                </template>
+              </Column>
+              <Column header="" :exportable="false" headerStyle="width: 3rem">
+                <template #body="slotProps">
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                    @click="slotProps.data.deleted = true; DeleteRow('request')"/>
+                </template>
+              </Column>
+          </DataTable>
           <div v-if="viewmode == 0" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
             <table class="TableDefault">
               <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
@@ -105,12 +142,19 @@ import SelectDiv from '../SelectDiv.vue'
 import DateTime from '../DateTime.vue';
 import XLSX from 'xlsx-js-style';
 
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Dropdown from 'primevue/dropdown';
+import InputNumber from 'primevue/inputnumber';
+import Calendar from 'primevue/calendar';
+import Button from 'primevue/button';
   export default {
     name: 'TargetDZZ',
     mixins: [PagesSettings],
     components:{
       SelectDiv,
-      DateTime
+      DateTime,
+      DataTable, Column,Dropdown,InputNumber,Calendar,Button
     },
     data(){
       return{
@@ -132,9 +176,15 @@ import XLSX from 'xlsx-js-style';
       }
     },
     methods: {
-      ChangeTime(obgtime){
-        this.requestJson[obgtime.id][obgtime.name] = obgtime.time
-        this.SatartSave('request')
+      ChangeTimeInput(value, param, index){
+        for (let i = 0; i < this.requestJson.length; i++) {
+          if(this.requestJson[i].requestId == index){
+            this.requestJson[i][param] = Math.floor(Date.parse(value)/1000)
+            console.log(Math.floor(Date.parse(value)/1000))
+            break
+          }
+        }
+        this.SaveChange(null, 'request')
       },
       CreateDateTime(time, mode){
         return CreateDateTime(time, mode)
@@ -142,6 +192,10 @@ import XLSX from 'xlsx-js-style';
       SelectChange(e, param){
         this.requestJson[e.id][param] = e.value
         this.SatartSave('request')
+      },
+      async SaveChange(event, component, refatch = false){
+        console.log(event, component, refatch)
+        if(component == 'request'){await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
       },
       AddRowRequest(catalog){
         if(this.catalogJson.length < 1){
@@ -206,7 +260,7 @@ import XLSX from 'xlsx-js-style';
         this.arr = []
         for (let i = 0; i < this.catalogJson.length; i++) {
           const element = this.catalogJson[i];
-          this.arr.push({value: element, lable: element.goalName })
+          this.arr.push(element)
         }
       },
       AddRow(){
@@ -223,9 +277,14 @@ import XLSX from 'xlsx-js-style';
         this.SatartSave('catalog')
       },
       DeleteRow(index){
-              this.catalogJson[index].deleted = true
-              this.SatartSave('catalog')
-          },
+        if(index == 'request'){
+          this.SatartSave('request')
+        }
+        else{
+          this.catalogJson[index].deleted = true
+          this.SatartSave('catalog')
+        }
+      },
       async SatartSave(target){
         if(target == 'catalog'){await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
         if(target == 'request'){await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
@@ -235,19 +294,11 @@ import XLSX from 'xlsx-js-style';
       async ReFetch(){
         this.datarequest = await this.$FetchGet('/api/v1/satrequest/data/get/all') || []
         this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
-        for (let index = 0; index < this.catalogJson.length; index++) {
-          this.catalogJson[index].countRequest = 0;
-        }
         this.requestJson = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
-        for (let index = 0; index < this.requestJson.length; index++) {
-          const element = this.requestJson[index].catalog.goalId
-          for (let indexii = 0; indexii < this.catalogJson.length; indexii++) {
-            if(element == this.catalogJson[indexii].goalId){
-              this.catalogJson[indexii].countRequest++;
-              break
-            }
-          }
-        }
+        this.requestJson.forEach(request => {
+         request.timeDate = new Date(request.time * 1000) || null
+         request.termDate = new Date(request.term * 1000) || null
+        })
         this.CreateSelectArr()
         },
         LoadXLSX(mode='request'){
@@ -332,6 +383,17 @@ import XLSX from 'xlsx-js-style';
   </script>
 
 <style lang="scss" scoped>
+
+.narrow-input-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .p-inputnumber {//контроль размеров инпута
+    width: 100px !important;
+    min-width: 100%;
+    flex-direction: column;
+  }
+}
 
 .ChangeViewMode{
   position: fixed;

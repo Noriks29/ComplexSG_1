@@ -5,33 +5,30 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-          
-          
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
-        <div class="FlexColumn">
-          <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
-          <div><button @click="CommandWork(5)" class="ButtonCommand">Расчёт плана контактов</button></div>
-          <div><button @click="CommandWork(6)" class="ButtonCommand">Графическое представление плана контактов</button></div>
+        <div class="FlexColumn" style="padding-top: 10px;">
+          <div><Button @click="CommandWork(1)" label="Рассчитать окна видимости"  icon="pi pi-play" iconPos="right"/></div>
+          <div><Button @click="CommandWork(5)" label="Расчёт плана контактов"  icon="pi pi-play" iconPos="right"/></div>
+          <div><Button @click="CommandWork(3)" label="Окна видимости" :outlined="PageSettings.status == 3"/></div>
+          <div><Button @click="CommandWork(6)" label="Графическое представление" :outlined="PageSettings.status == 6"/></div>
         </div>
       </div>
 
       <div class="Panel RightPanel">
-          <div v-if="PageSettings.status == 2">
-            
-            <div class="TableDiv" style="max-height: 60vh;">
-              <button @click="LoadXLSX" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button>
-              <table class="TableDefault">
-                <thead><tr><th>НП</th><th>КА</th><th>Начало</th><th>Конец</th></tr></thead>
-                <tbody><tr v-for="data, index in PageSettings.SatNp" :key="index">
-                  <td>{{ data.earthName }}</td><td>{{ data.satelliteName }}</td><td>{{ data.begin }}</td><td>{{ data.end }}</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr class="addRowButton"><td  colspan="4"></td></tr>
-              </tfoot>
-            </table>
-            </div>
+          <Toolbar class="mb-4" v-if="PageSettings.status == 3" >
+            <template #start>
+              <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+            </template>
+          </Toolbar>
+            <DataTable :value="PageSettings.SatNp" v-if="PageSettings.status == 3"
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              ref="dtSatGs" :exportFilename="'Окна_КА_НП_' + new Date().toISOString().slice(0, 10)">
+              <Column :field="field" :header="header" sortable  v-for="header, field in {
+                earthName:'НП', satelliteName:'КА',begin:'Начало',end:'Конец'
+                }" :key="header" />
+            </DataTable>
+          <div v-if="PageSettings.status == 6">
             <div id="plotlymapContain1"></div>
             <div id="plotlymapContain2"></div>
           </div>
@@ -46,6 +43,11 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
 import Plotly from 'plotly.js-dist'
 import XLSX from 'xlsx-js-style';
 
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Toolbar from 'primevue/toolbar';
+
   export default {
     name: 'TargetDZZ',
     mixins: [PagesSettings],
@@ -53,11 +55,14 @@ import XLSX from 'xlsx-js-style';
       return{
         PageSettings:{
           mode: false, //лидер / все
-          status: 2, //код открытого окна
+          status: 3, //код открытого окна
           SatNp: [], //список контактов сат-нп
         },
         KAModellingRoleMode: false
       }
+    },
+    components:{
+      DataTable, Column, Button, Toolbar
     },
     methods: {
        async CommandWork(commandId){
@@ -66,15 +71,20 @@ import XLSX from 'xlsx-js-style';
               await this.$FetchGet("/api/v1/contact-plan/earth")
               this.ReFetch()
               this.$showLoad(false)
+              this.PageSettings.status = 3
+            }
+            if(commandId == 3){
+              this.PageSettings.status = 3
             }
             if(commandId == 1){
               this.$showLoad(true)
               await this.$FetchPost('/api/v1/pro42/view/earth', {leaderProcessing: this.KAModellingRoleMode})
               this.ReFetch()
               this.$showLoad(false)
+              this.PageSettings.status = 3
             }
             if(commandId == 6){
-              this.PageSettings.status = 2
+              this.PageSettings.status = 6
               let response = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all') || []
               let dataGrapfKANP = {
                 type: 'bar',
@@ -108,7 +118,6 @@ import XLSX from 'xlsx-js-style';
               let OGGrafList = []
               
               response.forEach(element => {
-                console.log(CreateDateTime(element.end - element.begin, 2))
                 dataGrapfKANP.y.push(element.earthName)
                 dataGrapfKANP.text.push(element.satelliteName)
                 dataGrapfKANP.x.push(CreateDateTime(element.end - element.begin, 2))
@@ -127,15 +136,25 @@ import XLSX from 'xlsx-js-style';
               Plotly.newPlot("plotlymapContain2", [dataGrapfNPKA],{margin:{b:30,r:10, t:30,l:70}, height:(60+NPGrafList.length * 100)})
             }
         },
-        LoadXLSX(){
-          const workbook = XLSX.utils.book_new();
-          let data = [["НП","КА","Начало","Конец"]]
-            this.PageSettings.SatNp.forEach(element => {
-              data.push([element.earthName,element.satelliteName,element.begin,element.end])
+        exportExcel() {
+          // 1. Получаем имя файла
+          const headers = [];
+          const fields = [];
+          let filename = this.$refs.dtSatGs.$props.exportFilename || 'export';
+            this.$refs.dtSatGs.$slots.default()[0].children
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                headers.push(col.props?.header || col.props?.field);
+                fields.push(col.props?.field);
+              });
+          let data = this.PageSettings.SatNp.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                newRow[field] = row[field];
+              });
+              return newRow;
             });
-          console.log(data)
-          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
-          workbook.SheetNames.push('Data'); // Добавляем лист с названием First list
+          // 4. Создаем лист Excel
           let style = {
             font: {
               name: 'Calibri',
@@ -146,21 +165,18 @@ import XLSX from 'xlsx-js-style';
             border: {
               bottom: { style: 'thin', color: { rgb: '000000' } }
             }}
-          let keylist = Object.keys(worksheet)
-          for (let keyid = 0; keyid < keylist.length; keyid++) {
-            const key = keylist[keyid];
-            console.log(worksheet[key].v, keylist, data[0])
-            try {
-              if (data[0].indexOf(worksheet[key].v) != -1) {
-                worksheet[key].s = style
-              }
-            } catch (error) {
-              console.log(error)
-            }
-          }
-          console.log(worksheet)
-          workbook.Sheets['Data'] = worksheet;
-          XLSX.writeFile(workbook, 'KA-NP.xlsx');
+          // Преобразуем заголовки в массив объектов с стилями
+          const styledHeaders = headers.map(text => ({
+            v: text,
+            t: 's',
+            s: style
+          }));
+          const worksheet = XLSX.utils.json_to_sheet(data, { header: fields });
+          XLSX.utils.sheet_add_aoa(worksheet, [styledHeaders], { origin: 'A1' });
+          // 7. Сохраняем файл
+          const workbook = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+          XLSX.writeFile(workbook, `${filename}.xlsx`);
         },
         async ReFetch(){
           this.PageSettings.SatNp = await this.$FetchGet('/api/v1/modelling/data/earth-sat/all', false) || []
@@ -170,7 +186,6 @@ import XLSX from 'xlsx-js-style';
                 element.begin = CreateDateTime(element.begin)
                 element.end = CreateDateTime(element.end)
               }
-          await this.CommandWork(6)
         }
     },
     
@@ -187,17 +202,13 @@ import XLSX from 'xlsx-js-style';
   </script>
 
 <style lang="scss" scoped>
-.LoadExel{
-  padding: 0px !important;
-  width: fit-content !important;
-  height: fit-content !important;
-      top: 5px;
-    left: 20px;
-    position: relative;
-  img{
-    width: 30px;
+.FlexColumn{
+  padding-top: 10px;
+  div{
+    display: flex;
+    height: auto;
   }
-  }
+}
 
 #PlotlyDiv{
   width: 100vw;

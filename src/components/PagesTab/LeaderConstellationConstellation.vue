@@ -7,8 +7,8 @@
           </div>
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
-            <div class="FlexColumn" style="align-items: center; padding-top: 25px;">
-              <div v-if="PageSettings.mode">
+            <div class="FlexColumn">
+              <div v-if="PageSettings.mode" style="align-items: flex-end;">
                 <FloatLabel>
                   <InputNumber v-model="experimentObject.angle" inputId="angle" showButtons :invalid="!experimentObject.angle && experimentObject.angle !== 0"/>
                   <label for="angle">Минимальный угол</label>
@@ -398,7 +398,13 @@ import XLSX from 'xlsx-js-style';
 
 <style lang="scss" scoped>
 
-
+.FlexColumn{
+  padding-top: 10px;
+  div{
+    display: flex;
+    height: auto;
+  }
+}
 
 
 
