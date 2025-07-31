@@ -14,16 +14,16 @@
                   <label for="angle">Минимальный угол</label>
                 </FloatLabel>
               </div>
-              <div v-if="PageSettings.mode"><button @click="CommandWork(0)" class="ButtonCommand">Топология сети</button></div>
-              <div><button @click="CommandWork(1)" class="ButtonCommand">Рассчитать окна видимости</button></div>
-              <div v-if="!PageSettings.mode"><button @click="CommandWork(2)" class="ButtonCommand">Расчёт плана контактов</button></div>
-              <div><button @click="CommandWork(3)" class="ButtonCommand">Показать окна видимости / плана контактов</button></div>
-              <div><button @click="CommandWork(4)" class="ButtonCommand">Графическое представление плана контактов</button></div>
-              <div v-if="PageSettings.mode"><button @click="CommandWork(5)" class="ButtonCommand">Полносвязная сеть</button></div>
+              <div v-if="PageSettings.mode"><Button @click="CommandWork(0)" label="Топология сети" :outlined="PageSettings.status == 0"/></div>
+              <div><Button @click="CommandWork(1)" label="Рассчитать окна видимости"  icon="pi pi-play" iconPos="right"/></div>
+              <div v-if="!PageSettings.mode"><Button  @click="CommandWork(2)" label="Расчёт плана контактов"  icon="pi pi-play" iconPos="right"/></div>
+              <div><Button @click="CommandWork(3)" label="Показать окна видимости / плана контактов" :outlined="PageSettings.status == 3"/></div>
+              <div><Button @click="CommandWork(4)" label="Графическое представление" :outlined="PageSettings.status == 4"/></div>
+              <div v-if="PageSettings.mode"><Button @click="CommandWork(5)" label="Полносвязная сеть" :outlined="PageSettings.status == 5"/></div>
             </div>
         </div>
         <div class="Panel RightPanel">
-          <Toolbar class="mb-4">
+          <Toolbar class="mb-4" v-if="PageSettings.status in {0:null,3:null,5:null}">
             <template #start>
               <Button v-if="PageSettings.status in {0:null,3:null,5:null}" icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
             </template>
