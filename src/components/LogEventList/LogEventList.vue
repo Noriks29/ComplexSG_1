@@ -9,47 +9,55 @@
           
     <div class="ContentDiv" style="margin-top: 30px;" >
     <div class="Panel RightPanel">
-      <div class="TableDiv">
-      <table class="TableDefault"><thead>
-        <tr v-if="dataJson.length > 0">
-          <th>ID</th>
-          <th>Код</th>
-          <th>Событие</th>
-          <th></th>
-        </tr></thead><tbody>
-        <tr
-          v-for="(data, index) in dataJson"
-          :key="index"
-          :class="!modellingStatus ? 'active' :''"
-          @change="ChangeParam"
-        >
-            <td>{{ data.id }}</td>
-            <td><input :id="index" type="number" name="codeEvent"
-                :value="data.codeEvent"></td>
-            <td><input :id="index" name="descriptionEvent" class="description"
-                :value="data.descriptionEvent"></td>
-          <td v-if="!modellingStatus" :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="Удалить"></td>
-        </tr></tbody><tfoot>
-        <tr class="addRowButton">
-          <td colspan="4"><button @click="AddRow">
-            <img src="../../assets/add.png" alt="" class="addButtonIcon">
-            Добавить
-          </button></td>
-        </tr></tfoot>
-      </table>
-      </div>
+      <Toolbar class="mb-4">
+        <template #start>
+        </template>
+        <template #end>
+          <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
+        </template>
+      </Toolbar>
+      <DataTable :value="dataJson"
+          tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+          ref="dtDZZcatalog" :exportFilename="'События_' + new Date().toISOString().slice(0, 10)">
+          <Column field="id" header="ID" sortable/>
+          <Column field="codeEvent" header="Код">
+            <template #body="slotProps"><div class="narrow-input-container">
+              <InputNumber v-model="slotProps.data.codeEvent" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.codeEvent && slotProps.data.codeEvent !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
+            </div></template>
+          </Column>
+          <Column field="descriptionEvent" header="Событие">
+            <template #body="slotProps"><div class="narrow-input-container">
+              <InputText v-model="slotProps.data.descriptionEvent" @input="SaveChange(slotProps.data)" :invalid="!slotProps.data.descriptionEvent"/>
+            </div></template>
+          </Column>
+          <Column header="" :exportable="false" headerStyle="width: 3rem">
+            <template #body="slotProps">
+              <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                @click="slotProps.data.deleted = true; DeleteRow()"/>
+            </template>
+          </Column>
+      </DataTable>
     </div>
     </div>
     </div>
   </template>
   
   <script>
+  import DataTable from 'primevue/datatable';
+  import Column from 'primevue/column';
+  import InputNumber from 'primevue/inputnumber';
+  import Button from 'primevue/button';
+  import Toolbar from 'primevue/toolbar';
+  import InputText from 'primevue/inputtext';
   export default {
     name: 'LogEventList',
     data(){
       return{
         dataJson: []
       }
+    },
+    components: {
+      DataTable,Column,InputNumber,Button,Toolbar,InputText
     },
     props:{
     systemStatus:{
@@ -67,37 +75,23 @@
       },
       async setPost() {
           this.$showLoad(true)
-          let data = []
-          this.dataJson.forEach(element => {
-            console.log(element.codeEvent, element.descriptionEvent)
-            if(element.codeEvent != "" && element.descriptionEvent != ""){
-                data.push(element)
-            }
-          })
-          if(data.length == this.dataJson.length){
-            await this.$FetchPost("/api/v1/event/code/add", data)
-            await this.ReFetch()
-          }
+          await this.$FetchPost("/api/v1/event/code/add", this.dataJson)
+          await this.ReFetch()
           this.$showLoad(false)
         },
         async AddRow(){
           var addedRow = {'id' : undefined, 'codeEvent' : "", 'descriptionEvent' : "", 'deleted': false};
-          this.dataJson.push(addedRow);   
-        },
-        ChangeParam(event){
-          console.log(event)
-          this.dataJson[Number(event.target.id)][event.target.name] = event.target.value
+          this.dataJson.push(addedRow);
           this.setPost()
         },
-        async DeleteRow(index){
-            this.dataJson[index].deleted = true
-            await this.setPost()
-            await this.ReFetch()
+        SaveChange(){
+          this.setPost()
+        },
+        async DeleteRow(){
+          await this.setPost()
         },
         async ReFetch(){
-          this.$showLoad(true)
           this.dataJson = await this.$FetchGet('/api/v1/event/codes/all') || []
-          this.$showLoad(false)
         }
       
     },
@@ -108,6 +102,16 @@
   </script>
 
   <style lang="scss" scoped>
+  .narrow-input-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  .p-inputnumber, .p-inputtext {//контроль размеров инпута
+    width: 100px !important;
+    min-width: 100%;
+    flex-direction: column;
+  }
+}
   .description{
         width: 30vw;
     }
