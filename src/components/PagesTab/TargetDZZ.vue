@@ -6,32 +6,38 @@
             </button>
           </div>
     <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
-        <div class="Panel LeftPanel">
-            <div class="FlexColumn">
-              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=0" class="ButtonCommand" :class="viewmode==0?'Select':''">Заявки ДЗЗ</button></div>
-              <div v-if="!(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=1" class="ButtonCommand" :class="viewmode==1?'Select':''">Каталог целей</button></div>
-              <div v-if="(systemStatus.typeWorkplace in {4:null,5:null})"><button @click="viewmode=2" class="ButtonCommand"  :class="viewmode==2?'Select':''">Данные по заявкам</button></div>
-            </div>
-        </div>
         <div class="Panel RightPanel" >
-          <DataTable :value="requestJson"
+          <Toolbar class="mb-4">
+            <template #start>
+              <Button  icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+            </template>
+            <template #center v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
+              <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Заявки ДЗЗ" :outlined="viewmode == 0"/></div>
+              <div><Button @click="viewmode=1" label="Каталог целей" :outlined="viewmode == 1"/></div>
+            </template>
+            <template #end>
+              <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
+              <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
+            </template>
+          </Toolbar>
+          <DataTable :value="requestJson" v-if="viewmode==0"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZ" :exportFilename="'Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="catalog" header="Цель">
                 <template #body="slotProps">
-                  <Dropdown v-model="slotProps.data.catalog" :options="catalogJson" @change="SaveChange($event,'request')" optionLabel="goalName" placeholder="Выберите цель"/>
+                  <Dropdown v-model="slotProps.data.catalog" :options="catalogJson" @change="SaveChange($event)" optionLabel="goalName" placeholder="Выберите цель"/>
                 </template>
               </Column>
               <Column field="lat" header="Широта"><template #body="slotProps">{{ slotProps.data.catalog.lat }}</template></Column>
               <Column field="lon" header="Долгота"><template #body="slotProps">{{ slotProps.data.catalog.lon }}</template></Column>
               <Column field="choiceCriteria" header="Критерий">
                 <template #body="slotProps">
-                  <Dropdown v-model="slotProps.data.choiceCriteria" :options="choiceCriteriaArr" @change="SaveChange($event,'request')" optionLabel="lable" optionValue="value" placeholder="Выберите цель"/>
+                  <Dropdown v-model="slotProps.data.choiceCriteria" :options="choiceCriteriaArr" @change="SaveChange($event)" optionLabel="lable" optionValue="value" placeholder="Выберите цель"/>
                 </template>
               </Column>
               <Column field="priory" header="Приоритет">
                 <template #body="slotProps"><div class="narrow-input-container">
-                  <InputNumber v-model="slotProps.data.priory" showButtons @input="SaveChange($event,'request')" :invalid="!slotProps.data.choiceCriteria && slotProps.data.choiceCriteria !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
+                  <InputNumber v-model="slotProps.data.priory" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.priory && slotProps.data.priory !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
                 </div></template>
               </Column>
               <Column field="timeDate" header="Время появления">
@@ -44,92 +50,86 @@
                   <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
                 </template>
               </Column>
+              <Column field="type" header="Признак" v-if="systemStatus.typeWorkplace in {3:null}">
+                <template #body="slotProps">
+                  <Dropdown v-model="slotProps.data.type" :options="TypeRequest" @change="SaveChange($event)" optionLabel="lable" optionValue="value" placeholder="Выберите цель"/>
+                </template>
+              </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">
                 <template #body="slotProps">
                   <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
-                    @click="slotProps.data.deleted = true; DeleteRow('request')"/>
+                    @click="slotProps.data.deleted = true; DeleteRow()"/>
                 </template>
               </Column>
           </DataTable>
-          <div v-if="viewmode == 0" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
-            <table class="TableDefault">
-              <thead><tr><th>Цель</th><th>Широта</th><th>Долгота</th><th>Критерий</th><th>Приоритет</th><th>Время появления</th><th>Срок выполнения</th><th v-if="systemStatus.typeWorkplace in {3:null,4:null}">Признак</th><th></th></tr></thead>
-              <tbody><tr
-              v-for="data, index in requestJson"
-                :key="index"
-              >
-              <td><SelectDiv  :dataOption="arr" :valueS="{value:data.catalog, lable:data.catalog.goalName}" :id="String(index)" @valueSelect="SelectChange($event, 'catalog')"/></td>
-              <td>{{ data.catalog.lat }}</td>
-              <td>{{ data.catalog.lon }}</td>
-              <td><SelectDiv  :dataOption="choiceCriteriaArr" :valueS="choiceCriteriaArr[data.choiceCriteria-1]" :id="String(index)" @valueSelect="SelectChange($event, 'choiceCriteria')"/></td>
-              <td><input type="number" v-model="data.priory" @change="ChangeParamRequest"></td>
-              <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'time'" @valueSelect="ChangeTime"/></td>
-              <td><DateTime :valueUnix="data.term" :id="String(index)" :name="'term'"  @valueSelect="ChangeTime"/></td>
-              <td v-if="systemStatus.typeWorkplace in {3:null}"><SelectDiv  :dataOption="TypeRequest" :valueS="TypeRequest[data.type]" :id="String(index)" @valueSelect="SelectChange($event, 'type')"/></td>
-              <td :id="index" @click="DeleteRowRequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-              </tr></tbody>
-              <tfoot>
-              <tr class="addRowButton">
-                <td colspan="8"><button @click="AddRowRequest(catalogJson[0])"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить заявку</button></td>
-                <td v-if="systemStatus.typeWorkplace in {3:null,4:null}"></td>
-                <td v-if="requestJson.length > 0"><button @click="LoadXLSX('request')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
-              </tr>   
-            </tfoot></table>
-          </div>
-
-          <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
-          <table class="TableDefault">
-          <thead><tr><th>Цель</th><th>Заявки</th><th>Широта</th><th>Долгота</th><th></th></tr></thead>
-          <tbody><tr v-for="data, index in catalogJson"
-              :key="index"
-              @change="ChangeParam"
-              v-show="!(data.deleted==true)">
-              <td><input type="text" v-model="data.goalName"></td>
-              <td style="display: flex;align-items: center;justify-content: space-around;"><span>{{data.countRequest}}</span><img @click="AddRowRequest(data)" src="../../assets/add.png" alt="" class="addButtonIcon"></td>
-              <td><input type="number" v-model="data.lat"></td>
-              <td><input type="number" v-model="data.lon"></td>
-              <td :id="index" @click="DeleteRow(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-            </tr></tbody>
-            <tfoot><tr class="addRowButton">
-              <td colspan="5"><button @click="AddRow"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
-            </tr> 
-          </tfoot></table>
-        </div>
 
 
-        <div v-if="viewmode == 2" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
-          <table class="TableDefault">
-            <thead><tr><th>Имя</th><th>МКА</th><th>Объём, Мбайт</th><th>Приоритет</th><th>Время появления</th><th></th></tr></thead>
-            <tbody><tr v-for="data, index in datarequest"
-              :key="index"
-              @change="ChangeParamdatarequest"
-              v-show="!(data.deleted==true)"
-            >
-              <td><input type="text" v-model="data.name"></td>
-              <td><SelectDiv  :dataOption="datarequestКАList" :valueS="{lable: data.satellite.name, value: data.satellite.nodeId}" :id="index" @valueSelect="ChangeKadatarequest"/></td>
-              <td><input type="number" v-model="data.capacity"></td>
-              <td><input type="number" v-model="data.priority"></td>
-              <td><DateTime :valueUnix="data.time" :id="String(index)" :name="'timedatarequest'" @valueSelect="ChangeTimedatarequest"/></td>
-              <td :id="index" @click="DeleteRowdatarequest(index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-            </tr></tbody>
-            <tfoot><tr class="addRowButton">
-              <td colspan="5"><button @click="CreateNewdatarequest"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
-              <td v-if="datarequest.length > 0"><button @click="LoadXLSX('datarequest')" class="LoadExel"><img src="../../assets/excel.png"><span>&#8203;</span></button></td>
-            </tr> 
-            </tfoot></table>
-        </div>
+          <DataTable :value="catalogJson" v-if="viewmode==1"
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              ref="dtDZZcatalog" :exportFilename="'Каталог_Заявки_' + new Date().toISOString().slice(0, 10)">
+              <Column field="use" header="Использование" :exportable="false">
+                <template #body="slotProps">
+                  <Button icon="pi pi-plus" class="p-button-sm" severity="success" :label="String(catalogUse[slotProps.data.goalId])" text @click="AddRowCatalog(slotProps.data)" />
+                </template>
+              </Column>
+              <Column field="goalName" header="Цель">
+                <template #body="slotProps">
+                  <InputText v-model="slotProps.data.goalName" @input="SaveChange(slotProps.data)" :invalid="!slotProps.data.goalName"/>
+                </template>
+              </Column>
+              <Column field="lat" header="Широта">
+                <template #body="slotProps">
+                  <InputNumber v-model="slotProps.data.lat" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.lat && slotProps.data.lat !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                </template>
+              </Column>
+              <Column field="lon" header="Долгота">
+                <template #body="slotProps">
+                  <InputNumber v-model="slotProps.data.lon" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.lon && slotProps.data.lon !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                </template>
+              </Column>
+              <Column header="" :exportable="false" headerStyle="width: 3rem">
+                <template #body="slotProps">
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                    @click="slotProps.data.deleted = true; DeleteRow()"/>
+                </template>
+              </Column>
+          </DataTable>
 
-        <div v-if="viewmode == 3">
-          <div id="DrawKARoad">
-            <SelectDiv  :dataOption="KAArray" :valueS="SelectKa" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
-            <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
-            <label class="input-file">
-              <input type="file" name="file" id="file" @change="LoadFileKARoad" enctype="multipart/form-data">		
-              <span>Отрисовать из файла</span>
-            </label>
-            <button class="ButtonCommand" @click="ReloadMapContainer">Обновить карту</button>
-          </div>
-        </div>
+          <DataTable :value="datarequest" v-if="viewmode==2"
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              ref="dtDZZdata" :exportFilename="'Данные_Заявки_' + new Date().toISOString().slice(0, 10)">
+              <Column field="name" header="Имя">
+                <template #body="slotProps">
+                  <InputText v-model="slotProps.data.name" @input="SaveChange(slotProps.data)" :invalid="!slotProps.data.name"/>
+                </template>
+              </Column>
+              <Column field="satellite" header="МКА">
+                <template #body="slotProps">
+                  <Dropdown v-model="slotProps.data.satellite" :options="datarequestКАList" @change="SaveChange($event)" optionLabel="name"/>
+                </template>
+              </Column>
+              <Column field="capacity" header="Объём, Мбайт">
+                <template #body="slotProps">
+                  <InputNumber v-model="slotProps.data.capacity" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.capacity && slotProps.data.capacity !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                </template>
+              </Column>
+              <Column field="priority" header="Приоритет">
+                <template #body="slotProps">
+                  <InputNumber v-model="slotProps.data.priority" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.priority && slotProps.data.priority !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                </template>
+              </Column>
+              <Column field="timeDate" header="Время появления">
+                <template #body="slotProps">
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                </template>
+              </Column>
+              <Column header="" :exportable="false" headerStyle="width: 3rem">
+                <template #body="slotProps">
+                  <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                    @click="slotProps.data.deleted = true; DeleteRow()"/>
+                </template>
+              </Column>
+          </DataTable>
         </div>  
     </div>
   </div>
@@ -148,122 +148,111 @@ import Dropdown from 'primevue/dropdown';
 import InputNumber from 'primevue/inputnumber';
 import Calendar from 'primevue/calendar';
 import Button from 'primevue/button';
+import Toolbar from 'primevue/toolbar';
+import InputText from 'primevue/inputtext';
   export default {
     name: 'TargetDZZ',
     mixins: [PagesSettings],
     components:{
       SelectDiv,
       DateTime,
-      DataTable, Column,Dropdown,InputNumber,Calendar,Button
+      DataTable, Column,Dropdown,InputNumber,Calendar,Button, Toolbar, InputText
     },
     data(){
       return{
         viewmode: 0,
         catalogJson: [],
-        selectCatalog: null,
+        catalogUse: {},
         systemStatus: {typeWorkplace: null},
-
         datarequest: [],
         datarequestКАList: [],
         requestJson: [],
-        KAArray: [],
-        SelectKa: {},
-        KatoDraw: {},
         choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
         TypeRequest: [{value: 0, lable: 'НП'},{value: 1, lable: 'Лидер'}],
-        arr: [],
         arrNP: [],
       }
     },
     methods: {
       ChangeTimeInput(value, param, index){
-        for (let i = 0; i < this.requestJson.length; i++) {
-          if(this.requestJson[i].requestId == index){
-            this.requestJson[i][param] = Math.floor(Date.parse(value)/1000)
-            console.log(Math.floor(Date.parse(value)/1000))
+        switch (this.viewmode) {
+          case 0:
+            for (let i = 0; i < this.requestJson.length; i++) {
+              if(this.requestJson[i].requestId == index){
+                this.requestJson[i][param] = Math.floor(Date.parse(value)/1000)
+                break
+              }
+            }
+            this.SaveChange(null, 'request')
+            break;
+          case 2:
+            for (let i = 0; i < this.datarequest.length; i++) {
+              if(this.datarequest[i].id == index){
+                this.datarequest[i][param] = Math.floor(Date.parse(value)/1000)
+                break
+              }
+            }
+            this.SaveChange(null, 'datarequest')
             break
-          }
+          default:
+            break;
         }
-        this.SaveChange(null, 'request')
       },
       CreateDateTime(time, mode){
         return CreateDateTime(time, mode)
       },
-      SelectChange(e, param){
-        this.requestJson[e.id][param] = e.value
-        this.SatartSave('request')
-      },
       async SaveChange(event, component, refatch = false){
-        console.log(event, component, refatch)
-        if(component == 'request'){await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
-      },
-      AddRowRequest(catalog){
-        if(this.catalogJson.length < 1){
-          alert("Нет целей в каталоге, пожалуйста создайте")
-          return;
+        switch (this.viewmode) {
+          case 0:
+            await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+            break;
+          case 1:
+            await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)
+            break;
+        
+          default:
+            break;
         }
-        let system = this.$SystemObject()
+        console.log(event, component, refatch)
+      },
+      AddRowCatalog(data){
         var addedRow = {
-                      "requestId": undefined,
-                      "catalog": catalog,
+                      "catalog": data,
                       "orderId": this.requestJson.length + 1,
                       "priory": 3,
-                      "term": system.modelingEnd,
-                      "time": system.modelingBegin,
+                      "term": this.systemStatus.modelingEnd,
+                      "time": this.systemStatus.modelingBegin,
                       "earthPoint": this.arrNP[0].value,
                       "choiceCriteria": 1,
                       "filter": false,
-                      "deleted": null, 'role': "newRow"
+                      "deleted": null,
                 };
-        if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-          addedRow.type = 0
-        }
-            this.requestJson.push(addedRow);   
-            this.SatartSave('request')
-      },
-      DeleteRowRequest(index){
-              this.requestJson[index].deleted = true
-              this.SatartSave('request')
-          },
-      ChangeParamRequest(){
+        if(this.systemStatus.typeWorkplace in {3:null}){addedRow.type = 0}
+        this.requestJson.push(addedRow);   
         this.SatartSave('request')
       },
-      ChangeTimedatarequest(e){  // изменение времени в данных по заявкам
-        this.datarequest[e.id].time = e.time
-        this.SatartSave('datarequest')
-      },
-      ChangeKadatarequest(e){ // изменение выбранного ка в данных по заявкам
-        this.datarequest[e.id].satellite.id = e.value
-        this.SatartSave('datarequest')
-      },
-      CreateNewdatarequest(){ // Данные по заявкам добавление
-        let system = this.$SystemObject()
-        var addedRow = {
-                    "capacity": 100,
-                    "priority": 3,
-                    "time" : system.modelingBegin,
-                    "satellite":  {id: this.datarequestКАList[0].value},
-                    "deleted": null
-                };
-        this.datarequest.push(addedRow)
-        this.SatartSave('datarequest')
-        console.log(addedRow)
-      },
-      DeleteRowdatarequest(index){ //удаление из данные по заявкам
-        this.datarequest[index].deleted = true
-        this.SatartSave('datarequest')
-      },
-      ChangeParamdatarequest(){ // this.datarequest изменении параметров данных по заявкам
-          this.SatartSave('datarequest')
-      },
-      CreateSelectArr(){
-        this.arr = []
-        for (let i = 0; i < this.catalogJson.length; i++) {
-          const element = this.catalogJson[i];
-          this.arr.push(element)
-        }
-      },
       AddRow(){
+        switch (this.viewmode) {
+          case 0:
+            if(this.catalogJson.length < 1){
+              alert("Нет целей в каталоге, пожалуйста создайте")
+              return;
+            }
+            var addedRow = {
+                          "catalog": this.catalogJson[0],
+                          "orderId": this.requestJson.length + 1,
+                          "priory": 3,
+                          "term": this.systemStatus.modelingEnd,
+                          "time": this.systemStatus.modelingBegin,
+                          "earthPoint": this.arrNP[0].value,
+                          "choiceCriteria": 1,
+                          "filter": false,
+                          "deleted": null,
+                    };
+            if(this.systemStatus.typeWorkplace in {3:null}){addedRow.type = 0}
+            this.requestJson.push(addedRow);   
+            this.SatartSave('request')
+            break;   
+          case 1:
             var addedRow = {
                     'goalId' : 0,
                     'goalName' : "", 'lat' : 0,
@@ -272,17 +261,62 @@ import Button from 'primevue/button';
                 };
             this.catalogJson.push(addedRow);   
             this.SatartSave('catalog')
+            break;
+          case 2:
+            var addedRow = {
+                "capacity": 100,
+                "priority": 3,
+                "time" : this.systemStatus.modelingBegin,
+                "satellite":  {id: this.datarequestКАList[0].id},
+                "deleted": null
+            };
+            this.datarequest.push(addedRow)
+            this.SatartSave('datarequest')
+            break;
+          default:
+            break;
+        }
           },
       ChangeParam(){
         this.SatartSave('catalog')
       },
-      DeleteRow(index){
-        if(index == 'request'){
-          this.SatartSave('request')
+      DeleteAll(){
+        switch (this.viewmode) {
+          case 0:
+            this.requestJson.forEach(el => {
+              el.deleted = true
+            })
+            this.SatartSave('request')
+            break;
+          case 1:
+            this.catalogJson.forEach(el => {
+              el.deleted = true
+            })
+            this.SatartSave('catalog')
+            break;
+          case 2:
+            this.datarequest.forEach(el => {
+              el.deleted = true
+            })
+            this.SatartSave('datarequest')
+            break;
+          default:
+            break;
         }
-        else{
-          this.catalogJson[index].deleted = true
-          this.SatartSave('catalog')
+      },
+      DeleteRow(){
+        switch (this.viewmode) {
+          case 0:
+            this.SatartSave('request')
+            break;
+          case 1:
+            this.SatartSave('catalog')
+            break;
+          case 2:
+            this.SatartSave('datarequest')
+            break;
+          default:
+            break;
         }
       },
       async SatartSave(target){
@@ -292,43 +326,97 @@ import Button from 'primevue/button';
         await this.ReFetch()
       },
       async ReFetch(){
-        this.datarequest = await this.$FetchGet('/api/v1/satrequest/data/get/all') || []
-        this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
-        this.requestJson = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
-        this.requestJson.forEach(request => {
-         request.timeDate = new Date(request.time * 1000) || null
-         request.termDate = new Date(request.term * 1000) || null
-        })
-        this.CreateSelectArr()
-        },
-        LoadXLSX(mode='request'){
-          
+        if(this.systemStatus.typeWorkplace in {4:null,5:null}){
+          this.datarequest = await this.$FetchGet('/api/v1/satrequest/data/get/all') || []
+          this.datarequest.forEach(request => {
+          request.timeDate = new Date(request.time * 1000) || null
+          })
+        }
+        else{
+          this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
+          this.requestJson = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
+          this.requestJson.forEach(request => {
+            request.timeDate = new Date(request.time * 1000) || null
+            request.termDate = new Date(request.term * 1000) || null
+          })
+          this.catalogUse = {}
+          this.catalogJson.forEach(el => {
+            this.catalogUse[el.goalId] = 0
+            this.requestJson.forEach(rec => {
+              if(rec.catalog.goalId == el.goalId)  this.catalogUse[el.goalId] += 1
+            })
+          })
+        }
+      },
+      exportExcel() {
+          // 1. Получаем имя файла
+          const headers = [];
+          const fields = [];
+          let filename = 'export'
           let data = []
-          if(mode == 'request')
-          {
-            data = [["Цель","Широта","Долгота","Критерий","Приоритет","Время появления","Срок выполнения"]]
-            if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-              data[0].push("Признак")
-            }
-            this.requestJson.forEach(element => {
-              let crit = "Время"
-              if(element.choiceCriteria == 2) crit = "Разворот"
-              if(element.choiceCriteria == 3) crit = "Качество"
-              let row = [element.catalog.goalName, element.catalog.lat, element.catalog.lon, crit, element.priory, this.CreateDateTime(element.time), this.CreateDateTime(element.term)
-              ]
-              if(this.systemStatus.typeWorkplace in {3:null,4:null}){
-                row.push(this.TypeRequest[element.type].lable)
-              }
-              data.push(row)
-            });
+          switch (this.viewmode) {
+            case 0:
+              filename = this.$refs.dtDZZ.$props.exportFilename || 'export';
+              this.$refs.dtDZZ.$slots.default()
+                .filter(col => col.props?.exportable !== false)
+                .forEach(col => {
+                  headers.push(col.props?.header || col.props?.field);
+                  fields.push(col.props?.field);
+                  console.log(col)
+                });
+              data = this.requestJson.map(row => {
+                const newRow = {};
+                fields.forEach(field => {
+                  if(field == 'catalog') newRow.catalog = row.catalog.goalName
+                  else if(field == 'lat') newRow.lat = row.catalog.lat
+                  else if(field == 'lon') newRow.lon = row.catalog.lon
+                  else if(field == 'termDate') newRow.termDate = CreateDateTime(row.term)
+                  else if(field == 'timeDate') newRow.timeDate = CreateDateTime(row.time)
+                  else if(field == 'choiceCriteria') newRow.choiceCriteria = this.choiceCriteriaArr[row.choiceCriteria-1].lable
+                  else if(field == 'type') newRow.type = this.TypeRequest[row.type].lable
+                  else newRow[field] = row[field];
+                });
+                return newRow;
+              });
+              break;
+            case 1:
+              filename = this.$refs.dtDZZcatalog.$props.exportFilename || 'export';
+              this.$refs.dtDZZcatalog.$slots.default()
+                .filter(col => col.props?.exportable !== false)
+                .forEach(col => {
+                  headers.push(col.props?.header || col.props?.field);
+                  fields.push(col.props?.field);
+                });
+              data = this.catalogJson.map(row => {
+                const newRow = {};
+                fields.forEach(field => {
+                  newRow[field] = row[field];
+                });
+                return newRow;
+              });
+              break;
+            case 2:
+              filename = this.$refs.dtDZZdata.$props.exportFilename || 'export';
+              this.$refs.dtDZZdata.$slots.default()
+                .filter(col => col.props?.exportable !== false)
+                .forEach(col => {
+                  headers.push(col.props?.header || col.props?.field);
+                  fields.push(col.props?.field);
+                });
+              data = this.datarequest.map(row => {
+                const newRow = {};
+                fields.forEach(field => {
+                  if(field == 'satellite') newRow.satellite = row.satellite.name
+                  else if(field == 'timeDate') newRow.timeDate = CreateDateTime(row.time)
+                  else newRow[field] = row[field];
+                });
+                return newRow;
+              });
+              break;
+            default:
+              break;
           }
-          else{
-            data = [["Имя","МКА","Объём, Мбайт","Приоритет","Время появления"]]
-            this.datarequest.forEach(element => {
-              data.push([element.name,element.satellite.name,element.capacity,element.priority,this.CreateDateTime(element.time)])
-            });
-          }
-          let worksheet = XLSX.utils.aoa_to_sheet(data); // Создаем таблицу в файле с данными из массива
+          // 4. Создаем лист Excel
           let style = {
             font: {
               name: 'Calibri',
@@ -339,44 +427,40 @@ import Button from 'primevue/button';
             border: {
               bottom: { style: 'thin', color: { rgb: '000000' } }
             }}
-          let keylist = Object.keys(worksheet)
-          for (let keyid = 0; keyid < keylist.length; keyid++) {
-            const key = keylist[keyid];
-            console.log(worksheet[key].v, keylist, data[0])
-            try {
-              if (data[0].indexOf(worksheet[key].v) != -1) {
-                worksheet[key].s = style
-              }
-            } catch (error) {
-              console.log(error)
-            }
-          }
+          // Преобразуем заголовки в массив объектов с стилями
+          const styledHeaders = headers.map(text => ({
+            v: text,
+            t: 's',
+            s: style
+          }));
+          const worksheet = XLSX.utils.json_to_sheet(data, { header: fields });
+          XLSX.utils.sheet_add_aoa(worksheet, [styledHeaders], { origin: 'A1' });
+          // 7. Сохраняем файл
           const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, "Data")
-          console.log(worksheet, workbook)
-          XLSX.writeFile(workbook, 'dataRequest.xlsx');
-        },
+          XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+          XLSX.writeFile(workbook, `${filename}.xlsx`);
+        }
     },
-    
     async mounted() {
       this.$showLoad(true)
       this.systemStatus = await this.$SystemObject()
       if(this.systemStatus.typeWorkplace in {4:null, 5:null}){
         this.viewmode = 2
+        this.datarequestКАList = []
+        let OGList = await this.$OGList()
+        OGList.forEach(OG => {
+          OG.satellites.forEach(element =>{
+            this.datarequestКАList.push({id: element.satelliteId, name: element.name })
+          })
+        });
       }
-      let NP = await this.$NPList()
-      NP.forEach(element => {
-        this.arrNP.push({value: element, lable: element.nameEarthPoint })
-      })
-      await this.ReFetch()
-      //далее всё для карты
-      this.datarequestКАList = []
-      let OGList = await this.$OGList()
-      OGList.forEach(OG => {
-        OG.satellites.forEach(element =>{
-          this.datarequestКАList.push({value: element.satelliteId, lable: element.name })
+      else{
+        let NP = await this.$NPList()
+        NP.forEach(element => {
+          this.arrNP.push({value: element, lable: element.nameEarthPoint })
         })
-      });
+      }
+      await this.ReFetch()
       this.$showLoad(false)
     },
   }
@@ -394,60 +478,4 @@ import Button from 'primevue/button';
     flex-direction: column;
   }
 }
-
-.ChangeViewMode{
-  position: fixed;
-  padding: 0px;
-  border: none;
-  background: none;
-  
-  top: 50%;
-
-  &.Left{
-    left: 20px;
-  }
-  &.Right{
-    right: 20px;
-  }
-  img{
-    width: 30px;
-  }
-}
-#map{
-  background-color: #2b2b2b;
-  position: relative;
-    outline-style: none;
-    height: 75vh;
-  margin: 10px;
-  .leaflet-map-pane{
-            pointer-events: none;
-        }
-}
-
-#DrawKARoad{
-  display: flex;
-  align-items: center;
-  padding: 5px 20px;
-  margin: 0px 40px;
-
-  #inputColorKa{
-  height: 50px;
-  width: 100px;
-  padding: 0px;
-  margin: 5px 40px;
-  }
-  .ButtonCommand{
-    margin: 5px 40px;
-  }
-}
-
-.LoadExel{
-  padding: 0px !important;
-  width: fit-content !important;
-  height: fit-content !important;
-  img{
-    width: 30px;
-  }
-}
-
 </style>
