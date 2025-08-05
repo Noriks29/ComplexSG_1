@@ -28,7 +28,8 @@ const GlobalDataPlugin = {
         return NPList
     };
     app.config.globalProperties.$ChangeOGList = async function (data) {
-        await this.$FetchPost('/api/v1/constellation/update', data)
+        OGList = await data
+        await this.$FetchPost('/api/v1/constellation/update', OGList)
     };
     app.config.globalProperties.$GetSystemObject = async function () {
         console.log("A[etnm")

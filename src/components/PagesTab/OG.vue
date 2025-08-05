@@ -36,7 +36,7 @@
         
       </template>
       <Column field="name" header="Имя КА" sortable frozen>
-        <template #body="slotProps"><InputText v-model="slotProps.data.name" @input="ChangeParam(slotProps.data)" :style="'width:150px'"/></template>
+        <template #body="slotProps"><InputText v-model="slotProps.data.name" @input="ChangeParam($event,slotProps.data)" :style="'width:150px'"/></template>
       </Column>
       <Column field="modelSat" header="Модель КА">
         <template #body="slotProps">
@@ -55,7 +55,7 @@
         'incline':'Наклон','longitudeAscendingNode':'Долгота восходящего узла',
         'perigeeWidthArgument':'Аргумент широты перигея','trueAnomaly':'Истинная аномалия'
         }" :key="index" :field="index" :header="data">
-        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam(slotProps.data)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"  mode="decimal" :maxFractionDigits="5"/></div></template>
+        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam($event, slotProps.data, index)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"  mode="decimal" :maxFractionDigits="5"/></div></template>
       </Column>
       <Column header="" :exportable="false" headerStyle="width: 3rem">
         <template #body="slotProps">
@@ -178,14 +178,16 @@ import FileUpload from 'primevue/fileupload';
             this.valueSelectOG.satellites.push(addedRow);  
             this.SaveOGChange()
         },
-          ChangeParam(event){
-              this.SaveOGChange(false)
+          ChangeParam(event, data, param = undefined){
+              if(param != undefined) data[param] = event.value
               console.log(event, 'сделать тут отдельное обновление каждой строчки')
+              this.SaveOGChange(false)
           },
           DeleteRow(){ // ка из ог
               this.SaveOGChange(true)
           },
           async SaveOGChange(reload = true) { //сохранение изменения ог
+            console.log(this.valueSelectOG.satellites[0].eccentricity)
             await this.$ChangeOGList(this.valueSelectOG)
             if(reload){
               this.dataJson = await this.$GetOGList()
