@@ -53,23 +53,42 @@
 
           <div v-if="viewPanel == 2">
               <p>Каталог устройств</p>
-              <div class="TableDiv">
-              <table class="TableDefault">
-                <thead><tr><th style="width: 0px;">Использовать</th><th>Прибор</th><th></th></tr></thead>
-                <tbody><tr v-for="data,index in SelectKA.value.devCatalogs" :key="index" :id="data.id">
-                  <td><img @click="AddRow('devices',data)" src="../../assets/add.png" alt="" class="addButtonIcon" v-if="data.use < 1"></td>
-                  <td><input @change="ChangeValue($event, 'devCatalogs')" v-model="data.nameDevice"></td>
-                  <td @click="DeleteRow(index, 'devCatalogs')" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-                </tr>
-                <tr class="addRowButton">
-                  <td colspan="3"><button @click="AddRow('devCatalogs')"><img src="../../assets/add.png" alt="" class="addButtonIcon">Добавить</button></td>
-                </tr></tbody>
-              </table>
-              </div>
-              
-              
+              <DataTable :value="SelectKA.value.devCatalogs" scrollable scrollHeight="50vh"
+                tableStyle="min-width: 50rem" sortMode="multiple" stripedRows>
+                <ColumnGroup type="header">
+                  <Row>
+                      <Column header="Использовать" headerStyle="width: 3rem"/>
+                      <Column header="Прибор"/>
+                      <Column headerStyle="text-align: right; width: 3rem">
+                        <template #header>
+                          <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" text @click="AddRow('devCatalogs')"/>
+                        </template>
+                      </Column>
+                  </Row>
+                </ColumnGroup>
+                <Column header="Использовать" :exportable="false" headerStyle="width: 3rem">
+                  <template #body="slotProps">
+                    <Button icon="pi pi-plus" class="p-button-sm" severity="success" text @click="AddRow('devices',slotProps.data)" v-if="slotProps.data.use < 1"/>
+                  </template>
+                </Column>
+                <Column field="nameDevice" header="Прибор" sortable>
+                  <template #body="slotProps"><div class="narrow-input-container">
+                    <InputText 
+                      v-model="slotProps.data.nameDevice" 
+                      @input="ChangeValue(slotProps.data, 'devCatalogs')"
+                    /></div>
+                  </template>
+                </Column>
+                <Column header="" :exportable="false" style="width: 3rem; text-align: end;">
+                  <template #body="slotProps">
+                    <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text" 
+                      @click="slotProps.data.deleted = true; DeleteRow(index, 'devices')"/>
+                  </template>
+                </Column>
+              </DataTable>
+            
               <p>Устройства</p>
-              <DataTable :value="SelectKA.value.devices"
+              <DataTable :value="SelectKA.value.devices" scrollable scrollHeight="50vh"
                 tableStyle="min-width: 50rem" sortMode="multiple" stripedRows
                 ref="dt" :exportFilename="'Параметры_КА_' + new Date().toISOString().slice(0, 10)">
                 <Column field="devCatalog.nameDevice" header="Прибор" :sortable="true" />
@@ -87,12 +106,12 @@
               </DataTable>
           </div>
 
-            <DataTable :value="SelectKA.value.devices" v-if="viewPanel == 3"
+            <DataTable :value="SelectKA.value.devices" v-if="viewPanel == 3" scrollable scrollHeight="65vh"
                 tableStyle="min-width: 50rem" sortMode="multiple" stripedRows
                 ref="dt" :exportFilename="'Параметры_КА_' + new Date().toISOString().slice(0, 10)">
                 <ColumnGroup type="header">
                   <Row>
-                      <Column header="Product" :rowspan="2" />
+                      <Column header="Прибор" :rowspan="2" />
                       <Column :header="data.flightMode" v-for="data, index in SelectKA.value.modes" :key="index" :colspan="data.operatingModes.length" />
                   </Row>
                   <Row>
@@ -114,7 +133,7 @@
               </DataTable>
 
 
-              <DataTable :value="dataParamOperating" rowGroupMode="subheader" groupRowsBy="group" v-if="viewPanel == 4"
+              <DataTable :value="dataParamOperating" rowGroupMode="subheader" groupRowsBy="group" v-if="viewPanel == 4" scrollable scrollHeight="65vh"
                 tableStyle="min-width: 50rem" sortMode="multiple" stripedRows
                 ref="dt" :exportFilename="'Параметры_КА_' + new Date().toISOString().slice(0, 10)">
                 <Column field="group" header=""/>
@@ -148,7 +167,7 @@ import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputNumber from 'primevue/inputnumber';
-
+import InputText from 'primevue/inputtext';
 import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row'; 
 import SelectButton from 'primevue/selectbutton';
@@ -194,7 +213,7 @@ export default {
   },
   components:{
       SelectDiv,
-      FloatLabel, Dropdown, Button, DataTable, Column, InputNumber, ColumnGroup, Row, SelectButton
+      FloatLabel, Dropdown, Button, DataTable, Column, InputNumber, ColumnGroup, Row, SelectButton, InputText
   },
   methods:{
       async ChangeKA(data){
@@ -350,7 +369,7 @@ export default {
   width: 100%;
   display: flex;
   justify-content: center;
-  .p-inputnumber {//контроль размеров инпута
+  .p-inputnumber, .p-inputtext {//контроль размеров инпута
     width: 100px !important;
     min-width: 100%;
     flex-direction: column;

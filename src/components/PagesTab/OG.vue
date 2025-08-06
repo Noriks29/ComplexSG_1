@@ -29,9 +29,9 @@
           </template>
         </Toolbar> 
     <span>{{ valueSelectOG?.inputType?OGType[valueSelectOG.inputType]:''}}</span>
-    <DataTable :value="valueSelectOG.satellites" v-if="valueSelectOG != undefined"
+    <DataTable :value="valueSelectOG.satellites" v-if="valueSelectOG != undefined" scrollable scrollHeight="58vh"
       tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort
-      ref="dtSat" :exportFilename="'OG_' + new Date().toISOString().slice(0, 10)" scrollable>
+      ref="dtSat" :exportFilename="'OG_' + new Date().toISOString().slice(0, 10)">
       <template #header>
         
       </template>

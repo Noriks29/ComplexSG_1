@@ -34,7 +34,7 @@
               <Button v-if="PageSettings.status in {0:null,5:null}" icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
             </template>
           </Toolbar>
-          <DataTable :value="clusterTopology" v-if="PageSettings.status == 0"
+          <DataTable :value="clusterTopology" v-if="PageSettings.status == 0" scrollable scrollHeight="60vh"
             tableStyle="min-width: 50rem" sortMode="multiple" stripedRows
             ref="dtSatSatTopology" :exportFilename="'Топология_КА_КА_' + new Date().toISOString().slice(0, 10)">
             <Column field="cluster1" header="Кластер">
@@ -54,7 +54,7 @@
               </template>
             </Column>
           </DataTable>
-            <DataTable :value="PageSettings.SatSat" v-if="PageSettings.status == 3"
+            <DataTable :value="PageSettings.SatSat" v-if="PageSettings.status == 3" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtSatSat" :exportFilename="'Окна_КА_КА_' + new Date().toISOString().slice(0, 10)">
               <Column :field="field" :header="header" sortable  v-for="header, field in {
@@ -62,7 +62,7 @@
                 }" :key="header" />
             </DataTable>
 
-            <DataTable :value="networkClaster" v-if="PageSettings.status == 5"
+            <DataTable :value="networkClaster" v-if="PageSettings.status == 5" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" stripedRows removableSort
               ref="dtSatSatNet" :exportFilename="'Сеть_КА_КА_' + new Date().toISOString().slice(0, 10)">
               <Column field="beginTime" header="Время начал" sortables>

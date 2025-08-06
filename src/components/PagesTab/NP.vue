@@ -6,7 +6,7 @@
             </button>
           </div>
     <div class="ContentDiv" style="margin-top: 20px;">
-    <DataTable :value="dataJson" 
+    <DataTable :value="dataJson" scrollable scrollHeight="65vh"
       tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
       ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">
       <template #header>

@@ -20,7 +20,7 @@
               <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
             </template>
           </Toolbar>
-          <DataTable :value="requestJson" v-if="viewmode==0"
+          <DataTable :value="requestJson" v-if="viewmode==0" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZ" :exportFilename="'Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="catalog" header="Цель">
@@ -64,7 +64,7 @@
           </DataTable>
 
 
-          <DataTable :value="catalogJson" v-if="viewmode==1"
+          <DataTable :value="catalogJson" v-if="viewmode==1" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZcatalog" :exportFilename="'Каталог_Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="use" header="Использование" :exportable="false">
@@ -95,7 +95,7 @@
               </Column>
           </DataTable>
 
-          <DataTable :value="datarequest" v-if="viewmode==2"
+          <DataTable :value="datarequest" v-if="viewmode==2" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZdata" :exportFilename="'Данные_Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="name" header="Имя">
