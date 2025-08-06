@@ -23,32 +23,55 @@
           <div class="Panel RightPanel">
           <div v-if="viewPanel == 1">
               <p>Режимы функционирования</p>
-              <div>
-                  <div class="TableDiv">
-                    <table class="TableDefault">
-                      <thead><tr><th>Код</th><th>Режим полёта</th><th>Режим функционирования</th><th>Метод</th><th>К</th><th></th></tr></thead>
-                      <tbody v-for="data, index in SelectKA.value.modes" :key="index">
-                        <tr><td rowspan="0">{{ data.code || "не назван" }}</td><td rowspan="0">{{ data.flightMode || "не назван" }}</td></tr>
-                        <tr v-for="dataModes, indexModes in data.operatingModes" :key="indexModes" @change="ChangeValue($event, 'modes', index)">
-                          <td><input v-model="dataModes.mode"></td>
-                          <td><input v-model="dataModes.method"></td>
-                          <td><input type="number" v-model="dataModes.coefficient"></td>
-                          <td :id="index" @click="DeleteRow(indexModes, 'modes', index)" class="delete"><img class="iconDelete" src="../../assets/delete.svg" alt="-"></td>
-                        </tr>
-                        <tr><td colspan="6" @click="AddRow('modes',index)">...................................</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
+              <DataTable :value="SelectKA.value.modes" class="p-datatable-sm" responsiveLayout="scroll">
+                <Column field="code" header="Код">
+                  <template #body="{data}">{{ data.code || "не назван" }}</template>
+                </Column>
+                <Column field="flightMode" header="Режим полёта">
+                  <template #body="{data}">{{ data.flightMode || "не назван" }}</template>
+                </Column>
+                <Column header="" :exportable="false" style="width: 3rem;">
+                  <template #body="{data, index}">
+                    <Button icon="pi pi-plus" class="p-button-text" severity="success" @click="AddRow('modes', index)"/>
+                  </template>
+                </Column>
+                <Column header="Режим функционирования" style="min-width: 200px">
+                  <template #body="{data}">
+                    <div v-for="(mode, modeIndex) in data.operatingModes" :key="modeIndex">
+                      <InputText v-model="mode.mode" @change="ChangeValue($event, 'modes', index)" />
+                    </div>
+                  </template>
+                </Column>
+                <Column header="Метод" style="min-width: 200px">
+                  <template #body="{data}">
+                    <div v-for="(mode, modeIndex) in data.operatingModes" :key="modeIndex">
+                      <InputText v-model="mode.method" @change="ChangeValue($event, 'modes', index)" />
+                    </div>
+                  </template>
+                </Column>
+                <Column header="К">
+                  <template #body="{data}">
+                    <div v-for="(mode, modeIndex) in data.operatingModes" :key="modeIndex">
+                      <InputNumber v-model="mode.coefficient" @change="ChangeValue($event, 'modes', index)" />
+                    </div>
+                  </template>
+                </Column>
+                <Column header="" :exportable="false" style="min-width: 3rem">
+                  <template #body="{data, index}">
+                    <div v-for="(mode, modeIndex) in data.operatingModes" :key="modeIndex" class="flex align-items-center">
+                      <Button icon="pi pi-trash" class="p-button-text p-button-danger" @click="DeleteRow(modeIndex, 'modes', index)"/>
+                    </div>
+                  </template>
+                </Column>
+              </DataTable>
+
+
                   <p>Правила выбора режима полета, если интервалы времени пересекаются</p>
-                  <div class="TableDiv">
-                    <table class="TableDefault">
-                      <thead><tr><th>Пересечение режимов</th><th>Выполняется</th></tr></thead>
-                      <tbody><tr><th>A и B</th><td>выбор 1</td></tr>
-                      <tr><th>A и C</th><td>выбор 2</td></tr>
-                      <tr><th>B и C</th><td>выбор 3</td></tr></tbody>
-                    </table>
-                  </div>
-              </div>
+                  <DataTable :value="[{lable:'A и B', value: '-'},{lable:'A и C', value: '-'},{lable:'B и C', value: '-'}]"
+                    tableStyle="min-width: 50rem" sortMode="multiple" stripedRows>
+                    <Column field="lable" header="Пересечение режимов"/>
+                    <Column field="value" header="Выполняется"/>
+                  </DataTable>
           </div>
 
           <div v-if="viewPanel == 2">
