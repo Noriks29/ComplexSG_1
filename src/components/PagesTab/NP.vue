@@ -97,7 +97,6 @@ import XLSX from 'xlsx-js-style';
             fields.forEach(field => {
               newRow[field] = row[field];
             });
-            console.log(newRow)
             return newRow;
           });
           // 4. Создаем лист Excel

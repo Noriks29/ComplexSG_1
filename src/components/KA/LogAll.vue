@@ -1,7 +1,13 @@
 <!--Лог движка-->
 <template>
+    <Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
+      <template #end>
+        <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+      </template>
+    </Toolbar>
     <DataTable :value="dataT" class="p-datatable-sm" sortMode="multiple" 
         stripedRows removableSort scrollable scrollHeight="70vh"
+        ref="dt" :exportFilename="'Лог_движка_' + new Date().toISOString().slice(0, 10)"
         >
             <Column field="time" header="Время"></Column>
             <Column field="type" header="Код"></Column>
@@ -23,6 +29,9 @@
   <script>
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
+    import Button from 'primevue/button';
+    import Toolbar from 'primevue/toolbar';
+    import XLSX from 'xlsx-js-style';
 
     import VueJsonPretty from 'vue-json-pretty';
     import 'vue-json-pretty/lib/styles.css';
@@ -36,7 +45,7 @@
         },
       },
       components: {
-        Column,DataTable,VueJsonPretty
+        Column,DataTable,VueJsonPretty,Button,Toolbar
       },
       data() {
         return {
@@ -45,7 +54,51 @@
       },
       methods:
         {
-          LoadXLSX(){},
+          exportExcel() {
+            // 1. Получаем имя файла
+            const filename = this.$refs.dt.$props.exportFilename || 'export';
+            const headers = [];
+            const fields = [];
+            this.$refs.dt.$slots.default()
+              .filter(col => col.props?.exportable !== false)
+              .forEach(col => {
+                headers.push(col.props?.header || col.props?.field);
+                fields.push(col.props?.field);
+              });
+            // 3. Подготавливаем данные
+            const data = this.dataT.map(row => {
+              const newRow = {};
+              fields.forEach(field => {
+                if(field == 'data') newRow[field] = JSON.stringify(row[field]) 
+                else newRow[field] = String(row[field]);
+              });
+              return newRow;
+            });
+            // 4. Создаем лист Excel
+            let style = {
+              font: {
+                name: 'Calibri',
+                sz: 12,
+                bold: true,
+                    color: {rgb: '000000'} // red font
+              },
+              border: {
+                bottom: { style: 'thin', color: { rgb: '000000' } }
+              }}
+            // Преобразуем заголовки в массив объектов с стилями
+            const styledHeaders = headers.map(text => ({
+              v: text,
+              t: 's',
+              s: style
+            }));
+            const worksheet = XLSX.utils.json_to_sheet(data, { header: fields });
+            XLSX.utils.sheet_add_aoa(worksheet, [styledHeaders], { origin: 'A1' });
+            
+            // 7. Сохраняем файл
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+            XLSX.writeFile(workbook, `${filename}.xlsx`);
+          },
           UnixToDtimeL(time){
             return UnixToDtime(time, true, false).time
           },
