@@ -17,7 +17,7 @@
               <Column field="name" style="font-weight: bold;" ></Column>
               <Column>
                 <template #body="{ data, index }">
-                  {{ data.label[Number(modellingSettings[index])] }}
+                  {{ data.label[Number(modellingSettings[data.param])] }}
                 </template>
               </Column>
           </DataTable>
@@ -51,13 +51,13 @@ import { KaSettings } from './KaSettings';
         },
         experimentEddit: false,
         rezultShow:false,
-        modellingSettingsLabel:{
-          experiment: {name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
-          chargeForecasting: {name: "Прогнозирование заряда АКБ", label:["не выполняется", "выполняется, не учитывается", "выполняется, учитывается"]},
-          chargeSimulation: {name: "Расчёт заряда АКБ при моделировании", label:["не используется", "используется"]},
-          optionPro42: {name: "Расчёт Pro42 при моделировании", label:["не используется", "используется"]},
-          useInteraction: {name: "Межспутниковая связь для доставки", label:["не используется", "используется"]},
-        },
+        modellingSettingsLabel:[
+          {param: 'experiment', name: "Тип эксперимента", label:["планирование съемок", "планирование полёта", "моделирование полёта"]},
+          {param: 'chargeForecasting',name: "Прогнозирование заряда АКБ", label:["не выполняется", "выполняется, не учитывается", "выполняется, учитывается"]},
+          {param: 'chargeSimulation',name: "Расчёт заряда АКБ при моделировании", label:["не используется", "используется"]},
+          {param: 'optionPro42',name: "Расчёт Pro42 при моделировании", label:["не используется", "используется"]},
+          {param: 'useInteraction',name: "Межспутниковая связь для доставки", label:["не используется", "используется"]},
+        ],
       }
     },
     components:{
@@ -104,7 +104,6 @@ import { KaSettings } from './KaSettings';
         this.ConstellationJson = await this.$OGList()
         this.ConstellationJson.satCount = 0
         this.ConstellationJson.forEach(Og=>{
-          console.log(Og.satellites.length)
           this.ConstellationJson.satCount += Og.satellites.length
         })
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []

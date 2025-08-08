@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@primevue/forms": "^4.3.6",
+    "core-js": "^3.45.0",
     "crypto-browserify": "^3.12.1",
     "leaflet": "^1.9.4",
     "plotly.js-dist": "^3.0.1",
@@ -19,6 +20,7 @@
     "scss": "^0.2.4",
     "vanta": "^0.5.24",
     "vue": "^3.5.17",
+    "vue-json-pretty": "^2.5.0",
     "xlsx": "^0.18.5",
     "xlsx-js-style": "^1.2.0"
   },

@@ -32,7 +32,6 @@ const GlobalDataPlugin = {
         await this.$FetchPost('/api/v1/constellation/update', OGList)
     };
     app.config.globalProperties.$GetSystemObject = async function () {
-        console.log("A[etnm")
         SystemObject = await this.$FetchGet('/api/v1/system/get', true) || {}
         return SystemObject
     };

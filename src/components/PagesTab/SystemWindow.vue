@@ -3,13 +3,13 @@
           <table class="TableDefault" :class="modellingStatus?'DisableForModelling':''"><tbody>
           <tr><td>
             <FloatLabel>
-              <Calendar v-model="dataCalendar.startTime"  @date-select="ChangeTimeInput($event, 'startTime')" @input="ChangeTimeInput($event.target.value, 'startTime')" :invalid="!dataCalendar.startTime" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+              <Calendar v-model="dataCalendar.startTime"  @date-select="ChangeTimeInput($event, 'startTime')" @input="ChangeTimeInput($event.target.value, 'startTime')" :invalid="!dataCalendar.startTime" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
               <label for="startTime">Начальное время расчетов</label>
             </FloatLabel>
           </td>
           <td>
             <FloatLabel>
-              <Calendar v-model="dataCalendar.modelingBegin"  @date-select="ChangeTimeInput($event, 'modelingBegin')" @input="ChangeTimeInput($event.target.value, 'modelingBegin')" :invalid="!dataCalendar.modelingBegin" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true'/>
+              <Calendar v-model="dataCalendar.modelingBegin"  @date-select="ChangeTimeInput($event, 'modelingBegin')" @input="ChangeTimeInput($event.target.value, 'modelingBegin')" :invalid="!dataCalendar.modelingBegin" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
               <label for="modelingBegin">Старт моделирования</label>
             </FloatLabel>
           </td></tr>
@@ -21,7 +21,7 @@
           </td>
           <td>
             <FloatLabel>
-              <Calendar v-model="dataCalendar.modelingEnd"  @date-select="ChangeTimeInput($event, 'modelingEnd')" @input="ChangeTimeInput($event.target.value, 'modelingEnd')" :invalid="!dataCalendar.modelingEnd" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true'/>
+              <Calendar v-model="dataCalendar.modelingEnd"  @date-select="ChangeTimeInput($event, 'modelingEnd')" @input="ChangeTimeInput($event.target.value, 'modelingEnd')" :invalid="!dataCalendar.modelingEnd" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
               <label for="modelingEnd">Конец моделирования</label>
             </FloatLabel>
           </td>

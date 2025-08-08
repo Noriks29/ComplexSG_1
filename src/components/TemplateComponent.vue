@@ -2,7 +2,7 @@
   <div class="SectionMenu">
       <div class="HeadersSction">
         <SystemWindow :modellingStatus="ExperimentStatus" @updateParentComponent="ChangeComponents" :systemStatus="system" />
-        <ModellingComponent v-if="system.typeWorkplace != -1" :systemStatus="system" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)" :experimentEddit="experimentEddit"/>
+        <ModellingComponent v-if="system.typeWorkplace != -1" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)"/>
       </div>
       <div class="FooterSection" v-if="system.typeWorkplace != -1">
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
@@ -59,7 +59,7 @@
             </span>
           </template>
           <template #item="{ item }">
-            <a v-ripple class="flex align-items-center p-menuitem-link" :class="{ 'p-menuitem-active': item.active }">
+            <a class="flex align-items-center p-menuitem-link" :class="{ 'p-menuitem-active': item.active }">
               <span>{{ item.label }}</span>
               <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
                 {{ item.shortcut }}

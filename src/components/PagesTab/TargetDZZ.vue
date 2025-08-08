@@ -42,12 +42,12 @@
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="termDate" header="Срок выполнения">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="type" header="Признак" v-if="systemStatus.typeWorkplace in {3:null}">
@@ -120,7 +120,7 @@
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">

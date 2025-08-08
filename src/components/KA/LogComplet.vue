@@ -5,27 +5,25 @@
           </div>
         </div> 
         <div class="DataBody">
-          <button @click="selectOrder=undefined" v-show="selectOrder != undefined">Сброс фильтра</button>
-          <div class="TableDiv" style="max-height: 40vh; min-height: 40%;">
-          <table class="TableDefault">
-          <thead>
-            <tr><th>Заявка</th><th>Тип</th><th>Событие</th><th>Время</th><th>Описание</th><th>Узел 1</th><th>Узел 2</th></tr>
-          </thead>
-          <tbody v-for="(data, index) in dataT" :key="index">
-            <tr v-for="(dataev, indexev) in data.data" :key="indexev" v-show="selectOrder == undefined || selectOrder == dataev.orderName">
-              <td>{{ dataev.orderName }}</td><td>{{ dataev.type }}</td><td>{{ dataev.event }}</td><td>{{ dataev.timeUnix }}</td><td>{{ dataev.text }}</td><td>{{ dataev.node1Name }}</td><td>{{ dataev.node2Name }}</td>
-            </tr>
-          </tbody>
-          </table>
-        </div>
-        
+          <button @click="FilterData(undefined)" v-show="selectOrder != undefined">Сброс фильтра</button>
+          <DataTable :value="dataNew" class="p-datatable-sm" sortMode="multiple" stripedRows removableSort scrollable scrollHeight="60vh"
+          >
+            <Column field="orderName" header="Заявка"></Column>
+            <Column field="type" header="Тип"></Column>
+            <Column field="event" header="Событие"></Column>
+            <Column field="timeUnix" header="Время"></Column>
+            <Column field="text" header="Описание"></Column>
+            <Column field="node1Name" header="Узел 1"></Column>
+            <Column field="node2Name" header="Узел 2"></Column>
+          </DataTable>
       </div>
 </template>
   
 <script>
 import Plotly from 'plotly.js-dist'
 import { CreateDateTime } from '@/js/WorkWithDTime';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
     export default {
       name: 'TableData',
@@ -34,9 +32,13 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           type: Array
         },
       },
+      components: {
+        Column, DataTable
+      }, 
       data() {
         return {
             dataT: {},
+            dataNew: [],
             selectOrder: undefined
         }
       },
@@ -51,8 +53,21 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           LoadXLSX(){
             
           },
+          FilterData(target){
+            this.dataNew = this.dataTable.filter(item => item.orderName !== null);
+            this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
+            this.selectOrder=target
+            if(target != undefined){
+              this.dataNew = this.dataNew.filter(item => item.orderName == this.selectOrder);
+            }
+            
+          },
           async PrevrapData(){
             this.dataT = {}
+            this.dataNew = this.dataTable.filter(item => item.orderName !== null);
+            this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
+            
+            console.log(this.dataNew)
             this.dataTable.forEach(event => {
               if(event.orderId != 0 && event.orderName != null){
                 if(this.dataT[event.orderId] != undefined){
@@ -131,8 +146,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                     {displayModeBar: true}
                 )
                 document.getElementById("plotlydiv").on('plotly_click', (data)=>{
-                  console.log(data)
-                  this.selectOrder = data.points[0].y
+                  this.FilterData(data.points[0].y)
                 })
               }
           }

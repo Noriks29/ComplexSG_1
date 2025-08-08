@@ -4,6 +4,7 @@ import AlertToastPlugin from './js/alert'
 import LoadProcessPlugin from './js/load'
 import GlobalDataPlugin from './js/GlobalData'
 import ModellingProcess from './js/ModellingController'
+import 'core-js/stable'
 
 const app = createApp(App)
 app.use(AlertToastPlugin)

@@ -23,7 +23,7 @@
           <div class="Panel RightPanel">
           <div v-if="viewPanel == 1">
               <p>Режимы функционирования</p>
-              <DataTable :value="SelectKA.value.modes" class="p-datatable-sm" responsiveLayout="scroll">
+              <DataTable :value="SelectKA.value.modes" class="p-datatable-sm" responsiveLayout="scroll" scrollable scrollHeight="50vh">
                 <Column field="code" header="Код">
                   <template #body="{data}">{{ data.code || "не назван" }}</template>
                 </Column>
@@ -64,7 +64,6 @@
                   </template>
                 </Column>
               </DataTable>
-
 
                   <p>Правила выбора режима полета, если интервалы времени пересекаются</p>
                   <DataTable :value="[{lable:'A и B', value: '-'},{lable:'A и C', value: '-'},{lable:'B и C', value: '-'}]"

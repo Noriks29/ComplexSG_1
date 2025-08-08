@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="WorkPage">
-      <Menubar :model="items" class="idSesion" :class="login !== undefined ? titleModule==''?'show':'max show':''">
+      <Menubar class="idSesion" :class="login !== undefined ? titleModule==''?'show':'max show':''">
         <template #start>
           <div class="ModuleTitle" :class="titleModule==''?'hide':''">{{ titleModule }}</div>
         </template>

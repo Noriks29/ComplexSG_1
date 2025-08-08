@@ -6,6 +6,7 @@
             </button>
           </div>
     <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult.events"/>
+    <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
     <div class="ContentDiv" v-else style="margin-top: 30px;" >
         <div class="Panel LeftPanel">
         </div>
@@ -59,7 +60,9 @@ import ShootingPlan from './ShootingPlan.vue';
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
+
 import StatisticComponent from './StatisticComponent.vue';
+import LogAll from './LogAll.vue';
   export default {
     name: 'ModelingPanel',
     data(){
@@ -112,7 +115,8 @@ import StatisticComponent from './StatisticComponent.vue';
         E78Table,
       E77E78,
       BookmarkTable,
-      StatisticComponent
+      StatisticComponent,
+      LogAll
     },
     watch: {
       ModelingRezultMode(newreload) {
@@ -156,6 +160,8 @@ import StatisticComponent from './StatisticComponent.vue';
         this.ShowMode='DefaultTable'
       },
       ShowLogAll(){
+        this.ShowMode = 'LogAll'
+        /*
         this.dataTable = []
         this.modellingRezult.log.forEach(element =>{
           const e = Object.assign({}, element)
@@ -177,7 +183,7 @@ import StatisticComponent from './StatisticComponent.vue';
           {lable: "data", nameParam: "data", style:'text-align: left;'}
         ]
         this.PreWrapDefaultTable = false
-        this.ShowMode='DefaultTable'
+        this.ShowMode='DefaultTable'*/
       },
       ShowLogSmao(){
         this.dataTable = [] 

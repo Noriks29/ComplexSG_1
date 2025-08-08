@@ -24,25 +24,10 @@ let KaSettings = {
   
     },
     props:{
-      systemStatus:{
-        type: Object
-      },
-      reload:{
-        type: Number
-      },
       ExperimentStatus:{
         type: Boolean
       },
-      experimentEddit:{
-        type:Boolean
-      }
     },
-    watch: {
-      reload(newreload, oldreload) {
-        console.log(newreload, oldreload)
-        this.ReLoadComponent()
-      }
-    }
   }
 
 export {

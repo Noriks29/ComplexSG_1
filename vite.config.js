@@ -16,7 +16,7 @@ export default defineConfig({
     })],
   optimizeDeps: {
     exclude: ['crypto'],
-    include: ['xlsx-js-style']
+    include: ['xlsx-js-style', 'vue-json-pretty']
   },
   resolve: {
     alias: {
