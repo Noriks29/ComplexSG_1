@@ -1,22 +1,46 @@
 <template>
-  <div class="DataBody">
-    <div class="GrafDiv">
-      <div id="plotlydiv">
-        <!--Карта-->
-      </div>
-      <div id="plotlydivCharge">
-        <!--Карта-->
-      </div>
-    </div>
+  <DataTable :value="processedData" class="p-datatable-sm" rowGroupMode="rowspan" 
+            :groupRowsBy="groupKey" scrollable scrollHeight="500px">
+    <!-- Группирующие колонки -->
+    <Column field="typeContact" header="Тип контакта">
+      <template #body="slotProps">
+        {{ slotProps.data.typeContactDisplay }}
+      </template>
+      <template #groupheader="slotProps">
+        <strong>Группа: {{ slotProps.data.typeContactDisplay }}</strong>
+      </template>
+    </Column>
     
-  </div>
+    <Column field="timeRange" header="Временной диапазон">
+      <template #body="slotProps">
+        {{ slotProps.data.timeRangeDisplay }}
+      </template>
+    </Column>
+    
+    <!-- Остальные колонки -->
+    <Column field="node1" header="Узел 1"></Column>
+    <Column field="order" header="Заявка"></Column>
+    <Column field="node2" header="Узел 2"></Column>
+    <Column field="startTime" header="Начало">
+      <template #body="slotProps">
+        {{ formatTime(slotProps.data.ts) }}
+      </template>
+    </Column>
+    <Column field="endTime" header="Конец">
+      <template #body="slotProps">
+        {{ formatTime(slotProps.data.te) }}
+      </template>
+    </Column>
+  </DataTable>
 </template>
   
 <script>
-import Plotly from 'plotly.js-dist'
-import { CreateDateTime } from '@/js/WorkWithDTime';
 
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from 'primevue/button';
+import Toolbar from 'primevue/toolbar';
+import XLSX from 'xlsx-js-style';
     export default {
       name: 'TableData',
       props: {
@@ -24,133 +48,120 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
           type: Array
         },
       },
+      components: {
+        Column,DataTable,Button,Toolbar
+      },
       data() {
         return {
             dataT: [],
         }
       },
+      computed: {
+        processedData() {
+          // 1. Группируем данные
+          const groups = {};
+          this.dataT.forEach(item => {
+            const key = `${item.typeContact}_${item.valueTimeStart}_${item.valueTimeEnd}`;
+            if (!groups[key]) {
+              groups[key] = {
+                typeContact: item.typeContact,
+                typeContactDisplay: item.typeContact,
+                valueTimeStart: item.valueTimeStart,
+                valueTimeEnd: item.valueTimeEnd,
+                timeRangeDisplay: this.formatTimeRange(item.valueTimeStart, item.valueTimeEnd),
+                items: []
+              };
+            }
+            groups[key].items.push(item);
+          });
+          
+          // 2. Создаем плоский массив для таблицы
+          const result = [];
+          Object.values(groups).forEach(group => {
+            // Добавляем заголовок группы
+            result.push({
+              ...group,
+              isGroupHeader: true,
+              node1: '',
+              order: '',
+              node2: '',
+              ts: '',
+              te: ''
+            });
+            
+            // Добавляем элементы группы
+            result.push(...group.items.map(item => ({
+              ...item,
+              typeContactDisplay: '',
+              timeRangeDisplay: '',
+              isGroupHeader: false
+            })));
+          });
+          
+          return result;
+        }
+
+      },
       methods:
         {
-          CloseTable(){
-            this.$emit('closetable', true)
+          groupKey(row) {
+            return row.isGroupHeader 
+              ? `${row.typeContact}_${row.valueTimeStart}_${row.valueTimeEnd}`
+              : '';
           },
-          SelectRev(){
-
+          formatTime(timestamp) {
+            if (!timestamp || timestamp === 0) return '-';
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString('ru-RU');
           },
-          LoadXLSX(){
-            
+          formatTimeRange(start, end) {
+            if (start === 0 || end === 0) return 'Не указано';
+            return `${this.formatTime(start)} - ${this.formatTime(end)}`;
           },
           PrevrapData(){
             console.log(this.dataTable)
-
-            this.CreatePlot()
-          },
-          async CreatePlot(){
-              let dataPlotly = []
-              Plotly.newPlot("plotlydiv", [])
-              Plotly.newPlot("plotlydivCharge", [], {title: 'не готов', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
-              let data = [0]
-              let SystemObject = this.$SystemObject()
-              
-              if(data.length > 0 ){
-                let dataGrapf = {type: 'bar',name: "Пустой",y: [[],[]],x: [],orientation: 'h', base: [], showlegend: false,hoverinfo: 'none',
-                  marker: {opacity: 0.0}
-                }
-                let dataGrapf1 = {type: 'bar',name: "Данные в памяти МКА",y: [[],[]],x: [],orientation: 'h', base: [], showlegend: true,
-                  marker: {opacity: 0.6, color: 'blue'}
-                }
-                let dataGrapf2 = {type: 'bar',name: "Межспутниковая связь",y: [[],[]],x: [],orientation: 'h', base: [], showlegend: true,
-                  marker: {opacity: 0.6, color: 'green'}
-                }
-                let dataGrapf3 = {type: 'bar',name: "Сеанс связи с НП",y: [[],[]],x: [],orientation: 'h', base: [], showlegend: true,
-                  marker: {opacity: 0.8, color: []}
-                }
-                let satlist = {}
-                let OGList = await this.$OGList()
-                OGList.forEach(OG => {
-                    OG.satellites.forEach(sat => {
-                        dataGrapf.y[0].push(OG.constellationName)
-                        dataGrapf.y[1].push(sat.name)
-                        dataGrapf.base.push(CreateDateTime(SystemObject.modelingBegin,1))
-                        dataGrapf.x.push(CreateDateTime(1, 2))
-                        satlist[sat.satelliteId] = {og: OG.constellationName, sat: sat.name}
-                    })
-                })
-                for(var key in satlist){
-                  let timeData = null
-                  let timeToNP = null
-                  let timeSCSC = null
-                  this.dataTable.forEach(element => {
-                    if(element.node1Id == key){
-                      if(element.type in {10:null, 41:null, 42:null}){
-                        if(timeData != null){
-                          dataGrapf1.y[0].push(satlist[key].og)
-                          dataGrapf1.y[1].push(satlist[key].sat)
-                          dataGrapf1.base.push(CreateDateTime(timeData,1))
-                          dataGrapf1.x.push(CreateDateTime(element.time-timeData, 2))
-                        }
-                        if(element.type == 42){
-                          timeData = null
-                        }
-                        else timeData = element.time
-                      }
-                      else if(element.type in {43:null, 44:null}){
-                        if(timeToNP != null){
-                          dataGrapf3.y[0].push(satlist[key].og)
-                          dataGrapf3.y[1].push(satlist[key].sat)
-                          dataGrapf3.base.push(CreateDateTime(timeToNP,1))
-                          dataGrapf3.x.push(CreateDateTime(element.time-timeToNP, 2))
-                          dataGrapf3.marker.color.push("gray")
-                        }
-                        if(element.type == 44){
-                          timeToNP = null
-                        }
-                        else timeToNP = element.time
-                      }
-                      else if(element.type in {45:null, 46:null}){
-                        if(timeSCSC != null){
-                          dataGrapf2.y[0].push("Связь")
-                          dataGrapf2.y[1].push(satlist[key].sat)
-                          dataGrapf2.base.push(CreateDateTime(timeSCSC,1))
-                          dataGrapf2.x.push(CreateDateTime(element.time-timeSCSC, 2))
-                        }
-                        if(element.type == 46){
-                          timeSCSC = null
-                        }
-                        else timeSCSC = element.time
-                      }
-                    }
-                  })
-                }
-                console.log(dataGrapf1)
-
-                dataPlotly = [dataGrapf,dataGrapf1,dataGrapf3,dataGrapf2]
-                Plotly.newPlot("plotlydiv", dataPlotly,  {barmode: 'stack', bargap: 0.1, 
-                    showlegend: true, margin:{b:40,r:100, t:30,l:150}, height:50+dataGrapf.y[0].length*50,autosize: true, yaxis:{tickson: "boundaries",ticklen: 20,showdividers: true,dividercolor: 'grey',dividerwidth: 4}},
-                    {displayModeBar: true}
-                )
-                document.getElementById("plotlydiv").on('plotly_click', (data)=>{
-                  console.log(data)
-                  if(data.points[0].data.name == "Сеанс связи с НП"){
-                    var pn='',
-                    tn='',
-                    colors=[];
-                    for(var i=0; i < data.points.length; i++){
-                      pn = data.points[i].pointNumber;
-                      tn = data.points[i].curveNumber;
-                      colors = data.points[i].data.marker.color;
-                    }
-                    for (let col = 0; col < colors.length; col++) {
-                      colors[col] = 'gray'
-                    }
-                    colors[pn] = '#C54C82';
-
-                    var update = {'marker':{color: colors, size:16}};
-                    Plotly.restyle('plotlydiv', update, [tn]);
-                  }
+            let filterData = this.dataTable.filter(el => [11,12,13,14].includes(el.type));
+            filterData.forEach(event => {
+              if(event.type == 11){
+                this.dataT.push({
+                  typeContact: event.cluster, value: event.value, 
+                  valueTimeEnd: event.valueTimeEnd, valueTimeStart: event.valueTimeStart, 
+                  node1: event.node1Name, node2: event.node2Name, order: event.orderName,
+                  ts: event.time, te: null,
                 })
               }
-          }
+              else if(event.type == 12){
+                for (let i = this.dataT.length-1; i >= 0; i--) {
+                  if(this.dataT[i].node1 == event.node1Name &&
+                    this.dataT[i].value == event.value &&
+                    this.dataT[i].order == event.orderName){
+                      this.dataT[i].te = event.time
+                      break
+                    } 
+                }
+              }
+              else if(event.type == 13){
+                this.dataT.push({
+                  typeContact: 'Связь', value: event.value, 
+                  valueTimeEnd: event.valueTimeEnd, valueTimeStart: event.valueTimeStart, 
+                  node1: event.node1Name, node2: event.node2Name, order: event.orderName,
+                  ts: event.time, te: null,
+                })
+              }
+              else if(event.type == 14){
+                for (let i = this.dataT.length-1; i >= 0; i--) {
+                  if(this.dataT[i].node1 == event.node1Name &&
+                    this.dataT[i].value == event.value &&
+                    this.dataT[i].order == event.orderName){
+                      this.dataT[i].te = event.time
+                      break
+                    }
+                }
+              }
+            })
+            console.log(this.dataT)
+
+          },
       },
       mounted() {
         this.PrevrapData()

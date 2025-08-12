@@ -6,7 +6,7 @@
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='E77E78'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='BookmarkTable'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План закладок</button>
         <button v-if="systemStatus.typeWorkplace in {1:null,3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('LogComplet')" class="ButtonCommand">Лог выполнения заявок</button>
-        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('LogDownload')" class="ButtonCommand">Лог загрузки сеансов связи</button>
+        <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('LogDownload')" class="ButtonCommand">Лог доставки данных</button>
         <button v-if="systemStatus.typeWorkplace in {3:null,4:null}" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" @click="ShowTablePanel('StatisticComponent')" class="ButtonCommand">Статистика</button>
       </div>
       <div class="tdflexRow">
@@ -20,7 +20,7 @@
       <div class="tdflexRow">
         <p>Система</p>
         <button @click="ShowTablePanel('LogAll')" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
-        <button @click="ShowTablePanel('EventsLogResponse')" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
+        <button @click="ShowTablePanel('EventLog')" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
         <button @click="ShowTablePanel('LogSmao')" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand"><img src="../../assets/instructions.png" alt="smaoResponse" width="32"></button>
       </div>
   </div>

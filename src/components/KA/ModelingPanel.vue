@@ -7,6 +7,7 @@
           </div>
     <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult.events"/>
     <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
+    <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
     <div class="ContentDiv" v-else style="margin-top: 30px;" >
         <div class="Panel LeftPanel">
         </div>
@@ -19,32 +20,67 @@
           <E78Table v-if="ShowMode=='E78Table'" :dataTable="modellingRezult.Select.E78"/>
           <E77E78 v-if="ShowMode=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
           <BookmarkTable v-if="ShowMode=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
-          <div class="PanelSettings"  @change="ChangeSettings" v-if="ShowMode=='Settings'">
 
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null}">
-              <legend>Тип эксперимента:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.experiment"/><label>планирование съемок</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.experiment"/><label>планирование полёта</label></div>
-              <div><input type="radio" :value="2" v-model="modellingSettings.experiment"/><label>моделирование полёта</label></div>
-            </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {1:null,2:null,3:null} && modellingSettings.flightPlanning == 1">
-                <legend>Прогноз заряда АКБ при планировании:</legend>
-                <div><input type="radio" :value="0" v-model="modellingSettings.chargeForecasting"/><label>не выполняется</label></div>
-                <div><input type="radio" :value="1" v-model="modellingSettings.chargeForecasting"/><label>выполняется, не учитывается</label></div>
-                <div><input type="radio" :value="2" v-model="modellingSettings.chargeForecasting"/><label>выполняется, учитывается</label></div>
-              </fieldset>
-              <fieldset v-if="systemStatus.typeWorkplace in {1:null, 3:null} && modellingSettings.planSimulation == 1">
-                <legend>Моделирование полёта:</legend>
-                <div><input type="checkbox" v-model="modellingSettings.chargeSimulation"/><label>Использование АКБ</label></div>
-                <div><input type="checkbox" v-model="modellingSettings.optionPro42"/><label>Использование Pro</label></div>
-              </fieldset>
-            <fieldset v-if="systemStatus.typeWorkplace in {3:null, 4:null}">
-              <legend>Межспутниковая связь для доставки данных:</legend>
-              <div><input type="radio" :value="0" v-model="modellingSettings.useInteraction" true-value="1" false-value="0"/><label>не используется</label></div>
-              <div><input type="radio" :value="1" v-model="modellingSettings.useInteraction"/><label>используется</label></div>
-            </fieldset>
+          <div class="PanelSettings" @change="ChangeSettings" v-if="ShowMode=='Settings'">
+            <!-- Тип эксперимента -->
+            <Panel v-if="systemStatus.typeWorkplace in {1:null, 3:null}" header="Тип эксперимента:" toggleable>
+              <div class="field-radiobutton">
+                <RadioButton name="experiment" :value="0" v-model="modellingSettings.experiment" inputId="experiment1" />
+                <label for="experiment1">планирование съемок</label>
+              </div>
+              <div class="field-radiobutton">
+                <RadioButton name="experiment" :value="1" v-model="modellingSettings.experiment" inputId="experiment2" />
+                <label for="experiment2">планирование полёта</label>
+              </div>
+              <div class="field-radiobutton">
+                <RadioButton name="experiment" :value="2" v-model="modellingSettings.experiment" inputId="experiment3" />
+                <label for="experiment3">моделирование полёта</label>
+              </div>
+            </Panel>
+
+            <!-- Прогноз заряда АКБ -->
+            <Panel v-if="systemStatus.typeWorkplace in {1:null,2:null,3:null} && modellingSettings.flightPlanning == 1" 
+                  header="Прогноз заряда АКБ при планировании:" toggleable>
+              <div class="field-radiobutton">
+                <RadioButton name="chargeForecasting" :value="0" v-model="modellingSettings.chargeForecasting" inputId="charge1" />
+                <label for="charge1">не выполняется</label>
+              </div>
+              <div class="field-radiobutton">
+                <RadioButton name="chargeForecasting" :value="1" v-model="modellingSettings.chargeForecasting" inputId="charge2" />
+                <label for="charge2">выполняется, не учитывается</label>
+              </div>
+              <div class="field-radiobutton">
+                <RadioButton name="chargeForecasting" :value="2" v-model="modellingSettings.chargeForecasting" inputId="charge3" />
+                <label for="charge3">выполняется, учитывается</label>
+              </div>
+            </Panel>
+
+            <!-- Моделирование полёта -->
+            <Panel v-if="systemStatus.typeWorkplace in {1:null, 3:null} && modellingSettings.planSimulation == 1" 
+                  header="Моделирование полёта:" toggleable>
+              <div class="field-checkbox">
+                <Checkbox v-model="modellingSettings.chargeSimulation" inputId="chargeSim" binary />
+                <label for="chargeSim">Использование АКБ</label>
+              </div>
+              <div class="field-checkbox">
+                <Checkbox v-model="modellingSettings.optionPro42" inputId="optionPro" binary />
+                <label for="optionPro">Использование Pro</label>
+              </div>
+            </Panel>
+
+            <!-- Межспутниковая связь -->
+            <Panel v-if="systemStatus.typeWorkplace in {3:null, 4:null}" 
+                  header="Межспутниковая связь для доставки данных:" toggleable>
+              <div class="field-radiobutton">
+                <RadioButton name="useInteraction" :value="0" v-model="modellingSettings.useInteraction" inputId="interaction1" />
+                <label for="interaction1">не используется</label>
+              </div>
+              <div class="field-radiobutton">
+                <RadioButton name="useInteraction" :value="1" v-model="modellingSettings.useInteraction" inputId="interaction2" />
+                <label for="interaction2">используется</label>
+              </div>
+            </Panel>
           </div>
-
 
         </div>  
     </div>
@@ -63,6 +99,11 @@ import BookmarkTable from './BookmarkComponent.vue';
 
 import StatisticComponent from './StatisticComponent.vue';
 import LogAll from './LogAll.vue';
+import EventLog from './EventLog.vue';
+
+import Panel from 'primevue/panel';
+import RadioButton from 'primevue/radiobutton';
+import Checkbox from 'primevue/checkbox';
   export default {
     name: 'ModelingPanel',
     data(){
@@ -116,7 +157,11 @@ import LogAll from './LogAll.vue';
       E77E78,
       BookmarkTable,
       StatisticComponent,
-      LogAll
+      LogAll,EventLog,
+
+      Panel,
+      RadioButton,
+      Checkbox
     },
     watch: {
       ModelingRezultMode(newreload) {
@@ -137,7 +182,7 @@ import LogAll from './LogAll.vue';
       ValidateShowPanel(Panel){
         if(Panel == "FcLog")this.ShowFcLog()
         else if(Panel == "LogAll")this.ShowLogAll()
-        else if(Panel == "EventsLogResponse")this.ShowEventsLogResponse()
+        else if(Panel == "EventLog")this.ShowEventLog()
         else if(Panel == "LogSmao")this.ShowLogSmao()
         else if(Panel == "Settings"){
           this.modellingSettings = this.$GetSettings()
@@ -161,29 +206,6 @@ import LogAll from './LogAll.vue';
       },
       ShowLogAll(){
         this.ShowMode = 'LogAll'
-        /*
-        this.dataTable = []
-        this.modellingRezult.log.forEach(element =>{
-          const e = Object.assign({}, element)
-          let deleteName = ['time','type','idReceiver','receiverName','idSender','senderName']
-          for (let i = 0; i < deleteName.length; i++) {
-            delete e[deleteName[i]]
-          }
-          this.dataTable.push({
-            time: element.time,
-            type: element.type,
-            data: e,
-            name: element.senderName || element.receiverName || ''
-          })
-        })
-        this.dataLableName = [
-          {lable: "Время", nameParam: "time", style:'white-space: nowrap;'},
-          {lable: "Код", nameParam: "type"},
-          {lable: 'Источник', nameParam:'name', style:'text-align: left;'},
-          {lable: "data", nameParam: "data", style:'text-align: left;'}
-        ]
-        this.PreWrapDefaultTable = false
-        this.ShowMode='DefaultTable'*/
       },
       ShowLogSmao(){
         this.dataTable = [] 
@@ -196,7 +218,9 @@ import LogAll from './LogAll.vue';
         this.PreWrapDefaultTable = true
         this.ShowMode='DefaultTable'
       },
-      async ShowEventsLogResponse(){ //Лог событий
+      async ShowEventLog(){ //Лог событий
+        this.ShowMode = 'EventLog'
+        /*
         this.dataTable = this.modellingRezult.events
         this.dataLableName = [
           {lable: "Время", nameParam: "timeUnix"},
@@ -209,7 +233,7 @@ import LogAll from './LogAll.vue';
           {lable: "Значение", nameParam: "value"}
         ]
         this.PreWrapDefaultTable = false
-        this.ShowMode='DefaultTable'
+        this.ShowMode='DefaultTable'*/
       },
 
     },
@@ -223,6 +247,27 @@ import LogAll from './LogAll.vue';
 
 
 <style lang="scss" scoped>
+
+
+.PanelSettings {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field-radiobutton,
+.field-checkbox {
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.field-radiobutton label,
+.field-checkbox label {
+  margin-left: 0.5rem;
+}
+
+
   .PanelSettings{
     display: flex;
     height: 100%;
