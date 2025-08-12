@@ -8,12 +8,11 @@
     <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult.events"/>
     <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
     <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
+    <LogDownload v-if="ShowMode=='LogDownload'" :dataTable="modellingRezult.events"/>
+
     <div class="ContentDiv" v-else style="margin-top: 30px;" >
-        <div class="Panel LeftPanel">
-        </div>
         <div class="Panel RightPanel" >
           <LogComplet v-if="ShowMode=='LogComplet'" :dataTable="modellingRezult.events"/>
-          <LogDownload v-if="ShowMode=='LogDownload'" :dataTable="modellingRezult.events"/>
           <FlightplanForm v-if="ShowMode=='FlightplanForm'" :dataTable="modellingRezult.Select.E79"/>
           <DefaultTable v-if="ShowMode=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" :prevrap="PreWrapDefaultTable"/>
           <ShootingPlan v-if="ShowMode=='ShootingPlan'" :dataTable="modellingRezult.Select.E77"/>
