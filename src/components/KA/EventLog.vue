@@ -57,11 +57,10 @@
                 fields.push(col.props?.field);
               });
             // 3. Подготавливаем данные
-            const data = this.dataT.map(row => {
+            const data = this.dataTable.map(row => {
               const newRow = {};
               fields.forEach(field => {
-                if(field == 'data') newRow[field] = JSON.stringify(row[field]) 
-                else newRow[field] = String(row[field]);
+                newRow[field] = row[field];
               });
               return newRow;
             });

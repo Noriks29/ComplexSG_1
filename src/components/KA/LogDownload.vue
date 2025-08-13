@@ -16,7 +16,7 @@
       </template>
     </Column>
     
-    <Column field="timeRange" header="Временной диапазон">
+    <Column field="timeRangeDisplay" header="Временной диапазон">
       <template #body="slotProps">
         {{ slotProps.data.timeRangeDisplay }}
       </template>
@@ -25,12 +25,12 @@
     <Column field="node1" header="Узел 1"></Column>
     <Column field="order" header="Заявка"></Column>
     <Column field="node2" header="Узел 2"></Column>
-    <Column field="startTime" header="Начало">
+    <Column field="ts" header="Начало">
       <template #body="slotProps">
         {{ formatTime(slotProps.data.ts) }}
       </template>
     </Column>
-    <Column field="endTime" header="Конец">
+    <Column field="te" header="Конец">
       <template #body="slotProps">
         {{ formatTime(slotProps.data.te) }}
       </template>
@@ -131,10 +131,11 @@ import XLSX from 'xlsx-js-style';
                 fields.push(col.props?.field);
               });
             // 3. Подготавливаем данные
+            console.log(headers,fields)
             const data = this.dataT.map(row => {
               const newRow = {};
               fields.forEach(field => {
-                newRow[field] = String(row[field]);
+                newRow[field] = row[field];
               });
               return newRow;
             });
