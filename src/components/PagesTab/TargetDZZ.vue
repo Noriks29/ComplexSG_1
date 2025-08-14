@@ -37,17 +37,17 @@
               </Column>
               <Column field="priory" header="Приоритет">
                 <template #body="slotProps"><div class="narrow-input-container">
-                  <InputNumber v-model="slotProps.data.priory" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.priory && slotProps.data.priory !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
+                  <InputNumber v-model="slotProps.data.priory" showButtons @blur="SaveChange($event)" :invalid="!slotProps.data.priory && slotProps.data.priory !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"/>
                 </div></template>
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @blur="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="termDate" header="Срок выполнения">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @input="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @blur="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="type" header="Признак" v-if="systemStatus.typeWorkplace in {3:null}">
@@ -74,17 +74,17 @@
               </Column>
               <Column field="goalName" header="Цель">
                 <template #body="slotProps">
-                  <InputText v-model="slotProps.data.goalName" @input="SaveChange(slotProps.data)" :invalid="!slotProps.data.goalName"/>
+                  <InputText v-model="slotProps.data.goalName" @blur="SaveChange(slotProps.data)" :invalid="!slotProps.data.goalName"/>
                 </template>
               </Column>
               <Column field="lat" header="Широта">
                 <template #body="slotProps">
-                  <InputNumber v-model="slotProps.data.lat" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.lat && slotProps.data.lat !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                  <InputNumber v-model="slotProps.data.lat" showButtons @blur="SaveChange($event)" :invalid="!slotProps.data.lat && slotProps.data.lat !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
                 </template>
               </Column>
               <Column field="lon" header="Долгота">
                 <template #body="slotProps">
-                  <InputNumber v-model="slotProps.data.lon" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.lon && slotProps.data.lon !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                  <InputNumber v-model="slotProps.data.lon" showButtons @blur="SaveChange($event)" :invalid="!slotProps.data.lon && slotProps.data.lon !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
                 </template>
               </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">
@@ -100,7 +100,7 @@
               ref="dtDZZdata" :exportFilename="'Данные_Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="name" header="Имя">
                 <template #body="slotProps">
-                  <InputText v-model="slotProps.data.name" @input="SaveChange(slotProps.data)" :invalid="!slotProps.data.name"/>
+                  <InputText v-model="slotProps.data.name" @blur="SaveChange(slotProps.data)" :invalid="!slotProps.data.name"/>
                 </template>
               </Column>
               <Column field="satellite" header="МКА">
@@ -110,17 +110,17 @@
               </Column>
               <Column field="capacity" header="Объём, Мбайт">
                 <template #body="slotProps">
-                  <InputNumber v-model="slotProps.data.capacity" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.capacity && slotProps.data.capacity !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                  <InputNumber v-model="slotProps.data.capacity" showButtons @blur="SaveChange($event)" :invalid="!slotProps.data.capacity && slotProps.data.capacity !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
                 </template>
               </Column>
               <Column field="priority" header="Приоритет">
                 <template #body="slotProps">
-                  <InputNumber v-model="slotProps.data.priority" showButtons @input="SaveChange($event)" :invalid="!slotProps.data.priority && slotProps.data.priority !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
+                  <InputNumber v-model="slotProps.data.priority" showButtons @blur="SaveChange($event)" :invalid="!slotProps.data.priority && slotProps.data.priority !== 0" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput" mode="decimal" :maxFractionDigits="5"/>
                 </template>
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @input="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @blur="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">
