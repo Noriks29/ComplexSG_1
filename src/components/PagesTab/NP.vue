@@ -24,7 +24,7 @@
       <template #body="slotProps">
         <InputText 
           v-model="slotProps.data.nameEarthPoint" 
-          @input="saveChanges(slotProps.data)"
+          @blur="saveChanges(slotProps.data)"
         />
       </template>
     </Column>
@@ -32,7 +32,7 @@
       <template #body="slotProps">
         <InputNumber :min="-90" :max="90" mode="decimal" :maxFractionDigits="5"
           v-model="slotProps.data.latitude"  
-          @input="saveChanges(slotProps.data)" 
+          @blur="saveChanges(slotProps.data)" 
         />
       </template>
     </Column>
@@ -40,7 +40,7 @@
       <template #body="slotProps">
         <InputNumber :min="-180" :max="180"  mode="decimal" :maxFractionDigits="5"
           v-model="slotProps.data.longitude" 
-          @input="saveChanges(slotProps.data)"
+          @blur="saveChanges(slotProps.data)"
         />
       </template>
     </Column>
