@@ -138,8 +138,6 @@
   <script>
 import { PagesSettings } from './PagesSettings';
 import { CreateDateTime } from '@/js/WorkWithDTime';
-import SelectDiv from '../SelectDiv.vue'
-import DateTime from '../DateTime.vue';
 import XLSX from 'xlsx-js-style';
 
 import DataTable from 'primevue/datatable';
@@ -154,8 +152,6 @@ import InputText from 'primevue/inputtext';
     name: 'TargetDZZ',
     mixins: [PagesSettings],
     components:{
-      SelectDiv,
-      DateTime,
       DataTable, Column,Dropdown,InputNumber,Calendar,Button, Toolbar, InputText
     },
     data(){
@@ -203,12 +199,14 @@ import InputText from 'primevue/inputtext';
       async SaveChange(event, component, refatch = false){
         switch (this.viewmode) {
           case 0:
-            await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)
+            this.SatartSave('request')
             break;
           case 1:
-            await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)
+            this.SatartSave('catalog')
             break;
-        
+          case 2:
+            this.SatartSave('datarequest')
+            break;
           default:
             break;
         }

@@ -23,6 +23,21 @@
   }
 }
 
+/* Увеличиваем z-index для ColorPicker */
+.p-colorpicker-panel {
+    z-index: 10000 !important;
+}
+
+/* Если используете overlay */
+.p-colorpicker-overlay {
+    z-index: 9999 !important;
+}
+
+/* Для панели выбора цвета */
+.p-colorpicker-panel .p-colorpicker-content {
+    z-index: 10001 !important;
+}
+
 
 
 

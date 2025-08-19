@@ -11,6 +11,7 @@
       </div>
       <div class="tdflexRow">
         <p>Работа КА</p>
+        <Dropdown v-model="valueSS" :options="arr" @change="SelectChange($event.value)" optionLabel="lable" />
         <SelectDiv  :dataOption="arr" :valueS="valueSS" :id="'0'"  @valueSelect="SelectChange"/>
         <button @click="ShowTablePanel('ShootingPlan')" :class="(modellingRezult.Select.E77.length < 1) ? 'disable' : ''" class="ButtonCommand">План съёмок</button>
         <button v-if="systemStatus.typeWorkplace in {2:null}" @click="ShowTable='E78Table'" :class="(modellingRezult.Select.E78.length < 1) ? 'disable' : ''" class="ButtonCommand">План доставки</button>
@@ -27,8 +28,7 @@
 </template>
   
 <script>
-import SelectDiv from '../SelectDiv.vue';
-
+import Dropdown from 'primevue/dropdown';
   export default {
     name: 'ModelingRezult',
     data(){
@@ -67,7 +67,7 @@ import SelectDiv from '../SelectDiv.vue';
         },
     },
     components:{
-        SelectDiv,
+      Dropdown
     },
     methods: {
         RezultShowChange(status){
@@ -78,7 +78,8 @@ import SelectDiv from '../SelectDiv.vue';
           this.SelectChange(this.valueSS)
         },
         async SelectChange(target){
-          this.valueSS = {value: target.value, lable: target.lable}
+          console.log(target)
+          //this.valueSS = {value: target.value, lable: target.lable}
           await this.$SetModellingRezultSelect(target.value)
           this.modellingRezult = this.$GetModellingRezult()
           this.ShowTablePanel(null)
@@ -131,9 +132,8 @@ import SelectDiv from '../SelectDiv.vue';
   }
 
   .ModellingPanel{
-    
-    border-top: 3px solid var(--color-border1);
     background-color: var(--color-bg-panel);
+    margin: 5px 5px 5px 0px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -150,7 +150,7 @@ import SelectDiv from '../SelectDiv.vue';
     }
   }
   .tdflexRow{
-    width: 210px;
+    width: 200px;
     display: flex;
     flex-direction: column;
   }

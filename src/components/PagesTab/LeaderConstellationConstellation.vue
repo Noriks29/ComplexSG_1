@@ -95,9 +95,7 @@
 
 import { CreateDateTime } from '@/js/WorkWithDTime.js';
 import { PagesSettings } from './PagesSettings.js';
-import SelectDiv from '../SelectDiv.vue';
 import Plotly from 'plotly.js-dist'
-import DateTime from '../DateTime.vue';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -113,8 +111,6 @@ import XLSX from 'xlsx-js-style';
     name: 'LeaderConstellationConstellation',
     mixins: [PagesSettings],
     components:{
-      SelectDiv,
-      DateTime,
       DataTable, Column, Toolbar, Button,Calendar,Dropdown, FloatLabel, InputNumber
     },
     data(){

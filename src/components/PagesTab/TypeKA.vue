@@ -180,7 +180,6 @@
 </template>
 
 <script>
-import SelectDiv from '../SelectDiv.vue';
 import { PagesSettings } from './PagesSettings.js';
 
 import FloatLabel from 'primevue/floatlabel';
@@ -234,7 +233,6 @@ export default {
       }
   },
   components:{
-      SelectDiv,
       FloatLabel, Dropdown, Button, DataTable, Column, InputNumber, ColumnGroup, Row, SelectButton, InputText
   },
   methods:{

@@ -40,6 +40,7 @@
               { label: 'КА - КА', command: () => SelectComponent('LeaderConstellationConstellation'), active: activeComponent=='LeaderConstellationConstellation'}
             ]
           },
+          /*
           {
             label: 'Инструменты',
             visible: ![2, 4].includes(system.typeWorkplace),
@@ -47,7 +48,7 @@
               { label: 'Обход целей', command: () => SelectComponent('TargetRoad'), active: activeComponent=='TargetRoad'},
               { label: 'Видимость целей', command: () => SelectComponent('EstimationConstellation'), active: activeComponent=='EstimationConstellation'}
             ]
-          }
+          }*/
         ]">
           <template #start>
             <span class="ButtonStartMenu">

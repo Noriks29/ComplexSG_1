@@ -71,8 +71,6 @@
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import { PagesSettings } from './PagesSettings';
 import DefaultTable from '../DefaultTable.vue';
-import SelectDiv from '../SelectDiv.vue';
-import DateTime from '../DateTime.vue';
 
 import Plotly from 'plotly.js-dist'
 
@@ -81,8 +79,6 @@ import Plotly from 'plotly.js-dist'
     mixins: [PagesSettings],
     components:{
       DefaultTable,
-      SelectDiv,
-      DateTime
     },
     data(){
       return{

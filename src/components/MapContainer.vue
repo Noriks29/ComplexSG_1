@@ -1,11 +1,12 @@
 <template>
   <div class="MapContain">
    <div id="DrawKARoad" class="PanelMenu">
-            <SelectDiv  :dataOption="KAArray" :valueS="KatoDraw" :id="'KA'+String(0)" @valueSelect="ChangeKaDraw"/>
-            <input type="color" id="inputColorKa" value="#5900ff"><button class="ButtonCommand" @click="GetKARoad">Отрисовать маршрут</button>
+            <Dropdown v-model="KatoDraw" :options="KAArray" optionLabel="lable"/>
+            <ColorPicker v-model="color"/>
+            <Button @click="GetKARoad" severity="success" label="Отрисовать маршрут"/>
             <div class="LatLng"><span>Точка: {{ AddPoint.lat+', '+AddPoint.lng }}</span><button class="ButtonCommand" @click="StartAddPoint">Добавить</button></div>
-            <button class="ButtonCommand reload" @click="ReloadMapContainer"><img src="@/assets/reload.png" alt="Сброс"></button>
-    </div>
+            <Button icon="pi pi-replay" severity="danger" aria-label="Cancel"  @click="ReloadMapContainer"/>
+          </div>
     <div id="Legend" class="PanelMenu">
             <div><table>
               <tbody>
@@ -51,7 +52,7 @@
 </template>
 
 <script>
-import SelectDiv from './SelectDiv.vue';
+
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -59,6 +60,10 @@ import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
 import { PagesSettings } from './PagesTab/PagesSettings';
 import {adress} from '@/js/config_server'
+
+import Dropdown from 'primevue/dropdown';
+import ColorPicker from 'primevue/colorpicker';
+import Button from 'primevue/button';
 
 
 export default {
@@ -78,11 +83,12 @@ export default {
           name: undefined,
           height: 0
         },
+        color: '5900ff',
         RoadKaList:[]
     }
   },
   components:{
-      SelectDiv,
+    Dropdown, ColorPicker, Button
   },
   methods: {
       async CreateMap(){
@@ -201,9 +207,8 @@ export default {
             });
           }
           else{
-            let color = document.getElementById("inputColorKa").value
             let road = await this.$FetchPost("/api/v1/pro42/gps/sat", {}, "satelliteId="+this.KatoDraw.value.satelliteId) || []
-            this.DrowRoad(road,color, this.KatoDraw.value.name)
+            this.DrowRoad(road,'#'+this.color, this.KatoDraw.value.name)
           }
           this.$showLoad(false);
         },
@@ -232,6 +237,7 @@ export default {
           this.map.removeLayer(data.point)
         },
         async ReloadMapContainer(){
+          this.RoadKaList = []
           this.map.off();
           this.map.remove();
           this.CreateMap()
@@ -259,6 +265,21 @@ export default {
 
 
 <style lang="scss">
+
+:deep(.p-colorpicker-panel) {
+    z-index: 10000 !important;
+}
+
+:deep(.p-colorpicker-overlay) {
+    z-index: 9999 !important;
+}
+.custom-colorpicker .p-colorpicker-panel {
+    z-index: 10000 !important;
+}
+
+.custom-colorpicker .p-colorpicker-overlay {
+    z-index: 9999 !important;
+}
 .MapContain{
   position: relative;
   flex: 1;

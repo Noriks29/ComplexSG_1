@@ -112,8 +112,6 @@
   
   <script>
 import { PagesSettings } from './PagesSettings.js';
-import SelectDiv from '../SelectDiv.vue';
-import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
 import InputNumber from 'primevue/inputnumber';
@@ -154,8 +152,7 @@ import FileUpload from 'primevue/fileupload';
     },
     components:
     {
-      SelectDiv, 
-      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown,FloatLabel,FileUpload
+      Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown,FloatLabel,FileUpload
     },
     methods: {
       async DeleteRowOG(data){
