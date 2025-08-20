@@ -1,12 +1,12 @@
 <template>
   <div class="MapContain">
    <div id="DrawKARoad" class="PanelMenu">
-            <Dropdown v-model="KatoDraw" :options="KAArray" optionLabel="lable"/>
-            <ColorPicker v-model="color"/>
-            <Button @click="GetKARoad" severity="success" label="Отрисовать маршрут"/>
-            <div class="LatLng"><span>Точка: {{ AddPoint.lat+', '+AddPoint.lng }}</span><button class="ButtonCommand" @click="StartAddPoint">Добавить</button></div>
-            <Button icon="pi pi-replay" severity="danger" aria-label="Cancel"  @click="ReloadMapContainer"/>
-          </div>
+    <Button icon="pi pi-plus" :label="AddPoint.lat+', '+AddPoint.lng" text  @click="StartAddPoint"/>
+    <Dropdown v-model="KatoDraw" :options="KAArray" optionLabel="lable"/>
+    <ColorPicker v-model="color"/>
+    <Button @click="GetKARoad" severity="success" label="Отрисовать маршрут"/>
+    <Button icon="pi pi-replay" severity="danger" aria-label="Cancel"  @click="ReloadMapContainer"/>
+  </div>
     <div id="Legend" class="PanelMenu">
             <div><table>
               <tbody>

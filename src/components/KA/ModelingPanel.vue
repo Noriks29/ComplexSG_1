@@ -5,7 +5,7 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult.events"/>
+    <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult"/>
     <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
     <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
     <LogDownload v-if="ShowMode=='LogDownload'" :dataTable="modellingRezult.events"/>

@@ -56,6 +56,9 @@ const ModellingProcess = {
 
 
     app.config.globalProperties.$SetModellingRezult = function (ModellingData, eventsList) {
+      console.log(ModellingData, "fdrrefrgre")
+      try{ModellingRezultData.value.smaoTables = ModellingData.smaoTables}
+        catch (error) {console.error(error)}
       try{ModellingRezultData.value.Smao.push(ModellingData.smaoLogResponse)} //лог движка 
           catch (error) {console.error(error)}
         try {//лог событий
@@ -161,6 +164,7 @@ const ModellingProcess = {
             Smao: [],
             events: [],
             fcLog:[],
+            smaoTables: {},
             Select:{
               E77: [],
               E78: [],

@@ -11,9 +11,9 @@
             <table class="TableDefault">
               <thead><tr><th></th><th>Ожидание съемки</th><th>Время доставки</th></tr></thead>
               <tbody>
-                <tr><th>Среднее</th><td>{{ UnixToDtimeL(dataStatistic.timeDelay/dataStatistic.timeDelayCount) }}</td><td>{{ UnixToDtimeL(dataStatistic.timePost/dataStatistic.timePostCount) }}</td></tr>
-                <tr><th>Минимальное</th><td>{{ UnixToDtimeL(dataStatistic.timeDelayMin) }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMin) }}</td></tr>
-                <tr><th>Максимальное</th><td>{{ UnixToDtimeL(dataStatistic.timeDelayMax) }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMax) }}</td></tr>
+                <tr><th>Среднее</th><td>{{ dataStatistic.timeDelayCount!=0?UnixToDtimeL(dataStatistic.timeDelay/dataStatistic.timeDelayCount):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePost/dataStatistic.timePostCount) }}</td></tr>
+                <tr><th>Минимальное</th><td>{{ dataStatistic.timeDelayMin<100000000000000?UnixToDtimeL(dataStatistic.timeDelayMin):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMin) }}</td></tr>
+                <tr><th>Максимальное</th><td>{{ dataStatistic.timeDelayMax>0?UnixToDtimeL(dataStatistic.timeDelayMax):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMax) }}</td></tr>
               </tbody>
             </table>
             <table class="TableDefault SelectModeTable TopM">
@@ -29,6 +29,17 @@
               <tbody>
                 <tr v-for="data, index in targetEvent[TableSelect].events" :key="index">
                     <td>{{ data.timeUnix }}</td><td>{{ data.type }}</td><td>{{ data.event }}</td><td>{{ data.orderName }}</td><td>{{ data.node1Name }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>Не переданные заявки</p>
+            <table>
+              <thead><tr>
+                <th>Кластер</th><th>КА</th><th>Заявка</th><th>Обьём потери</th>
+              </tr></thead>
+              <tbody>
+                <tr v-for="data, index in notTransmittedData" :key="index">
+                  <td>{{ data.cluster }}</td><td>{{ data.satName }}</td><td>{{ data.orderName }}</td><td>{{ data.dataVolume }}</td>
                 </tr>
               </tbody>
             </table>
@@ -81,6 +92,8 @@
             TableSelect: undefined,
             TableReallocation: {targetCount:0, target1: 0, target2: 0, target3: 0, targetNone: 0},
             viewmode: 0,
+
+            notTransmittedData: []
         }
       },
       methods:
@@ -92,9 +105,9 @@
           },
           PrevrapData(){
             let dataT = []
-            dataT = dataT.concat(this.dataTable)
+            dataT = dataT.concat(this.dataTable.events)
             let OGlist = this.$OGList()
-            
+            this.notTransmittedData = this.dataTable.smaoTables.notTransmittedData
             
             let SatOgList = {}
             OGlist.forEach(og => {
