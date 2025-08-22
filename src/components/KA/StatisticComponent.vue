@@ -1,50 +1,33 @@
 <template>
-    <div class="ContentDiv">
-        <div class="Panel LeftPanel">
-            <div class="FlexColumn">
-              <div><button @click="viewmode=0" class="ButtonCommand" :class="viewmode==0?'Select':''">Выполнение заявок</button></div>
-              <div><button @click="viewmode=1" class="ButtonCommand" :class="viewmode==1?'Select':''">Оценки эффективности</button></div>
-            </div>
-        </div>
-        <div class="Panel RightPanel" >
-          <div v-if="viewmode == 0" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
-            <table class="TableDefault">
-              <thead><tr><th></th><th>Ожидание съемки</th><th>Время доставки</th></tr></thead>
-              <tbody>
-                <tr><th>Среднее</th><td>{{ dataStatistic.timeDelayCount!=0?UnixToDtimeL(dataStatistic.timeDelay/dataStatistic.timeDelayCount):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePost/dataStatistic.timePostCount) }}</td></tr>
-                <tr><th>Минимальное</th><td>{{ dataStatistic.timeDelayMin<100000000000000?UnixToDtimeL(dataStatistic.timeDelayMin):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMin) }}</td></tr>
-                <tr><th>Максимальное</th><td>{{ dataStatistic.timeDelayMax>0?UnixToDtimeL(dataStatistic.timeDelayMax):'-' }}</td><td>{{ UnixToDtimeL(dataStatistic.timePostMax) }}</td></tr>
-              </tbody>
-            </table>
-            <table class="TableDefault SelectModeTable TopM">
-              <thead><tr><th>Заявка</th><th>Выполнена</th><th>Ожидание съемки</th><th>Время доставки</th></tr></thead>
-              <tbody>
-                <tr v-for="data, index in targetEvent" :key="index" @click="TableSelect=index" :class="index==TableSelect?'select':''" style="text-align: center;">
-                    <td>{{ data.events[0].orderName}}</td><td>{{ data.status?'Да':'Нет'}}</td><td>{{ UnixToDtimeL(data.timeDelay)}}</td><td>{{ UnixToDtimeL(data.timePost)}}</td>
-                </tr>
-              </tbody>
-            </table>
-            <table class="TableDefault TopM" v-if="TableSelect != undefined">
-              <thead><tr><th>Время</th><th>Код</th><th>Событие</th><th>Заявка</th><th>Узел</th></tr></thead>
-              <tbody>
-                <tr v-for="data, index in targetEvent[TableSelect].events" :key="index">
-                    <td>{{ data.timeUnix }}</td><td>{{ data.type }}</td><td>{{ data.event }}</td><td>{{ data.orderName }}</td><td>{{ data.node1Name }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <p>Не переданные заявки</p>
-            <table>
-              <thead><tr>
-                <th>Кластер</th><th>КА</th><th>Заявка</th><th>Обьём потери</th>
-              </tr></thead>
-              <tbody>
-                <tr v-for="data, index in notTransmittedData" :key="index">
-                  <td>{{ data.cluster }}</td><td>{{ data.satName }}</td><td>{{ data.orderName }}</td><td>{{ data.dataVolume }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
+    <template #center>
+      <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Выполнение заявок" :outlined="viewmode == 0"/></div>
+      <div><Button @click="viewmode=1" label="Оценки эффективности" :outlined="viewmode == 1"/></div>
+    </template>
+    <template #end>
+      <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+    </template>
+  </Toolbar>
+  <DataTable :value="TimeStatistic" v-if="viewmode==0" scrollable stripedRows>
+      <Column field="name" header=""/>
+      <Column field="valueDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.valueDelay)}}</template></Column>
+      <Column field="valuePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.valuePost)}}</template></Column>
+  </DataTable>
+  <DataTable :value="targetEvent" v-if="viewmode==0" scrollable stripedRows>
+      <Column field="events" header="Заявка"><template #body="slotProps">{{slotProps.data.events[0].orderName}}</template></Column>
+      <Column field="status" header="Выполнена"><template #body="slotProps">{{slotProps.data.status?'Да':'Нет'}}</template></Column>
+      <Column field="timeDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.timeDelay)}}</template></Column>
+      <Column field="timePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.timePost)}}</template></Column>
+  </DataTable>
+  <DataTable :value="notTransmittedData" v-if="viewmode==0" scrollable stripedRows>
+      <Column field="cluster" header="Кластер"/>
+      <Column field="satName" header="КА"/>
+      <Column field="orderName" header="Заявка"/>
+      <Column field="dataVolume" header="Обьём потери"/>
+  </DataTable>
 
+    <div class="ContentDiv">
+        <div class="Panel RightPanel" >
           <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
           <table class="TableDefault">
           <thead><tr><th>Окно видимости</th><th>Кол-во заявок</th><th>% заявок</th></tr></thead>
@@ -54,9 +37,6 @@
                 <tr><th>3</th><td>{{ TableReallocation.target3 }}</td><td>{{ (Math.round(TableReallocation.target3 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
                 <tr><th>Не запланировано</th><td>{{ TableReallocation.targetNone }}</td><td>{{ (Math.round(TableReallocation.targetNone / TableReallocation.targetCount*100)) || '0' }}</td></tr>
             </tbody>
-          </table>
-          <table class="TableDefault TopM">
-          <thead><tr><th>Кластер</th><th>Кластер</th><th>Время начала</th><th>Длитель-ность</th><th>% использования</th></tr></thead>
           </table>
           <table class="TableDefault TopM">
           <thead><tr><th>Кластер</th><th>Кол-во заявок</th></tr></thead>
@@ -73,6 +53,7 @@
 </template>
   
   <script>
+
     import { UnixToDtime } from '@/js/WorkWithDTime'
     export default {
       name: 'StatisticComponent',
@@ -84,12 +65,11 @@
       data() {
         return {
             targetEvent: {},
-            dataStatistic: {
-                timeDelay: 0, timeDelayCount: 0, timeDelayMin: 99999999999999999999, timeDelayMax: 0,
-                timePost: 0, timePostCount: 0, timePostMin: 99999999999999999999, timePostMax: 0
-            },
+            TimeStatistic: [{name: 'Минимальное', valueDelay: Infinity, valuePost: Infinity},
+              {name: 'Среднее', valueDelay: null, valuePost: null},
+              {name: 'Максимальное', valueDelay: -Infinity, valuePost: -Infinity},
+            ],
             KPIOG: {},
-            TableSelect: undefined,
             TableReallocation: {targetCount:0, target1: 0, target2: 0, target3: 0, targetNone: 0},
             viewmode: 0,
 
@@ -101,6 +81,7 @@
           LoadXLSX(){},
           CreatePlot(){},
           UnixToDtimeL(time){
+            if((!time || time == Infinity || time == -Infinity) && time !== 0) return '-'
             return UnixToDtime(time, true, false).time
           },
           PrevrapData(){
@@ -137,18 +118,18 @@
                     else if(event.type == 7){this.targetEvent[event.orderName].events7 += 1}
                 }
             })
+            let PostCount = 0; let PostSumm = 0
+            let DelayCount = 0; let DelaySumm = 0
             for (var i in this.targetEvent){
                 if(this.targetEvent[i].timeDelay > 0){
-                    this.dataStatistic.timeDelay += this.targetEvent[i].timeDelay
-                    this.dataStatistic.timeDelayCount += 1
-                    this.dataStatistic.timeDelayMin = Math.min(this.dataStatistic.timeDelayMin, this.targetEvent[i].timeDelay)
-                    this.dataStatistic.timeDelayMax = Math.max(this.dataStatistic.timeDelayMax, this.targetEvent[i].timeDelay)
+                  this.TimeStatistic[0].valueDelay = Math.min(this.TimeStatistic[0].valueDelay, this.targetEvent[i].timeDelay)
+                  this.TimeStatistic[2].valueDelay = Math.max(this.TimeStatistic[0].valueDelay, this.targetEvent[i].timeDelay)
+                  DelayCount += 1; DelaySumm+= this.targetEvent[i].timeDelay
                 }
                 if(this.targetEvent[i].timePost > 0){
-                    this.dataStatistic.timePost += this.targetEvent[i].timePost
-                    this.dataStatistic.timePostCount += 1
-                    this.dataStatistic.timePostMin = Math.min(this.dataStatistic.timePostMin, this.targetEvent[i].timePost)
-                    this.dataStatistic.timePostMax = Math.max(this.dataStatistic.timePostMax, this.targetEvent[i].timePost)
+                  this.TimeStatistic[0].valuePost = Math.min(this.TimeStatistic[0].valuePost, this.targetEvent[i].timePost)
+                  this.TimeStatistic[2].valuePost = Math.max(this.TimeStatistic[0].valuePost, this.targetEvent[i].timePost)
+                  PostCount += 1; PostSumm += this.targetEvent[i].timePost
                 }
                 if(this.targetEvent[i].status){
                     this.TableReallocation.targetCount+=1
@@ -161,8 +142,9 @@
                   this.TableReallocation.targetNone += 1
                   this.TableReallocation.targetCount+=1
                 }
-                console.log(dataT, "fsfesfsefesfesf", OGlist, SatOgList,this.KPIOG)
             }
+            this.TimeStatistic[1].valueDelay = DelaySumm/DelayCount 
+            this.TimeStatistic[1].valuePost = PostSumm/PostCount
           },
       },
       mounted() {

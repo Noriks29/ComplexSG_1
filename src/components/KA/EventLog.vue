@@ -15,7 +15,6 @@
             <Column field="orderName" header="Заявка"></Column>
             <Column field="node1Name" header="Узел 1"></Column>
             <Column field="node2Name" header="Узел 2"></Column>
-            <Column field="text" header="Коментарий"></Column>
             <Column field="value" header="Значение"></Column>
     </DataTable>
 </template>
@@ -92,26 +91,8 @@
           UnixToDtimeL(time){
             return UnixToDtime(time, true, false).time
           },
-          PrevrapData(){
-            this.dataTable.forEach(element =>{
-                const e = Object.assign({}, element)
-                let deleteName = ['time','type','idReceiver','receiverName','idSender','senderName']
-                for (let i = 0; i < deleteName.length; i++) {
-                    delete e[deleteName[i]]
-                }
-                this.dataT.push({
-                    time: element.time,
-                    type: element.type,
-                    data: e,
-                    dataNormal: element,
-                    name: element.senderName || element.receiverName || '',
-                    showJson: false
-                })
-            })
-          },
       },
       mounted() {
-        //this.PrevrapData()
       }
     }
   </script>

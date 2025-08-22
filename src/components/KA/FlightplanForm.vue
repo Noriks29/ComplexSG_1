@@ -6,12 +6,12 @@
             <div class="TableDiv" :style="(selectRevId!=null)?'max-height:120px;height:120px;':'max-height:200px;'">
                 <table class="TableDefault SelectModeTable">
                     <thead>
-                      <tr><th>Виток</th><th>Съёмки</th><th>Связь с НП</th><th>Заряд АКБ</th><th>Память</th></tr>
+                      <tr><th>Виток</th><th>Съёмки</th><th>Связь с НП</th><th>Заряд АКБ Факт</th></tr>
                     </thead>
                     <tbody >
                         <tr v-for="data,index in dataPrevrap" :key="index" :class="selectRevId==index ? 'select': ''" @click="SelectRev(index)">
                             <td>{{ data.nRev }}</td><td>{{ data.shooting }}</td>
-                            <td>{{ data.gsContact }}</td><td>{{ data.charge }}</td><td>{{ data.memory }}</td>
+                            <td>{{ data.gsContact }}</td><td>{{ data.charge }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -64,10 +64,10 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
       data() {
         return {
             dataT: [],
-            dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]}],
+            dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: null, memory: 0, data:[]}],
           dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
             {lable: "C/T", nameParam: "lightForm"},{lable: "Съёмка", nameParam: "shootingName"},
-            {lable: "Связь с НП ", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Заряд АКБ теор.", nameParam: "chargeTheoForm"},{lable: "Заряд АКБ факт.", nameParam: "chargeFacForm"}],
+            {lable: "Связь с НП ", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Прогноз АКБ", nameParam: "chargeTheoForm"},{lable: "Факт АКБ", nameParam: "chargeFacForm"}],
             selectRevData: [],
             selectRevId: null
         }
@@ -206,9 +206,10 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                 console.log(element)
                 this.dataT.push(element) 
                 while(this.dataPrevrap.length-1 < element.nRev) {
-                    this.dataPrevrap.push({nRev: element.nRev, shooting:0, gsContact:0, charge: 0, memory: 0, data:[]})
+                    this.dataPrevrap.push({nRev: element.nRev, shooting:0, gsContact:0, charge: null, memory: 0, data:[]})
                 }
                 this.dataPrevrap[element.nRev].data.push(element)
+                if(element.chargeFacForm < this.dataPrevrap[element.nRev].charge || this.dataPrevrap[element.nRev].charge == null) this.dataPrevrap[element.nRev].charge = element.chargeFacForm
                 if(element.shootingName != null) this.dataPrevrap[element.nRev].shooting+=1
                 if(element.gsName != null) this.dataPrevrap[element.nRev].gsContact+=1
                 //доделать добавление остальных параметров

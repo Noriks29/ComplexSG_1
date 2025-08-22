@@ -12,7 +12,6 @@
             <Column field="type" header="Тип"></Column>
             <Column field="event" header="Событие"></Column>
             <Column field="timeUnix" header="Время"></Column>
-            <Column field="text" header="Описание"></Column>
             <Column field="node1Name" header="Узел 1"></Column>
             <Column field="node2Name" header="Узел 2"></Column>
           </DataTable>
@@ -47,25 +46,20 @@ import Column from 'primevue/column';
           CloseTable(){
             this.$emit('closetable', true)
           },
-          SelectRev(){
-
-          },
           LoadXLSX(){
             
           },
           FilterData(target){
-            this.dataNew = this.dataTable.filter(item => item.orderName !== null);
+            this.dataNew = this.dataTable.filter(item => item.orderName !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
             this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
             this.selectOrder=target
             if(target != undefined){
               this.dataNew = this.dataNew.filter(item => item.orderName == this.selectOrder);
             }
-            
           },
           async PrevrapData(){
             this.dataT = {}
-            this.dataNew = this.dataTable.filter(item => item.orderName !== null);
-            this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
+            this.FilterData(undefined)
             
             console.log(this.dataNew)
             this.dataTable.forEach(event => {
@@ -78,7 +72,6 @@ import Column from 'primevue/column';
                 }
               }
             })
-            
             this.CreatePlot()
           },
           CreatePlot(){
@@ -135,9 +128,7 @@ import Column from 'primevue/column';
                             grafidArr = undefined
                           }
                         }
-                        
                     }
-
                 }
                 let grafHeight = 30+40+eventOrderList.size*50
                 if(grafHeight < 150) grafHeight = 150
