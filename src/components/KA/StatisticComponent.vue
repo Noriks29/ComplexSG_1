@@ -27,31 +27,16 @@
       <Column field="orderName" header="Заявка"/>
       <Column field="dataVolume" header="Обьём потери Мбайт"><template #body="slotProps">{{Math.round(slotProps.data.dataVolume)}}</template></Column>
   </DataTable>
-
-    <div class="ContentDiv">
-        <div class="Panel RightPanel" >
-          <div v-if="viewmode == 1" class="TableDiv" style="max-height: 85vh; min-height: 80%;">
-          <table class="TableDefault">
-          <thead><tr><th>Окно видимости</th><th>Кол-во заявок</th><th>% заявок</th></tr></thead>
-            <tbody>
-                <tr><th>1</th><td>{{ TableReallocation.target1 }}</td><td>{{ (Math.round(TableReallocation.target1 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
-                <tr><th>2</th><td>{{ TableReallocation.target2 }}</td><td>{{ (Math.round(TableReallocation.target2 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
-                <tr><th>3</th><td>{{ TableReallocation.target3 }}</td><td>{{ (Math.round(TableReallocation.target3 / TableReallocation.targetCount*100)) || '0' }}</td></tr>
-                <tr><th>Не запланировано</th><td>{{ TableReallocation.targetNone }}</td><td>{{ (Math.round(TableReallocation.targetNone / TableReallocation.targetCount*100)) || '0' }}</td></tr>
-            </tbody>
-          </table>
-          <table class="TableDefault TopM">
-          <thead><tr><th>Кластер</th><th>Кол-во заявок</th></tr></thead>
-          <tbody>
-                <tr v-for="data, index in KPIOG" :key="index">
-                  <td>{{ index }}</td> <td>{{ data.orderCount }}</td>
-                </tr>
-              
-            </tbody>
-          </table>
-        </div>
-        </div>  
-    </div>
+  
+  <DataTable :value="TableReall" v-if="viewmode==1" scrollable stripedRows>
+      <Column field="label" header="Окно видимости"/>
+      <Column field="target" header="Кол-во заявок"/>
+      <Column field="percent" header="% заявок"/>
+  </DataTable>
+  <DataTable :value="KPIOG" v-if="viewmode==1" scrollable stripedRows>
+      <Column field="cluster" header="Кластер"/>
+      <Column field="orderCount" header="Кол-во заявок"/>
+  </DataTable>
 </template>
   
   <script>
@@ -71,8 +56,8 @@
               {name: 'Среднее', valueDelay: null, valuePost: null},
               {name: 'Максимальное', valueDelay: -Infinity, valuePost: -Infinity},
             ],
-            KPIOG: {},
-            TableReallocation: {targetCount:0, target1: 0, target2: 0, target3: 0, targetNone: 0},
+            KPIOG: [],
+            TableReall:[{label: 1, target: 0, percent: null},{label: 2, target: 0, percent: null},{label: 3, target: 0, percent: null},{label: "Не запланировано", target: 0, percent: null}],
             viewmode: 0,
 
             notTransmittedData: []
@@ -92,11 +77,12 @@
             let OGlist = this.$OGList()
             this.notTransmittedData = this.dataTable.smaoTables.notTransmittedData
             let SatOgList = {}
+            let KPIOGData = {}
             OGlist.forEach(og => {
               og.satellites.forEach(sat => {
                 SatOgList[sat.name] = og.constellationName
               })
-              this.KPIOG[og.constellationName] = {orderCount: 0}
+              KPIOGData[og.constellationName] = 0
             })
             let DataforTargetEvent = {}
             console.log(dataT)
@@ -112,8 +98,8 @@
                     if(event.type == 9){
                         DataforTargetEvent[event.orderName].status = true
                         
-                        if(this.KPIOG[SatOgList[event.node1Name]] == undefined) this.KPIOG[SatOgList[event.node1Name]] = {orderCount: 0}
-                        this.KPIOG[SatOgList[event.node1Name]].orderCount += 1
+                        if(KPIOGData[SatOgList[event.node1Name]] == undefined) KPIOGData[SatOgList[event.node1Name]] = 0
+                        KPIOGData[SatOgList[event.node1Name]] += 1
                         if(DataforTargetEvent[event.orderName].timeDelayStart != null) DataforTargetEvent[event.orderName].timeDelay = event.time - DataforTargetEvent[event.orderName].timeDelayStart
                     }
                     else if(event.type == 1 && DataforTargetEvent[event.orderName].timeDelayStart == null){
@@ -132,6 +118,7 @@
             })
             let PostCount = 0; let PostSumm = 0
             let DelayCount = 0; let DelaySumm = 0
+            let targetCounter = 0
             for (var i in DataforTargetEvent){
                 if(DataforTargetEvent[i].timeDelay > 0){
                   this.TimeStatistic[0].valueDelay = Math.min(this.TimeStatistic[0].valueDelay, DataforTargetEvent[i].timeDelay)
@@ -144,19 +131,25 @@
                   PostCount += 1; PostSumm += DataforTargetEvent[i].timePost
                 }
                 if(DataforTargetEvent[i].status){
-                    this.TableReallocation.targetCount+=1
-                    if(DataforTargetEvent[i].events7 == 0){this.TableReallocation.target1+=1}
-                    else if(DataforTargetEvent[i].events7 == 1){this.TableReallocation.target2+=1}
-                    else if(DataforTargetEvent[i].events7 > 1){this.TableReallocation.target3+=1}
-                    else this.TableReallocation.targetNone += 1
+                    if(DataforTargetEvent[i].events7 == 0){this.TableReall[0].target+=1}
+                    else if(DataforTargetEvent[i].events7 == 1){this.TableReall[1].target+=1}
+                    else if(DataforTargetEvent[i].events7 > 1){this.TableReall[2].target+=1}
+                    else this.TableReall[3].target += 1
                 }
                 else {
-                  this.TableReallocation.targetNone += 1
-                  this.TableReallocation.targetCount+=1
+                  this.TableReall[3].target += 1
                 }
+                targetCounter +=1
+            }
+            for (let i = 0; i < 4; i++) {
+              this.TableReall[i].percent = Math.round(this.TableReall[i].target/targetCounter*100)
             }
             this.TimeStatistic[1].valueDelay = DelaySumm/DelayCount 
             this.TimeStatistic[1].valuePost = PostSumm/PostCount
+
+            for(var i in KPIOGData){
+              this.KPIOG.push({cluster: i, orderCount: KPIOGData[i]})
+            }
 
             for (var i in DataforTargetEvent) {
               let postData = {name: i, data: DataforTargetEvent[i], losts: 0}

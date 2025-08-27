@@ -14,10 +14,10 @@
                     <label for="angle">Выбранный КА</label>
                   </FloatLabel>
                 </div>
-                <div><Button @click="viewPanel=1" label="Режимы функционирования" :outlined="viewPanel==1"/></div>
-                <div><Button @click="viewPanel=2" label="Устройства" :outlined="viewPanel==2"/></div>
-                <div><Button @click="viewPanel=3" label="Потребление энергии устройствами" :outlined="viewPanel==3"/></div>
-                <div><Button @click="viewPanel=4" label="Параметры устройств и функционирования" :outlined="viewPanel==4"/></div>
+                <div><Button @click="viewPanel=1" label="Режимы функционирования" :outlined="viewPanel!==1"/></div>
+                <div><Button @click="viewPanel=2" label="Устройства" :outlined="viewPanel!==2"/></div>
+                <div><Button @click="viewPanel=3" label="Потребление энергии устройствами" :outlined="viewPanel!==3"/></div>
+                <div><Button @click="viewPanel=4" label="Параметры устройств и функционирования" :outlined="viewPanel!==4"/></div>
               </div>
           </div>
           <div class="Panel RightPanel">

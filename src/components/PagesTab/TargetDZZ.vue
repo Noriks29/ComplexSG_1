@@ -12,8 +12,8 @@
               <Button  icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
             </template>
             <template #center v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
-              <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Заявки ДЗЗ" :outlined="viewmode == 0"/></div>
-              <div><Button @click="viewmode=1" label="Каталог целей" :outlined="viewmode == 1"/></div>
+              <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Заявки ДЗЗ" :outlined="viewmode !== 0"/></div>
+              <div><Button @click="viewmode=1" label="Каталог целей" :outlined="viewmode !== 1"/></div>
             </template>
             <template #end>
               <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />

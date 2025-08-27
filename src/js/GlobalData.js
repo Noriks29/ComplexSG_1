@@ -15,47 +15,49 @@ const GlobalDataPlugin = {
         return AccessKey
     };
     app.config.globalProperties.$ChangeSystemObject = async function (param, value, dataS=null) {
-        if(dataS == null)SystemObject[param] = value
+        if(dataS == null)SystemObject.value[param] = value
         else{
-          SystemObject = dataS
+          SystemObject.value = dataS
         }
-        await this.$FetchPost('/api/v1/system/update', SystemObject, true)
-        return SystemObject
+        await this.$FetchPost('/api/v1/system/update', SystemObject.value, true)
+        return SystemObject.value
     };
     app.config.globalProperties.$ChangeNPList = async function (data) {
         await this.$FetchPost("/api/v1/earth/update/byList", data)
-        NPList = data
-        return NPList
+        NPList.value = data
+        return NPList.value
     };
     app.config.globalProperties.$ChangeOGList = async function (data) {
-        OGList = await data
-        await this.$FetchPost('/api/v1/constellation/update', OGList)
+      for (let i = 0; i < OGList.value.length; i++) {
+        if(OGList.value[i].id == data.id){OGList.value[i] = data}
+      }
+        await this.$FetchPost('/api/v1/constellation/update', data)
     };
     app.config.globalProperties.$GetSystemObject = async function () {
-        SystemObject = await this.$FetchGet('/api/v1/system/get', true) || {}
-        return SystemObject
+        SystemObject.value = await this.$FetchGet('/api/v1/system/get', true) || {}
+        return SystemObject.value
     };
     app.config.globalProperties.$GetNPList = async function () {
-        NPList = await this.$FetchGet('/api/v1/earth/get/list') || []
-        return NPList
+        NPList.value = await this.$FetchGet('/api/v1/earth/get/list') || []
+        return NPList.value
     };
     app.config.globalProperties.$GetOGList = async function () {
-        OGList = await this.$FetchGet('/api/v1/constellation/get/list') || []
-        return OGList
+        OGList.value = await this.$FetchGet('/api/v1/constellation/get/list') || []
+        return OGList.value
     };
     app.config.globalProperties.$SystemObject = function () {
-        return SystemObject
+        return SystemObject.value
     };
     app.config.globalProperties.$NPList = function () {
-        return NPList
+        return NPList.value
     };
     app.config.globalProperties.$OGList = function () {
-        return OGList
+        return OGList.value
     };
 
     app.config.globalProperties.$InitGlobalData = async function(){
-        NPList = await this.$FetchGet('/api/v1/earth/get/list', false) || []
-        OGList = await this.$FetchGet('/api/v1/constellation/get/list', false) || []
+        NPList.value = await this.$FetchGet('/api/v1/earth/get/list', false) || []
+        OGList.value = await this.$FetchGet('/api/v1/constellation/get/list', false) || []
         await this.$GetSystemObject()
         return
     }

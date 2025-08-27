@@ -300,6 +300,7 @@ import FileUpload from 'primevue/fileupload';
       this.dataJson = await this.$OGList()
       let result = await this.$FetchGet('/api/v1/modelsat/all')
       this.KaModels = []
+      console.log(this.dataJson, "Дада вход")
       for (let index = 0; index < result.length; index++) {
         this.KaModels.push({modelName:result[index].modelName, id:result[index].id, "description": null, "imageFile": null, "operatingParameter": null, "rules": null, "modes": null, "devCatalogs": null, "devices": null, "charges": null})
       }
