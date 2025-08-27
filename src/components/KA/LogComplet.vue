@@ -50,7 +50,7 @@ import Column from 'primevue/column';
             
           },
           FilterData(target){
-            this.dataNew = this.dataTable.filter(item => item.orderName !== null && item.cluster !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
+            this.dataNew = this.dataTable.filter(item => item.orderName !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
             this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
             this.selectOrder=target
             if(target != undefined){
@@ -79,7 +79,7 @@ import Column from 'primevue/column';
               let data = [0]
               if(data.length > 0 ){
                 let dataGrapf = [
-                    {type: 'bar',name: "Съемка не запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: '#DDDDDD',line:{color: 'black'}}},
+                    {type: 'bar',name: "Съемка не запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.7, color: '#DDDDDD',line:{color: 'black'}}},
                     {type: 'bar',name: "Съемка запланирована",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: 'yellow'}},
                     {type: 'bar',name: "Съемка цели",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.8, color: 'red'}},
                     {type: 'bar',name: "Данные в памяти",y: [],x: [],orientation: 'h', base: [], showlegend: true,marker: {opacity: 0.5, color: 'green'}},
@@ -89,14 +89,17 @@ import Column from 'primevue/column';
                 let eventOrderList = new Set();
                 for(var key in this.dataT){
                     const element = this.dataT[key].data
+                    let event1Graf = false
                     for (let i = 0; i < element.length; i++) {
                         const eventMain = element[i];
                         let grafidArr = undefined
                         let timeEventMain = eventMain.time
                         for (let j = i+1; j < element.length; j++) {
                           const eventChild = element[j];
-                          if(eventMain.type in {1:null, 6:null} && eventChild.type in {1:null, 6:null, 9:null, 8:null}){
+                          if(eventMain.type in {1:null, 6:null} && eventChild.type in {6:null, 9:null, 8:null} && eventMain.cluster == null){
                             grafidArr = 0
+                            console.log("fsesfsfrs")
+                            event1Graf = true
                           }
                           else if(eventMain.type == 9 && eventChild.type in {10:null, 9:null}){
                             if(eventChild.type == 9) console.error("Повторение съёмки цели", eventChild)
@@ -121,7 +124,7 @@ import Column from 'primevue/column';
                           if(grafidArr != undefined){
                             dataGrapf[grafidArr].y.push(eventMain.orderName)
                             eventOrderList.add(eventMain.orderName)
-                            if(grafidArr == 0) dataGrapf[grafidArr].x.push(CreateDateTime(1, 2))
+                            if(grafidArr == 1000) dataGrapf[grafidArr].x.push(CreateDateTime(1, 2))
                             else dataGrapf[grafidArr].x.push(CreateDateTime(eventChild.time-timeEventMain, 2))
                             dataGrapf[grafidArr].base.push(CreateDateTime(timeEventMain, 1))
                             timeEventMain = eventChild.time
@@ -129,7 +132,11 @@ import Column from 'primevue/column';
                           }
                         }
                     }
+                    if(event1Graf == false){
+                      console.log("grgreereggegegege")
+                    }
                 }
+                console.log(dataGrapf)
                 let grafHeight = 30+40+eventOrderList.size*50
                 if(grafHeight < 150) grafHeight = 150
                 Plotly.newPlot("plotlydiv", dataGrapf,  {barmode: 'stack', bargap: 0.1, 
