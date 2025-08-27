@@ -109,7 +109,7 @@
                         }
                     }
                     DataforTargetEvent[event.orderName].events.push(event)
-                    if(event.type == 9 || event.type == 41){
+                    if(event.type == 9){
                         DataforTargetEvent[event.orderName].status = true
                         
                         if(this.KPIOG[SatOgList[event.node1Name]] == undefined) this.KPIOG[SatOgList[event.node1Name]] = {orderCount: 0}
