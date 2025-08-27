@@ -50,7 +50,7 @@ import Column from 'primevue/column';
             
           },
           FilterData(target){
-            this.dataNew = this.dataTable.filter(item => item.orderName !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
+            this.dataNew = this.dataTable.filter(item => item.orderName !== null && item.cluster !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
             this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
             this.selectOrder=target
             if(target != undefined){
@@ -62,7 +62,7 @@ import Column from 'primevue/column';
             this.FilterData(undefined)
             
             console.log(this.dataNew)
-            this.dataTable.forEach(event => {
+            this.dataNew.forEach(event => {
               if(event.orderId != 0 && event.orderName != null){
                 if(this.dataT[event.orderId] != undefined){
                     this.dataT[event.orderId].data.push(event)
@@ -95,15 +95,15 @@ import Column from 'primevue/column';
                         let timeEventMain = eventMain.time
                         for (let j = i+1; j < element.length; j++) {
                           const eventChild = element[j];
-                          if(eventMain.type in {1:null, 6:null} && eventChild.type in {1:null, 6:null, 9:null}){
+                          if(eventMain.type in {1:null, 6:null} && eventChild.type in {1:null, 6:null, 9:null, 8:null}){
                             grafidArr = 0
                           }
                           else if(eventMain.type == 9 && eventChild.type in {10:null, 9:null}){
                             if(eventChild.type == 9) console.error("Повторение съёмки цели", eventChild)
                             grafidArr = 2
                           }
-                          else if(eventMain.type == 10 && eventChild.type in {10:null, 12:null}){
-                            if(eventChild.type == 10) console.error("Повторное хранение", eventChild)
+                          else if(eventMain.type in {10:null, 41:null} && eventChild.type in {10:null, 41:null, 12:null}){
+                            if(eventChild.type in {10:null,41:null}) console.error("Повторное хранение", eventChild)
                             grafidArr = 3
                           }
                           else if(eventMain.type == 5 && eventChild.type in {9:null, 4:null, 5:null}){

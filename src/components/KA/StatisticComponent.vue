@@ -1,8 +1,8 @@
 <template>
   <Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
     <template #center>
-      <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Выполнение заявок" :outlined="viewmode == 0"/></div>
-      <div><Button @click="viewmode=1" label="Оценки эффективности" :outlined="viewmode == 1"/></div>
+      <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Выполнение заявок" :outlined="viewmode !== 0"/></div>
+      <div><Button @click="viewmode=1" label="Оценки эффективности" :outlined="viewmode !== 1"/></div>
     </template>
     <template #end>
       <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
@@ -14,16 +14,18 @@
       <Column field="valuePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.valuePost)}}</template></Column>
   </DataTable>
   <DataTable :value="targetEvent" v-if="viewmode==0" scrollable stripedRows>
-      <Column field="events" header="Заявка"><template #body="slotProps">{{slotProps.data.events[0].orderName}}</template></Column>
-      <Column field="status" header="Выполнена"><template #body="slotProps">{{slotProps.data.status?'Да':'Нет'}}</template></Column>
-      <Column field="timeDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.timeDelay)}}</template></Column>
-      <Column field="timePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.timePost)}}</template></Column>
+      <Column field="name" header="Заявка"/>
+      <Column field="data.status" header="Выполнена"><template #body="slotProps">{{slotProps.data.data.status?'Да':'Нет'}}</template></Column>
+      <Column field="data.timeDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.data.timeDelay)}}</template></Column>
+      <Column field="data.timePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.data.timePost)}}</template></Column>
+      <Column field="data.timeTransferSum" header="Время передачи"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.data.timeTransferSum)}}</template></Column>
+      <Column field="losts" header="Потери, Мбайт"><template #body="slotProps">{{Math.round(slotProps.data.losts)}}</template></Column>
   </DataTable>
   <DataTable :value="notTransmittedData" v-if="viewmode==0" scrollable stripedRows>
       <Column field="cluster" header="Кластер"/>
       <Column field="satName" header="КА"/>
       <Column field="orderName" header="Заявка"/>
-      <Column field="dataVolume" header="Обьём потери"/>
+      <Column field="dataVolume" header="Обьём потери Мбайт"><template #body="slotProps">{{Math.round(slotProps.data.dataVolume)}}</template></Column>
   </DataTable>
 
     <div class="ContentDiv">
@@ -64,7 +66,7 @@
       },
       data() {
         return {
-            targetEvent: {},
+            targetEvent: [],
             TimeStatistic: [{name: 'Минимальное', valueDelay: Infinity, valuePost: Infinity},
               {name: 'Среднее', valueDelay: null, valuePost: null},
               {name: 'Максимальное', valueDelay: -Infinity, valuePost: -Infinity},
@@ -89,7 +91,6 @@
             dataT = dataT.concat(this.dataTable.events)
             let OGlist = this.$OGList()
             this.notTransmittedData = this.dataTable.smaoTables.notTransmittedData
-            
             let SatOgList = {}
             OGlist.forEach(og => {
               og.satellites.forEach(sat => {
@@ -97,45 +98,56 @@
               })
               this.KPIOG[og.constellationName] = {orderCount: 0}
             })
+            let DataforTargetEvent = {}
+            console.log(dataT)
             dataT.forEach(event => {
                 if(event.orderName != null){
-                    if(!(event.orderName in this.targetEvent)){
-                        this.targetEvent[event.orderName] = {events:[], status: false, timeDelayStart: null, timeDelay: null, timePostStart: null, timePost: null, events7: 0 }
+                    if(!(event.orderName in DataforTargetEvent)){
+                        DataforTargetEvent[event.orderName] = {
+                          events:[], status: false, timeDelayStart: null, timeDelay: null, timePostStart: null, timePost: null, events7: 0,
+                          timeTransferStart: null, timeTransferSum: null
+                        }
                     }
-                    this.targetEvent[event.orderName].events.push(event)
-                    if(event.type == 9){
-                        this.targetEvent[event.orderName].status = true
+                    DataforTargetEvent[event.orderName].events.push(event)
+                    if(event.type == 9 || event.type == 41){
+                        DataforTargetEvent[event.orderName].status = true
                         
                         if(this.KPIOG[SatOgList[event.node1Name]] == undefined) this.KPIOG[SatOgList[event.node1Name]] = {orderCount: 0}
                         this.KPIOG[SatOgList[event.node1Name]].orderCount += 1
-                        if(this.targetEvent[event.orderName].timeDelayStart != null) this.targetEvent[event.orderName].timeDelay = event.time - this.targetEvent[event.orderName].timeDelayStart
+                        if(DataforTargetEvent[event.orderName].timeDelayStart != null) DataforTargetEvent[event.orderName].timeDelay = event.time - DataforTargetEvent[event.orderName].timeDelayStart
                     }
-                    else if(event.type == 1 && this.targetEvent[event.orderName].timeDelayStart == null){
-                        this.targetEvent[event.orderName].timeDelayStart = event.time
+                    else if(event.type == 1 && DataforTargetEvent[event.orderName].timeDelayStart == null){
+                        DataforTargetEvent[event.orderName].timeDelayStart = event.time
                     }
-                    else if(event.type == 10){this.targetEvent[event.orderName].timePostStart = event.time}
-                    else if(event.type == 12){this.targetEvent[event.orderName].timePost = event.time - this.targetEvent[event.orderName].timePostStart}
-                    else if(event.type == 7){this.targetEvent[event.orderName].events7 += 1}
+                    else if(event.type == 10 || event.type == 41){DataforTargetEvent[event.orderName].timePostStart = event.time}
+                    else if(event.type == 11){DataforTargetEvent[event.orderName].timeTransferStart = event.time}
+                    else if(event.type == 12){
+                      DataforTargetEvent[event.orderName].timePost = event.time - DataforTargetEvent[event.orderName].timePostStart
+                      if(DataforTargetEvent[event.orderName].timeTransferStart != null){
+                        DataforTargetEvent[event.orderName].timeTransferSum += event.time - DataforTargetEvent[event.orderName].timeTransferStart
+                      }
+                    }
+                    else if(event.type == 7){DataforTargetEvent[event.orderName].events7 += 1}
                 }
             })
             let PostCount = 0; let PostSumm = 0
             let DelayCount = 0; let DelaySumm = 0
-            for (var i in this.targetEvent){
-                if(this.targetEvent[i].timeDelay > 0){
-                  this.TimeStatistic[0].valueDelay = Math.min(this.TimeStatistic[0].valueDelay, this.targetEvent[i].timeDelay)
-                  this.TimeStatistic[2].valueDelay = Math.max(this.TimeStatistic[0].valueDelay, this.targetEvent[i].timeDelay)
-                  DelayCount += 1; DelaySumm+= this.targetEvent[i].timeDelay
+            for (var i in DataforTargetEvent){
+                if(DataforTargetEvent[i].timeDelay > 0){
+                  this.TimeStatistic[0].valueDelay = Math.min(this.TimeStatistic[0].valueDelay, DataforTargetEvent[i].timeDelay)
+                  this.TimeStatistic[2].valueDelay = Math.max(this.TimeStatistic[2].valueDelay, DataforTargetEvent[i].timeDelay)
+                  DelayCount += 1; DelaySumm+= DataforTargetEvent[i].timeDelay
                 }
-                if(this.targetEvent[i].timePost > 0){
-                  this.TimeStatistic[0].valuePost = Math.min(this.TimeStatistic[0].valuePost, this.targetEvent[i].timePost)
-                  this.TimeStatistic[2].valuePost = Math.max(this.TimeStatistic[0].valuePost, this.targetEvent[i].timePost)
-                  PostCount += 1; PostSumm += this.targetEvent[i].timePost
+                if(DataforTargetEvent[i].timePost > 0){
+                  this.TimeStatistic[0].valuePost = Math.min(this.TimeStatistic[0].valuePost, DataforTargetEvent[i].timePost)
+                  this.TimeStatistic[2].valuePost = Math.max(this.TimeStatistic[2].valuePost, DataforTargetEvent[i].timePost)
+                  PostCount += 1; PostSumm += DataforTargetEvent[i].timePost
                 }
-                if(this.targetEvent[i].status){
+                if(DataforTargetEvent[i].status){
                     this.TableReallocation.targetCount+=1
-                    if(this.targetEvent[i].events7 == 0){this.TableReallocation.target1+=1}
-                    else if(this.targetEvent[i].events7 == 1){this.TableReallocation.target2+=1}
-                    else if(this.targetEvent[i].events7 > 1){this.TableReallocation.target3+=1}
+                    if(DataforTargetEvent[i].events7 == 0){this.TableReallocation.target1+=1}
+                    else if(DataforTargetEvent[i].events7 == 1){this.TableReallocation.target2+=1}
+                    else if(DataforTargetEvent[i].events7 > 1){this.TableReallocation.target3+=1}
                     else this.TableReallocation.targetNone += 1
                 }
                 else {
@@ -145,6 +157,15 @@
             }
             this.TimeStatistic[1].valueDelay = DelaySumm/DelayCount 
             this.TimeStatistic[1].valuePost = PostSumm/PostCount
+
+            for (var i in DataforTargetEvent) {
+              let postData = {name: i, data: DataforTargetEvent[i], losts: 0}
+              console.log(postData)
+              for (let j = 0; j < this.notTransmittedData.length; j++) {
+                if(i == this.notTransmittedData[j].orderName) postData.losts += dataVolume
+              }
+              this.targetEvent.push(postData)
+            }
           },
       },
       mounted() {
