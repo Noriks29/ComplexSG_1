@@ -162,7 +162,7 @@
               let postData = {name: i, data: DataforTargetEvent[i], losts: 0}
               console.log(postData)
               for (let j = 0; j < this.notTransmittedData.length; j++) {
-                if(i == this.notTransmittedData[j].orderName) postData.losts += dataVolume
+                if(i == this.notTransmittedData[j].orderName) postData.losts += this.notTransmittedData[j].dataVolume
               }
               this.targetEvent.push(postData)
             }

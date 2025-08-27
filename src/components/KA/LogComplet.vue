@@ -38,7 +38,8 @@ import Column from 'primevue/column';
         return {
             dataT: {},
             dataNew: [],
-            selectOrder: undefined
+            selectOrder: undefined,
+            eventTimeMax: null
         }
       },
       methods:
@@ -51,6 +52,9 @@ import Column from 'primevue/column';
           },
           FilterData(target){
             this.dataNew = this.dataTable.filter(item => item.orderName !== null); //тут можно фильтровать по появлению заявки 2 раза на нп
+            this.dataNew.forEach(element => {
+              this.eventTimeMax = Math.max(this.eventTimeMax, element.time)
+            })
             this.dataNew.sort((a,b) => a.orderName.localeCompare(b.orderName))
             this.selectOrder=target
             if(target != undefined){
@@ -98,8 +102,8 @@ import Column from 'primevue/column';
                           const eventChild = element[j];
                           if(eventMain.type in {1:null, 6:null} && eventChild.type in {6:null, 9:null, 8:null} && eventMain.cluster == null){
                             grafidArr = 0
-                            console.log("fsesfsfrs")
-                            event1Graf = true
+                            if(eventChild.type != 8) event1Graf = true
+                            console.log(eventMain, eventChild, event1Graf)
                           }
                           else if(eventMain.type == 9 && eventChild.type in {10:null, 9:null}){
                             if(eventChild.type == 9) console.error("Повторение съёмки цели", eventChild)
@@ -124,8 +128,7 @@ import Column from 'primevue/column';
                           if(grafidArr != undefined){
                             dataGrapf[grafidArr].y.push(eventMain.orderName)
                             eventOrderList.add(eventMain.orderName)
-                            if(grafidArr == 1000) dataGrapf[grafidArr].x.push(CreateDateTime(1, 2))
-                            else dataGrapf[grafidArr].x.push(CreateDateTime(eventChild.time-timeEventMain, 2))
+                            dataGrapf[grafidArr].x.push(CreateDateTime(eventChild.time-timeEventMain, 2))
                             dataGrapf[grafidArr].base.push(CreateDateTime(timeEventMain, 1))
                             timeEventMain = eventChild.time
                             grafidArr = undefined
@@ -133,8 +136,12 @@ import Column from 'primevue/column';
                         }
                     }
                     if(event1Graf == false){
-                      console.log("grgreereggegegege")
+                      dataGrapf[0].y.push(element[0].orderName)
+                      eventOrderList.add(element[0].orderName)
+                      dataGrapf[0].x.push(CreateDateTime(this.eventTimeMax - element[0].time, 2))
+                      dataGrapf[0].base.push(CreateDateTime(element[0].time, 1))
                     }
+                    
                 }
                 console.log(dataGrapf)
                 let grafHeight = 30+40+eventOrderList.size*50
