@@ -59,7 +59,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import icon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import shadow from 'leaflet/dist/images/marker-shadow.png';
 import { PagesSettings } from './PagesTab/PagesSettings';
-import {adress} from '@/js/config_server'
+import {GetAddres} from '@/js/config_server'
 
 import Dropdown from 'primevue/dropdown';
 import ColorPicker from 'primevue/colorpicker';
@@ -93,10 +93,11 @@ export default {
   methods: {
       async CreateMap(){
           this.map = {}
+          let addresConfig = await GetAddres()
           console.log(await document.getElementById("map"))
           this.map = L.map('map', {zoomAnimation: true}).setView(new L.LatLng(55, 60), 3);
           //L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
-          L.tileLayer('http://'+adress+'/api/v1/map/{z}/{s}/{x}/{y}.png', 
+          L.tileLayer('http://'+addresConfig+'/api/v1/map/{z}/{s}/{x}/{y}.png', 
           {
             minZoom: 1, 
             maxZoom: 5,

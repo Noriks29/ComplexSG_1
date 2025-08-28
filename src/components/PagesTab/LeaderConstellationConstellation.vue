@@ -55,7 +55,7 @@
             </Column>
           </DataTable>
             <DataTable :value="PageSettings.SatSat" v-if="PageSettings.status == 3" scrollable scrollHeight="60vh"
-              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort :size="'small'"
               ref="dtSatSat" :exportFilename="'Окна_КА_КА_' + new Date().toISOString().slice(0, 10)">
               <Column :field="field" :header="header" sortable  v-for="header, field in {
                 satellite1:'КА', satellite2:'Видимый КА',beginUnix:'Начало',endUnix:'Конец'

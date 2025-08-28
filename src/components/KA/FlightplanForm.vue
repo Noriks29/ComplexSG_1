@@ -1,51 +1,36 @@
 <template>
-          <button @click="LoadXLSX" class="LoadExel">
-            <img src="../../assets/excel.png" ><span>&#8203;</span>
-          </button>
-        <div class="DataBody">
-            <div class="TableDiv" :style="(selectRevId!=null)?'max-height:120px;height:120px;':'max-height:200px;'">
-                <table class="TableDefault SelectModeTable">
-                    <thead>
-                      <tr><th>Виток</th><th>Съёмки</th><th>Связь с НП</th><th>Заряд АКБ Факт</th></tr>
-                    </thead>
-                    <tbody >
-                        <tr v-for="data,index in dataPrevrap" :key="index" :class="selectRevId==index ? 'select': ''" @click="SelectRev(index)">
-                            <td>{{ data.nRev }}</td><td>{{ data.shooting }}</td>
-                            <td>{{ data.gsContact }}</td><td>{{ data.charge }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-          
-        <div class="TableDiv" :style="(selectRevId!=null)?'max-height: 250px; height: 250px;':'max-height: 400px;'">
-          <table class="TableDefault">
-          <thead>
-            <tr><th 
-                v-for="(data, index) in dataLableName"
-                :key="index"
-                :name="data.nameParam"
-                >{{ data.lable }}</th></tr>
-          </thead>
-          <tbody>
-            <tr v-for="(data, index) in dataT" :key="index" v-show="data.nRev == selectRevId || selectRevId == null">
-              <td
-                v-for="(dataLable, index) in dataLableName"
-                :key="index"
-              >{{ data[dataLable.nameParam] }}</td>
-            </tr>
-          </tbody>
-          </table>
-        </div>
-        <div class="GrafDiv">
-          <div id="plotlydiv">
-            <!--Карта-->
-          </div>
-          <div id="plotlydivCharge">
-            <!--Карта-->
-          </div>
-        </div>
-        
+    <Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
+      <template #end>
+        <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel"/>
+      </template>
+    </Toolbar>
+    <DataTable :value="dataPrevrap" scrollable stripedRows :size="'small'" scrollHeight="30vh"
+      v-model:selection="selectedProduct"
+      selectionMode="multiple"
+      dataKey="nRev">
+      <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+      <Column field="nRev" header="Виток"/>
+      <Column field="shooting" header="Съёмки"/>
+      <Column field="gsContact" header="Связь с НП"/>
+      <Column field="charge" header="Заряд АКБ Факт"/>
+    </DataTable>
+    <DataTable :value="dataPrevrapSelectRef" scrollable stripedRows :size="'small'" scrollHeight="60vh" style="margin-top: 20px;">
+      <Column field="nRev" header="Виток"/>
+      <Column field="timeUnix" header="Время"/>
+      <Column field="lightForm" header="C/T"/>
+      <Column field="shootingName" header="Съёмка"/>
+      <Column field="gsName" header="Связь с НП"/>
+      <Column field="modeName" header="Режим"/>
+      <Column field="chargeTheoForm" header="Прогноз АКБ"/>
+      <Column field="chargeFacForm" header="Факт АКБ"/>
+
+    </DataTable>
+    <div class="GrafDiv">
+      <div id="plotlydiv">
       </div>
+      <div id="plotlydivCharge">
+      </div>
+    </div>
 </template>
   
   <script>
@@ -63,8 +48,10 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
       },
       data() {
         return {
-            dataT: [],
-            dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: null, memory: 0, data:[]}],
+          selectedProduct: [],
+          dataPrevrapSelectRef: [],
+          dataT: [],
+          dataPrevrap: [{nRev: 0, shooting:0, gsContact:0, charge: null, memory: 0, data:[]}],
           dataLableName: [{lable: "Виток", nameParam: "nRev"},{lable: "Время", nameParam: "timeUnix"},
             {lable: "C/T", nameParam: "lightForm"},{lable: "Съёмка", nameParam: "shootingName"},
             {lable: "Связь с НП ", nameParam: "gsName"},{lable: "Режим", nameParam: "modeName"},{lable: "Прогноз АКБ", nameParam: "chargeTheoForm"},{lable: "Факт АКБ", nameParam: "chargeFacForm"}],
@@ -72,26 +59,43 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             selectRevId: null
         }
       },
+      watch: {
+        selectedProduct: {
+          handler(newSelection) {
+            console.log('Выбор изменен:', newSelection);
+            this.handleRowSelect()
+          },
+          deep: true
+        }
+      },
       methods:
         {
           CloseTable(){
             this.$emit('closetable', true)
           },
-          SelectRev(id){
+          handleRowSelect(){
+            this.dataPrevrapSelectRef=[]
+            this.selectedProduct.forEach(el => {
+              this.dataPrevrapSelectRef = this.dataPrevrapSelectRef.concat(el.data)
+            })
+            this.dataPrevrapSelectRef.sort((a,b) => {
+              return a.nRev - b.nRev
+            })
+            this.SelectRev()
+
+          },
+          SelectRev(){
             let dataPlotly = []
-            if(id == this.selectRevId){
-              this.selectRevId = null
+            if(this.dataPrevrapSelectRef.length == 0){
               document.getElementById('plotlydiv').innerHTML = ''
               document.getElementById('plotlydivCharge').innerHTML = ''
             } 
             else {
-              if(this.selectRevId == null){
-                Plotly.newPlot("plotlydiv", [],  {title: 'Графическая форма представления витка:' +id,barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:200}, {displayModeBar: true})
-                Plotly.newPlot("plotlydivCharge", [], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
-              }
-              this.selectRevId = id
-              let data = this.dataPrevrap[id].data
+              Plotly.newPlot("plotlydiv", [],  {title: 'Графическая форма представления',barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:300}, {displayModeBar: true})
+              Plotly.newPlot("plotlydivCharge", [], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:250})
               
+              let data = this.dataPrevrapSelectRef
+
               if(data.length > 0 ){
                 let dataGrapf = {type: 'bar',name: "Свет / Тень",y: [],x: [],orientation: 'h', base: [],
                   marker: {opacity: 0.6,color: []}
@@ -111,7 +115,8 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                 let dataGrapf6 = {type: 'bar',name: "Межспутниковая",y: [],x: [],orientation: 'h',base: [],
                   marker: {opacity: 0.6,color: "purple",line: {width: 1}}
                 }
-                let dataGrapf5 = {name: "Заряд", y: [],x: [], type: 'scatter', fill: 'tonexty'}
+                let dataGrapf1_1 = {name: "Факт АКБ", y: [],x: [], type: 'scatter', fill: 'tonexty'}
+                let dataGrapf1_2 = {name: "Прогноз АКБ", y: [],x: [], type: 'scatter', fill: 'tonexty'}
                 data.forEach(element => {
                   dataGrapf.y.push("Свет / Тень")
                   dataGrapf.marker.color.push(element.light ? 'yellow' : "blue")
@@ -119,8 +124,10 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                   dataGrapf.base.push(CreateDateTime(element.timeBegin, 1))
                   console.log(CreateDateTime(element.timeEnd - element.timeBegin, 2), CreateDateTime(element.timeBegin, 1))
 
-                  dataGrapf5.y.push(element.charge)
-                  dataGrapf5.x.push(CreateDateTime(element.timeEnd, 1))
+                  dataGrapf1_1.y.push(element.chargeFacForm)
+                  dataGrapf1_2.y.push(element.chargeTheoForm)
+                  dataGrapf1_1.x.push(CreateDateTime(element.timeEnd, 1))
+                  dataGrapf1_2.x.push(CreateDateTime(element.timeEnd, 1))
                   if(element.gsName != null){
                     dataGrapf1.y.push("Связь с НП")
                     dataGrapf1.text.push(element.gsName+' '+ (element.timeEnd-element.timeBegin) + "c.")
@@ -149,10 +156,9 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                     dataGrapf4.base.push(CreateDateTime(element.timeBegin, 1))
                   }
                 });
-
                 dataPlotly = [dataGrapf,dataGrapf1,dataGrapf2,dataGrapf3,dataGrapf4,dataGrapf6]
-                Plotly.newPlot("plotlydiv", dataPlotly,  {title: 'Графическая форма представления витка:' +id,barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:200}, {displayModeBar: true})
-                Plotly.newPlot("plotlydivCharge", [dataGrapf5], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:150})
+                Plotly.newPlot("plotlydiv", dataPlotly,  {title: 'Графическая форма представления',barmode: 'stack', showlegend: false, margin:{b:40,r:10, t:30,l:100}, height:300}, {displayModeBar: true})
+                Plotly.newPlot("plotlydivCharge", [dataGrapf1_1, dataGrapf1_2], {title: 'Заряд АКБ Тестовые данные', showlegend: false, margin:{b:30,r:10, t:30,l:30}, height:250})
                 }
               }
           },
@@ -197,13 +203,11 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
             XLSX.writeFile(workbook, 'FlightplanForm.xlsx');
           },
           PrevrapData(){
-            console.log(this.dataTable)
             for (let index = 0; index < this.dataTable.length; index++) {
                 const element = this.dataTable[index];
                 element.chargeTheoForm = Math.round(element.charge * 100)/100
                 element.chargeFacForm = Math.round(element.factCharge * 100)/100
                 element.lightForm = element.light ? 'Свет' : 'Тень'
-                console.log(element)
                 this.dataT.push(element) 
                 while(this.dataPrevrap.length-1 < element.nRev) {
                     this.dataPrevrap.push({nRev: element.nRev, shooting:0, gsContact:0, charge: null, memory: 0, data:[]})
@@ -214,6 +218,7 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
                 if(element.gsName != null) this.dataPrevrap[element.nRev].gsContact+=1
                 //доделать добавление остальных параметров
             }
+            this.selectedProduct = this.dataPrevrap.concat([])
           },
       },
       mounted() {

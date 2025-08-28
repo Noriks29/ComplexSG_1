@@ -1,4 +1,5 @@
 <template>
+  <!--Пока не доступна из комплекса -->
   <div class="DataTable">
       <div class="closebutton"><button @click="CloseTable">
         <img src="../../assets/close.svg"><span>&#8203;</span>

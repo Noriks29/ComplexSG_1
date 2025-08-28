@@ -4,7 +4,7 @@
       <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel"/>
     </template>
   </Toolbar>
-  <DataTable :value="dataT" scrollable stripedRows :size="'small'" scrollHeight="60vh">
+  <DataTable :value="dataT" scrollable stripedRows :size="'small'" scrollHeight="63vh">
       <Column :field="data.nameParam" :header="data.lable" v-for="data, index in dataLableName" :key="index"/>
   </DataTable>
   <div class="GrafDiv">
@@ -14,8 +14,6 @@
 </template>
   
   <script>
-import Plotly from 'plotly.js-dist'
-import { CreateDateTime } from '@/js/WorkWithDTime'
 import XLSX from 'xlsx-js-style';
 
     export default {
@@ -28,17 +26,10 @@ import XLSX from 'xlsx-js-style';
       data() {
         return {
             dataT: [],
-          dataLableName: [
-          {lable: "Заявка", nameParam: "orderId"},
-          {lable: "Цель", nameParam: "targetName"},
-          {lable: "Начало видимости", nameParam: "wsUnix"},
-          {lable: "Окончание видимости", nameParam: "weUnix"},
-          {lable: "Разворот", nameParam: "transition"},
-          {lable: "Начало съёмки", nameParam: "tsUnix"},
-          {lable: "Окончаниие съёмки", nameParam: "teUnix"},
-          {lable: "Тангаж", nameParam: "pitch"},
-          {lable: "Крен", nameParam: "roll"}
-        ]
+          dataLableName: [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
+            {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
+            {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"Заряд АКБ",nameParam:'charge100'}
+            ]
         }
       },
       methods:
@@ -85,41 +76,12 @@ import XLSX from 'xlsx-js-style';
             XLSX.writeFile(workbook, 'ShootingPlan.xlsx');
             this.$showLoad(false);
           },
-          CreatePlot(){
-                document.getElementById("plotlydiv").innerHTML=''
-                if(this.dataT.length < 1 ) return
-                let dataPlotly = [
-                    {
-                      type: 'bar',name: "Видимость",y: [],x: [],
-                      orientation: 'h',base: [],
-                      marker: {
-                        opacity: 0.5,color: "blue",line: {width: 1}
-                      }
-                    },
-                    {
-                      type: 'bar',name: "Съёмка",y: [],x: [],
-                      orientation: 'h',
-                      base: [],
-                      marker: {
-                        opacity: 0.8,color: "red",line: {width: 1}
-                      }
-                    }]
-                
-                let annotations = []
-                this.dataT.forEach(element => {
-                    dataPlotly[0].y.push(element.targetName)
-                    dataPlotly[1].y.push(element.targetName)
-                    dataPlotly[0].x.push(CreateDateTime(element.we - element.ws, 2))
-                    dataPlotly[1].x.push(CreateDateTime(element.te - element.ts, 2))
-                    dataPlotly[0].base.push(CreateDateTime(element.ws, 1))
-                    dataPlotly[1].base.push(CreateDateTime(element.ts, 1))
-                    annotations.push({x: CreateDateTime(element.ts+(element.te-element.ts)/2, 1),y: element.targetName,xref: 'x',yref: 'y',text:element.nodeName,showarrow: false,ax: 0,ay: 0})
-                  })
-                Plotly.newPlot("plotlydiv", dataPlotly, {titel: 'График съёмки целей', annotations:annotations, barmode: 'stack', showlegend: false,height:150+(dataPlotly.length*70), margin:{l:100,t:40,b:40,r:40}})
-              },
           PrevrapData(){
             this.dataT = this.dataT.concat(this.dataTable)
-            this.CreatePlot()
+            this.dataT.forEach(element => {
+                element.lightName = element.light ? 'Свет':'Тень'
+                element.charge100 = Math.floor(element.charge * 100)/100
+            })
           },
       },
       mounted() {

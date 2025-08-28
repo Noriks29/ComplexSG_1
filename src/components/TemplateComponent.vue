@@ -53,10 +53,10 @@
           <template #start>
             <span class="ButtonStartMenu">
               <Button icon="pi pi-th-large" severity="info" text :style="'height: 35px;width: 35px;'" @click="animation.menuhide = !animation.menuhide"/>
-              <div class="ImportExport">
+              <!--<div class="ImportExport">
                 <Button icon="pi pi-upload"   severity="success" text outlined :style="'height: 35px;width: 35px;'"/>
                 <Button icon="pi pi-download" severity="danger" text outlined :style="'height: 35px;width: 35px;'"/>
-              </div>
+              </div>-->
             </span>
           </template>
           <template #item="{ item }">
@@ -68,15 +68,6 @@
             </a>
           </template>
         </Menu>
-        <!--
-        <div class="MenuButton">
-          <img src="@/assets/exportIcon.png" id="export" alt="" @click="SaveWorkplace">
-          <label class="input-fileMenu">
-              <input type="file" name="file" id="file-Json" @change="LoadFile" accept="application/json" enctype="multipart/form-data">		
-              <img src="@/assets/importIcon.png" id="import" alt="">
-          </label>
-        </div>  
-        -->
       </div>
     </div>
 </template>

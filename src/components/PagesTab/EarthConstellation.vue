@@ -22,7 +22,7 @@
             </template>
           </Toolbar>
             <DataTable :value="PageSettings.SatNp" v-if="PageSettings.status == 3" scrollable scrollHeight="60vh"
-              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+              tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort :size="'small'"
               ref="dtSatGs" :exportFilename="'Окна_КА_НП_' + new Date().toISOString().slice(0, 10)">
               <Column :field="field" :header="header" sortable  v-for="header, field in {
                 earthName:'НП', satelliteName:'КА',begin:'Начало',end:'Конец'

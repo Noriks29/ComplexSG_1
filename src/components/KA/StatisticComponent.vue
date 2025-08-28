@@ -8,12 +8,12 @@
       <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
     </template>
   </Toolbar>
-  <DataTable :value="TimeStatistic" v-if="viewmode==0" scrollable stripedRows>
+  <DataTable :value="TimeStatistic" v-if="viewmode==0" scrollable stripedRows :size="'small'" scrollHeight="30vh">
       <Column field="name" header=""/>
       <Column field="valueDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.valueDelay)}}</template></Column>
       <Column field="valuePost" header="Время доставки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.valuePost)}}</template></Column>
   </DataTable>
-  <DataTable :value="targetEvent" v-if="viewmode==0" scrollable stripedRows>
+  <DataTable :value="targetEvent" v-if="viewmode==0" scrollable stripedRows :size="'small'" scrollHeight="60vh" style="margin-top: 20px;">
       <Column field="name" header="Заявка"/>
       <Column field="data.status" header="Выполнена"><template #body="slotProps">{{slotProps.data.data.status?'Да':'Нет'}}</template></Column>
       <Column field="data.timeDelay" header="Ожидание съемки"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.data.timeDelay)}}</template></Column>
@@ -21,19 +21,19 @@
       <Column field="data.timeTransferSum" header="Время передачи"><template #body="slotProps">{{UnixToDtimeL(slotProps.data.data.timeTransferSum)}}</template></Column>
       <Column field="losts" header="Потери, Мбайт"><template #body="slotProps">{{Math.round(slotProps.data.losts)}}</template></Column>
   </DataTable>
-  <DataTable :value="notTransmittedData" v-if="viewmode==0" scrollable stripedRows>
+  <DataTable :value="notTransmittedData" v-if="viewmode==0" scrollable stripedRows :size="'small'" scrollHeight="60vh" style="margin-top: 20px;">
       <Column field="cluster" header="Кластер"/>
       <Column field="satName" header="КА"/>
       <Column field="orderName" header="Заявка"/>
       <Column field="dataVolume" header="Обьём потери Мбайт"><template #body="slotProps">{{Math.round(slotProps.data.dataVolume)}}</template></Column>
   </DataTable>
   
-  <DataTable :value="TableReall" v-if="viewmode==1" scrollable stripedRows>
+  <DataTable :value="TableReall" v-if="viewmode==1" scrollable stripedRows :size="'small'" scrollHeight="30vh" >
       <Column field="label" header="Окно видимости"/>
       <Column field="target" header="Кол-во заявок"/>
       <Column field="percent" header="% заявок"/>
   </DataTable>
-  <DataTable :value="KPIOG" v-if="viewmode==1" scrollable stripedRows>
+  <DataTable :value="KPIOG" v-if="viewmode==1" scrollable stripedRows :size="'small'" scrollHeight="60vh" style="margin-top: 20px;">
       <Column field="cluster" header="Кластер"/>
       <Column field="orderCount" header="Кол-во заявок"/>
   </DataTable>

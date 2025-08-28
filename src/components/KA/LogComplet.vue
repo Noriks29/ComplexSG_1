@@ -1,21 +1,19 @@
 <template>
-        <div class="GrafDiv">
-          <div id="plotlydiv">
-            <!--Карта-->
-          </div>
-        </div> 
-        <div class="DataBody">
-          <button @click="FilterData(undefined)" v-show="selectOrder != undefined">Сброс фильтра</button>
-          <DataTable :value="dataNew" class="p-datatable-sm" sortMode="multiple" stripedRows removableSort scrollable scrollHeight="60vh"
-          >
-            <Column field="orderName" header="Заявка"></Column>
-            <Column field="type" header="Тип"></Column>
-            <Column field="event" header="Событие"></Column>
-            <Column field="timeUnix" header="Время"></Column>
-            <Column field="node1Name" header="Узел 1"></Column>
-            <Column field="node2Name" header="Узел 2"></Column>
-          </DataTable>
+    <div class="GrafDiv">
+      <div id="plotlydiv">
+        <!--Карта-->
       </div>
+    </div> 
+    <button @click="FilterData(undefined)" v-show="selectOrder != undefined">Сброс фильтра</button>
+    <DataTable :value="dataNew" class="p-datatable-sm" sortMode="multiple" stripedRows removableSort 
+      scrollable scrollHeight="65vh">
+      <Column field="orderName" header="Заявка"></Column>
+      <Column field="type" header="Тип"></Column>
+      <Column field="event" header="Событие"></Column>
+      <Column field="timeUnix" header="Время"></Column>
+      <Column field="node1Name" header="Узел 1"></Column>
+      <Column field="node2Name" header="Узел 2"></Column>
+    </DataTable>
 </template>
   
 <script>

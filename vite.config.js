@@ -25,5 +25,12 @@ export default defineConfig({
       '@/components': path.resolve(__dirname, './src/components'),
       '@/style': path.resolve(__dirname, './src/style')
     }
-  }
+  },
+  publicDir: 'public', // убедитесь что это указано
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Копируем все из public в dist
+    copyPublicDir: true
+  },
 })

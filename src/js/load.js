@@ -1,6 +1,6 @@
 import { ref } from 'vue';
 import LoadProcess from '@/components/LoadProcess.vue';
-import {adress} from "@/js/config_server";
+import {GetAddres} from "@/js/config_server";
 const LoadProcessPlugin = {
   install(app) {
     const LoadComponent = ref(null);
@@ -14,9 +14,10 @@ const LoadProcessPlugin = {
       }
     };
     app.config.globalProperties.$FetchGet = async function (http, AlertError = true, massage=null){
+        let addresConfig = await GetAddres()
         let key = await this.$GetAccess()
         try {
-            const response = await fetch('http://'+adress+http+'?accessKey='+key);
+            const response = await fetch('http://'+addresConfig+http+'?accessKey='+key);
             if (!response.ok) { // для мэссэджей ильяса
                 let rezult = await response.json()
                 throw new Error(rezult.MESSAGE);
@@ -33,13 +34,13 @@ const LoadProcessPlugin = {
         }
     }
     app.config.globalProperties.$FetchPost = async function (http,datapost,dopparamhttp, AlertError = true, massage=null){
-        
+        let addresConfig = await GetAddres()
         let key = await this.$GetAccess()
         if(dopparamhttp != undefined){
             key = key +"&"+dopparamhttp
         }
         try {
-            const response = await fetch('http://'+adress+http+'?accessKey='+key,{
+            const response = await fetch('http://'+addresConfig+http+'?accessKey='+key,{
               method:  'POST',
               headers: {
                 'Content-Type': 'application/json'
@@ -63,10 +64,9 @@ const LoadProcessPlugin = {
     }
       app.config.globalProperties.$FetchPostFile = async function (http,formData){
             let key = await this.$GetAccess()
-            let add = adress
-            
+            let addresConfig = await GetAddres()
             try {
-                const response = await fetch('http://'+add+http+'?accessKey='+key,{
+                const response = await fetch('http://'+addresConfig+http+'?accessKey='+key,{
                   method:  'POST',
                   mode: 'cors',
                   body: formData

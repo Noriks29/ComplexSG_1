@@ -5,17 +5,19 @@
               <img src="../../assets/exit.svg">
             </button>
           </div>
-    <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult"/>
-    <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
-    <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
-    <LogDownload v-if="ShowMode=='LogDownload'" :dataTable="modellingRezult.events"/>
-
-    <div class="ContentDiv" v-else style="margin-top: 30px;" >
+    
+    <div class="ContentDiv" style="margin-top: 30px;" >
         <div class="Panel RightPanel" >
+          <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult"/>
+          <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
+          <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
+          <LogDownload v-if="ShowMode=='LogDownload'" :dataTable="modellingRezult.events"/>
           <LogComplet v-if="ShowMode=='LogComplet'" :dataTable="modellingRezult.events"/>
           <FlightplanForm v-if="ShowMode=='FlightplanForm'" :dataTable="modellingRezult.Select.E79"/>
-          <DefaultTable v-if="ShowMode=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" :prevrap="PreWrapDefaultTable"/>
           <ShootingPlan v-if="ShowMode=='ShootingPlan'" :dataTable="modellingRezult.Select.E77"/>
+          <FcLog v-if="ShowMode=='FcLog'" :dataTable="modellingRezult.Select.fcLog"/>
+
+          <DefaultTable v-if="ShowMode=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" :prevrap="PreWrapDefaultTable"/>
           <E78Table v-if="ShowMode=='E78Table'" :dataTable="modellingRezult.Select.E78"/>
           <E77E78 v-if="ShowMode=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
           <BookmarkTable v-if="ShowMode=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
@@ -95,6 +97,7 @@ import ShootingPlan from './ShootingPlan.vue';
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
+import FcLog from './FcLog.vue';
 
 import StatisticComponent from './StatisticComponent.vue';
 import LogAll from './LogAll.vue';
@@ -156,7 +159,7 @@ import Checkbox from 'primevue/checkbox';
       E77E78,
       BookmarkTable,
       StatisticComponent,
-      LogAll,EventLog,
+      LogAll,EventLog,FcLog,
 
       Panel,
       RadioButton,
@@ -179,32 +182,12 @@ import Checkbox from 'primevue/checkbox';
         this.$ReloadSettings()
       },
       ValidateShowPanel(Panel){
-        if(Panel == "FcLog")this.ShowFcLog()
-        else if(Panel == "LogAll")this.ShowLogAll()
-        else if(Panel == "EventLog")this.ShowEventLog()
-        else if(Panel == "LogSmao")this.ShowLogSmao()
+        if(Panel == "LogSmao")this.ShowLogSmao()
         else if(Panel == "Settings"){
           this.modellingSettings = this.$GetSettings()
           this.ShowMode = "Settings"
         }
-
         else this.ShowMode = Panel
-      },
-      ShowFcLog(){
-        this.dataTable = this.modellingRezult.Select.fcLog
-        this.dataTable.forEach(element => {
-          element.lightName = element.light ? 'Свет':'Тень'
-          element.charge100 = Math.floor(element.charge * 100)/100
-        })
-        this.dataLableName = [{lable:"Начало",nameParam:'timeBegin'},{lable:"Конец",nameParam:'timeEnd'},{lable:"С/Т",nameParam:'lightName'},
-          {lable:"Режим",nameParam:'modeName'},{lable:"Цель",nameParam:'orderName'},
-          {lable:"Связь с НП",nameParam:'gsContactName'},{lable:"Передача в НП",nameParam:'timeGs'},{lable:"Межспутниковая связь",nameParam:'timeIs'},{lable:"Заряд АКБ",nameParam:'charge100'}
-        ]
-        this.PreWrapDefaultTable = false
-        this.ShowMode='DefaultTable'
-      },
-      ShowLogAll(){
-        this.ShowMode = 'LogAll'
       },
       ShowLogSmao(){
         this.dataTable = [] 
@@ -217,24 +200,6 @@ import Checkbox from 'primevue/checkbox';
         this.PreWrapDefaultTable = true
         this.ShowMode='DefaultTable'
       },
-      async ShowEventLog(){ //Лог событий
-        this.ShowMode = 'EventLog'
-        /*
-        this.dataTable = this.modellingRezult.events
-        this.dataLableName = [
-          {lable: "Время", nameParam: "timeUnix"},
-          {lable: "Код", nameParam: "type"},
-          {lable: "Событие", nameParam: "event"},
-          {lable: "Заявка", nameParam: "orderName"},
-          {lable: "Узел 1", nameParam: "node1Name"},
-          {lable: "Узел 2", nameParam: "node2Name"},
-          {lable: "Коментарий", nameParam: "text"},
-          {lable: "Значение", nameParam: "value"}
-        ]
-        this.PreWrapDefaultTable = false
-        this.ShowMode='DefaultTable'*/
-      },
-
     },
     async mounted(){
       this.modellingRezult = await this.$GetModellingRezult()

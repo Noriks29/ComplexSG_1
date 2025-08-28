@@ -1,9 +1,9 @@
 <template>
-  <Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
+  <!--<Toolbar class="mb-4" :style="'width: 100%;padding: 0px;'">
       <template #end>
         <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel (не работает)"/>
       </template>
-  </Toolbar>
+  </Toolbar>-->
   <DataTable :value="processedData" class="p-datatable-sm" rowGroupMode="rowspan" 
             :groupRowsBy="groupKey" scrollable scrollHeight="500px"
             ref="dt" :exportFilename="'Лог_доставки_' + new Date().toISOString().slice(0, 10)">
