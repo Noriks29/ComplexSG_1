@@ -3,10 +3,48 @@ import SystemWindow from "@/components/PagesTab/SystemWindow.vue";
 
 const GlobalDataPlugin = {
   install(app) {
+
+    const apiVite = app.config.globalProperties
     let SystemObject = ref({typeWorkplace: -1});
-    let NPList = ref([]);
-    let OGList = ref([]);
     let AccessKey = null
+
+    // работа с наземными пунктами 
+    let NPList = ref([]);
+    const $NPList = function () {
+        return NPList
+    };
+    const $ChangeNPList = async function (data, reload = false) {
+        //console.log("Позже сделать через отдельный запрос на сохранение изменения одного нп", data)
+        await apiVite.$FetchPost("/api/v1/earth/update/byList", NPList.value)
+        if(reload) $GetNPList()
+    };
+    const $GetNPList = async function () {
+        NPList.value = await apiVite.$FetchGet('/api/v1/earth/get/list') || []
+    };
+    apiVite.$ChangeNPList = $ChangeNPList
+    apiVite.$GetNPList = $GetNPList
+    apiVite.$NPList = $NPList
+
+    //Работа с орбитальными группировками
+    let OGList = ref([]);
+    const $OGList = function () {
+        return OGList
+    };
+    const $ChangeOGList = async function (index, reload = false) {
+      console.log(index, OGList)
+      await apiVite.$FetchPost('/api/v1/constellation/update', OGList.value[index])
+      if(reload) await $GetOGList()
+    };
+    const $GetOGList = async function () {
+        OGList.value = await apiVite.$FetchGet('/api/v1/constellation/get/list') || []
+    };
+    apiVite.$GetOGList = $GetOGList
+    apiVite.$OGList = $OGList 
+    apiVite.$ChangeOGList = $ChangeOGList
+
+
+
+
     app.config.globalProperties.$InitAccess = async function (key) {
         AccessKey = key
     };
@@ -22,48 +60,28 @@ const GlobalDataPlugin = {
         await this.$FetchPost('/api/v1/system/update', SystemObject.value, true)
         return SystemObject.value
     };
-    app.config.globalProperties.$ChangeNPList = async function (data) {
-        await this.$FetchPost("/api/v1/earth/update/byList", data)
-        NPList.value = data
-        return NPList.value
-    };
-    app.config.globalProperties.$ChangeOGList = async function (data) {
-      for (let i = 0; i < OGList.value.length; i++) {
-        if(OGList.value[i].id == data.id){OGList.value[i] = data}
-      }
-        await this.$FetchPost('/api/v1/constellation/update', data)
-    };
+    
+    
     app.config.globalProperties.$GetSystemObject = async function () {
         SystemObject.value = await this.$FetchGet('/api/v1/system/get', true) || {}
         return SystemObject.value
     };
-    app.config.globalProperties.$GetNPList = async function () {
-        NPList.value = await this.$FetchGet('/api/v1/earth/get/list') || []
-        return NPList.value
-    };
-    app.config.globalProperties.$GetOGList = async function () {
-        OGList.value = await this.$FetchGet('/api/v1/constellation/get/list') || []
-        return OGList.value
-    };
+    
+    
     app.config.globalProperties.$SystemObject = function () {
         return SystemObject.value
     };
-    app.config.globalProperties.$NPList = function () {
-        return NPList.value
-    };
-    app.config.globalProperties.$OGList = function () {
-        return OGList.value
-    };
-
+    
+    
     app.config.globalProperties.$InitGlobalData = async function(){
-        NPList.value = await this.$FetchGet('/api/v1/earth/get/list', false) || []
-        OGList.value = await this.$FetchGet('/api/v1/constellation/get/list', false) || []
-        await this.$GetSystemObject()
-        return
+      await $GetNPList()
+      await $GetOGList()
+      await this.$GetSystemObject()
+      return
     }
     app.config.globalProperties.$ClearGlobalData = function(){
-        NPList = ref([])
-        OGList = ref([])
+        NPList.value = []
+        OGList.value = []
         SystemObject = ref({typeWorkplace: -1})
     }
 

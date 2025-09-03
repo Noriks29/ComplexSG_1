@@ -11,14 +11,14 @@
             <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel" :disabled="valueSelectOG == undefined" />
           </template>
           <template #center>
-            <SelectButton v-model="valueSelectOG" :options="dataJson" optionLabel="constellationName" dataKey="id" aria-labelledby="custom" 
+            <SelectButton v-model="valueSelectOG" :options="dataOGSelect" optionLabel="name" optionValue="id" dataKey="id" aria-labelledby="custom" 
             :pt="{button:{style:'padding: 7px 5px 7px 13px;'}}">
               <template #option="slotProps">
                  <div style="display: flex;align-items: center;">
-                  <span style="position: relative;">{{ slotProps.option.constellationName }}</span>
+                  <span style="position: relative;">{{ slotProps.option.name }}</span>
                   <Button icon="pi pi-trash" 
                     class="p-button-rounded p-button-danger p-button-text"  :style="'width: 25px;height: 25px;'"
-                    @click.stop="DeleteRowOG(slotProps.option)" @mousedown.stop @mouseup.stop/>
+                    @click.stop="DeleteRowOG(slotProps.option.id)" @mousedown.stop @mouseup.stop/>
                 </div>
               </template>
             </SelectButton>
@@ -28,15 +28,15 @@
             <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить КА" rounded text @click="AddRow" :disabled="valueSelectOG == undefined" />
           </template>
         </Toolbar> 
-    <span>{{ valueSelectOG?.inputType?OGType[valueSelectOG.inputType]:''}}</span>
-    <DataTable :value="valueSelectOG.satellites" v-if="valueSelectOG != undefined" scrollable scrollHeight="58vh"
+
+    <span>{{ valueSelectOG!==undefined?PageSettings.OGType[dataJson[valueSelectOG].inputType-1].lable:''}}</span>
+    <DataTable :value="dataJson[valueSelectOG].satellites" v-if="valueSelectOG != undefined" scrollable scrollHeight="58vh"
       tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort
       ref="dtSat" :exportFilename="'OG_' + new Date().toISOString().slice(0, 10)">
-      <template #header>
-        
-      </template>
       <Column field="name" header="Имя КА" sortable frozen>
-        <template #body="slotProps"><InputText v-model="slotProps.data.name" @input="ChangeParam($event,slotProps.data)" :style="'width:150px'"/></template>
+        <template #body="slotProps">
+          <InputText :disabled="dataJson[valueSelectOG].inputType==3" v-model="slotProps.data.name" @blur="ChangeParam(slotProps.data)" :style="'width:150px'"/>
+        </template>
       </Column>
       <Column field="modelSat" header="Модель КА">
         <template #body="slotProps">
@@ -45,19 +45,23 @@
       </Column>
       <Column field="role" header="Роль" v-if="PageSettings.RoleUse">
         <template #body="slotProps">
-          <Dropdown v-model="slotProps.data.role" :options="KaRole" @change="ChangeParam(slotProps.data)" optionLabel="lable" optionValue="value" placeholder="Выберите модель"/>
+          <Dropdown v-model="slotProps.data.role" :options="PageSettings.KaRole" @change="ChangeParam(slotProps.data)" optionLabel="lable" optionValue="value" placeholder="Выберите модель"/>
         </template>
       </Column>
-      <Column field="plane" header="Плосколсть" sortable v-if="valueSelectOG.inputType===2":style="'width:50px'"/>
-      <Column field="position" header="Позиция" sortable v-if="valueSelectOG.inputType===2" :style="'width:50px'"/>
+      <Column field="plane" header="Плосколсть" sortable v-if="dataJson[valueSelectOG].inputType===2":style="'width:50px'"/>
+      <Column field="position" header="Позиция" sortable v-if="dataJson[valueSelectOG].inputType===2" :style="'width:50px'"/>
       <Column v-for="data,index in {
         'altitude':'Большая полуось','eccentricity':'Эксцентриситет',
         'incline':'Наклон','longitudeAscendingNode':'Долгота восходящего узла',
         'perigeeWidthArgument':'Аргумент широты перигея','trueAnomaly':'Истинная аномалия'
         }" :key="index" :field="index" :header="data">
-        <template #body="slotProps"><div class="narrow-input-container"><InputNumber v-model="slotProps.data[index]" @input="ChangeParam($event, slotProps.data, index)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"  mode="decimal" :maxFractionDigits="5"/></div></template>
+        <template #body="slotProps">
+          <div class="narrow-input-container">
+            <InputNumber :disabled="dataJson[valueSelectOG].inputType==3" v-model="slotProps.data[index]" @blur="ChangeParam(slotProps.data)" :pt="{root: { style: 'width: 100%' },input: { style: 'width: 100px' }}" class="MinInput"  mode="decimal" :maxFractionDigits="5"/>
+          </div>
+        </template>
       </Column>
-      <Column header="" :exportable="false" headerStyle="width: 3rem">
+      <Column header="" :exportable="false" headerStyle="width: 3rem" v-if="dataJson[valueSelectOG].inputType != 3">
         <template #body="slotProps">
           <Button 
             icon="pi pi-trash" 
@@ -75,7 +79,7 @@
                   <label for="constellationName">Название</label>
                 </FloatLabel>
                 <FloatLabel>
-                  <Dropdown v-model="OG_Param.inputType" :options="[{value:1,lable: OGType[1]},{value:3,lable: OGType[3]},{value:2,lable: OGType[2]}]" optionLabel="lable" optionValue="value" inputId="inputType"/>
+                  <Dropdown v-model="OG_Param.inputType" :options="PageSettings.OGType" optionLabel="lable" optionValue="value" inputId="inputType"/>
                   <label for="inputType">Тип</label>
                 </FloatLabel>
               <div><Button label="Создать" severity="success" raised @click="AddOG"/></div>
@@ -112,30 +116,22 @@
   
   <script>
 import { PagesSettings } from './PagesSettings.js';
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
-import Toolbar from 'primevue/toolbar';
-import SelectButton from 'primevue/selectbutton';
 import XLSX from 'xlsx-js-style';
-import Dropdown from 'primevue/dropdown';
-import FloatLabel from 'primevue/floatlabel';
-import FileUpload from 'primevue/fileupload';
-
 
   export default {
     name: 'OG',
     mixins: [PagesSettings],
     data() {
       return {
-        OGType: {1: "Произвольное построение", 2:"Системное построение", 3:"Загруженно из TLE"}, //список типов созданий ог
+        
         dataJson: [],
+        dataOGSelect:[],
+        valueSelectOG : undefined,
         PageSettings:{
-          RoleUse:true
+          RoleUse:true,
+          OGType: [{value:1, lable:"Произвольное построение"},{value:2, lable:"Системное построение"},{value:3, lable:"Загруженно из TLE"}],
+          KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}],
         },
-        KaRole: [{lable:'Нет',value:0},{lable:'Ведомый',value:1},{lable:'Лидер',value:2}], // для редактора ог
         KaModels: [], //список моделей ка
         OG_Param:{
           constellationName: undefined,
@@ -147,20 +143,17 @@ import FileUpload from 'primevue/fileupload';
           },
           file: undefined
         },
-        valueSelectOG : undefined
-        
       }
     },
-    components:
-    {
-      DataTable, Column, Button, InputNumber, InputText, Toolbar, SelectButton,Dropdown,FloatLabel,FileUpload
-    },
+    components:{},
     methods: {
-      async DeleteRowOG(data){
+      async DeleteRowOG(id){
         if(!this.approved){
-          await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+data.id)
-          this.dataJson = await this.$GetOGList()
-          this.valueSelectOG = this.dataJson[0]
+          await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+this.dataJson[id].id)
+          await this.$GetOGList()
+          this.CreateSelectOGArray()
+          this.valueSelectOG = undefined
+          this.$showToast('','info',"Ог удалена");
         }
       },
         AddRow(){
@@ -173,30 +166,15 @@ import FileUpload from 'primevue/fileupload';
                     "modelSat": {"id": this.KaModels[0].value},
                     name: "none", role: 0
                 };
-            this.valueSelectOG.satellites.push(addedRow);  
-            this.SaveOGChange()
+            this.dataJson[this.valueSelectOG].satellites.push(addedRow);  
+            this.$ChangeOGList(this.valueSelectOG, true)
         },
-          ChangeParam(event, data, param = undefined){
-              if(param != undefined) data[param] = event.value
-              console.log(event, 'сделать тут отдельное обновление каждой строчки')
-              this.SaveOGChange(false)
+          ChangeParam(data){
+            //console.log(data) возможно сделать обновление построчным
+            this.$ChangeOGList(this.valueSelectOG)
           },
-          DeleteRow(){ // ка из ог
-              this.SaveOGChange(true)
-          },
-          async SaveOGChange(reload = true) { //сохранение изменения ог
-            console.log(this.valueSelectOG.satellites[0].eccentricity)
-            await this.$ChangeOGList(this.valueSelectOG)
-            if(reload){
-              this.dataJson = await this.$GetOGList()
-              for (let i = 0; i < this.dataJson.length; i++) {
-                const element = this.dataJson[i];
-                if(element.id == this.valueSelectOG.id){
-                  this.valueSelectOG = element
-                  break
-                }              
-              }
-            }
+          async DeleteRow(){ // ка из ог
+            await this.$ChangeOGList(this.valueSelectOG, true)
           },
           async AddOG(){
             try {
@@ -220,27 +198,30 @@ import FileUpload from 'primevue/fileupload';
                 responce = await this.$FetchPostFile("/api/v1/constellation/upload/tle", formData)
               }
               if(responce.type == "SUCCESS"){
-                this.dataJson = await this.$GetOGList()
-                this.valueSelectOG = this.dataJson[this.dataJson.length-1]
+                await this.$GetOGList()
+                this.CreateSelectOGArray()
+                this.valueSelectOG = this.dataJson.length-1
                 await this.$reloadSystem()
+                this.$showToast('','info',"Ог добавлена");
               }
               else{
-                alert("Ошибка добавления" + JSON.stringify(responce))
+                this.$showToast('','error',"Ошибка добавления");
                 console.log(responce)
               }
             }
             else{
-              alert("Некоректные входные данные - '"+this.OG_Param.constellationName+"' - '"+this.OG_Param.inputType+"'")
+              this.$showToast('Некоректные данные добавления ОГ','error',"Ошибка добавления");
+              console.error("Некоректные входные данные - '"+this.OG_Param.constellationName+"' - '"+this.OG_Param.inputType+"'")
             }
             } catch (error) {
-              console.error(error)
+              console.error(error);
+              this.$showToast('Неизвестная ошибка','error',"Ошибка добавления");
             }
           },
           async LoadFile(data){
             if (data.files[0]) {
               var file = data.files[0];
               this.OG_Param.file = file
-              console.log(this.OG_Param.file)
             }
           },
           LoadXLSX(){
@@ -262,11 +243,11 @@ import FileUpload from 'primevue/fileupload';
                 }
               });
             // 3. Подготавливаем данные
-            const data = this.valueSelectOG.satellites.map(row => {
+            const data = this.dataJson[this.valueSelectOG].satellites.map(row => {
               const newRow = {};
               fields.forEach(field => {
                 if(field == 'modelSat') newRow[field] = row.modelSat.modelName;
-                else if(field == 'role') newRow[field] = this.KaRole[row.role].lable;
+                else if(field == 'role') newRow[field] = this.PageSettings.KaRole[row.role].lable;
                 else newRow[field] = row[field];
               });
               return newRow;
@@ -295,20 +276,26 @@ import FileUpload from 'primevue/fileupload';
             XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
             XLSX.writeFile(workbook, `${filename}.xlsx`);
           },
+          CreateSelectOGArray(){
+            this.dataOGSelect = []
+            for (let i = 0; i < this.dataJson.length; i++) {
+              this.dataOGSelect.push({name: this.dataJson[i].constellationName, id: i})
+            }
+          }
     },
     async mounted(){
       this.dataJson = await this.$OGList()
+      this.CreateSelectOGArray()
+      if(this.dataJson.length > 0) this.valueSelectOG = 0
+
       let result = await this.$FetchGet('/api/v1/modelsat/all')
       this.KaModels = []
-      console.log(this.dataJson, "Дада вход")
       for (let index = 0; index < result.length; index++) {
         this.KaModels.push({modelName:result[index].modelName, id:result[index].id, "description": null, "imageFile": null, "operatingParameter": null, "rules": null, "modes": null, "devCatalogs": null, "devices": null, "charges": null})
       }
-      this.valueSelectOG = this.dataJson[0] || undefined
 
-      let system = await this.$SystemObject()
-
-      if(system.typeWorkplace in {1:null, 2:null}){
+      let system = await this.$SystemObject() 
+      if(system.typeWorkplace in {1:null, 2:null}){ //смотрим нужны ли нам роли ка
           this.PageSettings.RoleUse = false
       }
       this.OG_Param.parametersCalculation.modelSat={id:this.KaModels[0].value}

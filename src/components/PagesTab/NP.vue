@@ -49,7 +49,7 @@
         <Button 
           icon="pi pi-trash" 
           class="p-button-rounded p-button-danger p-button-text" 
-          @click="slotProps.data.deleted = true; DeleteRow()"
+          @click="slotProps.data.deleted = true; DeleteRow(slotProps.data)"
         />
       </template>
     </Column>
@@ -61,12 +61,6 @@
 <script> 
 import { PagesSettings } from './PagesSettings.js';
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
-import Toolbar from 'primevue/toolbar';
 import XLSX from 'xlsx-js-style';
   export default {
     name: 'NP',
@@ -77,7 +71,6 @@ import XLSX from 'xlsx-js-style';
       }
     },
     components:{
-      DataTable, Column, Button, InputNumber, InputText, Toolbar
     },
     methods: {
         exportExcel() {
@@ -125,24 +118,21 @@ import XLSX from 'xlsx-js-style';
           XLSX.writeFile(workbook, `${filename}.xlsx`);
         },
         async AddRow(lng=0,lat=0){
-          this.dataJson.push({'nameEarthPoint' : "", 'longitude' : lng, 'latitude' : lat, 'deleted': false});   
-          await this.$ChangeNPList(this.dataJson)
-          this.dataJson = await this.$GetNPList();
+          let dataNew = {'nameEarthPoint' : "", 'longitude' : lng, 'latitude' : lat, 'deleted': false}
+          this.dataJson.push(dataNew);   
+          await this.$ChangeNPList(dataNew, true)
         },
         async saveChanges(data){
-          await this.$ChangeNPList(this.dataJson)
-          console.log("Позже сделать через отдельный запрос на сохранение изменения одного нп", data)
+          await this.$ChangeNPList(data)
         },
-        async DeleteRow(){
-            await this.$ChangeNPList(this.dataJson)
-            this.dataJson = await this.$GetNPList();
+        async DeleteRow(data){
+            await this.$ChangeNPList(data, true)
         },
         async DeleteAll(){
-          this.dataJson.forEach(np => {
-            np.deleted = true
+          this.dataJson.forEach(GS => {
+            GS.deleted = true
           })
-          await this.$ChangeNPList(this.dataJson)
-          this.dataJson = await this.$GetNPList();
+          await this.$ChangeNPList(this.dataJson, true)
         }
     },
     async mounted() {

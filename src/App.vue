@@ -48,6 +48,7 @@
     </div>
     <div class="ChangeViewMode" @click="ChangeColor"><Button :icon="'pi '+(!colorthemBlack?'pi-sun':'pi-moon') " severity="secondary" style="height: 1.5rem;width: 1.5rem;"/></div>
     <AlertToast /><LoadProcess />
+    <Toast /><ConfirmDialog></ConfirmDialog>
 </template> 
 <script>
 import TemplateComponent from './components/TemplateComponent.vue'
@@ -107,11 +108,12 @@ export default {
         this.workplaceList = []
         let result = await this.$FetchPost("/api/v1/authentication/user/login",data,null,false)
         if(result == undefined){
-          this.$showToast('Неудачная попытка входа','warning', 'Login');
+          this.$toast.add({ severity: 'danger', summary: 'Ошибка', detail: 'Неудачная попытка входа', life: 5000 });
           this.$InitAccess(null)
         }
         else if(result.length > 0){
-          this.$showToast('Добро пожаловать '+data.nameUser,'success', 'Login');
+          //this.$showToast('Добро пожаловать '+data.nameUser,'success', 'Login');
+          this.$toast.add({ severity: 'success', summary: 'Добро пожаловать', detail: 'Пользователь: ' + data.nameUser, life: 3000 });
           result.sort((a,b) => {return a.type - b.type})
           this.workplaceList = result
           localStorage.setItem('nameUser', data.nameUser);
@@ -122,15 +124,26 @@ export default {
         this.$showLoad(false);
       },
       Log_out(){
-        this.titleModule = ''
-        localStorage.removeItem('nameUser')
-        this.$InitAccess(null)
-        localStorage.removeItem('email')
-        localStorage.removeItem('password')
-        this.workplaceList = []
-        this.login = undefined
-        this.systemStatus = {typeWorkplace: -1}
-        this.$ClearGlobalData()
+        this.$confirm.require({
+          message: 'Вы уверены что хотите выйти?',
+          header: 'Выход из системы',
+          icon: 'pi pi-info-circle',
+          rejectLabel: 'Отмена',
+          acceptLabel: 'Выйти',
+          rejectClass: 'p-button-secondary p-button-outlined',
+          acceptClass: 'p-button-danger',
+          accept: () => {
+              this.titleModule = ''
+              localStorage.removeItem('nameUser')
+              this.$InitAccess(null)
+              localStorage.removeItem('email')
+              localStorage.removeItem('password')
+              this.workplaceList = []
+              this.login = undefined
+              this.systemStatus = {typeWorkplace: -1}
+              this.$ClearGlobalData()
+            },
+        });
       },
       async StartSystem(data){
         this.$ClearGlobalData()
@@ -180,7 +193,7 @@ export default {
             spacing: 20.00,
           })
         } catch (error) {
-          this.$showToast('Не удалось загрузить фон','warning', 'Фон');
+          this.$toast.add({ severity: 'warning', summary: 'Фон', detail: 'Не удалось загрузить фон', life: 2500 });
         }
       },
       ChangeColor(){
