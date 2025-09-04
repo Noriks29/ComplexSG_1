@@ -92,7 +92,7 @@ import Dropdown from 'primevue/dropdown';
         await this.$SetModellingRezultSelect(id)
       },
       async ReLoadComponent(){
-        this.ConstellationJson = this.$OGList()
+        this.ConstellationJson = this.$OGList().value
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
         this.arr = []

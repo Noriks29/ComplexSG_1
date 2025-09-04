@@ -5,11 +5,11 @@ const GlobalDataPlugin = {
   install(app) {
 
     const apiVite = app.config.globalProperties
-    let SystemObject = ref({typeWorkplace: -1});
+    
     let AccessKey = null
 
     // работа с наземными пунктами 
-    let NPList = ref([]);
+    const NPList = ref([]);
     const $NPList = function () {
         return NPList
     };
@@ -26,7 +26,7 @@ const GlobalDataPlugin = {
     apiVite.$NPList = $NPList
 
     //Работа с орбитальными группировками
-    let OGList = ref([]);
+    const OGList = ref([]);
     const $OGList = function () {
         return OGList
     };
@@ -44,50 +44,103 @@ const GlobalDataPlugin = {
 
 
 
+    //Работа с системой
+    const SystemObject = ref({typeWorkplace: -1});
+    const $ChangeSystemObject = async function (param, value, dataS=null) {
+      console.log(param, value, dataS, "Система")
+      await apiVite.$FetchPost('/api/v1/system/update', SystemObject.value, true)
+    };
+    const $GetSystemObject = async function () {
+      SystemObject.value = await apiVite.$FetchGet('/api/v1/system/get', true) || {}
+    };
+    const $SystemObject = function () {
+      return SystemObject
+    };
+    apiVite.$ChangeSystemObject = $ChangeSystemObject
+    apiVite.$GetSystemObject = $GetSystemObject
+    apiVite.$SystemObject = $SystemObject
 
-    app.config.globalProperties.$InitAccess = async function (key) {
+
+    const Targets = ref({
+      datarequest:[], catalog:[], request:[]
+    })
+    const $ChangeTargets = async function (typeTarget, reload=false) {
+      switch (typeTarget) {
+        case 'request':
+          await apiVite.$FetchPost("/api/v1/satrequest/request/update", Targets.value.request)
+          break;
+        case 'catalog':
+          await apiVite.$FetchPost("/api/v1/satrequest/catalog/update", Targets.value.catalog)
+          break;
+        case 'datarequest':
+          await apiVite.$FetchPost("/api/v1/satrequest/data/update", Targets.value.datarequest)
+          break;
+        default:
+          console.error("Какое то несоответствие запросов на заявки!")
+          return
+      }
+      if(reload) $GetTargets(typeTarget)
+    };
+    const $GetTargets = async function (typeTarget=null) {
+      if((typeTarget == null || typeTarget == 'datarequest') && ([4, 5].includes(SystemObject.value.typeWorkplace))){
+        Targets.value.datarequest = await apiVite.$FetchGet('/api/v1/satrequest/data/get/all') || []
+        Targets.value.datarequest.forEach(request => {
+          request.timeDate = new Date(request.time * 1000) || null
+        })
+      }
+      else if(typeTarget == 'catalog' && !([4, 5].includes(SystemObject.value.typeWorkplace))){
+        Targets.value.catalog = await apiVite.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
+      }
+      else if(typeTarget == 'request' && !([4, 5].includes(SystemObject.value.typeWorkplace))){
+        Targets.value.request = await apiVite.$FetchGet('/api/v1/satrequest/request/get/all') || []
+      }
+      else if(typeTarget == null && !([4, 5].includes(SystemObject.value.typeWorkplace))){
+        Targets.value.catalog = await apiVite.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
+        Targets.value.request = await apiVite.$FetchGet('/api/v1/satrequest/request/get/all') || []
+      }
+      else{
+        console.error("Какое то несоответствие запросов на заявки!")
+      }
+      if(Targets.value.request.length > 0){
+        Targets.value.request.forEach(request => {
+          request.timeDate = new Date(request.time * 1000) || null
+          request.termDate = new Date(request.term * 1000) || null
+        })
+      }
+    };
+    const $Targets = function () {
+      return Targets
+    };
+    apiVite.$ChangeTargets = $ChangeTargets
+    apiVite.$GetTargets = $GetTargets
+    apiVite.$Targets = $Targets
+
+
+    apiVite.$InitAccess = async function (key) {
         AccessKey = key
     };
-    app.config.globalProperties.$GetAccess = async function () {
-        console.log("key", AccessKey)
+    apiVite.$GetAccess = async function () {
+        console.log("Запрос", AccessKey)
         return AccessKey
     };
-    app.config.globalProperties.$ChangeSystemObject = async function (param, value, dataS=null) {
-        if(dataS == null)SystemObject.value[param] = value
-        else{
-          SystemObject.value = dataS
-        }
-        await this.$FetchPost('/api/v1/system/update', SystemObject.value, true)
-        return SystemObject.value
-    };
     
-    
-    app.config.globalProperties.$GetSystemObject = async function () {
-        SystemObject.value = await this.$FetchGet('/api/v1/system/get', true) || {}
-        return SystemObject.value
-    };
-    
-    
-    app.config.globalProperties.$SystemObject = function () {
-        return SystemObject.value
-    };
-    
-    
-    app.config.globalProperties.$InitGlobalData = async function(){
+    apiVite.$InitGlobalData = async function(){
+      await $GetSystemObject()
       await $GetNPList()
       await $GetOGList()
-      await this.$GetSystemObject()
+      await $GetTargets()
       return
     }
-    app.config.globalProperties.$ClearGlobalData = function(){
+    apiVite.$ClearGlobalData = function(){
         NPList.value = []
         OGList.value = []
-        SystemObject = ref({typeWorkplace: -1})
+        SystemObject.value = {typeWorkplace: -1}
+        Targets.value = {datarequest:[], catalog:[], request:[]}
     }
 
     const toastComponent = ref(null);
     app.component('SystemWindow', SystemWindow);
-    app.config.globalProperties.$reloadSystem = function () {
+    apiVite.$reloadSystem = function () {
       if (toastComponent.value && toastComponent.value.reload) {
         toastComponent.value.reload();
       } else {

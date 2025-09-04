@@ -44,6 +44,7 @@ import SelectButton from 'primevue/selectbutton';
 import Dropdown from 'primevue/dropdown';
 import FloatLabel from 'primevue/floatlabel';
 import FileUpload from 'primevue/fileupload';
+import Calendar from 'primevue/calendar';
 
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -65,6 +66,7 @@ app.component('SelectButton', SelectButton);
 app.component('Dropdown', Dropdown);
 app.component('FloatLabel', FloatLabel);
 app.component('FileUpload', FileUpload);
+app.component('Calendar', Calendar);
 
 
 

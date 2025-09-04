@@ -100,8 +100,8 @@ import { KaSettings } from './KaSettings';
       },
       async ReLoadComponent(){
         this.$InitModellingRezult()
-        this.earthList = await this.$NPList()
-        this.ConstellationJson = await this.$OGList()
+        this.earthList = await this.$NPList().value
+        this.ConstellationJson = await this.$OGList().value
         this.ConstellationJson.satCount = 0
         this.ConstellationJson.forEach(Og=>{
           this.ConstellationJson.satCount += Og.satellites.length

@@ -12,20 +12,20 @@
               <Button  icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
             </template>
             <template #center v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
-              <div style="margin-right: 10px;"><Button @click="viewmode=0" label="Заявки ДЗЗ" :outlined="viewmode !== 0"/></div>
-              <div><Button @click="viewmode=1" label="Каталог целей" :outlined="viewmode !== 1"/></div>
+              <div style="margin-right: 10px;"><Button @click="viewmode='request'" label="Заявки ДЗЗ" :outlined="viewmode !== 'request'"/></div>
+              <div><Button @click="viewmode='catalog'" label="Каталог целей" :outlined="viewmode !== 'catalog'"/></div>
             </template>
             <template #end>
               <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
               <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
             </template>
           </Toolbar>
-          <DataTable :value="requestJson" v-if="viewmode==0" scrollable scrollHeight="60vh"
+          <DataTable :value="target.request" v-if="viewmode=='request'" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZ" :exportFilename="'Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="catalog" header="Цель">
                 <template #body="slotProps">
-                  <Dropdown v-model="slotProps.data.catalog" :options="catalogJson" @change="SaveChange($event)" optionLabel="goalName" placeholder="Выберите цель"/>
+                  <Dropdown v-model="slotProps.data.catalog" :options="target.catalog" @change="SaveChange($event)" optionLabel="goalName" placeholder="Выберите цель"/>
                 </template>
               </Column>
               <Column field="lat" header="Широта"><template #body="slotProps">{{ slotProps.data.catalog.lat }}</template></Column>
@@ -42,12 +42,12 @@
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @blur="ChangeTimeInput($event.target.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.requestId)" @blur="ChangeTimeInput($event.value, 'time', slotProps.data.requestId)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="termDate" header="Срок выполнения">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @blur="ChangeTimeInput($event.target.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.termDate"  @date-select="ChangeTimeInput($event, 'term', slotProps.data.requestId)" @blur="ChangeTimeInput($event.value, 'term', slotProps.data.requestId)" :invalid="!slotProps.data.termDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column field="type" header="Признак" v-if="systemStatus.typeWorkplace in {3:null}">
@@ -64,7 +64,7 @@
           </DataTable>
 
 
-          <DataTable :value="catalogJson" v-if="viewmode==1" scrollable scrollHeight="60vh"
+          <DataTable :value="target.catalog" v-if="viewmode=='catalog'" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZcatalog" :exportFilename="'Каталог_Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="use" header="Использование" :exportable="false">
@@ -95,7 +95,7 @@
               </Column>
           </DataTable>
 
-          <DataTable :value="datarequest" v-if="viewmode==2" scrollable scrollHeight="60vh"
+          <DataTable :value="target.datarequest" v-if="viewmode=='datarequest'" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZdata" :exportFilename="'Данные_Заявки_' + new Date().toISOString().slice(0, 10)">
               <Column field="name" header="Имя">
@@ -120,7 +120,7 @@
               </Column>
               <Column field="timeDate" header="Время появления">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @blur="ChangeTimeInput($event.target.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.timeDate"  @date-select="ChangeTimeInput($event, 'time', slotProps.data.id)" @blur="ChangeTimeInput($event.value, 'time', slotProps.data.id)" :invalid="!slotProps.data.timeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
                 </template>
               </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">
@@ -140,211 +140,114 @@ import { PagesSettings } from './PagesSettings';
 import { CreateDateTime } from '@/js/WorkWithDTime';
 import XLSX from 'xlsx-js-style';
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Dropdown from 'primevue/dropdown';
-import InputNumber from 'primevue/inputnumber';
-import Calendar from 'primevue/calendar';
-import Button from 'primevue/button';
-import Toolbar from 'primevue/toolbar';
-import InputText from 'primevue/inputtext';
   export default {
     name: 'TargetDZZ',
     mixins: [PagesSettings],
-    components:{
-      DataTable, Column,Dropdown,InputNumber,Calendar,Button, Toolbar, InputText
-    },
+    components:{},
     data(){
       return{
-        viewmode: 0,
-        catalogJson: [],
+        viewmode: 'request',
         catalogUse: {},
         systemStatus: {typeWorkplace: null},
-        datarequest: [],
         datarequestКАList: [],
-        requestJson: [],
         choiceCriteriaArr: [{value: 1, lable: 'Время'},{value: 2, lable: 'Разворот'},{value: 3, lable: 'Качество'}],
         TypeRequest: [{value: 0, lable: 'НП'},{value: 1, lable: 'Лидер'}],
         arrNP: [],
+        target:{}
       }
     },
     methods: {
       ChangeTimeInput(value, param, index){
-        switch (this.viewmode) {
-          case 0:
-            for (let i = 0; i < this.requestJson.length; i++) {
-              if(this.requestJson[i].requestId == index){
-                this.requestJson[i][param] = Math.floor(Date.parse(value)/1000)
-                break
-              }
-            }
-            this.SaveChange(null, 'request')
-            break;
-          case 2:
-            for (let i = 0; i < this.datarequest.length; i++) {
-              if(this.datarequest[i].id == index){
-                this.datarequest[i][param] = Math.floor(Date.parse(value)/1000)
-                break
-              }
-            }
-            this.SaveChange(null, 'datarequest')
+        for (let i = 0; i < this.target[this.viewmode].length; i++) {
+          if(this.target[this.viewmode][i].requestId == index || this.target[this.viewmode][i].id == index){
+           this.target[this.viewmode][i][param] = Math.floor(Date.parse(value)/1000)
             break
-          default:
-            break;
+          }
         }
+        this.$ChangeTargets(this.viewmode)
       },
-      CreateDateTime(time, mode){
-        return CreateDateTime(time, mode)
-      },
-      async SaveChange(event, component, refatch = false){
-        switch (this.viewmode) {
-          case 0:
-            this.SatartSave('request')
-            break;
-          case 1:
-            this.SatartSave('catalog')
-            break;
-          case 2:
-            this.SatartSave('datarequest')
-            break;
-          default:
-            break;
-        }
-        console.log(event, component, refatch)
+      async SaveChange(event){
+        this.$ChangeTargets(this.viewmode)
+        if(this.viewmode == 'catalog') this.$ChangeTargets('request',true)
+        this.CreateCatalogUse()
       },
       AddRowCatalog(data){
-        var addedRow = {
-                      "catalog": data,
-                      "orderId": this.requestJson.length + 1,
-                      "priory": 3,
-                      "term": this.systemStatus.modelingEnd,
-                      "time": this.systemStatus.modelingBegin,
-                      "earthPoint": this.arrNP[0].value,
-                      "choiceCriteria": 1,
-                      "filter": false,
-                      "deleted": null,
-                };
-        if(this.systemStatus.typeWorkplace in {3:null}){addedRow.type = 0}
-        this.requestJson.push(addedRow);   
-        this.SatartSave('request')
+        this.target.request.push({
+              "catalog": data,
+              "orderId": this.target.request.length + 1,
+              "priory": 3,
+              "term": this.systemStatus.modelingEnd,
+              "time": this.systemStatus.modelingBegin,
+              "earthPoint": this.arrNP[0].value,
+              "choiceCriteria": 1,
+              "filter": false,
+              "deleted": null,
+              "type": 0
+        });   
+        this.$ChangeTargets('request',true)
+        this.CreateCatalogUse()
       },
       AddRow(){
         switch (this.viewmode) {
-          case 0:
-            if(this.catalogJson.length < 1){
+          case 'request':
+            if(this.target.catalog.length < 1){
               alert("Нет целей в каталоге, пожалуйста создайте")
               return;
             }
-            var addedRow = {
-                          "catalog": this.catalogJson[0],
-                          "orderId": this.requestJson.length + 1,
-                          "priory": 3,
-                          "term": this.systemStatus.modelingEnd,
-                          "time": this.systemStatus.modelingBegin,
-                          "earthPoint": this.arrNP[0].value,
-                          "choiceCriteria": 1,
-                          "filter": false,
-                          "deleted": null,
-                    };
-            if(this.systemStatus.typeWorkplace in {3:null}){addedRow.type = 0}
-            this.requestJson.push(addedRow);   
-            this.SatartSave('request')
+            this.target.request.push({
+              "catalog": this.target.catalog[0],
+              "orderId": this.target.request.length + 1,
+              "priory": 3,
+              "term": this.systemStatus.modelingEnd,
+              "time": this.systemStatus.modelingBegin,
+              "earthPoint": this.arrNP[0].value,
+              "choiceCriteria": 1,
+              "filter": false,
+              "deleted": null,
+              "type": 0
+            });  
             break;   
-          case 1:
-            var addedRow = {
+          case 'catalog':
+            this.target.catalog.push({
                     'goalId' : 0,
                     'goalName' : "", 'lat' : 0,
                     'lon' : 0, 'alt' : 0,
                     'deleted': false, 'role': "newRow"
-                };
-            this.catalogJson.push(addedRow);   
-            this.SatartSave('catalog')
+                });   
             break;
-          case 2:
-            var addedRow = {
+          case 'datarequest':
+            this.target.datarequest.push({
                 "capacity": 100,
                 "priority": 3,
                 "time" : this.systemStatus.modelingBegin,
                 "satellite":  {id: this.datarequestКАList[0].id},
                 "deleted": null
-            };
-            this.datarequest.push(addedRow)
-            this.SatartSave('datarequest')
+            })
             break;
           default:
             break;
         }
-          },
-      ChangeParam(){
-        this.SatartSave('catalog')
+        this.$ChangeTargets(this.viewmode,true)
+        this.CreateCatalogUse()
       },
       DeleteAll(){
-        switch (this.viewmode) {
-          case 0:
-            this.requestJson.forEach(el => {
-              el.deleted = true
-            })
-            this.SatartSave('request')
-            break;
-          case 1:
-            this.catalogJson.forEach(el => {
-              el.deleted = true
-            })
-            this.SatartSave('catalog')
-            break;
-          case 2:
-            this.datarequest.forEach(el => {
-              el.deleted = true
-            })
-            this.SatartSave('datarequest')
-            break;
-          default:
-            break;
-        }
+        this.target[this.viewmode].forEach(el => {el.deleted = true})
+        this.DeleteRow()
+        this.CreateCatalogUse()
       },
       DeleteRow(){
-        switch (this.viewmode) {
-          case 0:
-            this.SatartSave('request')
-            break;
-          case 1:
-            this.SatartSave('catalog')
-            break;
-          case 2:
-            this.SatartSave('datarequest')
-            break;
-          default:
-            break;
-        }
+        this.$ChangeTargets(this.viewmode,true)
+        if(this.viewmode == 'catalog') this.$ChangeTargets('request',true)
+        this.CreateCatalogUse()
       },
-      async SatartSave(target){
-        if(target == 'catalog'){await this.$FetchPost("/api/v1/satrequest/catalog/update", this.catalogJson)}
-        if(target == 'request'){await this.$FetchPost("/api/v1/satrequest/request/update", this.requestJson)}
-        if(target == 'datarequest'){await this.$FetchPost("/api/v1/satrequest/data/update", this.datarequest)}
-        await this.ReFetch()
-      },
-      async ReFetch(){
-        if(this.systemStatus.typeWorkplace in {4:null,5:null}){
-          this.datarequest = await this.$FetchGet('/api/v1/satrequest/data/get/all') || []
-          this.datarequest.forEach(request => {
-          request.timeDate = new Date(request.time * 1000) || null
+      CreateCatalogUse(){
+        this.catalogUse = {}
+        this.target.catalog.forEach(el => {
+          this.catalogUse[el.goalId] = 0
+          this.target.request.forEach(rec => {
+            if(rec.catalog.goalId == el.goalId)  this.catalogUse[el.goalId] += 1
           })
-        }
-        else{
-          this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
-          this.requestJson = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
-          this.requestJson.forEach(request => {
-            request.timeDate = new Date(request.time * 1000) || null
-            request.termDate = new Date(request.term * 1000) || null
-          })
-          this.catalogUse = {}
-          this.catalogJson.forEach(el => {
-            this.catalogUse[el.goalId] = 0
-            this.requestJson.forEach(rec => {
-              if(rec.catalog.goalId == el.goalId)  this.catalogUse[el.goalId] += 1
-            })
-          })
-        }
+        })
       },
       exportExcel() {
           // 1. Получаем имя файла
@@ -353,7 +256,7 @@ import InputText from 'primevue/inputtext';
           let filename = 'export'
           let data = []
           switch (this.viewmode) {
-            case 0:
+            case 'request':
               filename = this.$refs.dtDZZ.$props.exportFilename || 'export';
               this.$refs.dtDZZ.$slots.default()
                 .filter(col => col.props?.exportable !== false)
@@ -362,7 +265,7 @@ import InputText from 'primevue/inputtext';
                   fields.push(col.props?.field);
                   console.log(col)
                 });
-              data = this.requestJson.map(row => {
+              data = this.target.request.map(row => {
                 const newRow = {};
                 fields.forEach(field => {
                   if(field == 'catalog') newRow.catalog = row.catalog.goalName
@@ -377,7 +280,7 @@ import InputText from 'primevue/inputtext';
                 return newRow;
               });
               break;
-            case 1:
+            case 'catalog':
               filename = this.$refs.dtDZZcatalog.$props.exportFilename || 'export';
               this.$refs.dtDZZcatalog.$slots.default()
                 .filter(col => col.props?.exportable !== false)
@@ -385,7 +288,7 @@ import InputText from 'primevue/inputtext';
                   headers.push(col.props?.header || col.props?.field);
                   fields.push(col.props?.field);
                 });
-              data = this.catalogJson.map(row => {
+              data = this.target.catalog.map(row => {
                 const newRow = {};
                 fields.forEach(field => {
                   newRow[field] = row[field];
@@ -393,7 +296,7 @@ import InputText from 'primevue/inputtext';
                 return newRow;
               });
               break;
-            case 2:
+            case 'datarequest':
               filename = this.$refs.dtDZZdata.$props.exportFilename || 'export';
               this.$refs.dtDZZdata.$slots.default()
                 .filter(col => col.props?.exportable !== false)
@@ -401,7 +304,7 @@ import InputText from 'primevue/inputtext';
                   headers.push(col.props?.header || col.props?.field);
                   fields.push(col.props?.field);
                 });
-              data = this.datarequest.map(row => {
+              data = this.target.datarequest.map(row => {
                 const newRow = {};
                 fields.forEach(field => {
                   if(field == 'satellite') newRow.satellite = row.satellite.name
@@ -441,24 +344,25 @@ import InputText from 'primevue/inputtext';
     },
     async mounted() {
       this.$showLoad(true)
-      this.systemStatus = await this.$SystemObject()
+      this.systemStatus = await this.$SystemObject().value
       if(this.systemStatus.typeWorkplace in {4:null, 5:null}){
-        this.viewmode = 2
+        this.viewmode = 'datarequest'
         this.datarequestКАList = []
-        let OGList = await this.$OGList()
-        OGList.forEach(OG => {
+        const OGList = await this.$OGList()
+        OGList.value.forEach(OG => {
           OG.satellites.forEach(element =>{
             this.datarequestКАList.push({id: element.satelliteId, name: element.name })
           })
         });
       }
       else{
-        let NP = await this.$NPList()
-        NP.forEach(element => {
+        const NP = await this.$NPList()
+        NP.value.forEach(element => {
           this.arrNP.push({value: element, lable: element.nameEarthPoint })
         })
       }
-      await this.ReFetch()
+      this.target = await this.$Targets()
+      this.CreateCatalogUse()
       this.$showLoad(false)
     },
   }
