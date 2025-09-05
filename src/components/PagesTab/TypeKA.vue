@@ -1,25 +1,20 @@
 <template>
-  <div class="main_contain RowSection">
-      <div>
-          <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-            <img src="../../assets/exit.svg">
-          </button>
-        </div>
+  <div class="main_contain">
+    <div сlass="HeaderContain">
+        <Toolbar class="mb-4">
+          <template #start>
+            <FloatLabel>
+              <Dropdown v-model="SelectKA" :options="KatypeList" @change="ChangeCluster($event)" optionLabel="lable" inputId="angle"  placeholder="Выберите кластер"/>
+              <label for="angle" class="always-top">Выбранный КА</label>
+            </FloatLabel>
+          </template>
+          <template #center>
+            <TabMenu @tab-change="viewPanel = $event.index+1" :model="[
+              {label:'Режимы'},{label:'Устройства'},{label:'Потребление энергии'},{label:'Параметры'}]" />
+          </template>
+        </Toolbar> 
+      </div>
       <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
-          <div class="Panel Select LeftPanel" >
-              <div class="FlexColumn">
-                <div style="align-items: flex-end;">
-                  <FloatLabel>
-                    <Dropdown v-model="SelectKA" :options="KatypeList" @change="ChangeCluster($event)" optionLabel="lable" inputId="angle"  placeholder="Выберите кластер"/>
-                    <label for="angle">Выбранный КА</label>
-                  </FloatLabel>
-                </div>
-                <div><Button @click="viewPanel=1" label="Режимы функционирования" :outlined="viewPanel!==1"/></div>
-                <div><Button @click="viewPanel=2" label="Устройства" :outlined="viewPanel!==2"/></div>
-                <div><Button @click="viewPanel=3" label="Потребление энергии устройствами" :outlined="viewPanel!==3"/></div>
-                <div><Button @click="viewPanel=4" label="Параметры устройств и функционирования" :outlined="viewPanel!==4"/></div>
-              </div>
-          </div>
           <div class="Panel RightPanel">
           <div v-if="viewPanel == 1">
               <p>Режимы функционирования</p>
@@ -182,16 +177,6 @@
 <script>
 import { PagesSettings } from './PagesSettings.js';
 
-import FloatLabel from 'primevue/floatlabel';
-import Dropdown from 'primevue/dropdown';
-import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import InputNumber from 'primevue/inputnumber';
-import InputText from 'primevue/inputtext';
-import ColumnGroup from 'primevue/columngroup';   // optional
-import Row from 'primevue/row'; 
-import SelectButton from 'primevue/selectbutton';
 export default {
   name: 'KAInfo',
   mixins: [PagesSettings],
@@ -232,9 +217,7 @@ export default {
           ]
       }
   },
-  components:{
-      FloatLabel, Dropdown, Button, DataTable, Column, InputNumber, ColumnGroup, Row, SelectButton, InputText
-  },
+  components:{},
   methods:{
       async ChangeKA(data){
           if(data.value == "add"){
@@ -371,6 +354,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.always-top {
+    top: 0.1rem !important;
+    left: 0.2rem !important;
+    font-size: 0.875rem !important;
+}
+
+
 .FlexColumn{
   padding-top: 10px;
   div{

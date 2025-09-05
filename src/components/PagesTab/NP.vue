@@ -1,15 +1,6 @@
 <template>
-    <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
-    <div class="ContentDiv" style="margin-top: 20px;">
-    <DataTable :value="dataJson" scrollable scrollHeight="65vh"
-      tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
-      ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">
-      <template #header>
+    <div class="main_contain">
+      <div сlass="HeaderContain">
         <Toolbar class="mb-4">
           <template #start>
             <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
@@ -18,8 +9,13 @@
             <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow(0,0)" />
             <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
           </template>
-      </Toolbar>
-      </template>
+        </Toolbar>
+      </div>
+
+    <div class="ContentDiv">
+    <DataTable :value="dataJson" scrollable scrollHeight="65vh"
+      tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
+      ref="dt" :exportFilename="'НП_' + new Date().toISOString().slice(0, 10)">
       <Column field="nameEarthPoint" header="Название" sortable>
       <template #body="slotProps">
         <InputText 
@@ -55,7 +51,7 @@
     </Column>
   </DataTable> 
   </div>
-  </div>
+</div>
 </template>
 
 <script> 

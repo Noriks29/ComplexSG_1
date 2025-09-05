@@ -1,10 +1,19 @@
 <template>
-    <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
+    <div class="main_contain">
+      <div сlass="HeaderContain">
+        <Toolbar class="mb-4">
+          <template #start>
+            <FloatLabel>
+                  <InputNumber v-model="experimentObject.angle" inputId="angle" showButtons :invalid="!experimentObject.angle && experimentObject.angle !== 0"/>
+                  <label for="angle" class="always-top">Минимальный угол</label>
+            </FloatLabel>
+          </template>
+          <template #center>
+            <TabMenu @tab-change="viewPanel = $event.index+1" :model="[
+              {label:'Режимы'},{label:'Устройства'},{label:'Потребление энергии'},{label:'Параметры'}]" />
+          </template>
+        </Toolbar> 
+      </div>
     <div class="ContentDiv">
       <div class="Panel LeftPanel">
             <div class="FlexColumn">
@@ -97,22 +106,11 @@ import { CreateDateTime } from '@/js/WorkWithDTime.js';
 import { PagesSettings } from './PagesSettings.js';
 import Plotly from 'plotly.js-dist'
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Toolbar from 'primevue/toolbar';
-import Button from 'primevue/button';
-import Calendar from 'primevue/calendar';
-import Dropdown from 'primevue/dropdown';
-import FloatLabel from 'primevue/floatlabel';
-import InputNumber from 'primevue/inputnumber';
-
 import XLSX from 'xlsx-js-style';
   export default {
     name: 'LeaderConstellationConstellation',
     mixins: [PagesSettings],
-    components:{
-      DataTable, Column, Toolbar, Button,Calendar,Dropdown, FloatLabel, InputNumber
-    },
+    components:{},
     data(){
       return{
         clusterTopology: [], // топология сети

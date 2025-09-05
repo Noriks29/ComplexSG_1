@@ -74,30 +74,6 @@
   height: 100%;
   color: var(--color-Main);
   background: var(--background-Main);
-
-
-  &.whiteMode{
-    --font-size: 16px;
-    --background-Table1: #00000054;
-    --background-Main: #e8e8e8;
-    --background-Panel: rgba(151, 151, 151, 0.15);
-    --background-Button1: #c6c6c6;
-    --background-Button2: #9e9e9e;
-    --background-Button3: #dcdcdc;
-    --background-Panel2: white;
-    --backgroung-animatePanel: linear-gradient(120deg, transparent, rgba(35, 39, 242, 0.192), transparent);
-    --color-Main: black;
-    --box-shadow-defoult: none;
-    --box-shadow-Panel: rgba(63, 60, 60, 0.35);
-    --box-shadow-Pabel2: none;
-    --box-shadow-button: rgba(0, 0, 0, 0.6);
-    --border-Table1: #a7a7a7;
-    --border-Panel: rgba(0, 0, 0, 0.25);
-    --border-button: #bfbfbf;
-    --border-button2: #31313173;
-    --border-Panel2: #DCDCDC;
-    --border-bottom-input: #bfbfbf;
-  }
 }
 
 
@@ -145,135 +121,30 @@ body{
       }
     }
 }
-
-.main_contain { //все вкладки
+.ComponentSelect{
+  display: flex;
+  overflow: hidden;
   position: relative;
-  font-size: var(--font-size);
-  padding: 0px 0px 0px ;
-  height: fit-content;
-    .ToMenuButtonDiv {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        padding: 0px;
-        border: none;
-        background: none;
-        z-index: 5;
-        svg{
-            width: 30px;
-        }
-    }
-    .ContentDiv{
-        flex-direction: column;
-        overflow-y: auto;
-        overflow-x: hidden;
-        min-width: 60%;
-        display: flex;
-        height: 100%;
-        align-items: stretch;
-    }   
-
-    &.RowSection{
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      align-items: center;
-  
-      .ContentDiv{
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        width: 98%;
-  
-        .Panel{
-          &.RightPanel{
-            flex: 3;
-            overflow-y: auto;
-            padding: 20px;
-          }
-          &.LeftPanel{
-            flex: 1;
-            .FlexColumn{
-              display: flex;
-              div{
-                width: 100%;
-                button{
-                  width: 96%;
-                  text-align: start;
-                }
-              }
-              &.stretch{
-                align-items: stretch;
-              }
-              &.center{
-                align-items: center;
-              }
-            }
-          }
-        }
-      }
-    }
-}
-
-.iconDelete img{ //в ог 
-  width: 30px;
-}
-.addButtonIcon{
-  width: 25px;
-  position: relative;
-  top: 6px;
-  left: -10px;
-}
-.iconButton{
-  width: 25px;
-  position: absolute;
-  right: 4px;
-  top: 10px;
-}
-
-
-
-
-.input-file{ //чтение файла
-	background: var(--background-Button1);
-  color: var(--color-Main);
-  border: 1px solid var(---border-button);
-  padding: 14px;
-  font-size: var(--font-size);
-  border-radius: 10px;
-  box-shadow: -3px 3px 1px var(--box-shadow-defoult);
-  margin: 5px;
-  transition: all 0.2s;
-  position: relative;
-  display: inline-block;
-
-  span {
+  flex: 1;
+  z-index: 1;
+  height: auto;
+  background: none;
+    .main_contain { //все вкладки
     position: relative;
-    cursor: pointer;
-    outline: none;
-    box-sizing: border-box;
-    display: flex;
-    vertical-align: middle;
-    text-align: center;
-    background: none;
-    height: 100%;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    color: var(--color-Main);
-    align-items: center;
-    flex-direction: row;
-  }
-  input[type=file] {
-    position: absolute;
-    z-index: -1;
-    opacity: 0;
-    display: block;
-    width: 0;
-    height: 0;
-  }
+    flex: 1;
+    overflow: auto;
+      .ContentDiv{
+          flex-direction: column;
+          overflow-y: auto;
+          overflow-x: hidden;
+          min-width: 60%;
+          display: flex;
+          align-items: stretch;
+      }
+    } 
 }
+
+
 
 
 .ModellingDiv{ //для моделирования 
@@ -399,15 +270,4 @@ body{
       pointer-events: none;
     }
   }
-}
-
-.LoadExel{
-  img{
-    width: 35px;
-  }
-  position: absolute;
-  top: 10px;
-  left: 70px;
-  background: none;
-  border: none;
 }

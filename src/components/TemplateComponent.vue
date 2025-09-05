@@ -79,7 +79,7 @@ import KARealTime from "./KA/KARealTime.vue";
 import NP from "./PagesTab/NP.vue";
 import OG from './PagesTab/OG.vue'
 import TypeKA from './PagesTab/TypeKA.vue';
-import LogEventList from "./LogEventList/LogEventList.vue";
+import LogEventList from "./PagesTab/LogEventList.vue";
 import SystemWindow from './PagesTab/SystemWindow.vue';
 import TargetDZZ from './PagesTab/TargetDZZ.vue'
 import EarthConstellation from './PagesTab/EarthConstellation.vue'
@@ -307,15 +307,6 @@ export default {
         flex: 1;
         z-index: 21;
         margin: 5px 5px 5px 0px;
-        .ComponentSelect{
-          display: flex;
-          overflow-x: hidden;
-          position: relative;
-          flex: 1;
-          z-index: 1;
-          height: auto;
-          background: none;
-        }
       }
   } 
   }

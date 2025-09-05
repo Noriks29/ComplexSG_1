@@ -1,12 +1,7 @@
 <template>
-    <div class="main_contain RowSection" style="width: 100%;">
-    <div>
-      <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-        <img src="@/assets/exit.svg"><span>&#8203;</span>
-      </button>
-    </div>
-    <div class="ContentDiv" style="margin-top: 20px;">
-      <Toolbar class="mb-4">
+<div class="main_contain">
+      <div сlass="HeaderContain">
+        <Toolbar class="mb-4">
           <template #start>
             <Button icon="pi pi-file-excel" severity="help" @click="LoadXLSX" text label="Exel" :disabled="valueSelectOG == undefined" />
           </template>
@@ -28,7 +23,8 @@
             <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить КА" rounded text @click="AddRow" :disabled="valueSelectOG == undefined" />
           </template>
         </Toolbar> 
-
+      </div>
+    <div class="ContentDiv">
     <span>{{ valueSelectOG!==undefined?PageSettings.OGType[dataJson[valueSelectOG].inputType-1].lable:''}}</span>
     <DataTable :value="dataJson[valueSelectOG].satellites" v-if="valueSelectOG != undefined" scrollable scrollHeight="58vh"
       tableStyle="min-width: 50rem; max-width: 100%" sortMode="multiple" stripedRows removableSort

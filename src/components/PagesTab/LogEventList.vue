@@ -1,14 +1,6 @@
 <template>
-    <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
-          
-          
-    <div class="ContentDiv" style="margin-top: 30px;" >
-    <div class="Panel RightPanel">
+<div class="main_contain">
+    <div сlass="HeaderContain">
       <Toolbar class="mb-4">
         <template #start>
         </template>
@@ -16,6 +8,9 @@
           <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
         </template>
       </Toolbar>
+    </div>
+
+    <div class="ContentDiv">
       <DataTable :value="dataJson"
           tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
           ref="dtDZZcatalog" :exportFilename="'События_' + new Date().toISOString().slice(0, 10)">
@@ -38,17 +33,10 @@
           </Column>
       </DataTable>
     </div>
-    </div>
-    </div>
+  </div>
   </template>
   
   <script>
-  import DataTable from 'primevue/datatable';
-  import Column from 'primevue/column';
-  import InputNumber from 'primevue/inputnumber';
-  import Button from 'primevue/button';
-  import Toolbar from 'primevue/toolbar';
-  import InputText from 'primevue/inputtext';
   export default {
     name: 'LogEventList',
     data(){
@@ -56,23 +44,9 @@
         dataJson: []
       }
     },
-    components: {
-      DataTable,Column,InputNumber,Button,Toolbar,InputText
-    },
-    props:{
-    systemStatus:{
-          type: Object
-        },
-        modellingStatus:{
-          type: Boolean
-        }
-    },
+    components: {},
+    props:{},
     methods: {
-      SelectComponent(nameComponent) {
-        this.$emit('updateParentComponent', {
-            nameComponent: nameComponent
-        })
-      },
       async setPost() {
           this.$showLoad(true)
           await this.$FetchPost("/api/v1/event/code/add", this.dataJson)

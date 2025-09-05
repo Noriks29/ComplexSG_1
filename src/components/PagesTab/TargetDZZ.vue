@@ -1,25 +1,21 @@
 <template>
-    <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
+    <div class="main_contain">
+      <div сlass="HeaderContain">
+        {{ active }}
+        <Toolbar class="mb-4">
+          <template #start>
+            <Button  icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
+          </template>
+          <template #center v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
+            <TabMenu @tab-change="viewmode = TabList[$event.index].value" :model="TabList" />
+          </template>
+          <template #end>
+            <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
+            <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
+          </template>
+        </Toolbar>
+      </div>
     <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
-        <div class="Panel RightPanel" >
-          <Toolbar class="mb-4">
-            <template #start>
-              <Button  icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
-            </template>
-            <template #center v-if="!(systemStatus.typeWorkplace in {4:null,5:null})">
-              <div style="margin-right: 10px;"><Button @click="viewmode='request'" label="Заявки ДЗЗ" :outlined="viewmode !== 'request'"/></div>
-              <div><Button @click="viewmode='catalog'" label="Каталог целей" :outlined="viewmode !== 'catalog'"/></div>
-            </template>
-            <template #end>
-              <Button icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
-              <Button icon="pi pi-trash" class="p-button-sm" severity="danger" label="Удалить всё" rounded text @click="DeleteAll"/>
-            </template>
-          </Toolbar>
           <DataTable :value="target.request" v-if="viewmode=='request'" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort
               ref="dtDZZ" :exportFilename="'Заявки_' + new Date().toISOString().slice(0, 10)">
@@ -131,8 +127,7 @@
               </Column>
           </DataTable>
         </div>  
-    </div>
-  </div>
+</div>
 </template>
   
   <script>
@@ -147,6 +142,7 @@ import XLSX from 'xlsx-js-style';
     data(){
       return{
         viewmode: 'request',
+        TabList: [{label:'Заявки ДЗЗ', value:'request'},{label:'Каталог целей', value: 'catalog'}],
         catalogUse: {},
         systemStatus: {typeWorkplace: null},
         datarequestКАList: [],
@@ -191,7 +187,7 @@ import XLSX from 'xlsx-js-style';
         switch (this.viewmode) {
           case 'request':
             if(this.target.catalog.length < 1){
-              alert("Нет целей в каталоге, пожалуйста создайте")
+              this.$toast.add({ severity: 'warning', summary: 'Заявки', detail: "Нет целей в каталоге, пожалуйста создайте", life: 2500 });
               return;
             }
             this.target.request.push({
