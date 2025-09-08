@@ -9,35 +9,19 @@
             </FloatLabel>
           </template>
           <template #center>
-            <TabMenu @tab-change="viewPanel = $event.index+1" :model="[
-              {label:'Режимы'},{label:'Устройства'},{label:'Потребление энергии'},{label:'Параметры'}]" />
+            <TabMenu  :model="TabMenuButton" />
           </template>
         </Toolbar> 
       </div>
     <div class="ContentDiv">
-      <div class="Panel LeftPanel">
-            <div class="FlexColumn">
-              <div v-if="PageSettings.mode" style="align-items: flex-end;">
-                <FloatLabel>
-                  <InputNumber v-model="experimentObject.angle" inputId="angle" showButtons :invalid="!experimentObject.angle && experimentObject.angle !== 0"/>
-                  <label for="angle">Минимальный угол</label>
-                </FloatLabel>
-              </div>
-              <div v-if="PageSettings.mode"><Button @click="CommandWork(0)" label="Топология сети" :outlined="PageSettings.status == 0"/></div>
-              <div><Button @click="CommandWork(1)" label="Рассчитать окна видимости"  icon="pi pi-play" iconPos="right"/></div>
-              <div v-if="!PageSettings.mode"><Button  @click="CommandWork(2)" label="Расчёт плана контактов"  icon="pi pi-play" iconPos="right"/></div>
-              <div><Button @click="CommandWork(3)" label="Показать окна видимости / плана контактов" :outlined="PageSettings.status == 3"/></div>
-              <div><Button @click="CommandWork(4)" label="Графическое представление" :outlined="PageSettings.status == 4"/></div>
-              <div v-if="PageSettings.mode"><Button @click="CommandWork(5)" label="Полносвязная сеть" :outlined="PageSettings.status == 5"/></div>
-            </div>
-        </div>
-        <div class="Panel RightPanel">
           <Toolbar class="mb-4" v-if="PageSettings.status in {0:null,3:null,5:null}">
             <template #start>
               <Button v-if="PageSettings.status in {0:null,3:null,5:null}" icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
             </template>
             <template #center>
               <Button v-if="PageSettings.status == 5" @click="NetworkModelling" label="Расчёт полносвязной сети" severity="success" />
+              <Button v-if="PageSettings.status == 3" @click="CommandWork(1)" label="Расчёт окон видимости" severity="success" />
+              <Button v-if="PageSettings.status == 3 && !PageSettings.mode" @click="CommandWork(2)" label="Расчёт плана контактов" severity="success" style="margin-left: 15px;"/>
             </template>
             <template #end>
               <Button v-if="PageSettings.status in {0:null,5:null}" icon="pi pi-plus" class="p-button-sm" severity="success" label="Добавить" rounded text @click="AddRow()" />
@@ -76,12 +60,12 @@
               ref="dtSatSatNet" :exportFilename="'Сеть_КА_КА_' + new Date().toISOString().slice(0, 10)">
               <Column field="beginTime" header="Время начал" sortables>
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.beginTimeDate"  @date-select="ChangeTimeInput($event, 'beginTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'beginTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.beginTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.beginTimeDate"  @date-select="ChangeTimeInput($event, 'beginTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'beginTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.beginTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" :showSeconds="true" :manualInput="true"/>
                 </template>
               </Column>
               <Column field="endTime" header="Время окончания">
                 <template #body="slotProps">
-                  <Calendar v-model="slotProps.data.endTimeDate"  @date-select="ChangeTimeInput($event, 'endTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'endTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.endTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds='true' :manualInput="true"/>
+                  <Calendar v-model="slotProps.data.endTimeDate"  @date-select="ChangeTimeInput($event, 'endTime', slotProps.data.meshNetworkId)" @input="ChangeTimeInput($event.target.value, 'endTime', slotProps.data.meshNetworkId)" :invalid="!slotProps.data.endTimeDate" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" :showSeconds="true" :manualInput="true"/>
                 </template>
               </Column>
               <Column header="" :exportable="false" headerStyle="width: 3rem">
@@ -94,8 +78,7 @@
 
           <div id="plotlymapContain1"></div>
           </div>
-        </div>
-    </div>
+  </div>
 
     
   </template>
@@ -113,6 +96,7 @@ import XLSX from 'xlsx-js-style';
     components:{},
     data(){
       return{
+        TabMenuButton: [],
         clusterTopology: [], // топология сети
         networkClaster: [], //полносвязная сеть
         lessConstellation: [], // облегчённый список ог для селектора
@@ -287,7 +271,7 @@ import XLSX from 'xlsx-js-style';
               case 4:
                 this.PageSettings.status = 4
                 var dataPlotly = []
-                if(this.PageSettings.SatSat.length < 1 ) return
+                if(this.PageSettings.SatSat.length < 1 ) break
                 this.PageSettings.SatSat.forEach(element => {
                   let flagadd = false
                   dataPlotly.forEach(plot => {
@@ -328,7 +312,6 @@ import XLSX from 'xlsx-js-style';
                         line: {width: 1}
                       }
                     }
-                console.log(networkPlot)
                 this.networkClaster.forEach(elementNet => {
                   networkPlot.y.push('Полносвязная сеть')
                   networkPlot.base.push(CreateDateTime(elementNet.beginTime, 1))
@@ -374,7 +357,7 @@ import XLSX from 'xlsx-js-style';
     },
     async mounted() {
       this.$showLoad(true)
-      let system = await this.$SystemObject()
+      let system = await this.$SystemObject().value
       if(system.typeWorkplace in {3:null, 4:null}) { //для случаев ка-ка кластеры
         this.PageSettings.mode = true
         this.PageSettings.status = 0
@@ -386,6 +369,11 @@ import XLSX from 'xlsx-js-style';
       }
       this.ReFetch()
       this.$showLoad(false)
+
+      if(this.PageSettings.mode) this.TabMenuButton.push({label: 'Топология сети',command: () => this.CommandWork(0)})
+      this.TabMenuButton.push({label: 'Окна видимости / план контактов',command: () => this.CommandWork(3)})
+      this.TabMenuButton.push({label: 'Графическое представление',command: () => this.CommandWork(4)})
+      if(this.PageSettings.mode) this.TabMenuButton.push({label: 'Полносвязная сеть',command: () => this.CommandWork(5)})
     }
   }
   </script>

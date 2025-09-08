@@ -9,7 +9,7 @@
             <Button v-if="ExperimentStatus" @click="Experiment(false)" label="Закончить эксперимент" severity="danger" icon="pi pi-stop" iconPos="right"/>
             <Button v-if="!ExperimentStatus" @click="ShowSettings" label="Настройки" severity="help" :outlined="experimentEddit" icon="pi pi-sliders-h" iconPos="right"/>
           </div>
-          <DataTable :size="'small'" :value="[{name:'Заявки:',count:purposesJson},{name:'НП:',count:earthList.length},{name:'КА:',count:ConstellationJson.satCount}]" tableStyle="" :pt="{ thead: { style: 'display: none' }}">
+          <DataTable :size="'small'" :value="[{name:'Заявки:',count:purposesJson},{name:'НП:',count:earthList.length},{name:'КА:',count:ConstellationCount}]" tableStyle="" :pt="{ thead: { style: 'display: none' }}">
               <Column field="name" style="font-weight: bold;" ></Column>
               <Column field="count"></Column>
           </DataTable>
@@ -25,9 +25,6 @@
 </template>
   
 <script>
-import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import Panel from 'primevue/panel';
 import { KaSettings } from './KaSettings';
 
@@ -37,7 +34,7 @@ import { KaSettings } from './KaSettings';
     data(){
       return{
         purposesJson: 0, //колличество заявок
-        ConstellationJson: [], //список ог
+        ConstellationCount: 0, //список ог
         dataTable: [],
         earthList: [],
         modellingSettings:{
@@ -61,7 +58,7 @@ import { KaSettings } from './KaSettings';
       }
     },
     components:{
-      Button,DataTable,Column,Panel
+      Panel
     },
     methods: {
         async ShowSettings(){
@@ -100,18 +97,19 @@ import { KaSettings } from './KaSettings';
       },
       async ReLoadComponent(){
         this.$InitModellingRezult()
-        this.earthList = await this.$NPList().value
-        this.ConstellationJson = await this.$OGList().value
-        this.ConstellationJson.satCount = 0
-        this.ConstellationJson.forEach(Og=>{
-          this.ConstellationJson.satCount += Og.satellites.length
+        this.earthList = await this.$NPList()
+        let OGList = await this.$OGList() || []
+        this.ConstellationCount = 0
+        OGList.value.forEach(og =>{
+         this.ConstellationCount += og.satellites.length
         })
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
       },
     },
     async mounted(){
-      this.ReLoadComponent()
+      await this.ReLoadComponent()
+      
       this.modellingSettings = await this.$SetSettings(null)
     }
   }

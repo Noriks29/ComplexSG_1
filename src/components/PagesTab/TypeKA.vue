@@ -15,7 +15,6 @@
         </Toolbar> 
       </div>
       <div class="ContentDiv" :class="modellingStatus?'DisableForModelling':''">
-          <div class="Panel RightPanel">
           <div v-if="viewPanel == 1">
               <p>Режимы функционирования</p>
               <DataTable :value="SelectKA.value.modes" class="p-datatable-sm" responsiveLayout="scroll" scrollable scrollHeight="50vh">
@@ -170,7 +169,6 @@
                 </Column>
               </DataTable>
         </div>
-      </div>
   </div>
 </template>
 

@@ -1,26 +1,20 @@
 <template>
-    <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
-    <div class="ContentDiv">
-      <div class="Panel LeftPanel">
-        <div class="FlexColumn" style="padding-top: 10px;">
-          <div><Button @click="CommandWork(1)" label="Рассчитать окна видимости"  icon="pi pi-play" iconPos="right"/></div>
-          <div><Button @click="CommandWork(5)" label="Расчёт плана контактов"  icon="pi pi-play" iconPos="right"/></div>
-          <div><Button @click="CommandWork(3)" label="Окна видимости" :outlined="PageSettings.status == 3"/></div>
-          <div><Button @click="CommandWork(6)" label="Графическое представление" :outlined="PageSettings.status == 6"/></div>
-        </div>
+    <div class="main_contain">
+      <div сlass="HeaderContain">
+        <Toolbar class="mb-4">
+          <template #center>
+            <TabMenu :model="[
+              {label: 'Окна видимости',command: () => this.CommandWork(3)},{label: 'Графическое представление',command: () => this.CommandWork(6)},
+            ]" />
+          </template>
+          <template #end>
+            <Button :disabled="PageSettings.status !== 3" icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel" style="margin-left: 15px;"/>
+            <Button @click="CommandWork(1)" label="Рассчитать окна видимости"  icon="pi pi-play" iconPos="right" severity="success" style="margin-left: 15px;"/>
+            <Button @click="CommandWork(5)" label="Расчёт плана контактов" icon="pi pi-play" iconPos="right" severity="success" style="margin-left: 15px;"/>
+          </template>
+        </Toolbar> 
       </div>
-
-      <div class="Panel RightPanel">
-          <Toolbar class="mb-4" v-if="PageSettings.status == 3" >
-            <template #start>
-              <Button icon="pi pi-file-excel" severity="help" @click="exportExcel" text label="Exel"/>
-            </template>
-          </Toolbar>
+    <div class="ContentDiv">
             <DataTable :value="PageSettings.SatNp" v-if="PageSettings.status == 3" scrollable scrollHeight="60vh"
               tableStyle="min-width: 50rem" sortMode="multiple" stripedRows removableSort :size="'small'"
               ref="dtSatGs" :exportFilename="'Окна_КА_НП_' + new Date().toISOString().slice(0, 10)">
@@ -33,8 +27,7 @@
             <div id="plotlymapContain2"></div>
           </div>
       </div>
-    </div>
-    </div>
+  </div>
   </template>
   
   <script>
@@ -43,10 +36,6 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
 import Plotly from 'plotly.js-dist'
 import XLSX from 'xlsx-js-style';
 
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import Toolbar from 'primevue/toolbar';
 
   export default {
     name: 'TargetDZZ',
@@ -61,9 +50,7 @@ import Toolbar from 'primevue/toolbar';
         KAModellingRoleMode: false
       }
     },
-    components:{
-      DataTable, Column, Button, Toolbar
-    },
+    components:{},
     methods: {
        async CommandWork(commandId){
             if(commandId == 5){
@@ -191,7 +178,7 @@ import Toolbar from 'primevue/toolbar';
     
     async mounted() {
       this.$showLoad(true)
-      let system = await this.$SystemObject()
+      let system = await this.$SystemObject().value
       if(system.typeWorkplace in {3:null,4:null}){
         this.KAModellingRoleMode = true
       }
