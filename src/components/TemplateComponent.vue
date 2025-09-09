@@ -235,6 +235,11 @@ export default {
     
     created(){
       this.ChangeComponents()
+      document.addEventListener('keydown', (event) => {
+            if (event.code == 'Escape') {
+                this.SelectComponent('MapContainer')
+            }
+          });
     },
 }
 

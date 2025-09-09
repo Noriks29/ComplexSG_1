@@ -358,21 +358,6 @@ export default {
     font-size: 0.875rem !important;
 }
 
-
-.FlexColumn{
-  padding-top: 10px;
-  div{
-    display: flex;
-    height: auto;
-  }
-}
-
-#TableChargeKA{
-  .null{
-    background-color: #ff000063;
-  }
-}
-
 .narrow-input-container {
   width: 100%;
   display: flex;

@@ -379,53 +379,9 @@ import XLSX from 'xlsx-js-style';
   </script>
 
 <style lang="scss" scoped>
-
-.FlexColumn{
-  padding-top: 10px;
-  div{
-    display: flex;
-    height: auto;
-  }
-}
-
-
-
-
-#PlotlyDiv{
-  width: 100vw;
-    height: 100vh;
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    background-color: #000000d4;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-  .ContainerDiv{
-    min-width: 90vw;
-    margin-top: 100px;
-    flex: 1;
-    margin-bottom: 20px;
-    background-color: #111111c7;
-    border: 2px solid #4c4b4b;
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-
-    .closebutton{
-      display: flex;
-      margin: 20px;
-      flex-direction: row-reverse;
-      button{
-        background: none;
-        border: none;
-        img{
-          width: 25px;
-        }
-      }
-    }
-  }
-  
+.always-top {
+    top: 0.1rem !important;
+    left: 0.2rem !important;
+    font-size: 0.875rem !important;
 }
 </style>

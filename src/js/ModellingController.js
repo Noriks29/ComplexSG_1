@@ -194,8 +194,6 @@ const ModellingProcess = {
         this.$showToast('Ошибка сохранения настроек','error',"LOAD");
       }
     };
-
-
     app.mixin({
       mounted() {
         if (this.$options.name === "ModellingComponent") {

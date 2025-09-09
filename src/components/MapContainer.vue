@@ -61,9 +61,7 @@ import shadow from 'leaflet/dist/images/marker-shadow.png';
 import { PagesSettings } from './PagesTab/PagesSettings';
 import {GetAddres} from '@/js/config_server'
 
-import Dropdown from 'primevue/dropdown';
 import ColorPicker from 'primevue/colorpicker';
-import Button from 'primevue/button';
 
 
 export default {
@@ -88,7 +86,7 @@ export default {
     }
   },
   components:{
-    Dropdown, ColorPicker, Button
+    ColorPicker
   },
   methods: {
       async CreateMap(){

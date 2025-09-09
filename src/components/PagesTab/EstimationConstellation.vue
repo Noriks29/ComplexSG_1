@@ -1,7 +1,6 @@
+
 <template>
     <div class="main_contain RowSection">
-          <DefaultTable v-if="ShowDefaultTable" :dataLableName="dataLableName" :dataTable="dataTable" @closetable="ShowDefaultTable = false"/>
-          <div>
             <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
               <img src="../../assets/exit.svg">
             </button>
@@ -63,23 +62,19 @@
         </div>
         
       </div>
-      </div>
   </template>
   
   <script>
 
 import {UnixToDtime} from "../../js/WorkWithDTime.js";
 import { PagesSettings } from './PagesSettings';
-import DefaultTable from '../DefaultTable.vue';
 
 import Plotly from 'plotly.js-dist'
 
   export default {
     name: 'EstimationConstellation',
     mixins: [PagesSettings],
-    components:{
-      DefaultTable,
-    },
+    components:{},
     data(){
       return{
         purposesJson: 0,

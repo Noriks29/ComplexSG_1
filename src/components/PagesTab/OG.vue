@@ -312,19 +312,6 @@ import XLSX from 'xlsx-js-style';
   }
 }
 
-.ElementCol{
-  display: grid;
-  grid-template-columns: 4fr 3fr 1fr;
-  background: var(--background-Button1);
-  border: 1px solid var(--border-button);
-  padding: 5px;
-  border-radius: 5px;
-  margin: 1px 5px;
-  transition: all 0.2s;
-  div{
-    padding: 5px 10px;
-  }
-}
 
 .flexrow{
   display: flex;
@@ -332,32 +319,6 @@ import XLSX from 'xlsx-js-style';
   align-items: center;
   .p-float-label{
     margin: 10px 10px;
-  }
-}
-
-.OGList{
-  display: flex;
-  .ButtonCommand{
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    width: auto !important;
-    flex: none !important;
-    .addButtonIcon{
-      top: auto;
-    }
-  }
-}
-.LoadExel{
-  display: flex;
-  justify-content: space-between;
-  padding: 0px 20px;
-  div{
-    display: flex;
-    align-items: center;
-  }
-  img{
-    width: 30px;
   }
 }
 </style>

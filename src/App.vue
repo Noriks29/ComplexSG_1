@@ -38,16 +38,16 @@
         </template>
         <template #end>
           <div class="endMenu">
-            <p>Пользователь: {{ login }} {{ SystemObject }}</p>
+            <p>Пользователь: {{ login }}</p>
             <Button icon="pi pi-bars" outlined :class="systemStatus.typeWorkplace !== -1 ? 'show' : ''" @click="ChangetypeWorkplace(-1)" class="p-button-sm" severity="info"/>
             <Button label="Выйти" outlined @click="Log_out" icon="pi pi-sign-out" iconPos="right" class="p-button-sm" severity="danger"/>
           </div>
         </template>
       </Menubar>
-      <TemplateComponent v-if="systemStatus.typeWorkplace != -1" @reload="ReloadTemplate"/>
+      <TemplateComponent v-if="systemStatus.typeWorkplace != -1"/>
     </div>
     <div class="ChangeViewMode" @click="ChangeColor"><Button :icon="'pi '+(!colorthemBlack?'pi-sun':'pi-moon') " severity="secondary" style="height: 1.5rem;width: 1.5rem;"/></div>
-    <AlertToast /><LoadProcess />
+    <LoadProcess />
     <Toast /><ConfirmDialog></ConfirmDialog>
 </template> 
 <script>
@@ -55,20 +55,10 @@ import TemplateComponent from './components/TemplateComponent.vue'
 import LoadProcess from './components/LoadProcess.vue'
 import './style/GlobalStyle.scss'
 import '@/style/GlobalElementStyle.scss'
-import AlertToast from './components/AlertToast.vue'
 
 
 import NET from 'vanta/dist/vanta.net.min'
 import * as THREE from 'three'
-
-import FloatLabel from 'primevue/floatlabel';
-import Button from 'primevue/button';
-import InputText from 'primevue/inputtext';
-import Password from 'primevue/password';
-import Card from 'primevue/card';
-
-import Menubar from 'primevue/menubar';
-
 
 export default {
   name: 'App',
@@ -78,7 +68,6 @@ export default {
       titleModule: '',
       login: undefined,
       workplaceList: [],
-      SystemObject: null,
       colorthemBlack: true,
       form: {login: undefined, password: undefined}
     }
@@ -86,13 +75,6 @@ export default {
   components: {
     TemplateComponent,
     LoadProcess,
-    AlertToast,
-    Button,
-    InputText,
-    FloatLabel,
-    Password,
-    Card,
-    Menubar
   },
   methods: {
       StartLogin(){
@@ -112,7 +94,6 @@ export default {
           this.$InitAccess(null)
         }
         else if(result.length > 0){
-          //this.$showToast('Добро пожаловать '+data.nameUser,'success', 'Login');
           this.$toast.add({ severity: 'success', summary: 'Добро пожаловать', detail: 'Пользователь: ' + data.nameUser, life: 3000 });
           result.sort((a,b) => {return a.type - b.type})
           this.workplaceList = result
@@ -154,18 +135,14 @@ export default {
         this.$showLoad(false);
       },
       ChangetypeWorkplace(mode){
+        this.workplaceList.forEach(workplace => {
+          if(workplace.type == mode){
+            this.StartSystem(workplace)
+            return
+          }
+        })
         this.titleModule = ''
-          this.workplaceList.forEach(workplace => {
-            if(workplace.type == mode){
-              this.StartSystem(workplace)
-              return
-            }
-          })
-          this.$ClearGlobalData()
-      },
-      async ReloadTemplate(){
-        let tWP = this.systemStatus.typeWorkplace
-        await this.ChangetypeWorkplace(tWP)
+        this.$ClearGlobalData()
       },
       CreateBg(){
         let bg = '#dddddd'
@@ -185,7 +162,7 @@ export default {
             scaleMobile: 1.00,
             color: 0x15eb,       // Цвет точек
             backgroundColor: bg, // Фон (чёрный)
-            points: 7.00,
+            points: 6.00,
             maxDistance: 27.00,
             spacing: 20.00,
           })
@@ -207,7 +184,6 @@ export default {
   async mounted() {
     this.$showLoad(true);
     this.CreateBg()
-    this.$primevue.changeTheme('aura-light-blue', 'aura-dark-blue', 'theme-link', () => {});
     this.workplaceList = []
     if(localStorage.nameUser != undefined && localStorage.email != undefined && localStorage.password != undefined){
       let data = {
@@ -216,14 +192,6 @@ export default {
             "password": localStorage.password,
       }
       this.VerifyWorkSapce(data)
-    }
-    localStorage.viewMode = localStorage.viewMode || 0
-    try {
-      if (localStorage.viewMode == true) {
-        document.getElementById("app").className = "whiteMode";
-      }
-    } catch (error) {
-      console.log(error)
     }
     this.$showLoad(false);
   },

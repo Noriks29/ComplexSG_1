@@ -48,34 +48,9 @@
     justify-content: center;
     align-items: center;
     z-index: 25;
-    box-shadow: inset 0px 0px 1000px 9px black;
 
   .ModalWindow{
     background-color: rgba(255, 255, 255, 0.044);
-    box-shadow: 0px 0px 1000px 100px rgb(0, 0, 0);
-  }
-  .closeButton{
-    position: absolute;
-    bottom: 40px;
-    z-index: 12;
-    button{
-      background: none;
-      border: 2px solid var(--color-Main);
-      padding: 10px 60px;
-      border-radius: 14px;
-      color: var(--color-Main);
-      backdrop-filter: blur(5px);
-      box-shadow: 0px 0px 5px 0px var(--color-Main);
-      transition: all 0.5s;
-      
-      &:hover{
-        box-shadow: 0px 2px 5px 0px var(--color-Main);
-      }
-      &:active{
-        box-shadow: 0px 0px 0px 0px var(--color-Main);
-        backdrop-filter: blur(0px);
-      }
-    }
   }
 
   :root {

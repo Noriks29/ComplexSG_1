@@ -76,7 +76,7 @@
   </script>
 
   <style lang="scss" scoped>
-  .narrow-input-container {
+.narrow-input-container {
   width: 100%;
   display: flex;
   justify-content: center;

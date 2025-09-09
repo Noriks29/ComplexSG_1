@@ -137,5 +137,3 @@ import XLSX from 'xlsx-js-style';
   }
   </script>
 
-<style lang="scss" scoped>
-</style>

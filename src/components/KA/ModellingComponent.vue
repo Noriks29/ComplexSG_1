@@ -25,7 +25,6 @@
 </template>
   
 <script>
-import Panel from 'primevue/panel';
 import { KaSettings } from './KaSettings';
 
   export default {
@@ -57,9 +56,7 @@ import { KaSettings } from './KaSettings';
         ],
       }
     },
-    components:{
-      Panel
-    },
+    components:{},
     methods: {
         async ShowSettings(){
           console.log("fesfefsfef")

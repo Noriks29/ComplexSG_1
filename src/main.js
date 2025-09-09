@@ -1,13 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import AlertToastPlugin from './js/alert'
 import LoadProcessPlugin from './js/load'
 import GlobalDataPlugin from './js/GlobalData'
 import ModellingProcess from './js/ModellingController'
 import 'core-js/stable'
 
 const app = createApp(App)
-app.use(AlertToastPlugin)
 app.use(LoadProcessPlugin)
 app.use(GlobalDataPlugin)
 app.use(ModellingProcess)
@@ -48,7 +46,12 @@ import Calendar from 'primevue/calendar';
 import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row'; 
 import TabMenu from 'primevue/tabmenu';
-
+import Password from 'primevue/password';
+import Card from 'primevue/card';
+import Menubar from 'primevue/menubar';
+import Panel from 'primevue/panel';
+import RadioButton from 'primevue/radiobutton';
+import Checkbox from 'primevue/checkbox';
 
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -74,8 +77,13 @@ app.component('Calendar', Calendar);
 app.component('ColumnGroup', ColumnGroup);
 app.component('Row', Row);
 app.component('TabMenu', TabMenu);
-
-
-
+app.component('Password', Password);
+app.component('Card', Card);
+app.component('Menubar', Menubar);
+app.component('Panel', Panel);
+app.component('RadioButton', RadioButton);
+app.component('Checkbox', Checkbox);
 
 app.mount('#app')
+
+

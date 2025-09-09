@@ -10,8 +10,8 @@
           <FlightplanForm v-if="ShowMode=='FlightplanForm'" :dataTable="modellingRezult.Select.E79"/>
           <ShootingPlan v-if="ShowMode=='ShootingPlan'" :dataTable="modellingRezult.Select.E77"/>
           <FcLog v-if="ShowMode=='FcLog'" :dataTable="modellingRezult.Select.fcLog"/>
+          <LogSmao v-if="ShowMode=='LogSmao'" :dataTable="modellingRezult.Smao"/>
 
-          <DefaultTable v-if="ShowMode=='DefaultTable'" :dataLableName="dataLableName" :dataTable="dataTable" :prevrap="PreWrapDefaultTable"/>
           <E78Table v-if="ShowMode=='E78Table'" :dataTable="modellingRezult.Select.E78"/>
           <E77E78 v-if="ShowMode=='E77E78'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
           <BookmarkTable v-if="ShowMode=='BookmarkTable'" :dataTable1="modellingRezult.E77" :dataTable2="modellingRezult.E78"/>
@@ -85,20 +85,17 @@
 import LogComplet from './LogComplet.vue';
 import LogDownload from './LogDownload.vue';
 import FlightplanForm from './FlightplanForm.vue';
-import DefaultTable from '../DefaultTable.vue';
 import ShootingPlan from './ShootingPlan.vue';
 import E78Table from './E78Table.vue';
 import E77E78 from './E77E78.vue';
 import BookmarkTable from './BookmarkComponent.vue';
 import FcLog from './FcLog.vue';
+import LogSmao from './LogSmao.vue';
 
 import StatisticComponent from './StatisticComponent.vue';
 import LogAll from './LogAll.vue';
 import EventLog from './EventLog.vue';
 
-import Panel from 'primevue/panel';
-import RadioButton from 'primevue/radiobutton';
-import Checkbox from 'primevue/checkbox';
   export default {
     name: 'ModelingPanel',
     data(){
@@ -131,10 +128,6 @@ import Checkbox from 'primevue/checkbox';
             }
         },
         ShowMode: 'Settings',
-        SettingsShow: true,
-        PreWrapDefaultTable: false,
-        dataLableName: [{label: "data", nameParam: "data"}],
-        dataTable: [],
       }
     },
     props:{
@@ -146,17 +139,12 @@ import Checkbox from 'primevue/checkbox';
         },
     },
     components:{
-      LogComplet,LogDownload,FlightplanForm,
-      DefaultTable,ShootingPlan,
+      LogComplet,LogDownload,FlightplanForm,ShootingPlan,
         E78Table,
       E77E78,
       BookmarkTable,
       StatisticComponent,
-      LogAll,EventLog,FcLog,
-
-      Panel,
-      RadioButton,
-      Checkbox
+      LogAll,EventLog,FcLog,LogSmao,
     },
     watch: {
       ModelingRezultMode(newreload) {
@@ -175,23 +163,11 @@ import Checkbox from 'primevue/checkbox';
         this.$ReloadSettings()
       },
       ValidateShowPanel(Panel){
-        if(Panel == "LogSmao")this.ShowLogSmao()
-        else if(Panel == "Settings"){
+        if(Panel == "Settings"){
           this.modellingSettings = this.$GetSettings()
           this.ShowMode = "Settings"
         }
         else this.ShowMode = Panel
-      },
-      ShowLogSmao(){
-        this.dataTable = [] 
-        this.modellingRezult.Smao.forEach(element => {
-          this.dataTable.push({data: element})
-        })
-        this.dataLableName = [
-          {lable: "data", nameParam: "data", style:'text-align: left;'}
-        ]
-        this.PreWrapDefaultTable = true
-        this.ShowMode='DefaultTable'
       },
     },
     async mounted(){
