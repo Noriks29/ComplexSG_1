@@ -5,6 +5,7 @@
         <ModellingComponent v-if="system.typeWorkplace != -1" :ExperimentStatus="ExperimentStatus" @ChangeExperimentStatus="ChangeExperimentStatus"  @showSettings="ChangeExperimentEddit($event)"/>
       </div>
       <div class="FooterSection" v-if="system.typeWorkplace != -1">
+        
         <ModelingRezult :systemStatus="system" @showRezult="ShowModellingPanel"/>
         <Panel class="workpage" :pt="{ header: { style: 'display: none' }, content:{style:'display: flex;padding: 0px;height:100%'},toggleablecontent:{style:'height: 100%;'} }" :style="'overflow: hidden;'">
             <transition name="translate" mode="out-in" v-if="activeComponent != ''">
@@ -53,6 +54,7 @@
           <template #start>
             <span class="ButtonStartMenu">
               <Button icon="pi pi-th-large" severity="info" text :style="'height: 35px;width: 35px;'" @click="animation.menuhide = !animation.menuhide"/>
+              <Button icon="pi pi-map" label="Карта" severity="help" class="ToMenuButtonDiv" :outlined="activeComponent!='MapContainer'"  @click="SelectComponent('MapContainer')"/>
               <!--<div class="ImportExport">
                 <Button icon="pi pi-upload"   severity="success" text outlined :style="'height: 35px;width: 35px;'"/>
                 <Button icon="pi pi-download" severity="danger" text outlined :style="'height: 35px;width: 35px;'"/>
@@ -316,6 +318,6 @@ export default {
     img{
       transition: all 0.5s linear;
     }
-    
   }
+
 </style>
