@@ -95,21 +95,17 @@ import { KaSettings } from './KaSettings';
         }
         this.$showLoad(false);
       },
-      async ReLoadComponent(){
-        this.$InitModellingRezult()
-        this.earthList = await this.$NPList()
-        let OGList = await this.$OGList() || []
-        this.ConstellationCount = 0
-        OGList.value.forEach(og =>{
-         this.ConstellationCount += og.satellites.length
-        })
-        let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
-        this.purposesJson = result.length
-      },
     },
     async mounted(){
-      await this.ReLoadComponent()
-      
+      this.$InitModellingRezult()
+      this.earthList = await this.$NPList()
+      let OGList = await this.$OGList() || []
+      this.ConstellationCount = 0
+      OGList.value.forEach(og =>{
+        this.ConstellationCount += og.satellites.length
+      })
+      let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
+      this.purposesJson = result.length
       this.modellingSettings = await this.$SetSettings(null)
     }
   }

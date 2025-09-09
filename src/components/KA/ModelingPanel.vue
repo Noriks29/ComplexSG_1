@@ -1,13 +1,7 @@
 <template>
-  <div class="main_contain RowSection">
-          <div>
-            <button class="ToMenuButtonDiv" @click="SelectComponent('TemplateComponent')">
-              <img src="../../assets/exit.svg">
-            </button>
-          </div>
+  <div class="main_contain">
     
-    <div class="ContentDiv" style="margin-top: 30px;" >
-        <div class="Panel RightPanel" >
+    <div class="ContentDiv">
           <StatisticComponent v-if="ShowMode=='StatisticComponent'" :dataTable="modellingRezult"/>
           <LogAll v-if="ShowMode=='LogAll'" :dataTable="modellingRezult.log"/>
           <EventLog v-if="ShowMode=='EventLog'" :dataTable="modellingRezult.events"/>
@@ -84,7 +78,6 @@
           </div>
 
         </div>  
-    </div>
   </div>
 </template>
   

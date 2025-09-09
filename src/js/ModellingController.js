@@ -27,7 +27,7 @@ const ModellingProcess = {
     }
     app.config.globalProperties.$SetSettings = async function (data=null) {
       if(data == null){
-        let system = this.$SystemObject()
+        let system = this.$SystemObject().value
         ModellingSettings.value = {experiment: 0,flightPlanning: 0,planSimulation: 0,chargeForecasting: 0,useInteraction: 0,chargeSimulation: 0,optionPro42: 0}
         if (system.typeWorkplace in {2:null}) {
           ModellingSettings.value.experiment = 1

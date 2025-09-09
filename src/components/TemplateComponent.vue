@@ -74,7 +74,6 @@
 
 <script>
 //import { saveAs } from 'file-saver';
-import KARealTime from "./KA/KARealTime.vue";
 
 import NP from "./PagesTab/NP.vue";
 import OG from './PagesTab/OG.vue'
@@ -110,8 +109,6 @@ export default {
     TargetRoad,
     LeaderConstellationConstellation,
     LogEventList,
-
-    KARealTime,
     MapContainer,
 
     ModellingComponent,

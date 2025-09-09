@@ -93,6 +93,7 @@ import Dropdown from 'primevue/dropdown';
         let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
         this.purposesJson = result.length
         this.arr = []
+        console.log(this.ConstellationJson)
         for (let i = 0; i < this.ConstellationJson.length; i++) {
           for (let index = 0; index < this.ConstellationJson[i].satellites.length; index++) {
             const element = this.ConstellationJson[i].satellites[index];

@@ -74,7 +74,7 @@
           PrevrapData(){
             let dataT = []
             dataT = dataT.concat(this.dataTable.events)
-            let OGlist = this.$OGList()
+            let OGlist = this.$OGList().value
             this.notTransmittedData = this.dataTable.smaoTables.notTransmittedData
             let SatOgList = {}
             let KPIOGData = {}

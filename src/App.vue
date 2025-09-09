@@ -140,7 +140,6 @@ export default {
               localStorage.removeItem('password')
               this.workplaceList = []
               this.login = undefined
-              this.systemStatus = {typeWorkplace: -1}
               this.$ClearGlobalData()
             },
         });
@@ -162,12 +161,10 @@ export default {
               return
             }
           })
-          this.systemStatus = {typeWorkplace: -1}
           this.$ClearGlobalData()
       },
       async ReloadTemplate(){
         let tWP = this.systemStatus.typeWorkplace
-        this.systemStatus = {typeWorkplace: -1}
         await this.ChangetypeWorkplace(tWP)
       },
       CreateBg(){

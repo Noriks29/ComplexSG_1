@@ -125,9 +125,9 @@ const GlobalDataPlugin = {
     };
     
     apiVite.$InitGlobalData = async function(){
-      await $GetSystemObject()
       await $GetNPList()
       await $GetOGList()
+      await $GetSystemObject()
       await $GetTargets()
       return
     }
