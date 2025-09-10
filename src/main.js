@@ -52,6 +52,7 @@ import Menubar from 'primevue/menubar';
 import Panel from 'primevue/panel';
 import RadioButton from 'primevue/radiobutton';
 import Checkbox from 'primevue/checkbox';
+import Menu from 'primevue/menu';
 
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -83,6 +84,7 @@ app.component('Menubar', Menubar);
 app.component('Panel', Panel);
 app.component('RadioButton', RadioButton);
 app.component('Checkbox', Checkbox);
+app.component('Menu', Menu);
 
 app.mount('#app')
 

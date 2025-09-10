@@ -95,8 +95,6 @@ import ModelingRezult from './KA/ModelingRezult.vue';
 import ModelingPanel from './KA/ModelingPanel.vue';
 
 import Menu from 'primevue/menu';
-import Button from 'primevue/button';
-import Panel from 'primevue/panel';
 export default {
   name: 'TemplateComponent',
   emits: ['changeExperimentStatus'],
@@ -117,7 +115,7 @@ export default {
     ModelingPanel,
     ModelingRezult,
 
-    Menu,Button,Panel
+    Menu
   },
   data(){
       return{

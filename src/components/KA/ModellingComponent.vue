@@ -85,12 +85,19 @@ import { KaSettings } from './KaSettings';
         let dataPost = Object.assign(this.modellingSettings)
         dataPost.chargeSimulation = Number(dataPost.chargeSimulation)
         dataPost.optionPro42 = Number(dataPost.optionPro42)
-        let rezult = await this.$FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
-        if(rezult.engineLogResponse.length > 0){
-          let events = await this.$FetchGet('/api/v1/event/codes/all') || []
-          this.$SetModellingRezult(rezult,events)
+        try {
+          let rezult = await this.$FetchPost("/api/v1/smao", dataPost) || {engineLogResponse: []}
+          if(rezult.engineLogResponse.length > 0){
+            let events = await this.$FetchGet('/api/v1/event/codes/all') || []
+            this.$SetModellingRezult(rezult,events)
+          }
+          
+        } catch (error) {
+          console.log(error)
+          this.$showLoad(false);
         }
         this.$showLoad(false);
+        
       },
     },
     async mounted(){

@@ -190,7 +190,6 @@ import XLSX from 'xlsx-js-style';
                 formData.append('file', file); // Добавляем файл
                 formData.append('constellationName', this.OG_Param.constellationName); // Добавляем имя
                 formData.append('inputType', 3);
-                console.log(formData)
                 responce = await this.$FetchPostFile("/api/v1/constellation/upload/tle", formData)
               }
               if(responce.type == "SUCCESS"){

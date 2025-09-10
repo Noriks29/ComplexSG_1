@@ -1,6 +1,19 @@
 <template>
     
     <div class="ModellingPanel" :class="RezultShow?'show':''">
+      <Menu :style="'margin: 1px;min-width: fit-content;overflow-y:auto;overflow-x:hidden;'" :model="rezultMenu">
+          <template #item="{ item }">
+            <Dropdown v-if="item.button" v-model="valueSS" :options="arr" @change="SelectChange($event.value)" optionLabel="lable" />
+            <a v-else class="flex align-items-center p-menuitem-link" :class="{ 'p-disabled': item.disabled }">
+              <span :class="item.icon"  v-if="item.icon"/>
+              <span>{{ " "+item.label }}</span>
+              <span v-if="item.shortcut" class="ml-auto border-1 surface-border border-round surface-100 text-xs p-1">
+                {{ item.shortcut }}
+              </span>
+            </a>
+          </template>
+        </Menu>
+        <!--
       <div class="tdflexRow">
         <p>Сводки</p>
         <button v-if="systemStatus.typeWorkplace==2" @click="ShowTable='E77E78'" :class="(modellingRezult.E77.length < 1 || modellingRezult.E78.length < 1 ) ? 'disable' : ''" class="ButtonCommand">План выполнения заявок</button>
@@ -22,7 +35,7 @@
         <button @click="ShowTablePanel('LogAll')" :class="(modellingRezult.log.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог движка</button>
         <button @click="ShowTablePanel('EventLog')" :class="(modellingRezult.events.length < 1) ? 'disable' : ''" class="ButtonCommand">Лог событий</button>
         <button @click="ShowTablePanel('LogSmao')" :class="(modellingRezult.Smao.length < 1) ? 'disable' : ''" class="ButtonCommand"><img src="../../assets/instructions.png" alt="smaoResponse" width="32"></button>
-      </div>
+      </div>-->
   </div>
 </template>
   
@@ -50,14 +63,13 @@ import Dropdown from 'primevue/dropdown';
             selectKA: undefined
           }
         },
-
         arr: [],
         valueSS: {},
-
-        ShowTable: null, //переменная для отображения таблиц
-        PreWrapDefaultTable: false,
-        dataLableName: [{label: "data", nameParam: "data"}],
-        dataTable: [],
+        rezultMenu:[
+          {label: 'Сводки',items: []},
+          {label: 'Работа КА',items: []},
+          {label: 'Система',items: []},
+        ],
       }
     },
     props:{
@@ -75,6 +87,7 @@ import Dropdown from 'primevue/dropdown';
         dataTransfer(data){ //доставка данных в компонент с моделлирования
           this.modellingRezult = data
           this.SelectChange(this.valueSS)
+          this.CreateMenu()
         },
         async SelectChange(target){
           await this.$SetModellingRezultSelect(target.value)
@@ -87,6 +100,28 @@ import Dropdown from 'primevue/dropdown';
         
         async modellingRezultSelect_FillById(id){ //выбор данных под ка
         await this.$SetModellingRezultSelect(id)
+      },
+      CreateMenu(){
+        this.rezultMenu = [
+          {label: 'Сводки',items: []},
+          {label: 'Работа КА',items: []},
+          {label: 'Система',items: []},
+        ],
+        this.rezultMenu[2].items.push({ label: 'Лог движка', command: () => this.ShowTablePanel('LogAll'), disabled: this.modellingRezult.log.length < 1})
+        this.rezultMenu[2].items.push({ label: 'Лог событий', command: () => this.ShowTablePanel('EventLog'), disabled: this.modellingRezult.events.length < 1})
+        this.rezultMenu[2].items.push({ icon: 'pi pi-receipt', label: 'Лог SMAO', command: () => this.ShowTablePanel('LogSmao'), disabled: this.modellingRezult.Smao.length < 1})
+
+        if(this.systemStatus.typeWorkplace==2)this.rezultMenu[0].items.push({ label: 'План выполнения заявок', command: () => this.ShowTablePanel('E77E78'), disabled: this.modellingRezult.E77.length < 1 || this.modellingRezult.E78.length < 1 })
+        if(this.systemStatus.typeWorkplace==2)this.rezultMenu[0].items.push({ label: 'План закладок', command: () => this.ShowTablePanel('BookmarkTable'), disabled: this.modellingRezult.E77.length < 1 || this.modellingRezult.E78.length < 1 })
+        if(this.systemStatus.typeWorkplace in {1:null,3:null,4:null})this.rezultMenu[0].items.push({ label: 'Лог выполнения заявок', command: () => this.ShowTablePanel('LogComplet'), disabled: this.modellingRezult.events.length < 1})
+        if(this.systemStatus.typeWorkplace in {3:null,4:null})this.rezultMenu[0].items.push({ label: 'Лог доставки данных', command: () => this.ShowTablePanel('LogDownload'), disabled: this.modellingRezult.events.length < 1})
+        if(this.systemStatus.typeWorkplace in {3:null,4:null})this.rezultMenu[0].items.push({ label: 'Статистика', command: () => this.ShowTablePanel('StatisticComponent'), disabled: this.modellingRezult.events.length < 1})
+        
+        this.rezultMenu[1].items.push({button:true})
+        this.rezultMenu[1].items.push({ label: 'План съёмок', command: () => this.ShowTablePanel('ShootingPlan'), disabled: this.modellingRezult.Select.E77.length < 1})
+        if(this.systemStatus.typeWorkplace==2)this.rezultMenu[1].items.push({ label: 'План доставки<', command: () => this.ShowTablePanel('E78Table'), disabled: this.modellingRezult.Select.E78.length < 1})
+        this.rezultMenu[1].items.push({ label: 'План полёта', command: () => this.ShowTablePanel('FlightplanForm'), disabled: this.modellingRezult.Select.E79.length < 1})
+        this.rezultMenu[1].items.push({ label: 'Лог полёта', command: () => this.ShowTablePanel('FcLog'), disabled: this.modellingRezult.Select.fcLog.length < 1})
       },
       async ReLoadComponent(){
         this.ConstellationJson = this.$OGList().value
@@ -113,6 +148,11 @@ import Dropdown from 'primevue/dropdown';
                 this.ShowTable = null
             }
           });
+      
+      
+    
+      //  <Dropdown v-model="valueSS" :options="arr" @change="SelectChange($event.value)" optionLabel="lable" />
+    
     }
   }
   </script>
