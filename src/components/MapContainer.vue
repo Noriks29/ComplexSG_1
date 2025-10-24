@@ -42,7 +42,7 @@
       </div>
       <div>
         <button class="ButtonCommand" @click="AddNP">Добавить НП</button>
-        <button class="ButtonCommand" @click="AddRequest" :class="system.typeWorkplace == 3? 'disable':''" :disabled="system.typeWorkplace == 3">Добавить в каталог</button>
+        <button class="ButtonCommand" @click="AddRequest" >Добавить в каталог</button>
       </div>
       
     </div>
@@ -73,7 +73,7 @@ export default {
         KatoDraw: {},
         KAArray: [],
         requestJson: [],
-        NPList: [],OGList:[],catalogJson: [],system:{},
+        NPList: [],OGList:[],catalogJson: [],
         AddPoint:{
           showadd: false,
           lat: 0,
@@ -95,10 +95,11 @@ export default {
           console.log(await document.getElementById("map"))
           this.map = L.map('map', {zoomAnimation: true}).setView(new L.LatLng(55, 60), 3);
           //L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', 
-          L.tileLayer('http://'+addresConfig+'/api/v1/map/{z}/{s}/{x}/{y}.png', 
+          L.tileLayer('http://'+addresConfig+'/api/v1/map/{z}/{x}/{y}.png', 
+          //L.tileLayer('http://localhost:8000/map/{z}/{x}/{y}.png', 
           {
             minZoom: 1, 
-            maxZoom: 5,
+            maxZoom: 8,
             attribution: ''
           }).addTo(this.map);
           let DefaultIcon = new L.icon({
@@ -247,7 +248,6 @@ export default {
       this.NPList = await this.$NPList()
       this.OGList = await this.$OGList()
       this.catalogJson = await this.$FetchGet('/api/v1/satrequest/catalog/get/all') || []
-      this.system = await this.$SystemObject()
       this.KAArray.push({value: null, lable: "Все КА" })
       this.OGList.forEach(OG => {
         OG.satellites.forEach(element =>{

@@ -9,7 +9,9 @@
             <Button v-if="ExperimentStatus" @click="Experiment(false)" label="Закончить эксперимент" severity="danger" icon="pi pi-stop" iconPos="right"/>
             <Button v-if="!ExperimentStatus" @click="ShowSettings" label="Настройки" severity="help" :outlined="experimentEddit" icon="pi pi-sliders-h" iconPos="right"/>
           </div>
-          <DataTable :size="'small'" :value="[{name:'Заявки:',count:purposesJson},{name:'НП:',count:earthList.length},{name:'КА:',count:ConstellationCount}]" tableStyle="" :pt="{ thead: { style: 'display: none' }}">
+          <DataTable :size="'small'" :value="[
+            {name:'Заявки:',count:purposesJson.datarequest.length + purposesJson.request.length},
+            {name:'НП:',count:earthList.length},{name:'КА:',count:ConstellationCount}]" tableStyle="" :pt="{ thead: { style: 'display: none' }}">
               <Column field="name" style="font-weight: bold;" ></Column>
               <Column field="count"></Column>
           </DataTable>
@@ -32,7 +34,7 @@ import { KaSettings } from './KaSettings';
     mixins: [KaSettings],
     data(){
       return{
-        purposesJson: 0, //колличество заявок
+        purposesJson: {datarequest:[],request:[]}, //колличество заявок
         ConstellationCount: 0, //список ог
         dataTable: [],
         earthList: [],
@@ -108,8 +110,9 @@ import { KaSettings } from './KaSettings';
       OGList.value.forEach(og =>{
         this.ConstellationCount += og.satellites.length
       })
-      let result = await this.$FetchGet('/api/v1/satrequest/request/get/all') || []
-      this.purposesJson = result.length
+      
+
+      this.purposesJson = await this.$Targets()
       this.modellingSettings = await this.$SetSettings(null)
     }
   }

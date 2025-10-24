@@ -93,6 +93,8 @@ import Dropdown from 'primevue/dropdown';
           await this.$SetModellingRezultSelect(target.value)
           this.modellingRezult = this.$GetModellingRezult()
           this.ShowTablePanel(null)
+          this.CreateSelectMenu()
+
         },
         ShowTablePanel(mode){
           this.$emit('showRezult', mode)
@@ -117,6 +119,10 @@ import Dropdown from 'primevue/dropdown';
         if(this.systemStatus.typeWorkplace in {3:null,4:null})this.rezultMenu[0].items.push({ label: 'Лог доставки данных', command: () => this.ShowTablePanel('LogDownload'), disabled: this.modellingRezult.events.length < 1})
         if(this.systemStatus.typeWorkplace in {3:null,4:null})this.rezultMenu[0].items.push({ label: 'Статистика', command: () => this.ShowTablePanel('StatisticComponent'), disabled: this.modellingRezult.events.length < 1})
         
+        this.CreateSelectMenu()
+      },
+      CreateSelectMenu(){
+        this.rezultMenu[1].items = []
         this.rezultMenu[1].items.push({button:true})
         this.rezultMenu[1].items.push({ label: 'План съёмок', command: () => this.ShowTablePanel('ShootingPlan'), disabled: this.modellingRezult.Select.E77.length < 1})
         if(this.systemStatus.typeWorkplace==2)this.rezultMenu[1].items.push({ label: 'План доставки<', command: () => this.ShowTablePanel('E78Table'), disabled: this.modellingRezult.Select.E78.length < 1})

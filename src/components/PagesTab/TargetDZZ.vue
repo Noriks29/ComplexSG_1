@@ -226,14 +226,14 @@ import XLSX from 'xlsx-js-style';
         this.$ChangeTargets(this.viewmode,true)
         this.CreateCatalogUse()
       },
-      DeleteAll(){
+      async DeleteAll(){
         this.target[this.viewmode].forEach(el => {el.deleted = true})
-        this.DeleteRow()
+        await this.DeleteRow()
         this.CreateCatalogUse()
       },
-      DeleteRow(){
-        this.$ChangeTargets(this.viewmode,true)
-        if(this.viewmode == 'catalog') this.$ChangeTargets('request',true)
+      async DeleteRow(){
+        await this.$ChangeTargets(this.viewmode,true)
+        if(this.viewmode == 'catalog') await this.$ChangeTargets('request',true)
         this.CreateCatalogUse()
       },
       CreateCatalogUse(){
@@ -241,7 +241,7 @@ import XLSX from 'xlsx-js-style';
         this.target.catalog.forEach(el => {
           this.catalogUse[el.goalId] = 0
           this.target.request.forEach(rec => {
-            if(rec.catalog.goalId == el.goalId)  this.catalogUse[el.goalId] += 1
+            if(rec.catalog.goalId == el.goalId && !rec.deleted)  this.catalogUse[el.goalId] += 1
           })
         })
       },
