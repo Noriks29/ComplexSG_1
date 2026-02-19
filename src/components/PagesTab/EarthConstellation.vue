@@ -4,7 +4,8 @@
         <Toolbar class="mb-4">
           <template #center>
             <TabMenu :model="[
-              {label: 'Окна видимости',command: () => this.CommandWork(3)},{label: 'Графическое представление',command: () => this.CommandWork(6)},
+              {label: 'Окна видимости',command: () => this.CommandWork(3)},
+              {label: 'Графическое представление',command: () => this.CommandWork(6)}
             ]" />
           </template>
           <template #end>

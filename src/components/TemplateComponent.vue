@@ -38,7 +38,8 @@
             label: 'Связь',
             items: [
               { label: 'КА - НП', command: () => SelectComponent('EarthConstellation'), active: activeComponent=='EarthConstellation'},
-              { label: 'КА - КА', command: () => SelectComponent('LeaderConstellationConstellation'), active: activeComponent=='LeaderConstellationConstellation'}
+              { label: 'КА - КА', command: () => SelectComponent('LeaderConstellationConstellation'), active: activeComponent=='LeaderConstellationConstellation'},
+              { label: 'Нештатные ситуации', command: () => SelectComponent('EmergencySit'), active: activeComponent=='EmergencySit'}
             ]
           },
           /*
@@ -88,6 +89,8 @@ import EstimationConstellation from './PagesTab/EstimationConstellation.vue'
 import TargetRoad from './PagesTab/TargetRoad.vue';
 import LeaderConstellationConstellation from './PagesTab/LeaderConstellationConstellation.vue';
 
+import EmergencySit from './PagesTab/EmergencySit.vue';
+
 import MapContainer from './MapContainer.vue';
 
 import ModellingComponent from './KA/ModellingComponent.vue';
@@ -110,6 +113,7 @@ export default {
     LeaderConstellationConstellation,
     LogEventList,
     MapContainer,
+    EmergencySit,
 
     ModellingComponent,
     ModelingPanel,

@@ -38,9 +38,17 @@ const GlobalDataPlugin = {
     const $GetOGList = async function () {
         OGList.value = await apiVite.$FetchGet('/api/v1/constellation/get/list') || []
     };
+
     apiVite.$GetOGList = $GetOGList
     apiVite.$OGList = $OGList 
     apiVite.$ChangeOGList = $ChangeOGList
+
+
+    const EmergencySit = ref([]);
+    const $EmergencySit = function () {
+        return EmergencySit
+    };
+    apiVite.$EmergencySit = $EmergencySit
 
 
 
