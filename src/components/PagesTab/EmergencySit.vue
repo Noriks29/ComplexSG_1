@@ -3,13 +3,11 @@
       <div сlass="HeaderContain">
         <Toolbar class="mb-4">
           <template #start>
-            <Button icon="pi pi-save" severity="success" @click="SaveData" text style="margin-left: 15px;"/>
+            <Button icon="pi pi-plus" severity="success" @click="AddRow" text style="margin-left: 15px;"/>
           </template>
           <template #center>
           </template>
           <template #end>
-            <Button icon="pi pi-plus" severity="success" @click="AddRow" text style="margin-left: 15px;"/>
-            <Button :disabled="true" icon="pi pi-file-excel" severity="help" @click="" text label="Exel" style="margin-left: 15px;"/>
           </template>
         </Toolbar> 
       </div>
@@ -26,10 +24,12 @@
             <Calendar v-model="slotProps.data.timePr"  @date-select="ChangeTimeInput($event, slotProps.data)" @blur="ChangeTimeInput($event.value, slotProps.data)" dateFormat="yy-mm-dd" timeFormat="HH:mm:ss" showTime hourFormat="24" showIcon iconDisplay="input" inputId="datetime" showSeconds :manualInput="true"/>
           </template>
         </Column>
+        <Column field="del" header="">
+          <template #body="slotProps">
+            <Button icon="pi pi-trash" severity="danger" @click="DeleteRow(slotProps)" text style="margin-left: 15px;"/>
+          </template>
+        </Column>
       </DataTable>
-      {{ OG }}
-
-      {{ dataTable }}
     </div>
   </div>
   </template>
@@ -57,7 +57,9 @@ import { CreateDateTime } from '@/js/WorkWithDTime';
         AddRow(){
           this.dataTable.push({satelliteId: null, time: null})
         },
-        SaveData(){
+        DeleteRow(data){
+          console.log(data)
+          this.dataTable.splice(data.index, 1);
         },
         ChangeTimeInput(value, data){
           for (let i = 0; i < this.dataTable.length; i++) {
