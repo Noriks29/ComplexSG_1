@@ -54,7 +54,7 @@
           this.$showLoad(false)
         },
         async AddRow(){
-          var addedRow = {'id' : undefined, 'codeEvent' : "", 'descriptionEvent' : "", 'deleted': false};
+          var addedRow = {'id' : undefined, 'codeEvent' : '', 'descriptionEvent' : "", 'deleted': false};
           this.dataJson.push(addedRow);
           this.setPost()
         },

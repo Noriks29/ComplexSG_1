@@ -39,7 +39,8 @@
             items: [
               { label: 'КА - НП', command: () => SelectComponent('EarthConstellation'), active: activeComponent=='EarthConstellation'},
               { label: 'КА - КА', command: () => SelectComponent('LeaderConstellationConstellation'), active: activeComponent=='LeaderConstellationConstellation'},
-              { label: 'Нештатные ситуации', command: () => SelectComponent('EmergencySit'), active: activeComponent=='EmergencySit'}
+              { label: 'Нештатные ситуации', command: () => SelectComponent('EmergencySit'), active: activeComponent=='EmergencySit'},
+              { label: 'Анализ ТМИ', command: () => OpenPage()}
             ]
           },
           /*
@@ -97,6 +98,8 @@ import ModellingComponent from './KA/ModellingComponent.vue';
 import ModelingRezult from './KA/ModelingRezult.vue';
 import ModelingPanel from './KA/ModelingPanel.vue';
 
+import { GetAddres } from "@/js/config_server";
+
 import Menu from 'primevue/menu';
 export default {
   name: 'TemplateComponent',
@@ -143,6 +146,11 @@ export default {
         this.system = await this.$SystemObject()
         this.SelectComponent('MapContainer')
         
+      },
+      async OpenPage() {
+        let addres = await GetAddres()
+        console.log(`http://${addres.split(':')[0]}:5000/`)
+        window.open(`http://${addres.split(':')[0]}:5000/`)
       },
       async ShowModellingPanel(mode){
         if(!(this.ModelingRezultMode == 'Settings' && mode == null)){
