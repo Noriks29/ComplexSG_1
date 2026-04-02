@@ -81,7 +81,10 @@ import Dropdown from 'primevue/dropdown';
       Dropdown
     },
     methods: {
-        RezultShowChange(status){
+        async RezultShowChange(status){
+          if(status == true){
+            await this.ReLoadComponent()
+          }
             this.RezultShow = status
         },
         dataTransfer(data){ //доставка данных в компонент с моделлирования
@@ -145,6 +148,7 @@ import Dropdown from 'primevue/dropdown';
           this.valueSS = {lable: this.arr[0].lable, value: this.arr[0].value}
           this.modellingRezult.Select.selectKA = this.arr[0].value
         } catch (error) {console.error(error)}
+        return
       }
     },
     async mounted(){

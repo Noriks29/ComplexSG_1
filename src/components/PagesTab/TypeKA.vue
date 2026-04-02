@@ -159,7 +159,7 @@
                 <Column field="name" header=""/>
                 <Column field="param" header="">
                   <template #body="slotProps" >
-                    <InputNumber v-model="SelectKA.value.operatingParameter[slotProps.data.param]" @input="ChangeParamKa" showButtons :invalid="!SelectKA.value.operatingParameter[slotProps.data.param] && SelectKA.value.operatingParameter[slotProps.data.param] !== 0" :disabled="!slotProps.data.param" mode="decimal" :maxFractionDigits="5"/>
+                    <InputNumber v-model="SelectKA.value.operatingParameter[slotProps.data.param]" @input="ChangeParamKa(slotProps.data.param, $event)" showButtons :invalid="!SelectKA.value.operatingParameter[slotProps.data.param] && SelectKA.value.operatingParameter[slotProps.data.param] !== 0" :disabled="!slotProps.data.param" mode="decimal" :maxFractionDigits="5"/>
                   </template>
                 </Column>
                 <Column field="value" header="">
@@ -297,8 +297,10 @@ export default {
         }
         await this.ReFerchKA(this.SelectKA.value.id)
       },
-      async ChangeParamKa(){
-        await this.$FetchPost("/api/v1/modelsat/update/parameters", this.SelectKA.value.operatingParameter)
+      async ChangeParamKa(data, event){
+          let dataPost = JSON.parse(JSON.stringify(this.SelectKA.value.operatingParameter))
+          dataPost[data] = Number(event.originalEvent.target.value.replace(',','.'))
+          await this.$FetchPost("/api/v1/modelsat/update/parameters", dataPost)
       },
       async ReFerchKA(index){
         let result = await this.$FetchGet('/api/v1/modelsat/all')

@@ -144,12 +144,24 @@ import XLSX from 'xlsx-js-style';
     components:{},
     methods: {
       async DeleteRowOG(id){
+        
         if(!this.approved){
-          await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+this.dataJson[id].id)
-          await this.$GetOGList()
-          this.CreateSelectOGArray()
-          this.valueSelectOG = undefined
-          this.$showToast('','info',"Ог удалена");
+          this.$confirm.require({
+            message: 'Вы уверены что хотите удалить группировку?',
+            header: 'Удаление ОГ',
+            icon: 'pi pi-info-circle',
+            rejectLabel: 'Отмена',
+            acceptLabel: 'Удалить',
+            rejectClass: 'p-button-secondary p-button-outlined',
+            acceptClass: 'p-button-danger',
+            accept: async() => {
+                await this.$FetchPost('/api/v1/constellation/delete/byId',{},'id='+this.dataJson[id].id)
+                await this.$GetOGList()
+                this.CreateSelectOGArray()
+                this.valueSelectOG = undefined
+                this.$showToast('','info',"Ог удалена");
+              },
+          });
         }
       },
         AddRow(){
