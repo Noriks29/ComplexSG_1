@@ -2,9 +2,10 @@
 <template>
   <div id="backgroundDiv"></div>
     <div class="headerSelectMode" :class="login !== undefined && systemStatus.typeWorkplace == -1 ? 'show' : ''">
-      <div v-for="data, index in workplaceList" :key="index" class="buttonMenu">
+      <div v-for="data, index in workplaceList" :key="index" class="buttonMenu" style="position: relative;">
         <Button  @click="ChangetypeWorkplace(data.type)" :label="data.name" severity="secondary">
         </Button>
+        <Button icon="pi pi-info" outlined label="Справка" @click="infoType=data.type" severity="help" style="position: absolute;bottom: 10px;left: 10px;"/>
       </div>
     </div>
     <div class="TitleComplex" :class="login !== undefined && systemStatus.typeWorkplace == -1 ? 'show' : ''">
@@ -32,15 +33,16 @@
       </div>
     </div>
     <div class="WorkPage">
-      <Menubar class="idSesion" :class="login !== undefined ? titleModule==''?'show':'max show':''">
+      <Menubar class="idSesion show" :class="titleModule==''?'':'max'">
         <template #start>
           <div class="ModuleTitle" :class="titleModule==''?'hide':''">{{ titleModule }}</div>
         </template>
         <template #end>
           <div class="endMenu">
-            <p>Пользователь: {{ login }}</p>
-            <Button icon="pi pi-bars" outlined :class="systemStatus.typeWorkplace !== -1 ? 'show' : ''" @click="ChangetypeWorkplace(-1)" class="p-button-sm" severity="info"/>
-            <Button label="Выйти" outlined @click="Log_out" icon="pi pi-sign-out" iconPos="right" class="p-button-sm" severity="danger"/>
+            <Button icon="pi pi-info" outlined label="Справка" @click="infoType=1" severity="help"/>
+            <p v-if="login">Пользователь: {{ login }}</p>
+            <Button v-if="login" icon="pi pi-bars" outlined :class="systemStatus.typeWorkplace !== -1 ? 'show' : ''" @click="ChangetypeWorkplace(-1)" class="p-button-sm" severity="info"/>
+            <Button v-if="login" label="Выйти" outlined @click="Log_out" icon="pi pi-sign-out" iconPos="right" class="p-button-sm" severity="danger"/>
           </div>
         </template>
       </Menubar>
@@ -49,6 +51,95 @@
     <div class="ChangeViewMode" @click="ChangeColor"><Button :icon="'pi '+(!colorthemBlack?'pi-sun':'pi-moon') " severity="secondary" style="height: 1.5rem;width: 1.5rem;"/></div>
     <LoadProcess />
     <Toast /><ConfirmDialog></ConfirmDialog>
+    <div class="PanelInfo" v-if="infoType" @click="CloseInfo($event.target)">
+      <Card style="position: relative;">
+          
+          <template #title><span>Справка</span>
+              <Button icon="pi pi-times" text severity="secondary" @click="infoType=null" style="position: absolute;right: 20px;"/>
+          </template>
+          <template #content >
+            <section v-if="infoType==1">
+               <h2>Полное наименование программы:</h2>
+    <p>Экспериментальный образец программного комплекса автономного группового управления многоспутниковыми группировками малоразмерных космических аппаратов наблюдения земной поверхности и околоземного космического пространства на основе комплексирования классических подходов, нейросетевых технологий и искусственного интеллекта</p>
+    <h2>Сокращённое наименование:</h2>
+    <p>ЭО ПК АГУ МГ МКА</p>
+    <h2>Шифр СЧ НИР:</h2>
+    <p>«Комплекс-СГ-3.1.2.1»</p>
+    <h2>Версия программы:</h2>
+    <p>1.0 (экспериментальная, 2025 г.)</p>
+    <h2>Назначение программы</h2>
+    <p>Программа предназначена для отработки, экспериментальной проверки и подтверждения правильности основных модельно‑алгоритмических решений, разработанных для информационной технологии автономного группового управления (АГУ) многоспутниковыми группировками (МГ) малоразмерных космических аппаратов (МКА) наблюдения земной поверхности и околоземного космического пространства.</p>
+    <p>В рамках программы рассматривается орбитальное построение МГ в виде кластеров, где в каждом кластере один МКА выполняет роль ведущего (лидера), а остальные — ведомых. Управление осуществляется с минимальным участием наземного комплекса управления (НКУ) на основе информационного взаимодействия МКА.</p>
+    <h2>Решаемые задачи</h2>
+    <ul>
+        <li>Формирование имитационной модели многоспутниковой группировки МКА заданного состава и баллистической структуры на основе базы данных МКА.</li>
+        <li>Описание состава, текущего орбитального построения и задач МГ наблюдения Земли и околоземного космического пространства (НЗКП).</li>
+        <li>Расчёт и анализ показателей оперативности распределения и перераспределения задач автономного группового управления, оценка качества формируемых планов применения.</li>
+        <li>Автономное планирование, коррекция и перепланирование применения МКА НЗКП, координация планов в рамках МГ.</li>
+        <li>Реализация алгоритма автономного группового управления на основе комплексирования классических, нейросетевых и интеллектуальных алгоритмов.</li>
+        <li>Проведение экспериментальных исследований с изменением целей, состава и качества решения задач.</li>
+        <li>Сохранение хода и результатов отработки алгоритма в базе данных с возможностью доступа к ретроспективной информации.</li>
+        <li>Визуальное отображение хода и результатов экспериментов (имитационное моделирование).</li>
+        <li>Анализ показателей производительности функционирования космической системы.</li>
+    </ul>
+    <h2>Состав программного комплекса</h2>
+    <ul>
+        <li><strong>База данных (БД)</strong> — хранение входных и выходных данных, результатов моделирования.</li>
+        <li><strong>Интерфейс АРМ и доступ к БД</strong> — совокупность пользовательских форм для ввода/редактирования исходных данных и отображения результатов.</li>
+        <li><strong>Движок имитационного моделирования</strong> — реализация дискретно‑событийного моделирования функционирования МГ.</li>
+        <li><strong>Библиотека специального модельно‑алгоритмического обеспечения (СМАО)</strong> — описывает поведение и функциональные возможности программных агентов МКА, реализующих основные положения информационной технологии АГУ.</li>
+        <li><strong>Информационная шина</strong> — обеспечивает обмен данными между компонентами.</li>
+    </ul>
+    <h2>Условия выполнения (системные требования)</h2>
+    <h3>Операционная система:</h3>
+    <p>Astra Linux (64‑разрядная)</p>
+    <h3>Программное обеспечение:</h3>
+    <ul>
+        <li>Веб‑браузер: Google Chrome</li>
+        <li>Java Development Kit (JDK) версии 17.0.9</li>
+        <li>Node.js (версия 20.19.4) и npm (10.8.2)</li>
+        <li>Nginx (версия 1.18.0) для обслуживания статических файлов</li>
+        <li>Компилятор GCC (9.4.0)</li>
+        <li>Python интерпретатор (3.10.15) и менеджер пакетов pip (24.3.1)</li>
+        <li>СУБД PostgreSQL (версия 12.20)</li>
+    </ul>
+    <h3>Минимальные аппаратные требования:</h3>
+    <ul>
+        <li>Процессор: Intel Core i5, 6‑ядерный, 2,9 ГГц (Turbo — до 4,3 ГГц)</li>
+        <li>Оперативная память: не менее 8 ГБ (DDR4)</li>
+        <li>Твердотельный накопитель (SSD): не менее 128 ГБ</li>
+        <li>Монитор: диагональ не менее 27″, разрешение не хуже 1920×1080</li>
+        <li>Клавиатура и мышь: проводные, USB</li>
+    </ul>
+    <h2>Разработчик</h2>
+    <p>Федеральное государственное бюджетное учреждение науки<br>
+    «Санкт‑Петербургский Федеральный исследовательский центр Российской академии наук» (СПб ФИЦ РАН)</p>
+    <h2>Год разработки</h2>
+    <p>2024–2025</p>
+    <p>Данная справка является встроенной помощью пользователя ЭО ПК АГУ МГ МКА и соответствует требованиям Технического задания (п. 5.6).</p>
+            </section>
+            <section v-if="infoType==3">
+              <h2>Автономное групповое управление кластерами МКА:</h2>
+              <ul>
+                  <li>кластеры: близкое расположение МКА</li>
+                  <li>автономное управление: распределение заявок в кластерах и между кластерами на основе информационного взаимодействия</li>
+                  <li>планирование и моделирование в двух режимах: с использованием и без использования межспутниковой связи</li>
+                  <li>автономный расчет плана съемок и плана полета на каждом МКА с учетом параметров маневренности МКА</li>
+                  <li>возможность планирования полета с учетом прогноза электробаланса</li>
+              </ul>
+            </section>
+            <section v-if="infoType==4">
+              <h2>О программе в «Доставка данных на Землю»</h2>
+              <p>Упрощённая «удобная» версия программного комплекса для валидации процессов доставки данных на Землю:</p>
+              <ul>
+                  <li>описание заявок предполагает указание объёмов данных и времени их появления на МКА в результате выполнения съёмок</li>
+                  <li>доставка данных в двух режимах: с использованием и без использования межспутниковой связи</li>
+              </ul>
+            </section>
+          </template>
+      </Card>
+    </div>
+    
 </template> 
 <script>
 import TemplateComponent from './components/TemplateComponent.vue'
@@ -69,7 +160,8 @@ export default {
       login: undefined,
       workplaceList: [],
       colorthemBlack: true,
-      form: {login: undefined, password: undefined}
+      form: {login: undefined, password: undefined},
+      infoType: null
     }
   },
   components: {
@@ -84,6 +176,12 @@ export default {
             "password": this.form.password
         }     
         this.VerifyWorkSapce(data)
+      },
+      CloseInfo(target){
+        console.log(target)
+        if(target.className == "PanelInfo"){
+          this.infoType = null
+        }
       },
       async VerifyWorkSapce(data){
         this.$showLoad(true);
@@ -200,7 +298,24 @@ export default {
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
+
+.PanelInfo{
+    position: absolute;
+    z-index: 10;
+    top: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: #00000038;
+    display: flex;
+    padding: 40px;
+}
+.PanelInfo .p-card-body{
+  height: 100%;
+}
+.PanelInfo .p-card-content{
+  overflow: auto;
+}
 
 #backgroundDiv{
     position: fixed;
