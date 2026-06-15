@@ -33,6 +33,28 @@ const LoadProcessPlugin = {
             return undefined
         }
     }
+    app.config.globalProperties.$FetchDelete = async function (http, AlertError = true, massage=null){
+        let addresConfig = await GetAddres()
+        let key = await this.$GetAccess()
+        try {
+            const response = await fetch('http://'+addresConfig+http+'?accessKey='+key,{
+              method:  'DELETE'
+            })
+            if (!response.ok) {
+                let rezult = await response.json()
+                throw new Error(rezult.MESSAGE);
+            }
+            else{
+                let rezult = await response.json()
+                if(massage != null) this.$showToast(massage,'success',"Запрос выполнен");
+                return rezult;
+            }
+            } catch (error) {
+                console.error('Error save:', error);
+                if(AlertError) this.$showToast(error,'error',"Запрос не выполнен");
+                return undefined;
+            }
+    }
     app.config.globalProperties.$FetchPost = async function (http,datapost,dopparamhttp, AlertError = true, massage=null){
         let addresConfig = await GetAddres()
         let key = await this.$GetAccess()

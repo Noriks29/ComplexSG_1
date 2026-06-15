@@ -7,6 +7,7 @@
                   <InputNumber v-model="experimentObject.angle" inputId="angle" showButtons :invalid="!experimentObject.angle && experimentObject.angle !== 0"/>
                   <label for="angle" class="always-top">Минимальный угол</label>
             </FloatLabel>
+            <Button icon="pi pi-ban" severity="danger" @click="ClearConnection" outlined label="Отчистить" style="margin-left: 5px;"/>
           </template>
           <template #center>
             <TabMenu  :model="TabMenuButton" />
@@ -226,6 +227,23 @@ import XLSX from 'xlsx-js-style';
             break;
         }
       },
+      async ClearConnection(){
+        this.$confirm.require({
+          message: 'Вы уверены?',
+          header: 'Удалление окон/плана',
+          icon: 'pi pi-info-circle',
+          rejectLabel: 'Отмена',
+          acceptLabel: 'Удалить',
+          rejectClass: 'p-button-secondary p-button-outlined',
+          acceptClass: 'p-button-danger',
+          accept: async () => {
+              let responce = await this.$FetchDelete('/api/v1/cluster/all')
+              this.ReFetch()
+            },
+        });
+        
+      },
+      
       async DeleteRow(index){
         if(index == 'Net'){
           await this.$FetchPost('/api/v1/network/update', this.networkClaster, null)
